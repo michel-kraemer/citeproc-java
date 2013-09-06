@@ -1,0 +1,12 @@
+.gradle/
+build/
+target/
+reports/
+src-gen/
+gradle.properties
+
+bin/
+.externalToolBuilders/
+.settings/
+.classpath
+.project

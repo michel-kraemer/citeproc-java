@@ -1,0 +1,44 @@
+{
+    "name": "CSLName",
+    "package": "de.undercouch.citeproc.csl",
+    "description": "A human being's name",
+    
+    "properties": [
+        {
+            "type": "String",
+            "name": "family"
+        },
+        {
+            "type": "String",
+            "name": "given"
+        },
+        {
+            "type": "String",
+            "name": "dropping-particle"
+        },
+        {
+            "type": "String",
+            "name": "non-dropping-particle"
+        },
+        {
+            "type": "String",
+            "name": "suffix"
+        },
+        {
+            "type": "Boolean",
+            "name": "comma-prefix"
+        },
+        {
+            "type": "Boolean",
+            "name": "static-ordering"
+        },
+        {
+            "type": "String",
+            "name": "literal"
+        },
+        {
+            "type": "Boolean",
+            "name": "parse-names"
+        }
+    ]
+}

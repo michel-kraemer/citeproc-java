@@ -1,0 +1,36 @@
+{
+    "name": "CSLDate",
+    "shortname": "date",
+    "package": "de.undercouch.citeproc.csl",
+    "description": "A citation date.",
+    
+    "properties": [
+        {
+            "type": "int[][]",
+            "name": "date-parts"
+        },
+        {
+            "type": "String",
+            "name": "season"
+        },
+        {
+            "type": "Boolean",
+            "name": "circa"
+        },
+        {
+            "type": "String",
+            "name": "literal"
+        },
+        {
+            "type": "String",
+            "name": "raw"
+        }
+    ],
+    
+    "additionalBuilderMethods": [
+        "public CSLDateBuilder dateParts(int year) { dateParts(new int[] { year }); return this; }",
+        "public CSLDateBuilder dateParts(int year, int month) { dateParts(new int[] { year, month }); return this; }",
+        "public CSLDateBuilder dateParts(int year, int month, int day) { dateParts(new int[] { year, month, day }); return this; }",
+        "public CSLDateBuilder season(int season) { season(String.valueOf(season)); return this; }"
+    ]
+}

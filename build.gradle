@@ -1,0 +1,299 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    
+    dependencies {
+        classpath 'org.apache.directory.studio:org.apache.commons.io:2.4'
+        classpath 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
+        classpath 'org.eclipse.tycho:org.eclipse.jdt.core:3.9.0.v20130604-1421'
+        classpath 'org.mod4j.org.eclipse.jface:text:3.5.0'
+        classpath 'org.mod4j.org.eclipse.core:resources:3.5.0'
+        classpath 'org.antlr:antlr4:4.1'
+    }
+}
+
+apply plugin: 'maven'
+apply plugin: 'osgi'
+apply plugin: 'signing'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.antlr.v4.Tool
+import org.eclipse.jdt.core.JavaCore
+import org.eclipse.jdt.core.ToolFactory
+import org.eclipse.jdt.core.formatter.CodeFormatter
+import org.eclipse.jface.text.Document
+import org.stringtemplate.v4.AttributeRenderer
+import org.stringtemplate.v4.ST
+import org.stringtemplate.v4.STGroup
+import org.apache.commons.io.FileUtils
+
+version = '0.1'
+group = 'de.undercouch'
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
+    compile 'org.jbibtex:jbibtex:1.0.8'
+    compile 'org.antlr:antlr4-runtime:4.1'
+    compile 'org.citationstyles:styles:1.0.2-SNAPSHOT'
+    compile 'org.citationstyles:locales:1.0.2-SNAPSHOT'
+    
+    testCompile 'junit:junit:4.11'
+}
+
+tasks.withType(Compile) { 
+    options.compilerArgs << "-Xlint" 
+}
+
+def normalize(String s, String c) {
+    int da
+    while ((da = s.indexOf(c)) > 0) {
+        s = s.substring(0, da) + Character.toUpperCase(s.charAt(da + 1)).toString() +
+            s.substring(da + 2)
+    }
+    return s
+}
+
+def normalize(String s) {
+    s = normalize(normalize(s, '-'), '_')
+    if (s.equals('abstract')) {
+        s = 'abstrct'
+    }
+    return s
+}
+
+def renderTemplate(template, attrs, dst, outName, stg) {
+    def t = FileUtils.readFileToString(new File('templates', template), 'UTF-8')
+    def st = new ST(stg, t)
+    for (def e in attrs) {
+        st.add(e.key, e.value)
+    }
+    
+    def r = st.render()
+    
+    def options = [
+        (JavaCore.COMPILER_SOURCE): "1.6",
+        (JavaCore.COMPILER_COMPLIANCE): "1.6",
+        (JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM): "1.6"
+    ]
+    def codeFormatter = ToolFactory.createCodeFormatter(options)
+    def textEdit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS,
+        r, 0, r.length(), 0, null)
+    def doc = new Document(r)
+    if (textEdit != null) {
+        textEdit.apply(doc)
+    }
+    FileUtils.writeStringToFile(new File(dst, outName), doc.get(), 'UTF-8')
+}
+
+def renderTemplates(name, dst, stg, type = false) {
+    def om = new ObjectMapper()
+    def attrs = om.readValue(new File('templates', "${name}.json"), Map)
+    
+    if (attrs.properties != null) {
+        attrs.requiredProperties = []
+        for (p in attrs.properties) {
+            if (p.normalizedName == null) {
+                p.normalizedName = normalize(p.name)
+            }
+            if (p.required) {
+                attrs.requiredProperties += p
+            }
+        }
+        attrs.properties.removeAll(attrs.requiredProperties)
+    }
+    
+    if (attrs.additionalBuilderMethods == null) {
+        attrs.additionalBuilderMethods = []
+    }
+    
+    if (attrs.noJsonObject == null) {
+        attrs.noJsonObject = false
+    }
+    
+    if (attrs.shortname == null) {
+        attrs.shortname = ""
+    }
+    
+    dst = new File(dst, attrs.package.replaceAll('\\.', '/'))
+    dst.mkdirs()
+    
+    if (type) {
+        renderTemplate("Type.java", attrs, dst, "${name}.java", stg)
+    } else {
+        renderTemplate("Object.java", attrs, dst, "${name}.java", stg)
+        if (attrs.noBuilder == null || !attrs.noBuilder) {
+            renderTemplate("Builder.java", attrs, dst, "${name}Builder.java", stg)
+        }
+    }
+}
+
+def renderGrammar(name, dst) {
+    def filename = "grammars/${name}.g4"
+    def tool = new Tool()
+    tool.outputDirectory = dst
+    tool.haveOutputDir = true
+    def grast = tool.loadGrammar(filename)
+    grast.fileName = filename
+    def g = tool.createGrammar(grast)
+    g.fileName = filename
+    tool.process(g, true)
+}
+
+task generateSources {
+    inputs.files fileTree(dir: projectDir, includes: [ 'templates/*', 'grammars/*' ])
+    outputs.files fileTree(dir: 'src-gen', include: '**/*.java')
+} << {
+    def ar = new AttributeRenderer() {
+        String toString(Object o, String formatString, Locale locale) {
+            if (formatString.equals('toEnum')) {
+                return o.toString().toUpperCase().replaceAll('-', '_')
+            } else if (formatString.equals('toGetter')) {
+                def s = o.toString()
+                s = Character.toUpperCase(s.charAt(0)).toString() + s.substring(1)
+                return "get${s}"
+            } else if (formatString.equals('toEllipse')) {
+                def s = o.toString()
+                if (s.endsWith('[]')) {
+                    s = s.substring(0, s.length() - 2) + '...'
+                }
+                return s
+            }
+            return o.toString()
+        }
+    }
+    
+    def stg = new STGroup('$' as char, '$' as char)
+    stg.registerRenderer(String, ar)
+    
+    def dst = new File('src-gen/main/java')
+    dst.mkdirs()
+    
+    renderTemplates('CSLType', dst, stg, true)
+    renderTemplates('CSLLabel', dst, stg, true)
+    renderTemplates('CSLCitation', dst, stg)
+    renderTemplates('CSLCitationItem', dst, stg)
+    renderTemplates('CSLDate', dst, stg)
+    renderTemplates('CSLItemData', dst, stg)
+    renderTemplates('CSLName', dst, stg)
+    renderTemplates('CSLProperties', dst, stg)
+    
+    renderTemplates('Bibliography', dst, stg)
+    renderTemplates('Citation', dst, stg)
+    renderTemplates('FormattingParameters', dst, stg)
+    
+    //renderGrammar('InternalName', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
+    renderGrammar('InternalPage', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
+}
+
+task cleanGeneratedSources(type: Delete) {
+    delete 'src-gen'
+}
+
+sourceSets.main.java.srcDirs 'src-gen/main/java'
+
+tasks['compileJava'].dependsOn(generateSources)
+tasks['eclipseClasspath'].dependsOn(generateSources)
+tasks['clean'].dependsOn(cleanGeneratedSources)
+
+jar {
+    // define OSGi bundle manifest
+    manifest {
+        name = 'citeproc-java'
+        symbolicName = "de.undercouch.citeproc"
+        vendor = 'Michel Kraemer'
+        instruction 'Import-Package', '*'
+        instruction 'Export-Package', "de.undercouch.*;version=${version}"
+    }
+    
+    // include license into jar
+    from 'LICENSE.txt'
+}
+
+// initialize gradle wrapper
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.7'
+}
+
+// package javadoc into a jar file
+task packageJavadoc(type: Jar, dependsOn: 'javadoc') {
+    from javadoc.destinationDir
+    classifier = 'javadoc'
+}
+
+// package source into a jar file
+task packageSources(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+// define artifacts for upload
+artifacts {
+    archives jar
+    archives packageJavadoc
+    archives packageSources
+}
+
+// sign all artifacts
+signing {
+    required { gradle.taskGraph.hasTask(uploadArchives) }
+    sign configurations.archives
+}
+
+// remove test dependencies from configuration-to-scope mapping
+// this also removes them from the maven pom file
+conf2ScopeMappings.mappings.remove(configurations.testCompile)
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            // sign artifacts before upload
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            
+            // upload to sonatype OSS
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
+                authentication(userName: this.hasProperty('sonatypeUsername') ? sonatypeUsername : '',
+                    password: this.hasProperty('sonatypePassword') ? sonatypePassword : '')
+            }
+            
+            // pom file details
+            pom.project {
+               name 'citeproc-java'
+               packaging 'jar'
+               description 'A Citation Style Language (CSL) Processor for Java.'
+               url 'http://www.michel-kraemer.com'
+ 
+               scm {
+                   url 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
+                   connection 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
+                   developerConnection 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
+               }
+ 
+               licenses {
+                   license {
+                       name 'The Apache Software License, Version 2.0'
+                       url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                       distribution 'repo'
+                   }
+               }
+ 
+               developers {
+                   developer {
+                       id 'michel-kraemer'
+                       name 'Michel Kraemer'
+                       email 'michel@undercouch.de'
+                   }
+               }
+           }
+        }
+    }
+}

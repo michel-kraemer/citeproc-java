@@ -1,0 +1,44 @@
+{
+    "name": "FormattingParameters",
+    "package": "de.undercouch.citeproc.output",
+    "description": "Formatting parameters for a generated bibliography.",
+    "noJsonObject": true,
+    "noBuilder": true,
+    
+    "properties": [
+        {
+            "type": "Integer",
+            "name": "maxoffset",
+            "normalizedName": "maxOffset"
+        },
+        {
+            "type": "Integer",
+            "name": "entryspacing",
+            "normalizedName": "entrySpacing"
+        },
+        {
+            "type": "Integer",
+            "name": "linespacing",
+            "normalizedName": "lineSpacing"
+        },
+        {
+            "type": "Integer",
+            "name": "hangingindent",
+            "normalizedName": "hangingIndent"
+        },
+        {
+            "type": "Boolean",
+            "name": "second-field-align"
+        },
+        {
+            "type": "String",
+            "name": "bibstart",
+            "normalizedName": "bibStart"
+        },
+        {
+            "type": "String",
+            "name": "bibend",
+            "normalizedName": "bibEnd"
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "name": "CSLCitation",
+    "shortname": "citation",
+    "package": "de.undercouch.citeproc.csl",
+    "description": "A set of citation items. This class is used to register citations in the CSL processor.",
+    
+    "properties": [
+        {
+            "type": "CSLCitationItem[]",
+            "name": "citationItems",
+            "required": true
+        },
+        {
+            "type": "String",
+            "name": "citationID",
+            "default": "Long.toString((long)Math.floor(Math.random() * 100000000000000L), 32)"
+        },
+        {
+            "type": "CSLProperties",
+            "name": "properties",
+            "default": "new CSLProperties()"
+        }
+    ],
+    
+    "additionalBuilderMethods": [
+        "public CSLCitationBuilder citationID(long citationID) { citationID(String.valueOf(citationID)); return this; }"
+    ]
+}

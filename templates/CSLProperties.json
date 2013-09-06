@@ -1,0 +1,13 @@
+{
+    "name": "CSLProperties",
+    "package": "de.undercouch.citeproc.csl",
+    "description": "Citation cluster properties.",
+    
+    "properties": [
+        {
+            "type": "Integer",
+            "name": "noteIndex",
+            "default": 0
+        }
+    ]
+}

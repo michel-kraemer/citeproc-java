@@ -1,0 +1,20 @@
+{
+    "name": "Bibliography",
+    "shortname": "bibliography",
+    "package": "de.undercouch.citeproc.output",
+    "description": "A generated bibliography consisting of bibliography entries and some formatting parameters",
+    "noJsonObject": true,
+    "noBuilder": true,
+    
+    "properties": [
+        {
+            "type": "String[]",
+            "name": "entries",
+            "required": true
+        },
+        {
+            "type": "FormattingParameters",
+            "name": "parameters"
+        }
+    ]
+}

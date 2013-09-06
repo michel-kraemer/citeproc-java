@@ -1,0 +1,377 @@
+{
+    "name": "CSLItemData",
+    "shortname": "citation item",
+    "package": "de.undercouch.citeproc.csl",
+    "description": "A citation item contains all attributes that make up a citation.",
+    
+    "properties": [
+        {
+            "type": "String",
+            "name": "id",
+            "required": true
+        },
+        {
+            "type": "CSLType",
+            "name": "type",
+            "required": true
+        },
+        {
+            "type": "String[]",
+            "name": "categories"
+        },
+        {
+            "type": "String",
+            "name": "language"
+        },
+        {
+            "type": "String",
+            "name": "journalAbbreviation"
+        },
+        {
+            "type": "String",
+            "name": "shortTitle"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "author"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "collection-editor"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "composer"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "container-author"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "director"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "editor"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "editorial-director"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "interviewer"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "illustrator"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "original-author"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "recipient"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "reviewed-author"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "translator"
+        },
+        {
+            "type": "CSLDate",
+            "name": "accessed"
+        },
+        {
+            "type": "CSLDate",
+            "name": "container"
+        },
+        {
+            "type": "CSLDate",
+            "name": "event-date"
+        },
+        {
+            "type": "CSLDate",
+            "name": "issued"
+        },
+        {
+            "type": "CSLDate",
+            "name": "original-date"
+        },
+        {
+            "type": "CSLDate",
+            "name": "submitted"
+        },
+        {
+            "type": "String",
+            "name": "abstract"
+        },
+        {
+            "type": "String",
+            "name": "annote"
+        },
+        {
+            "type": "String",
+            "name": "archive"
+        },
+        {
+            "type": "String",
+            "name": "archive_location"
+        },
+        {
+            "type": "String",
+            "name": "archive-place"
+        },
+        {
+            "type": "String",
+            "name": "authority"
+        },
+        {
+            "type": "String",
+            "name": "call-number"
+        },
+        {
+            "type": "String",
+            "name": "chapter-number"
+        },
+        {
+            "type": "String",
+            "name": "citation-number"
+        },
+        {
+            "type": "String",
+            "name": "citation-label"
+        },
+        {
+            "type": "String",
+            "name": "collection-number"
+        },
+        {
+            "type": "String",
+            "name": "collection-title"
+        },
+        {
+            "type": "String",
+            "name": "container-title"
+        },
+        {
+            "type": "String",
+            "name": "container-title-short"
+        },
+        {
+            "type": "String",
+            "name": "dimensions"
+        },
+        {
+            "type": "String",
+            "name": "DOI"
+        },
+        {
+            "type": "String",
+            "name": "edition"
+        },
+        {
+            "type": "String",
+            "name": "event"
+        },
+        {
+            "type": "String",
+            "name": "eventplace"
+        },
+        {
+            "type": "String",
+            "name": "first-reference-note-number"
+        },
+        {
+            "type": "String",
+            "name": "genre"
+        },
+        {
+            "type": "String",
+            "name": "ISBN"
+        },
+        {
+            "type": "String",
+            "name": "ISSN"
+        },
+        {
+            "type": "String",
+            "name": "issue"
+        },
+        {
+            "type": "String",
+            "name": "jurisdiction"
+        },
+        {
+            "type": "String",
+            "name": "keyword"
+        },
+        {
+            "type": "String",
+            "name": "locator"
+        },
+        {
+            "type": "String",
+            "name": "medium"
+        },
+        {
+            "type": "String",
+            "name": "note"
+        },
+        {
+            "type": "String",
+            "name": "number"
+        },
+        {
+            "type": "String",
+            "name": "number-of-pages"
+        },
+        {
+            "type": "String",
+            "name": "number-of-volumes"
+        },
+        {
+            "type": "String",
+            "name": "original-publisher"
+        },
+        {
+            "type": "String",
+            "name": "original-publisher-place"
+        },
+        {
+            "type": "String",
+            "name": "original-title"
+        },
+        {
+            "type": "String",
+            "name": "page"
+        },
+        {
+            "type": "String",
+            "name": "page-first"
+        },
+        {
+            "type": "String",
+            "name": "PMCID"
+        },
+        {
+            "type": "String",
+            "name": "PMID"
+        },
+        {
+            "type": "String",
+            "name": "publisher"
+        },
+        {
+            "type": "String",
+            "name": "publisher-place"
+        },
+        {
+            "type": "String",
+            "name": "references"
+        },
+        {
+            "type": "String",
+            "name": "reviewed-title"
+        },
+        {
+            "type": "String",
+            "name": "scale"
+        },
+        {
+            "type": "String",
+            "name": "section"
+        },
+        {
+            "type": "String",
+            "name": "source"
+        },
+        {
+            "type": "String",
+            "name": "status"
+        },
+        {
+            "type": "String",
+            "name": "title"
+        },
+        {
+            "type": "String",
+            "name": "title-short"
+        },
+        {
+            "type": "String",
+            "name": "URL"
+        },
+        {
+            "type": "String",
+            "name": "version"
+        },
+        {
+            "type": "String",
+            "name": "volume"
+        },
+        {
+            "type": "String",
+            "name": "year-suffix"
+        }
+    ],
+    
+    "additionalBuilderMethods": [
+        "public CSLItemDataBuilder edition(int edition) { edition(String.valueOf(edition)); return this; }",
+        "public CSLItemDataBuilder issue(int issue) { issue(String.valueOf(issue)); return this; }",
+        "public CSLItemDataBuilder number(int number) { number(String.valueOf(number)); return this; }",
+        "public CSLItemDataBuilder numberOfVolumes(int numberOfVolumes) { numberOfVolumes(String.valueOf(numberOfVolumes)); return this; }",
+        "public CSLItemDataBuilder volume(int volume) { volume(String.valueOf(volume)); return this; }",
+        "public CSLItemDataBuilder page(int page) { page(String.valueOf(page)); return this; }",
+        "public CSLItemDataBuilder pageFirst(int pageFirst) { pageFirst(String.valueOf(pageFirst)); return this; }",
+        "public CSLItemDataBuilder author(String given, String family) { author(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder author(String given, String family, boolean parseNames) { author(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder collectionEditor(String given, String family) { collectionEditor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder collectionEditor(String given, String family, boolean parseNames) { collectionEditor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder composer(String given, String family) { composer(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder composer(String given, String family, boolean parseNames) { composer(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder containerAuthor(String given, String family) { containerAuthor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder containerAuthor(String given, String family, boolean parseNames) { containerAuthor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder director(String given, String family) { director(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder director(String given, String family, boolean parseNames) { director(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder editor(String given, String family) { editor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder editor(String given, String family, boolean parseNames) { editor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder editorialDirector(String given, String family) { editorialDirector(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder editorialDirector(String given, String family, boolean parseNames) { editorialDirector(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder interviewer(String given, String family) { interviewer(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder interviewer(String given, String family, boolean parseNames) { interviewer(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder illustrator(String given, String family) { illustrator(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder illustrator(String given, String family, boolean parseNames) { illustrator(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder originalAuthor(String given, String family) { originalAuthor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder originalAuthor(String given, String family, boolean parseNames) { originalAuthor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder recipient(String given, String family) { recipient(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder recipient(String given, String family, boolean parseNames) { recipient(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder reviewedAuthor(String given, String family) { reviewedAuthor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder reviewedAuthor(String given, String family, boolean parseNames) { reviewedAuthor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder translator(String given, String family) { translator(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder translator(String given, String family, boolean parseNames) { translator(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder issued(int year) { issued(new CSLDateBuilder().dateParts(year).build()); return this; }",
+        "public CSLItemDataBuilder issued(int year, int month) { issued(new CSLDateBuilder().dateParts(year, month).build()); return this; }",
+        "public CSLItemDataBuilder issued(int year, int month, int day) { issued(new CSLDateBuilder().dateParts(year, month, day).build()); return this; }",
+        "public CSLItemDataBuilder accessed(int year) { accessed(new CSLDateBuilder().dateParts(year).build()); return this; }",
+        "public CSLItemDataBuilder accessed(int year, int month) { accessed(new CSLDateBuilder().dateParts(year, month).build()); return this; }",
+        "public CSLItemDataBuilder accessed(int year, int month, int day) { accessed(new CSLDateBuilder().dateParts(year, month, day).build()); return this; }",
+        "public CSLItemDataBuilder container(int year) { container(new CSLDateBuilder().dateParts(year).build()); return this; }",
+        "public CSLItemDataBuilder container(int year, int month) { container(new CSLDateBuilder().dateParts(year, month).build()); return this; }",
+        "public CSLItemDataBuilder container(int year, int month, int day) { container(new CSLDateBuilder().dateParts(year, month, day).build()); return this; }",
+        "public CSLItemDataBuilder eventDate(int year) { eventDate(new CSLDateBuilder().dateParts(year).build()); return this; }",
+        "public CSLItemDataBuilder eventDate(int year, int month) { eventDate(new CSLDateBuilder().dateParts(year, month).build()); return this; }",
+        "public CSLItemDataBuilder eventDate(int year, int month, int day) { eventDate(new CSLDateBuilder().dateParts(year, month, day).build()); return this; }",
+        "public CSLItemDataBuilder originalDate(int year) { originalDate(new CSLDateBuilder().dateParts(year).build()); return this; }",
+        "public CSLItemDataBuilder originalDate(int year, int month) { originalDate(new CSLDateBuilder().dateParts(year, month).build()); return this; }",
+        "public CSLItemDataBuilder originalDate(int year, int month, int day) { originalDate(new CSLDateBuilder().dateParts(year, month, day).build()); return this; }",
+        "public CSLItemDataBuilder submitted(int year) { submitted(new CSLDateBuilder().dateParts(year).build()); return this; }",
+        "public CSLItemDataBuilder submitted(int year, int month) { submitted(new CSLDateBuilder().dateParts(year, month).build()); return this; }",
+        "public CSLItemDataBuilder submitted(int year, int month, int day) { submitted(new CSLDateBuilder().dateParts(year, month, day).build()); return this; }"
+    ]
+}

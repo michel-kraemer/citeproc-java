@@ -1,0 +1,21 @@
+{
+    "name": "Citation",
+    "shortname": "citation",
+    "package": "de.undercouch.citeproc.output",
+    "description": "A generated citation that can be put into the text",
+    "noJsonObject": true,
+    "noBuilder": true,
+    
+    "properties": [
+        {
+            "type": "int",
+            "name": "index",
+            "required": true
+        },
+        {
+            "type": "String",
+            "name": "text",
+            "required": true
+        }
+    ]
+}

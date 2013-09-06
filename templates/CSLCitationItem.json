@@ -1,0 +1,46 @@
+{
+    "name": "CSLCitationItem",
+    "shortname": "citation item",
+    "package": "de.undercouch.citeproc.csl",
+    "description": "A citation item is used to register a citation in the CSL processor. It usually only consists of the citation's ID but can also contain other formatting parameters.",
+    
+    "properties": [
+        {
+            "type": "String",
+            "name": "id",
+            "required": true
+        },
+        {
+            "type": "CSLItemData",
+            "name": "itemData"
+        },
+        {
+            "type": "String",
+            "name": "prefix"
+        },
+        {
+            "type": "String",
+            "name": "suffix"
+        },
+        {
+            "type": "String",
+            "name": "locator"
+        },
+        {
+            "type": "CSLLabel",
+            "name": "label"
+        },
+        {
+            "type": "Boolean",
+            "name": "suppress-author"
+        },
+        {
+            "type": "Boolean",
+            "name": "author-only"
+        },
+        {
+            "type": "String[]",
+            "name": "uris"
+        }
+    ]
+}

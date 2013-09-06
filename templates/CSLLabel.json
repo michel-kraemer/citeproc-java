@@ -1,0 +1,24 @@
+{
+    "name": "CSLLabel",
+    "package": "de.undercouch.citeproc.csl",
+    "description": "Valid citation labels",
+    
+    "types": [
+        "book",
+        "chapter",
+        "column",
+        "figure",
+        "folio",
+        "issue",
+        "line",
+        "note",
+        "opus",
+        "page",
+        "paragraph",
+        "part",
+        "section",
+        "sub_verbo",
+        "verse",
+        "volume"
+    ]
+}
