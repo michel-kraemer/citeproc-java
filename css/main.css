@@ -1,0 +1,116 @@
+p {
+  font-size: 120%;
+  line-height: 1.6em;
+}
+
+pre {
+  font-size: 110%;
+}
+
+li {
+  font-size: 110%;
+  line-height: 1.6em;
+}
+
+footer p {
+  color: #888;
+}
+
+.navbar-nav li {
+  font-size: 110%;
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 750px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 800px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 875px;
+  }
+}
+
+.page-header {
+  margin-top: 100px;
+  padding-bottom: 30px;
+  margin-bottom: 40px;
+}
+
+h1 {
+  font-size: 4.5em;
+  margin-left: -3px;
+  line-height: 1.1em;
+}
+
+h2 {
+  padding-top: 80px;
+  margin-top: -40px;
+  padding-bottom: 14px;
+}
+
+footer{
+  margin: 5em 0;
+  border-top: 1px solid #ecf0f1;
+}
+
+footer li {
+  float: left;
+  margin-right: 1.5em;
+  margin-bottom: 1.5em
+}
+
+footer p {
+  margin-bottom: 0;
+  clear: left
+}
+
+pre {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.sample {
+  padding-top: 20px;
+  padding-bottom: 58px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ecf0f1;
+  font-size: 110%;
+}
+
+.sample pre {
+  border: none;
+  background: none;
+  padding-top: 10px;
+  margin-top: 0px;
+  padding-left: 0;
+}
+
+.sample .label {
+  font-size: 100%;
+}
+
+.csl-entry {
+  padding-top: 10px;
+}
+
+.sample .csl-entry {
+  font-size: 120%;
+}
+
+.csl-left-margin {
+  float: left;
+  display: table;
+  padding-right: 0.5em;
+}
+
+.csl-right-inline {
+  display: table;
+}

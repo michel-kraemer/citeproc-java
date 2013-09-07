@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }}</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.0/flatly/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.2.0/respond.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" href="{{ site.baseurl }}css/main.css">
+    <link rel="stylesheet" href="{{ site.baseurl }}css/syntax.css">
+  </head>
+  <body id="top">
+
+    <div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="#top" class="navbar-brand">citeproc-java</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav">
+            <li>
+              <a href="#using">Using</a>
+            </li>
+            <li>
+              <a href="#using-the-bibtex-converter">BibTeX</a>
+            </li>
+            <li>
+              <a href="#building">Building</a>
+            </li>
+            <li>
+              <a href="#installing">Installing</a>
+            </li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#license"><i class="icon-file-alt"></i>&nbsp;&nbsp;License</a></li>
+            <li><a href="https://github.com/michel-kraemer/citeproc-java"><i class="icon-github"></i>&nbsp;&nbsp;GitHub</a></li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+    
+    <div class="container">
+      <div class="page-header" id="banner">
+        <div class="row">
+          <div class="col-lg-12">
+            <h1>{{ page.title }}</h1>
+            <p class="lead">{{ page.lead }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="sample">
+{% capture sample_content %}
+{% include sample.md %}
+{% endcapture %}
+{{ sample_content | markdownify }}
+      </div>
+      
+      {{ content }}
+      
+      <footer>
+        <div class="row">
+          <div class="col-lg-12">
+            <ul class="list-unstyled">
+              <li class="pull-right"><a href="#top"><i class="icon-chevron-sign-up"></i>&nbsp;&nbsp;Back to top</a></li>
+              <li><a href="https://github.com/michel-kraemer/citeproc-java">GitHub</a></li>
+              <!-- TODO
+              <li><a href="">JavaDoc API</a></li>
+              -->
+            </ul>
+            <p>Copyright &copy; {{ site.time | date: "%Y" }} <a href="http://www.michel-kraemer.com">Michel Kr&auml;mer</a>. All rights reserved.</p>
+            <p>Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License v2.0</a>.</p>
+            <p>This website is based on <a href="http://getbootstrap.com">Bootstrap</a>. Flatly Theme from <a href="http://bootswatch.com/">Bootswatch</a>.<br>
+            Icons from <a href="http://fortawesome.github.io/Font-Awesome/">Font Awesome</a>. Web fonts from <a href="http://www.google.com/webfonts">Google</a>.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="{{ site.baseurl }}js/jquery.ba-bbq.min.js"></script>
+    <script src="{{ site.baseurl }}js/jquery.smooth-scroll.min.js"></script>
+    <script src="{{ site.baseurl }}js/main.js"></script>
+  </body>
+</html>
