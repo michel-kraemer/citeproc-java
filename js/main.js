@@ -31,7 +31,6 @@ $(document).ready(function() {
       }
     });
 
-    console.log(window.location.hash);
     if (window.location.hash) {
       dontscroll = true;
       $(window).trigger('hashchange');
