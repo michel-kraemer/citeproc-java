@@ -30,6 +30,7 @@ import javax.script.ScriptException;
 
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
+import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.JsonHelper;
 import de.undercouch.citeproc.output.Bibliography;
@@ -310,5 +311,67 @@ public class CSL {
 			r = def;
 		}
 		return r;
+	}
+	
+	/**
+	 * Creates an ad hoc bibliography from the given citation items using the
+	 * <code>"html"</code> output format. Calling this method is rather
+	 * expensive as it initializes the CSL processor. If you need to create
+	 * bibliographies multiple times in your application you should create
+	 * the processor yourself and cache it if necessary.
+	 * @param style the citation style to use. May either be a serialized
+	 * XML representation of the style or a style's name such as <code>ieee</code>.
+	 * In the latter case, the processor loads the style from the classpath (e.g.
+	 * <code>/ieee.csl</code>)
+	 * @param items the citation items to add to the bibliography
+	 * @return the bibliography encoded as a string
+	 * @throws IOException if the underlying JavaScript files or the CSL style
+	 * could not be loaded
+	 * @see #makeAdhocBibliography(String, String, CSLItemData...)
+	 */
+	public static String makeAdhocBibliography(String style, CSLItemData... items)
+			throws IOException {
+		return makeAdhocBibliography(style, "html", items);
+	}
+	
+	/**
+	 * Creates an ad hoc bibliography from the given citation items. Calling
+	 * this method is rather expensive as it initializes the CSL processor.
+	 * If you need to create bibliographies multiple times in your application
+	 * you should create the processor yourself and cache it if necessary.
+	 * @param style the citation style to use. May either be a serialized
+	 * XML representation of the style or a style's name such as <code>ieee</code>.
+	 * In the latter case, the processor loads the style from the classpath (e.g.
+	 * <code>/ieee.csl</code>)
+	 * @param outputFormat the processor's output format (one of
+	 * <code>"html"</code>, <code>"text"</code>, or <code>"rtf"</code>)
+	 * @param items the citation items to add to the bibliography
+	 * @return the bibliography encoded as a string
+	 * @throws IOException if the underlying JavaScript files or the CSL style
+	 * could not be loaded
+	 */
+	public static String makeAdhocBibliography(String style, String outputFormat, CSLItemData... items)
+			throws IOException {
+		ItemDataProvider provider = new ListItemDataProvider(items);
+		CSL csl = new CSL(provider, style);
+		csl.setOutputFormat(outputFormat);
+		
+		String[] ids = new String[items.length];
+		for (int i = 0; i < items.length; ++i) {
+			ids[i] = items[i].getId();
+		}
+		csl.registerCitationItems(ids);
+		
+		Bibliography bibl = csl.makeBibliography();
+		
+		StringBuffer result = new StringBuffer();
+		for (String s : bibl.getEntries()) {
+			if (result.length() > 0) {
+				result.append("\n");
+			}
+			result.append(s);
+		}
+		
+		return result.toString();
 	}
 }

@@ -150,4 +150,24 @@ public class CSLTest {
 				+ "The Bell System Technical Journal, vol. 57, no. 6, pp. 2087\u20132101, "
 				+ "Jul.\u2013Aug. 1978.\n", b.getEntries()[3]);
 	}
+	
+	/**
+	 * Tests if an ad hoc bibliography can be created
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void makeAdhocBibliography() throws Exception {
+		CSLItemData item = new CSLItemDataBuilder("citeproc-java", CSLType.WEBPAGE)
+			.title("citeproc-java: A Citation Style Language (CSL) processor for Java")
+			.author("Michel", "Kr\u00E4mer")
+			.issued(2013, 9, 7)
+			.URL("http://github.io")
+			.accessed(2013, 9, 7)
+			.build();
+		
+		String bibl = CSL.makeAdhocBibliography("ieee", "text", item);
+		assertEquals("[1]M. Kr\u00E4mer, \u201cciteproc-java: A Citation Style "
+				+ "Language (CSL) processor for Java,\u201d 07-Sep-2013. [Online]. "
+				+ "Available: http://github.io. [Accessed: 07-Sep-2013].\n", bibl);
+	}
 }
