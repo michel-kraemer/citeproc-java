@@ -1,14 +1,14 @@
 p {
-  font-size: 120%;
+  font-size: 18px;
   line-height: 1.6em;
 }
 
 pre {
-  font-size: 110%;
+  font-size: 18px;
 }
 
 li {
-  font-size: 110%;
+  font-size: 18px;
   line-height: 1.6em;
 }
 
@@ -17,7 +17,12 @@ footer p {
 }
 
 .navbar-nav li {
-  font-size: 110%;
+  font-size: 17px;
+}
+
+.navbar-brand {
+  font-size: 22px;
+  padding-top: 18px;
 }
 
 @media (min-width: 768px) {
@@ -82,7 +87,7 @@ pre {
   padding-bottom: 58px;
   margin-bottom: 10px;
   border-bottom: 1px solid #ecf0f1;
-  font-size: 110%;
+  font-size: 18px;
 }
 
 .sample pre {
@@ -94,7 +99,7 @@ pre {
 }
 
 .sample .label {
-  font-size: 100%;
+  font-size: 18px;
 }
 
 .csl-entry {
@@ -102,7 +107,7 @@ pre {
 }
 
 .sample .csl-entry {
-  font-size: 120%;
+  font-size: 18px;
 }
 
 .csl-left-margin {
