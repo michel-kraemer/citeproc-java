@@ -102,12 +102,19 @@ pre {
   font-size: 18px;
 }
 
-.csl-entry {
+.sample .tab-content {
   padding-top: 10px;
+}
+
+.acm-siggraph, .apa, .chicago, .mla {
+  padding-left: 2em;
+  text-indent: -2em;
 }
 
 .sample .csl-entry {
   font-size: 18px;
+  padding-top: 10px;
+  width: 90%;
 }
 
 .csl-left-margin {

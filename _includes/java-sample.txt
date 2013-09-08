@@ -1,0 +1,12 @@
+{% highlight java %}
+CSLItemData item = new CSLItemDataBuilder("citeproc-java", CSLType.WEBPAGE)
+    .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
+    .author("Michel", "Krämer")
+    .issued({{ site.time | date: "%Y" }}, {{ site.time | date: "%-m" }}, {{ site.time | date: "%-d" }})
+    .URL("http://michel-kraemer.github.io/citeproc-java/")
+    .accessed({{ site.time | date: "%Y" }}, {{ site.time | date: "%-m" }}, {{ site.time | date: "%-d" }})
+    .build();
+
+{% if breakmake %}String bibl = CSL.makeAdhocBibliography("{{ format }}",
+    item).makeString();{% else %}String bibl = CSL.makeAdhocBibliography("{{ format }}", item).makeString();{% endif %}
+{% endhighlight %}
