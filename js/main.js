@@ -40,7 +40,7 @@ $(document).ready(function() {
     var date = new Date();
     var year = date.getFullYear();
     var month = date.getMonth() + 1;
-    var day = date.getDay() + 1;
+    var day = date.getDate();
     var strday = "" + day;
     if (strday.length < 2) {
       strday = '0' + strday;
@@ -49,8 +49,10 @@ $(document).ready(function() {
     var strmonth = monthnames[month - 1];
     $('.sample code').each(function() {
       var h = $(this).html();
-      h = h.replace(/accessed\([0-9]+, [0-9]+, [0-9]+\)/, 'accessed(' +
-        year + ', ' + month + ', ' + day + ')');
+      //replace accessed(y, m, d) in syntax highlighted code
+      h = h.replace(/accessed<([^(]+)\(<([^0-9]+)[0-9]+<([^0-9]+)[0-9]+<([^0-9]+)[0-9]+/,
+        'accessed<$1(<$2' + year + '<$3' + month + '<$4' + day);
+      //replace [Accessed: d-m-y] in output
       h = h.replace(/\[Accessed\: [0-9]+-[a-zA-Z]+-[0-9]+\]/, '[Accessed: ' +
         strday + '-' + strmonth + '-' + year + ']');
       $(this).html(h);
