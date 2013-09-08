@@ -16,7 +16,7 @@
 {% assign format = "ieee" %}
 {% include java-sample.txt %}
 
-<span class="label label-primary">Output</span>
+<h4>Output</h4>
 
 {% highlight html %}
 <div class="csl-bib-body">
@@ -30,7 +30,7 @@
 </div>
 {% endhighlight %}
 
-<span class="label label-info">Rendered</span>
+<h4>Rendered</h4>
 
 <div class="csl-bib-body">
   <div class="csl-entry">
@@ -49,7 +49,7 @@
 {% assign format = "acm-siggraph" %}
 {% include java-sample.txt %}
 
-<span class="label label-primary">Output</span>
+<h4>Output</h4>
 
 {% highlight html %}
 <div class="csl-bib-body">
@@ -61,7 +61,7 @@
 </div>
 {% endhighlight %}
 
-<span class="label label-info">Rendered</span>
+<h4>Rendered</h4>
 
 <div class="csl-bib-body acm-siggraph">
   <div class="csl-entry">
@@ -77,7 +77,7 @@
 {% assign format = "apa" %}
 {% include java-sample.txt %}
 
-<span class="label label-primary">Output</span>
+<h4>Output</h4>
 
 {% highlight html %}
 <div class="csl-bib-body">
@@ -88,7 +88,7 @@
 </div>
 {% endhighlight %}
 
-<span class="label label-info">Rendered</span>
+<h4>Rendered</h4>
 
 <div class="csl-bib-body apa">
   <div class="csl-entry">Krämer, M. ({{ site.time | date: "%Y" }}, {{ site.time | date: "%B" }} {{ site.time | date: "%-d" }}). citeproc-java:
@@ -104,7 +104,7 @@
 {% assign format = "chicago-author-date" %}
 {% include java-sample.txt %}
 
-<span class="label label-primary">Output</span>
+<h4>Output</h4>
 
 {% highlight html %}
 <div class="csl-bib-body">
@@ -115,7 +115,7 @@
 </div>
 {% endhighlight %}
 
-<span class="label label-info">Rendered</span>
+<h4>Rendered</h4>
 
 <div class="csl-bib-body chicago">
   <div class="csl-entry">Krämer, Michel. {{ site.time | date: "%Y" }}. “Citeproc-Java: A Citation
@@ -132,7 +132,7 @@
 {% assign format = "council-of-science-editors" %}
 {% include java-sample.txt %}
 
-<span class="label label-primary">Output</span>
+<h4>Output</h4>
 
 {% highlight html %}
 <div class="csl-bib-body">
@@ -143,7 +143,7 @@
 </div>
 {% endhighlight %}
 
-<span class="label label-info">Rendered</span>
+<h4>Rendered</h4>
 
 <div class="csl-bib-body">
   <div class="csl-entry">1. Krämer M. citeproc-java: A Citation Style Language
@@ -160,7 +160,7 @@
 {% assign format = "modern-language-association" %}
 {% include java-sample.txt %}
 
-<span class="label label-primary">Output</span>
+<h4>Output</h4>
 
 {% highlight html %}
 <div class="csl-bib-body">
@@ -170,7 +170,7 @@
 </div>
 {% endhighlight %}
 
-<span class="label label-info">Rendered</span>
+<h4>Rendered</h4>
 
 <div class="csl-bib-body mla">
   <div class="csl-entry">Krämer, Michel. “Citeproc-Java: A Citation Style
