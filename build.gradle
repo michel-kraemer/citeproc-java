@@ -112,6 +112,10 @@ def renderTemplates(name, dst, stg, type = false) {
         attrs.properties.removeAll(attrs.requiredProperties)
     }
     
+    if (attrs.additionalMethods == null) {
+        attrs.additionalMethods = []
+    }
+    
     if (attrs.additionalBuilderMethods == null) {
         attrs.additionalBuilderMethods = []
     }

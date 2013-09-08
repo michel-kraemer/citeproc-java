@@ -324,12 +324,12 @@ public class CSL {
 	 * In the latter case, the processor loads the style from the classpath (e.g.
 	 * <code>/ieee.csl</code>)
 	 * @param items the citation items to add to the bibliography
-	 * @return the bibliography encoded as a string
+	 * @return the bibliography
 	 * @throws IOException if the underlying JavaScript files or the CSL style
 	 * could not be loaded
 	 * @see #makeAdhocBibliography(String, String, CSLItemData...)
 	 */
-	public static String makeAdhocBibliography(String style, CSLItemData... items)
+	public static Bibliography makeAdhocBibliography(String style, CSLItemData... items)
 			throws IOException {
 		return makeAdhocBibliography(style, "html", items);
 	}
@@ -346,12 +346,12 @@ public class CSL {
 	 * @param outputFormat the processor's output format (one of
 	 * <code>"html"</code>, <code>"text"</code>, or <code>"rtf"</code>)
 	 * @param items the citation items to add to the bibliography
-	 * @return the bibliography encoded as a string
+	 * @return the bibliography
 	 * @throws IOException if the underlying JavaScript files or the CSL style
 	 * could not be loaded
 	 */
-	public static String makeAdhocBibliography(String style, String outputFormat, CSLItemData... items)
-			throws IOException {
+	public static Bibliography makeAdhocBibliography(String style, String outputFormat,
+			CSLItemData... items) throws IOException {
 		ItemDataProvider provider = new ListItemDataProvider(items);
 		CSL csl = new CSL(provider, style);
 		csl.setOutputFormat(outputFormat);
@@ -362,16 +362,6 @@ public class CSL {
 		}
 		csl.registerCitationItems(ids);
 		
-		Bibliography bibl = csl.makeBibliography();
-		
-		StringBuffer result = new StringBuffer();
-		for (String s : bibl.getEntries()) {
-			if (result.length() > 0) {
-				result.append("\n");
-			}
-			result.append(s);
-		}
-		
-		return result.toString();
+		return csl.makeBibliography();
 	}
 }

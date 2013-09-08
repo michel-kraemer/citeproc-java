@@ -16,5 +16,9 @@
             "type": "FormattingParameters",
             "name": "parameters"
         }
+    ],
+    
+    "additionalMethods":[
+        "/**\n* Converts this bibliography to a String that can be inserted into the text\n*/\npublic String makeString() { StringBuilder b = new StringBuilder(); if (parameters != null && parameters.getBibStart() != null) b.append(parameters.getBibStart()); if (entries != null) { for (String e : entries) b.append(e); } if (parameters != null && parameters.getBibEnd() != null) b.append(parameters.getBibEnd()); return b.toString(); }"
     ]
 }

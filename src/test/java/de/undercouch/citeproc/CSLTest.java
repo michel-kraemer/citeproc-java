@@ -161,13 +161,13 @@ public class CSLTest {
 			.title("citeproc-java: A Citation Style Language (CSL) processor for Java")
 			.author("Michel", "Kr\u00E4mer")
 			.issued(2013, 9, 7)
-			.URL("http://github.io")
-			.accessed(2013, 9, 7)
+			.URL("http://michel-kraemer.github.io/citeproc-java/")
+			.accessed(2013, 12, 6)
 			.build();
 		
-		String bibl = CSL.makeAdhocBibliography("ieee", "text", item);
+		String bibl = CSL.makeAdhocBibliography("ieee", "text", item).makeString();
 		assertEquals("[1]M. Kr\u00E4mer, \u201cciteproc-java: A Citation Style "
 				+ "Language (CSL) processor for Java,\u201d 07-Sep-2013. [Online]. "
-				+ "Available: http://github.io. [Accessed: 07-Sep-2013].\n", bibl);
+				+ "Available: http://michel-kraemer.github.io/citeproc-java/. [Accessed: 06-Dec-2013].\n", bibl);
 	}
 }

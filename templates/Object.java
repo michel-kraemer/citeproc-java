@@ -87,4 +87,6 @@ public class $name$ $if(!noJsonObject)$implements JsonObject$endif$ {
 		return toJson();
 	}
 	$endif$
+	
+	$additionalMethods; separator="\n"$
 }
