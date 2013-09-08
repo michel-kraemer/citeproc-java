@@ -21,7 +21,7 @@ It executes this JavaScript library through the Java Scripting API
 (available since Java 6). The JRE bundles the
 [Rhino JavaScript engine](https://developer.mozilla.org/de/docs/Rhino),
 so citeproc-java should work on all systems with a JRE 6 or higher
-installed. If you experience problems please contact me.
+installed. If you experience problems please [contact me](http://www.michel-kraemer.com/about).
 
 Using
 -----
