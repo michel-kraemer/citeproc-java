@@ -38,9 +38,9 @@ $(document).ready(function() {
     
     //set last accessed data in samples to today
     var date = new Date();
-    var year = date.getFullYear()        + 1;
-    var month = date.getMonth() + 1            - 3;
-    var day = date.getDate()                   - 4;
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
     var strday = "" + day;
     if (strday.length < 2) {
       strday = '0' + strday;
