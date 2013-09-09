@@ -21,6 +21,15 @@ by Frank G. Bennett and is licensed under the Common Public
 Attribution License Version 1.0
 (http://bitbucket.org/fbennett/citeproc-js/src/tip/LICENSE).
 
+Name Parser
+-----------
+
+The BibTeX name parser's grammar is based on the one found
+in the [bibtex-ruby](https://github.com/inukshuk/bibtex-ruby).
+The original grammar is licensed under GPL v3. It has been
+converted to ANTLR and is released here under the Apache License
+2.0 by permission of the original author Sylvester Keil.
+
 License
 -------
 
