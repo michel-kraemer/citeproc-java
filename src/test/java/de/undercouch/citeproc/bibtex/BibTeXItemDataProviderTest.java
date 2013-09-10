@@ -16,9 +16,12 @@ package de.undercouch.citeproc.bibtex;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jbibtex.BibTeXDatabase;
+import org.jbibtex.Key;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.undercouch.citeproc.CSL;
@@ -30,16 +33,21 @@ import de.undercouch.citeproc.output.Citation;
  * @author Michel Kraemer
  */
 public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
+	private static BibTeXDatabase db;
+	private static BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
+	
+	@BeforeClass
+	public static void setUp() throws Exception {
+		db = loadUnixDatabase();
+		sys.addDatabase(db);
+	}
+	
 	/**
 	 * Tests if a valid bibliography can be generated through the item provider
 	 * @throws Exception if something goes wrong
 	 */
 	@Test
 	public void bibliography() throws Exception {
-		BibTeXDatabase db = loadUnixDatabase();
-		
-		BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
-		sys.addDatabase(db);
 		CSL citeproc = new CSL(sys, "ieee");
 		citeproc.setOutputFormat("text");
 		
@@ -79,5 +87,42 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 		assertEquals("[4]H. Lycklama, \u201cUNIX Time-Sharing System: UNIX on a Microprocessor,\u201d "
 				+ "The Bell System Technical Journal, vol. 57, no. 6, pp. 2087\u20132101, "
 				+ "Jul.\u2013Aug. 1978.\n", b.getEntries()[3]);
+	}
+	
+	/**
+	 * Tests if a valid bibliography can be generated through the item provider
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void numericAlphabetical() throws Exception {
+		CSL citeproc = new CSL(sys, "din-1505-2-numeric-alphabetical");
+		citeproc.setOutputFormat("text");
+		
+		List<Key> keys = new ArrayList<Key>(db.getEntries().keySet());
+		List<String> result = new ArrayList<String>();
+		List<Integer> rnds = new ArrayList<Integer>();
+		for (int i = 0; i < 10; ++i) {
+			int j = (int)(Math.random() * keys.size());
+			rnds.add(j);
+			Key k = keys.get(j);
+			List<Citation> cs = citeproc.makeCitation(k.getValue());
+			for (Citation c : cs) {
+				while (result.size() <= c.getIndex()) {
+					result.add("");
+				}
+				result.set(c.getIndex(), c.getText());
+			}
+		}
+		
+		int c = 0;
+		for (Integer r : rnds) {
+			Key k = keys.get(r);
+			List<Citation> cs = citeproc.makeCitation(k.getValue());
+			assertEquals(1, cs.size());
+			String nc = cs.get(0).getText();
+			String pc = result.get(c);
+			assertEquals(nc, pc);
+			++c;
+		}
 	}
 }

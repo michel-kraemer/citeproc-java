@@ -32,8 +32,8 @@ public abstract class AbstractBibTeXTest {
 	 * @throws IOException if the database could not be loaded
 	 * @throws ParseException if the database is invalid
 	 */
-	protected BibTeXDatabase loadUnixDatabase() throws IOException, ParseException {
-		InputStream is = getClass().getResourceAsStream("/unix.bib.gz");
+	protected static BibTeXDatabase loadUnixDatabase() throws IOException, ParseException {
+		InputStream is = AbstractBibTeXTest.class.getResourceAsStream("/unix.bib.gz");
 		BibTeXDatabase db;
 		try {
 			GZIPInputStream gis = new GZIPInputStream(is);
