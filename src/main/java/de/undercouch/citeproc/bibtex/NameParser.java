@@ -14,7 +14,14 @@
 
 package de.undercouch.citeproc.bibtex;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+
+import de.undercouch.citeproc.bibtex.internal.InternalNameLexer;
+import de.undercouch.citeproc.bibtex.internal.InternalNameParser;
+import de.undercouch.citeproc.bibtex.internal.InternalNameParser.NamesContext;
 import de.undercouch.citeproc.csl.CSLName;
+import de.undercouch.citeproc.csl.CSLNameBuilder;
 
 /**
  * Parses a human's name to a {@link CSLName} object
@@ -27,12 +34,11 @@ public class NameParser {
 	 * method always returns at least one object, even if the given
 	 * names cannot be parsed. In this case the returned object just
 	 * contains a literal string.
-	 * FIXME this method is not yet ready
 	 * @param names the names to parse
 	 * @return the {@link CSLName} objects (never null and never empty)
 	 */
 	public static CSLName[] parse(String names) {
-		/*ANTLRInputStream is = new ANTLRInputStream(names);
+		ANTLRInputStream is = new ANTLRInputStream(names);
 		InternalNameLexer lexer = new InternalNameLexer(is);
 		lexer.removeErrorListeners(); //do not output errors to console
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -43,7 +49,6 @@ public class NameParser {
 			//unparsable fall back to literal string
 			return new CSLName[] { new CSLNameBuilder().literal(names).build() };
 		}
-		return ctx.result.toArray(new CSLName[ctx.result.size()]);*/
-		throw new UnsupportedOperationException();
+		return ctx.result.toArray(new CSLName[ctx.result.size()]);
 	}
 }

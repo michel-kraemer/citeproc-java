@@ -195,7 +195,7 @@ task generateSources {
     renderTemplates('Citation', dst, stg)
     renderTemplates('FormattingParameters', dst, stg)
     
-    //renderGrammar('InternalName', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
+    renderGrammar('InternalName', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
     renderGrammar('InternalPage', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
 }
 
