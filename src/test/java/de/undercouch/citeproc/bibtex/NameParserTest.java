@@ -115,6 +115,18 @@ public class NameParserTest {
 	}
 	
 	/**
+	 * Tests if a name with a given name and two family names can be
+	 * parsed correctly and if the given name is not parsed as suffix
+	 */
+	@Test
+	public void commaNoJunior() {
+		CSLName[] names = NameParser.parse("Familya Familyb, Given");
+		assertEquals(1, names.length);
+		assertEquals("Given", names[0].getGiven());
+		assertEquals("Familya Familyb", names[0].getFamily());
+	}
+	
+	/**
 	 * Tests if a name with a comma and a middle initial can be parsed
 	 */
 	@Test

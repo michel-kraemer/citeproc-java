@@ -12,6 +12,7 @@ package de.undercouch.citeproc.bibtex.internal;
 
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.CSLNameBuilder;
+import org.apache.commons.lang.StringUtils;
 }
 
 names
@@ -31,10 +32,20 @@ name
   @after {
     $result = $builder.build();
   }
-  : uwords SPACE word SPACE? COMMA SPACE? UWORD { $builder.given($uwords.text).suffix($UWORD.text).family($word.text); }
-  | uwords SPACE von SPACE last SPACE? COMMA SPACE? first { $builder.given($first.result[1]).suffix($first.result[0]).nonDroppingParticle($uwords.text + " " + $von.text).family($last.text); }
+  : uwords SPACE von SPACE last SPACE? COMMA SPACE? first { $builder.given($first.result[1]).suffix($first.result[0]).nonDroppingParticle($uwords.text + " " + $von.text).family($last.text); }
   | von SPACE last SPACE? COMMA SPACE? first { $builder.given($first.result[1]).suffix($first.result[0]).nonDroppingParticle($von.text).family($last.text); }
-  | last SPACE? COMMA SPACE? first { $builder.given($first.result[1]).suffix($first.result[0]).family($last.text); }
+  | last SPACE? COMMA SPACE? first {
+      if ($first.text.equals("Jr.")) {
+        Iterator<String> l = $last.result.iterator();
+        if ($last.result.size() == 1) {
+          $builder.suffix($first.text).family(StringUtils.join(l, " "));
+        } else {
+          $builder.given(l.next()).suffix($first.text).family(StringUtils.join(l, " "));
+        }
+      } else {
+        $builder.given($first.result[1]).suffix($first.result[0]).family($last.text);
+      }
+    }
   | von SPACE last { $builder.nonDroppingParticle($von.text).family($last.text); }
   | uwords SPACE von SPACE last { $builder.given($uwords.text).nonDroppingParticle($von.text).family($last.text); }
   | uwords SPACE word { $builder.given($uwords.text).family($word.text); }
@@ -42,7 +53,13 @@ name
   ;
 
 uwords
-  : UWORD ( SPACE UWORD )*
+  returns [
+    List<String> result
+  ]
+  @init {
+    $result = new ArrayList<String>();
+  }
+  : w1=UWORD { $result.add($w1.text); } ( SPACE w2=UWORD { $result.add($w2.text); } )*
   ;
 
 word
@@ -71,7 +88,14 @@ first
   ;
 
 last
-  : LWORD | uwords
+  returns [
+    List<String> result
+  ]
+  @init {
+    $result = new ArrayList<String>();
+  }
+  : LWORD { $result.add($LWORD.text); }
+  | uwords { $result.addAll($uwords.result); }
   ;
 
 AND  : 'and' ;
