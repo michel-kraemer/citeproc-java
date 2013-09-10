@@ -188,8 +188,10 @@ public class CSL {
 
 	/**
 	 * Introduces the given citation IDs to the processor. The processor will
-	 * call {@link ItemDataProvider#retrieveItem(String)} for each ID to get the respective
-	 * citation item.
+	 * call {@link ItemDataProvider#retrieveItem(String)} for each ID to get
+	 * the respective citation item. The retrieved items will be added to the
+	 * bibliography, so you don't have to call {@link #makeCitation(String...)}
+	 * for each of them anymore.
 	 * @param ids the IDs to register
 	 */
 	public void registerCitationItems(String... ids) {

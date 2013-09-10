@@ -115,7 +115,6 @@ public class CSLTest {
 	public void bibliography() throws Exception {
 		CSL citeproc = new CSL(new TestItemDataProvider(), "ieee");
 		citeproc.setOutputFormat("text");
-		citeproc.registerCitationItems(items[0].getId(), items[1].getId(), items[2].getId());
 		
 		List<Citation> a = citeproc.makeCitation(items[0].getId());
 		assertEquals(0, a.get(0).getIndex());

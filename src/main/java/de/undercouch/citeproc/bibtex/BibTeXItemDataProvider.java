@@ -31,8 +31,7 @@ public class BibTeXItemDataProvider implements ItemDataProvider {
 	private Map<String, CSLItemData> items = new HashMap<String, CSLItemData>();
 	
 	/**
-	 * Adds the given database. You should call {@link #registerCitationItems(CSL)}
-	 * after you added all databases.
+	 * Adds the given database
 	 * @param db the database to add
 	 */
 	public void addDatabase(BibTeXDatabase db) {

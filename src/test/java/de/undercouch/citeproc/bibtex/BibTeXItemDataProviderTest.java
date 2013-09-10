@@ -42,7 +42,6 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 		sys.addDatabase(db);
 		CSL citeproc = new CSL(sys, "ieee");
 		citeproc.setOutputFormat("text");
-		sys.registerCitationItems(citeproc);
 		
 		String id0 = "Johnson:1973:PLB";
 		String id1 = "Ritchie:1973:UTS";
