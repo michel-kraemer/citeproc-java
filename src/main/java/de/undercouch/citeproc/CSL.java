@@ -102,6 +102,7 @@ public class CSL {
 		try {
 			evaluateScript("/xmle4x.js");
 			evaluateScript("/citeproc.js");
+			evaluateScript("/formats.js");
 			evaluateScript("/loadsys.js");
 		} catch (ScriptException e) {
 			//should never happen because bundled JavaScript files should be OK indeed
@@ -176,7 +177,7 @@ public class CSL {
 	/**
 	 * Sets the processor's output format
 	 * @param format the format (one of <code>"html"</code>,
-	 * <code>"text"</code>, or <code>"rtf"</code>)
+	 * <code>"text"</code>, <code>"asciidoc"</code>, or <code>"rtf"</code>)
 	 */
 	public void setOutputFormat(String format) {
 		try {
@@ -366,7 +367,8 @@ public class CSL {
 	 * In the latter case, the processor loads the style from the classpath (e.g.
 	 * <code>/ieee.csl</code>)
 	 * @param outputFormat the processor's output format (one of
-	 * <code>"html"</code>, <code>"text"</code>, or <code>"rtf"</code>)
+	 * <code>"html"</code>, <code>"text"</code>, <code>"asciidoc"</code>,
+	 * or <code>"rtf"</code>)
 	 * @param items the citation items to add to the bibliography
 	 * @return the bibliography
 	 * @throws IOException if the underlying JavaScript files or the CSL style

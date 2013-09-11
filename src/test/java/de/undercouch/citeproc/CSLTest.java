@@ -209,4 +209,31 @@ public class CSLTest {
 				+ "[Accessed: 11-Sep-2013].</div>\n"
 				+ "  </div>\n", b.getEntries()[0]);
 	}
+	
+	/**
+	 * Tests the AsciiDoc output format
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void asciiDocFormat() throws Exception {
+		CSLItemData item = new CSLItemDataBuilder("citeproc-java", CSLType.WEBPAGE)
+			.title("citeproc-java: A Citation Style Language (CSL) processor for Java")
+			.author("Michel", "Kr\u00E4mer")
+			.issued(2013, 9, 9)
+			.URL("http://michel-kraemer.github.io/citeproc-java/")
+			.accessed(2013, 9, 11)
+			.build();
+		
+		CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee");
+		citeproc.setOutputFormat("asciidoc");
+		citeproc.makeCitation("citeproc-java");
+		
+		Bibliography b = citeproc.makeBibliography();
+		
+		assertEquals(1, b.getEntries().length);
+		assertEquals("[1] M. Kr\u00E4mer, ``citeproc-java: A Citation Style "
+				+ "Language (CSL) processor for Java,'' 09-Sep-2013. [Online]. "
+				+ "Available: http://michel-kraemer.github.io/citeproc-java/. "
+				+ "[Accessed: 11-Sep-2013].\n", b.getEntries()[0]);
+	}
 }
