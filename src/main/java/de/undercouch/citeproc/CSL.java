@@ -185,6 +185,20 @@ public class CSL {
 			throw new IllegalArgumentException("Could not set output format", e);
 		}
 	}
+	
+	/**
+	 * Specifies if the processor should convert URLs and DOIs in the output
+	 * to links. How links are created depends on the output format that has
+	 * been set with {@link #setOutputFormat(String)}
+	 * @param convert true if URLs and DOIs should be converted to links
+	 */
+	public void setConvertLinks(boolean convert) {
+		try {
+			engine.eval("__engine__.opt.development_extensions.wrap_url_and_doi = " + convert + ";");
+		} catch (ScriptException e) {
+			throw new IllegalArgumentException("Could not set option", e);
+		}
+	}
 
 	/**
 	 * Introduces the given citation IDs to the processor. The processor will
