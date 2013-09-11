@@ -236,4 +236,37 @@ public class CSLTest {
 				+ "Available: http://michel-kraemer.github.io/citeproc-java/. "
 				+ "[Accessed: 11-Sep-2013].\n", b.getEntries()[0]);
 	}
+	
+	/**
+	 * Tests the FO output format
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void asciiFOFormat() throws Exception {
+		CSL citeproc = new CSL(new TestItemDataProvider(), "ieee");
+		citeproc.setOutputFormat("fo");
+		citeproc.makeCitation(items[0].getId());
+		
+		Bibliography b = citeproc.makeBibliography();
+		
+		assertEquals(1, b.getEntries().length);
+		assertEquals("<fo:block id=\"Johnson:1973:PLB\">\n"
+				+ "  <fo:table table-layout=\"fixed\" width=\"100%\">\n"
+				+ "    <fo:table-column column-number=\"1\" column-width=\"3em\"/>\n"
+				+ "    <fo:table-column column-number=\"2\" column-width=\"proportional-column-width(1)\"/>\n"
+				+ "    <fo:table-body>\n"
+				+ "      <fo:table-row>\n"
+				+ "        <fo:table-cell>\n"
+				+ "          <fo:block>[1]</fo:block>\n"
+				+ "        </fo:table-cell>\n"
+				+ "        <fo:table-cell>\n"
+				+ "          <fo:block>S. C. Johnson and B. W. Kernighan, "
+				+ "\u201cThe Programming Language B,\u201d Bell Laboratories, "
+				+ "Murray Hill, NJ, USA, 8, 1973.</fo:block>\n"
+				+ "        </fo:table-cell>\n"
+				+ "      </fo:table-row>\n"
+				+ "    </fo:table-body>\n"
+				+ "  </fo:table>\n"
+				+ "</fo:block>\n", b.getEntries()[0]);
+	}
 }

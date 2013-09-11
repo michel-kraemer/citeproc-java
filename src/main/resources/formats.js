@@ -98,3 +98,111 @@ CSL.Output.Formats.asciidoc = {
 		return "http://dx.doi.org/" + str + "[" + str + "]";
 	}
 };
+
+
+CSL.Output.Formats.fo = {
+	"text_escape": function (text) {
+		if (!text) {
+			text = "";
+		}
+		return text.replace(/&/g, "&#38;")
+			.replace(/</g, "&#60;")
+			.replace(/>/g, "&#62;")
+			.replace("  ", "&#160; ", "g")
+			.replace(CSL.SUPERSCRIPTS_REGEXP, function(aChar) {
+				return "<fo:inline vertical-align=\"super\">" + CSL.SUPERSCRIPTS[aChar] + "</fo:inline>";
+			});
+	},
+	"bibstart": "",
+	"bibend": "",
+	"@passthrough/true": CSL.Output.Formatters.passthrough,
+	
+	"@font-style/italic": "<fo:inline font-style=\"italic\">%%STRING%%</fo:inline>",
+	"@font-style/oblique": "<fo:inline font-style=\"oblique\">%%STRING%%</fo:inline>",
+	"@font-style/normal": "<fo:inline font-style=\"normal\">%%STRING%%</fo:inline>",
+	
+	"@font-variant/small-caps": "<fo:inline font-variant=\"small-caps\">%%STRING%%</fo:inline>",
+	"@font-variant/normal": "<fo:inline font-variant=\"normal\">%%STRING%%</fo:inline>",
+	
+	"@font-weight/bold": "<fo:inline font-weight=\"bold\">%%STRING%%</fo:inline>",
+	"@font-weight/normal": "<fo:inline font-weight=\"normal\">%%STRING%%</fo:inline>",
+	"@font-weight/light": "<fo:inline font-weight=\"lighter\">%%STRING%%</fo:inline>",
+	
+	"@text-decoration/none": "<fo:inline text-decoration=\"none\">%%STRING%%</fo:inline>",
+	"@text-decoration/underline": "<fo:inline text-decoration=\"underline\">%%STRING%%</fo:inline>",
+	
+	"@vertical-align/sup": "<fo:inline vertical-align=\"super\">%%STRING%%</fo:inline>",
+	"@vertical-align/sub": "<fo:inline vertical-align=\"sub\">%%STRING%%</fo:inline>",
+	"@vertical-align/baseline": "<fo:inline vertical-align=\"baseline\">%%STRING%%</fo:inline>",
+	
+	"@strip-periods/true": CSL.Output.Formatters.passthrough,
+	"@strip-periods/false": CSL.Output.Formatters.passthrough,
+	
+	"@quotes/true": function (state, str) {
+		if ("undefined" === typeof str) {
+			return state.getTerm("open-quote");
+		}
+		return state.getTerm("open-quote") + str + state.getTerm("close-quote");
+	},
+	"@quotes/inner": function (state, str) {
+		if ("undefined" === typeof str) {
+			return "\u2019";
+		}
+		return state.getTerm("open-inner-quote") + str + state.getTerm("close-inner-quote");
+	},
+	"@quotes/false": false,
+	
+	"@cite/entry": function (state, str) {
+		return state.sys.wrapCitationEntry(str, this.item_id, this.locator_txt, this.suffix_txt);
+	},
+	
+	"@bibliography/entry": function (state, str) {
+		var maxoffset = 0;
+		var len = state.registry.reflist.length;
+		for (pos = 0; pos < len; pos += 1) {
+			var item = state.registry.reflist[pos];
+			if (item.offset > maxoffset) {
+				maxoffset = item.offset;
+			}
+		}
+		
+		str = str.replace("$$$__COLUMN_WIDTH_1__$$$", maxoffset + "em");
+		
+		var insert = "";
+		if (state.sys.embedBibliographyEntry) {
+			insert = state.sys.embedBibliographyEntry(this.item_id) + "\n";
+		}
+		return "<fo:block id=\"" + this.system_id + "\">" + str + "</fo:block>\n" + insert;
+	},
+	
+	"@display/block": function (state, str) {
+		return "\n  <fo:block>" + str + "</fo:block>\n";
+	},
+	"@display/left-margin": function (state, str) {
+		return "\n  <fo:table table-layout=\"fixed\" width=\"100%\">\n    " +
+				"<fo:table-column column-number=\"1\" column-width=\"$$$__COLUMN_WIDTH_1__$$$\"/>\n    " +
+				"<fo:table-column column-number=\"2\" column-width=\"proportional-column-width(1)\"/>\n    " +
+				"<fo:table-body>\n      " +
+					"<fo:table-row>\n        " +
+						"<fo:table-cell>\n          " +
+							"<fo:block>" + str + "</fo:block>\n        " +
+						"</fo:table-cell>\n        ";
+	},
+	"@display/right-inline": function (state, str) {
+		return "<fo:table-cell>\n          " +
+				"<fo:block>" + str + "</fo:block>\n        " +
+			"</fo:table-cell>\n      " +
+			"</fo:table-row>\n    " +
+			"</fo:table-body>\n  " +
+			"</fo:table>\n";
+	},
+	"@display/indent": function (state, str) {
+		return "<fo:block margin-left=\"2em\">" + str + "</fo:block>\n";
+	},
+	"@URL/true": function (state, str) {
+		return "<fo:basic-link external-destination=\"url('" + str + "')\">" + str + "</fo:basic-link>";
+	},
+	"@DOI/true": function (state, str) {
+		return "<fo:basic-link external-destination=\"url('http://dx.doi.org/" + str + "')\">" + str + "</fo:basic-link>";
+	}
+};

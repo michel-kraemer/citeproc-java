@@ -177,7 +177,8 @@ public class CSL {
 	/**
 	 * Sets the processor's output format
 	 * @param format the format (one of <code>"html"</code>,
-	 * <code>"text"</code>, <code>"asciidoc"</code>, or <code>"rtf"</code>)
+	 * <code>"text"</code>, <code>"asciidoc"</code>, <code>"fo"</code>,
+	 * or <code>"rtf"</code>)
 	 */
 	public void setOutputFormat(String format) {
 		try {
@@ -368,7 +369,7 @@ public class CSL {
 	 * <code>/ieee.csl</code>)
 	 * @param outputFormat the processor's output format (one of
 	 * <code>"html"</code>, <code>"text"</code>, <code>"asciidoc"</code>,
-	 * or <code>"rtf"</code>)
+	 * <code>"fo"</code>, or <code>"rtf"</code>)
 	 * @param items the citation items to add to the bibliography
 	 * @return the bibliography
 	 * @throws IOException if the underlying JavaScript files or the CSL style
