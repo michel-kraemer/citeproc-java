@@ -17,9 +17,8 @@ citeproc-js
 
 The library includes [citeproc-js](https://bitbucket.org/fbennett/citeproc-js/wiki/Home),
 a CSL processor written in JavaScript. citeproc-js has been created
-by Frank G. Bennett and is licensed under the Common Public
-Attribution License Version 1.0
-(http://bitbucket.org/fbennett/citeproc-js/src/tip/LICENSE).
+by Frank G. Bennett and is licensed under the
+[Common Public Attribution License Version 1.0](http://bitbucket.org/fbennett/citeproc-js/src/tip/LICENSE).
 
 Name Parser
 -----------
@@ -29,6 +28,17 @@ in the [bibtex-ruby](https://github.com/inukshuk/bibtex-ruby).
 The original grammar is licensed under GPL v3. It has been
 converted to ANTLR and is released here under the Apache License
 2.0 by permission of the original author Sylvester Keil.
+
+BibTeX Converter
+----------------
+
+The BibTeX to CSL converter is based on the mapping used in
+[Docear](http://www.docear.org) as [presented by Joeran Beel](http://www.docear.org/2012/08/08/docear4word-mapping-bibtex-fields-and-types-with-the-citation-style-language).
+
+Docear is released under the GPLv2 but its code
+[may also be reused](http://www.docear.org/software/licence/)
+in projects licensed under Apache License 2.0. The mapping is released here
+under the Apache License 2.0 by permission of Joaran Beel, Docear.
 
 License
 -------
