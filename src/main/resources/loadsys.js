@@ -20,6 +20,9 @@ Sys.prototype.retrieveLocale = function(lang) {
 
 Sys.prototype.retrieveItem = function(id) {
 	var item = __itemDataProvider__.retrieveItem(id);
+	if (item == null) {
+		return null;
+	}
 	return JSON.parse(item.toJson());
 };
 

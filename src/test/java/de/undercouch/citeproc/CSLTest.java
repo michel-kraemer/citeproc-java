@@ -169,4 +169,15 @@ public class CSLTest {
 				+ "Language (CSL) processor for Java,\u201d 07-Sep-2013. [Online]. "
 				+ "Available: http://michel-kraemer.github.io/citeproc-java/. [Accessed: 06-Dec-2013].\n", bibl);
 	}
+	
+	/**
+	 * Tests if the processor throws an {@link IllegalArgumentException} if
+	 * a citation item does not exist
+	 * @throws Exception if something else goes wrong
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void missingItem() throws Exception {
+		CSL citeproc = new CSL(new TestItemDataProvider(), "ieee");
+		citeproc.makeCitation("foobar");
+	}
 }

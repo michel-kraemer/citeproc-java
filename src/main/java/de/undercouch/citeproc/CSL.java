@@ -193,6 +193,8 @@ public class CSL {
 	 * bibliography, so you don't have to call {@link #makeCitation(String...)}
 	 * for each of them anymore.
 	 * @param ids the IDs to register
+	 * @throws IllegalArgumentException if one of the given IDs refers to
+	 * citation item data that does not exist
 	 */
 	public void registerCitationItems(String... ids) {
 		try {
@@ -210,6 +212,8 @@ public class CSL {
 	 * that only consists of the retrieved citation items.
 	 * @param ids IDs of citation items for which strings should be generated
 	 * @return citations strings that can be inserted into the text
+	 * @throws IllegalArgumentException if one of the given IDs refers to
+	 * citation item data that does not exist
 	 */
 	public List<Citation> makeCitation(String... ids) {
 		CSLCitationItem[] items = new CSLCitationItem[ids.length];
@@ -227,6 +231,8 @@ public class CSL {
 	 * generate a bibliography that only consists of the retrieved items.
 	 * @param citation a set of citation items for which strings should be generated
 	 * @return citations strings that can be inserted into the text
+	 * @throws IllegalArgumentException if the given set of citation items
+	 * refers to citation item data that does not exist
 	 */
 	public List<Citation> makeCitation(CSLCitation citation) {
 		List<Object> r;
