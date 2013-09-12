@@ -166,7 +166,10 @@ CSL.Output.Formats.fo = {
 			}
 		}
 		
-		str = str.replace("$$$__COLUMN_WIDTH_1__$$$", maxoffset + "em");
+		//make reasonable margin for an average character width
+		var em = Math.max(2.5, maxoffset * 0.6);
+		
+		str = str.replace("$$$__COLUMN_WIDTH_1__$$$", em + "em");
 		
 		var insert = "";
 		if (state.sys.embedBibliographyEntry) {
