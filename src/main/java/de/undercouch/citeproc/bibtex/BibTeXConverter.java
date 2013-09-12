@@ -60,6 +60,7 @@ public class BibTeXConverter {
 	private static final String FIELD_AUTHOR = "author";
 	private static final String FIELD_BOOKTITLE = "booktitle";
 	private static final String FIELD_CHAPTER = "chapter";
+	private static final String FIELD_DATE = "date";
 	private static final String FIELD_DOI = "doi";
 	private static final String FIELD_EDITION = "edition";
 	private static final String FIELD_EDITOR = "editor";
@@ -82,6 +83,7 @@ public class BibTeXConverter {
 	private static final String FIELD_STATUS = "status";
 	private static final String FIELD_TITLE = "title";
 	private static final String FIELD_URL = "url";
+	private static final String FIELD_URLDATE = "urldate";
 	private static final String FIELD_VOLUME = "volume";
 	private static final String FIELD_YEAR = "year";
 	
@@ -95,6 +97,7 @@ public class BibTeXConverter {
 	private static final String TYPE_INPROCEEDINGS = "inproceedings";
 	private static final String TYPE_MANUAL = "manual";
 	private static final String TYPE_MASTERSTHESIS = "mastersthesis";
+	private static final String TYPE_ONLINE = "online";
 	private static final String TYPE_PATENT = "patent";
 	private static final String TYPE_PERIODICAL = "periodical";
 	private static final String TYPE_PHDTHESIS = "phdthesis";
@@ -102,6 +105,7 @@ public class BibTeXConverter {
 	private static final String TYPE_STANDARD = "standard";
 	private static final String TYPE_TECHREPORT = "techreport";
 	private static final String TYPE_UNPUBLISHED = "unpublished";
+	private static final String TYPE_WWW = "www";
 	
 	private LaTeXParser latexParser = new LaTeXParser();
 	private LaTeXPrinter latexPrinter = new LaTeXPrinter();
@@ -192,9 +196,18 @@ public class BibTeXConverter {
 		}
 		
 		//map date
-		CSLDate date = DateParser.toDate(entries.get(FIELD_YEAR), entries.get(FIELD_MONTH));
-		builder.issued(date);
-		builder.eventDate(date);
+		if (type == CSLType.WEBPAGE && entries.containsKey(FIELD_URLDATE)) {
+			CSLDate date = DateParser.toDate(entries.get(FIELD_URLDATE));
+			builder.issued(date);
+		} else if (entries.containsKey(FIELD_DATE)) {
+			CSLDate date = DateParser.toDate(entries.get(FIELD_DATE));
+			builder.issued(date);
+			builder.eventDate(date);
+		} else {
+			CSLDate date = DateParser.toDate(entries.get(FIELD_YEAR), entries.get(FIELD_MONTH));
+			builder.issued(date);
+			builder.eventDate(date);
+		}
 		
 		//map journal, booktitle, series
 		if (entries.containsKey(FIELD_JOURNAL)) {
@@ -326,6 +339,10 @@ public class BibTeXConverter {
 		} else if (s.equalsIgnoreCase(TYPE_PATENT)) {
 			return CSLType.PATENT;
 		} else if (s.equalsIgnoreCase(TYPE_ELECTRONIC)) {
+			return CSLType.WEBPAGE;
+		} else if (s.equalsIgnoreCase(TYPE_ONLINE)) {
+			return CSLType.WEBPAGE;
+		} else if (s.equalsIgnoreCase(TYPE_WWW)) {
 			return CSLType.WEBPAGE;
 		} else if (s.equalsIgnoreCase(TYPE_STANDARD)) {
 			return CSLType.LEGISLATION;
