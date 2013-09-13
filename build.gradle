@@ -223,6 +223,16 @@ jar {
     from 'LICENSE.txt'
 }
 
+//configure javadoc
+javadoc {
+    //exclude internal packages
+    exclude '**/internal/**'
+    
+    //link to JRE6 documentation
+    options.author true
+    options.links 'http://download.oracle.com/javase/6/docs/api/'
+}
+
 // initialize gradle wrapper
 task wrapper(type: Wrapper) {
     gradleVersion = '1.7'
