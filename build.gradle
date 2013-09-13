@@ -37,16 +37,18 @@ targetCompatibility = '1.6'
 
 repositories {
     mavenCentral()
-    mavenLocal()
+    maven {
+        url 'https://oss.sonatype.org/content/groups/public'
+    }
 }
 
 dependencies {
     compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
     compile 'org.jbibtex:jbibtex:1.0.8'
     compile 'org.antlr:antlr4-runtime:4.1'
-    compile 'org.citationstyles:styles:1.0.2-SNAPSHOT'
-    compile 'org.citationstyles:locales:1.0.2-SNAPSHOT'
     
+    testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
+    testCompile 'org.citationstyles:locales:1.0.1-SNAPSHOT'
     testCompile 'junit:junit:4.11'
 }
 
