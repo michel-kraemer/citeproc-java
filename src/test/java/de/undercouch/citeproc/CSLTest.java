@@ -252,7 +252,7 @@ public class CSLTest {
 		assertEquals(1, b.getEntries().length);
 		assertEquals("<fo:block id=\"Johnson:1973:PLB\">\n"
 				+ "  <fo:table table-layout=\"fixed\" width=\"100%\">\n"
-				+ "    <fo:table-column column-number=\"1\" column-width=\"3em\"/>\n"
+				+ "    <fo:table-column column-number=\"1\" column-width=\"2.5em\"/>\n"
 				+ "    <fo:table-column column-number=\"2\" column-width=\"proportional-column-width(1)\"/>\n"
 				+ "    <fo:table-body>\n"
 				+ "      <fo:table-row>\n"
