@@ -238,7 +238,7 @@ public class NameParserTest {
 	 */
 	@Test
 	public void nonParseable() {
-		String str = "Jerry Peek and Tim O’Reilly and Mike Loukides and other authors of the Nutshell handbooks";
+		String str = "Jerry Peek and Tim O'Reilly and Mike Loukides and other authors of the Nutshell handbooks";
 		CSLName[] names = NameParser.parse(str);
 		assertEquals(1, names.length);
 		assertEquals(str, names[0].getLiteral());
