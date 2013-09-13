@@ -12,6 +12,11 @@ $(document).ready(function() {
         if (document.getElementById(tgt)) {
           $.smoothScroll({scrollTarget: '#' + tgt});
         }
+        
+        if ($(this).attr('role') == 'menuitem') {
+          $('.dropdown-toggle').dropdown('toggle');
+        }
+        
         return false;
       }
     });
@@ -54,13 +59,13 @@ $(document).ready(function() {
     var strmonth = monthnames[month - 1];
     var strmonthmedium = monthnamesmedium[month - 1];
     var strmonthlong = monthnameslong[month - 1];
-    $('.sample code').each(function() {
+    $('code').each(function() {
       var h = $(this).html();
       //replace 'accessed(y, m, d)' in syntax highlighted code
       h = h.replace(/accessed<([^(]+)\(<([^0-9]+)[0-9]+<([^0-9]+)[0-9]+<([^0-9]+)[0-9]+/,
         'accessed<$1(<$2' + year + '<$3' + month + '<$4' + day);
       //replace '[Accessed: d-m-y]' in output
-      h = h.replace(/\[Accessed\: [0-9]+-[a-zA-Z]+-[0-9]+\]/, '[Accessed: ' +
+      h = h.replace(/\[Accessed\:(\s+)[0-9]+-[a-zA-Z]+-[0-9]+\]/, '[Accessed:$1' +
         strday + '-' + strmonth + '-' + year + ']');
       //replace 'Retrieved m d, y' in output
       h = h.replace(/Retrieved(\s+)[a-zA-Z]+ [0-9]+, [0-9]+/, 'Retrieved$1' +

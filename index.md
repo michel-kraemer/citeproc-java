@@ -23,8 +23,8 @@ It executes this JavaScript library through the Java Scripting API
 so citeproc-java should work on all systems with a JRE 6 or higher
 installed. If you experience problems please [contact me](http://www.michel-kraemer.com/about).
 
-Using
------
+Getting started
+---------------
 
 First you have to create a `ItemDataProvider` that provides
 citation item data to the CSL processor. For example, the following
@@ -142,6 +142,21 @@ provider.registerCitationItems(CSL);
 {% endhighlight %}
 
 Now you can use the CSL processor as described above.
+
+Output formats
+--------------
+
+citeproc-java supports several output formats. The most common
+ones are `"html"` and `"text"` but you can also use `"asciidoc"`,
+`"fo"`, and `"rtf"`.
+
+Call the CSL processor's `setOutputFormat(String)` method to set
+the desired format.
+
+{% capture outputformats_content %}
+{% include outputformats.md %}
+{% endcapture %}
+{{ outputformats_content | markdownify }}
 
 Building
 --------

@@ -20,7 +20,7 @@
   </head>
   <body id="top">
 
-    <div class="navbar navbar-default navbar-fixed-top">
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
           <a href="#top" class="navbar-brand">citeproc-java</a>
@@ -32,11 +32,13 @@
         </div>
         <div class="navbar-collapse collapse" id="navbar-main">
           <ul class="nav navbar-nav">
-            <li>
-              <a href="#using">Using</a>
-            </li>
-            <li>
-              <a href="#using-the-bibtex-converter">BibTeX</a>
+            <li class="dropdown">
+              <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">Using <b class="caret"></b></a>
+              <ul class="dropdown-menu" role="menu">
+                <li role="presentation"><a role="menuitem" href="#getting-started">Getting started</a></li>
+                <li role="presentation"><a role="menuitem" href="#using-the-bibtex-converter">BibTeX converter</a></li>
+                <li role="presentation"><a role="menuitem" href="#output-formats">Output formats</a></li>
+              </ul>
             </li>
             <li>
               <a href="#building">Building</a>
