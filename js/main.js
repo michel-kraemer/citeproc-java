@@ -14,7 +14,7 @@ $(document).ready(function() {
         }
         
         if ($(this).attr('role') == 'menuitem') {
-          $('.dropdown-toggle').dropdown('toggle');
+          $(this).dropdown('toggle');
         }
         
         return false;
