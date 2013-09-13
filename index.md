@@ -16,12 +16,20 @@ database entries to CSL citations.
 Prerequisites
 -------------
 
+Generally, citeproc-java runs on JRE 6 or higher. However, JRE 7 or higher is
+preferred due to the following reasons.
+
 The library wraps around [citeproc-js](https://bitbucket.org/fbennett/citeproc-js/wiki/Home).
-It executes this JavaScript library through the Java Scripting API
-(available since Java 6). The JRE bundles the
-[Rhino JavaScript engine](https://developer.mozilla.org/de/docs/Rhino),
-so citeproc-java should work on all systems with a JRE 6 or higher
-installed. If you experience problems please [contact me](http://www.michel-kraemer.com/about).
+It executes this JavaScript library through the Java Scripting API.
+Out of the box citeproc-java runs on all systems with a JRE 7 or higher installed.
+
+Although the JRE 6 is bundled with the [Rhino JavaScript engine](https://developer.mozilla.org/de/docs/Rhino) it lacks
+support for E4X (ECMAScript for XML) which is needed by citeproc-java. However,
+there is a fallback mechanism integrated into citeproc-java. Just add a recent version
+of Rhino to your classpath and the library should automatically use it instead of the
+one bundled with the JRE.
+
+If you experience problems please [contact me](http://www.michel-kraemer.com/about).
 
 Getting started
 ---------------
