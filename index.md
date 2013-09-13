@@ -359,6 +359,8 @@ dependencies {
 Building
 --------
 
+If you want to hack on citeproc-java download its source code from
+the [GitHub repository](https://github.com/michel-kraemer/citeproc-java).
 Execute the following command to compile the library and to run the
 unit tests:
 
