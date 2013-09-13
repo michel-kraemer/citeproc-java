@@ -265,9 +265,9 @@ public class CSL {
 			if (o instanceof List) {
 				@SuppressWarnings("unchecked")
 				List<Object> i = (List<Object>)o;
-				if (i.get(0) instanceof Number && i.get(1) instanceof String) {
+				if (i.get(0) instanceof Number && i.get(1) instanceof CharSequence) {
 					int index = ((Number)i.get(0)).intValue();
-					String text = (String)i.get(1);
+					String text = i.get(1).toString();
 					result.add(new Citation(index, text));
 				}
 			}
@@ -293,8 +293,12 @@ public class CSL {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> fpm = (Map<String, Object>)r.get(0);
 		@SuppressWarnings("unchecked")
-		List<String> entriesList = (List<String>)r.get(1);
-		String[] entries = entriesList.toArray(new String[entriesList.size()]);
+		List<CharSequence> entriesList = (List<CharSequence>)r.get(1);
+		
+		String[] entries = new String[entriesList.size()];
+		for (int i = 0; i < entries.length; ++i) {
+			entries[i] = entriesList.get(i).toString();
+		}
 		
 		int maxOffset = getFromMap(fpm, "maxoffset", 0);
 		int entrySpacing = getFromMap(fpm, "entryspacing", 0);
@@ -322,8 +326,8 @@ public class CSL {
 		if (r == null) {
 			return def;
 		}
-		if (r instanceof String) {
-			return Boolean.parseBoolean((String)r);
+		if (r instanceof CharSequence) {
+			return Boolean.parseBoolean(r.toString());
 		}
 		return (Boolean)r;
 	}

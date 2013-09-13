@@ -5,6 +5,7 @@ buildscript {
     
     dependencies {
         classpath 'org.apache.directory.studio:org.apache.commons.io:2.4'
+        classpath 'org.apache.directory.studio:org.apache.commons.lang:2.6'
         classpath 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
         classpath 'org.eclipse.tycho:org.eclipse.jdt.core:3.9.0.v20130604-1421'
         classpath 'org.mod4j.org.eclipse.jface:text:3.5.0'
@@ -29,6 +30,7 @@ import org.stringtemplate.v4.AttributeRenderer
 import org.stringtemplate.v4.ST
 import org.stringtemplate.v4.STGroup
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.SystemUtils
 
 version = '0.1'
 group = 'de.undercouch'
@@ -42,11 +44,21 @@ repositories {
     }
 }
 
+configurations {
+    // define a configuration for compile-time-only dependencies
+    provided
+}
+
 dependencies {
     compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
     compile 'org.jbibtex:jbibtex:1.0.8'
     compile 'org.antlr:antlr4-runtime:4.1'
     
+    provided 'org.mozilla:rhino:1.7R4'
+    
+    if (!SystemUtils.isJavaVersionAtLeast(170)) {
+        testCompile 'org.mozilla:rhino:1.7R4'
+    }
     testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
     testCompile 'org.citationstyles:locales:1.0.1-SNAPSHOT'
     testCompile 'junit:junit:4.11'
@@ -205,7 +217,11 @@ task cleanGeneratedSources(type: Delete) {
     delete 'src-gen'
 }
 
+// include generated sources
 sourceSets.main.java.srcDirs 'src-gen/main/java'
+
+// included compile-time-only dependencies
+sourceSets.main.compileClasspath += configurations.provided
 
 tasks['compileJava'].dependsOn(generateSources)
 tasks['eclipseClasspath'].dependsOn(generateSources)
@@ -217,7 +233,7 @@ jar {
         name = 'citeproc-java'
         symbolicName = "de.undercouch.citeproc"
         vendor = 'Michel Kraemer'
-        instruction 'Import-Package', '*'
+        instruction 'Import-Package', '*,org.mozilla.javascript;resolution:=optional'
         instruction 'Export-Package', "de.undercouch.*;version=${version}"
     }
     
@@ -233,6 +249,9 @@ javadoc {
     //link to JRE6 documentation
     options.author true
     options.links 'http://download.oracle.com/javase/6/docs/api/'
+    
+    //add compile-time-only dependencies
+    classpath += configurations.provided
 }
 
 // initialize gradle wrapper

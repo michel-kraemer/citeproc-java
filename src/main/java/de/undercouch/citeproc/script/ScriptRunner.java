@@ -14,6 +14,7 @@
 
 package de.undercouch.citeproc.script;
 
+import java.io.IOException;
 import java.io.Reader;
 
 /**
@@ -41,6 +42,7 @@ public interface ScriptRunner {
 	 * @param reader the reader
 	 * @return the return value from the executed script
 	 * @throws ScriptRunnerException if the script could not be executed
+	 * @throws IOException if the script could not be read from the reader
 	 */
-	Object eval(Reader reader) throws ScriptRunnerException;
+	Object eval(Reader reader) throws ScriptRunnerException, IOException;
 }
