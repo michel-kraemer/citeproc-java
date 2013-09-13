@@ -10,7 +10,7 @@ Introduction
 citeproc-java is a [Citation Style Language (CSL)](http://citationstyles.org/)
 processor for Java. It interprets CSL styles and generates citations and
 bibliographies. In addition to that, citeproc-java contains a
-[BibTeX](http://www.bibtex.org/) converter that is able to map BibTeX
+[Bib<span class="tex">T<sub>e</sub>X</span>](http://www.bibtex.org/) converter that is able to map Bib<span class="tex">T<sub>e</sub>X</span>
 database entries to CSL citations.
 
 Prerequisites
@@ -112,11 +112,12 @@ for (String entry : bibl.getEntries()) {
 //   ....
 {% endhighlight %}
 
-Using the BibTeX converter
+Using the Bib<span class="tex">T<sub>e</sub>X</span> converter
 --------------------------
+{: #using-the-bibtex-converter}
 
 With citeproc-java you can also generate citations and bibliographies
-from your BibTeX databases.
+from your Bib<span class="tex">T<sub>e</sub>X</span> databases.
 
 First you have to load a database:
 
@@ -143,7 +144,8 @@ CSL citeproc = new CSL(provider, "ieee");
 
 Now you can use the CSL processor as described above. You can
 even call the `registerCitationItems(CSL)` method to generate a
-bibliography that contains all items from your BibTeX database.
+bibliography that contains all items from your Bib<span class="tex">T<sub>e</sub>X</span>
+database.
 
 {% highlight java %}
 provider.registerCitationItems(citeproc);
