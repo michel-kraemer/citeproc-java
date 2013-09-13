@@ -1,4 +1,5 @@
 language: java
+install:  echo "do not execute installed gradle but gradle wrapper"
 script: "chmod 755 gradlew && ./gradlew test"
 jdk:
   - oraclejdk7
