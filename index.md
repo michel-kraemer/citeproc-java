@@ -225,7 +225,7 @@ dependencies {
 In addition to citeproc-java you will need the CSL styles and locales which
 the library interprets to generate citations and bibliographies.
 
-<div class="alert alert-success">
+<div class="alert alert-success" markdown="1">
 Please note that without these files citeproc-java will be rather useless.
 </div>
 
