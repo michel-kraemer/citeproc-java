@@ -176,7 +176,7 @@ You can download citeproc-java from Maven central:
 
 [http://central.maven.org/maven2/de/undercouch/citeproc-java/0.1](http://central.maven.org/maven2/de/undercouch/citeproc-java/0.1)
 
-The library has dependencies to [java-bibtex 1.0.8](https://code.google.com/p/java-bibtex/),
+The library has dependencies to [JBibTeX 1.0.8](https://code.google.com/p/java-bibtex/),
 [ANTLR 4.1](http://www.antlr.org/), and [Apache Commons Lang 2.6](http://commons.apache.org/proper/commons-lang/).
 
 I highly recommend using a build tool such as [Maven](http://maven.apache.org/)
