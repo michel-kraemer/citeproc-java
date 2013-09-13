@@ -24,10 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLItemData;
@@ -36,6 +32,9 @@ import de.undercouch.citeproc.helper.JsonHelper;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
 import de.undercouch.citeproc.output.FormattingParameters;
+import de.undercouch.citeproc.script.ScriptRunner;
+import de.undercouch.citeproc.script.ScriptRunnerException;
+import de.undercouch.citeproc.script.ScriptRunnerFactory;
 
 /**
  * The citation processor
@@ -43,9 +42,9 @@ import de.undercouch.citeproc.output.FormattingParameters;
  */
 public class CSL {
 	/**
-	 * A JavaScript engine used to execute citeproc-js
+	 * A JavaScript runner used to execute citeproc-js
 	 */
-	private final ScriptEngine engine;
+	private final ScriptRunner runner;
 	
 	/**
 	 * Constructs a new citation processor
@@ -91,12 +90,12 @@ public class CSL {
 	 */
 	public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
 			String style, String lang, boolean forceLang) throws IOException {
-		//create JavaScript engine
-		engine = new ScriptEngineManager().getEngineByName("javascript");
+		//create JavaScript runner
+		runner = ScriptRunnerFactory.createRunner();
 		
 		//initialize global variables
-		engine.put("__itemDataProvider__", itemDataProvider);
-		engine.put("__localeProvider__", localeProvider);
+		runner.put("__itemDataProvider__", itemDataProvider);
+		runner.put("__localeProvider__", localeProvider);
 		
 		//load bundles scripts
 		try {
@@ -104,7 +103,7 @@ public class CSL {
 			evaluateScript("/citeproc.js");
 			evaluateScript("/formats.js");
 			evaluateScript("/loadsys.js");
-		} catch (ScriptException e) {
+		} catch (ScriptRunnerException e) {
 			//should never happen because bundled JavaScript files should be OK indeed
 			throw new RuntimeException("Invalid bundled javascript file", e);
 		}
@@ -116,9 +115,9 @@ public class CSL {
 		
 		//initialize engine
 		try {
-			engine.eval("var __engine__ = new CSL.Engine(Sys, \"" + escapeJava(style) + "\", \"" +
+			runner.eval("var __engine__ = new CSL.Engine(Sys, \"" + escapeJava(style) + "\", \"" +
 					escapeJava(lang) + "\", " + forceLang + ");");
-		} catch (ScriptException e) {
+		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not parse arguments", e);
 		}
 	}
@@ -127,9 +126,9 @@ public class CSL {
 	 * Loads a script from the classpath and evaluates it
 	 * @param filename the script's filename
 	 * @throws IOException if the script could not be loaded
-	 * @throws ScriptException if the script is invalid
+	 * @throws ScriptRunnerException if the script is invalid
 	 */
-	private void evaluateScript(String filename) throws IOException, ScriptException {
+	private void evaluateScript(String filename) throws IOException, ScriptRunnerException {
 		URL citeProcURL = getClass().getResource(filename);
 		if (citeProcURL == null) {
 			throw new FileNotFoundException("Could not find " + filename + " in classpath");
@@ -137,7 +136,7 @@ public class CSL {
 		
 		InputStreamReader reader = new InputStreamReader(citeProcURL.openStream());
 		try {
-			engine.eval(reader);
+			runner.eval(reader);
 		} finally {
 			reader.close();
 		}
@@ -182,8 +181,8 @@ public class CSL {
 	 */
 	public void setOutputFormat(String format) {
 		try {
-			engine.eval("__engine__.setOutputFormat(\"" + escapeJava(format) + "\");");
-		} catch (ScriptException e) {
+			runner.eval("__engine__.setOutputFormat(\"" + escapeJava(format) + "\");");
+		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not set output format", e);
 		}
 	}
@@ -196,8 +195,8 @@ public class CSL {
 	 */
 	public void setConvertLinks(boolean convert) {
 		try {
-			engine.eval("__engine__.opt.development_extensions.wrap_url_and_doi = " + convert + ";");
-		} catch (ScriptException e) {
+			runner.eval("__engine__.opt.development_extensions.wrap_url_and_doi = " + convert + ";");
+		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not set option", e);
 		}
 	}
@@ -214,8 +213,8 @@ public class CSL {
 	 */
 	public void registerCitationItems(String... ids) {
 		try {
-			engine.eval("__engine__.updateItems(" + JsonHelper.toJson(ids) + ");");
-		} catch (ScriptException e) {
+			runner.eval("__engine__.updateItems(" + JsonHelper.toJson(ids) + ");");
+		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not update items", e);
 		}
 	}
@@ -254,10 +253,10 @@ public class CSL {
 		List<Object> r;
 		try {
 			@SuppressWarnings("unchecked")
-			List<Object> rr = (List<Object>)engine.eval(
+			List<Object> rr = (List<Object>)runner.eval(
 					"__engine__.appendCitationCluster(" + JsonHelper.toJson(citation) + ");");
 			r = rr;
-		} catch (ScriptException e) {
+		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not append citation cluster", e);
 		}
 		
@@ -285,9 +284,9 @@ public class CSL {
 		List<Object> r;
 		try {
 			@SuppressWarnings("unchecked")
-			List<Object> rr = (List<Object>)engine.eval("__engine__.makeBibliography();");
+			List<Object> rr = (List<Object>)runner.eval("__engine__.makeBibliography();");
 			r = rr;
-		} catch (ScriptException e) {
+		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not make bibliography", e);
 		}
 		
