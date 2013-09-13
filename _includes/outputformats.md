@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs" id="samples-tab">
+<ul class="nav nav-tabs" id="outputformat-tab">
   <li class="active"><a href="#outputformat-html" data-toggle="tab" class="no-scroll">HTML</a></li>
   <li><a href="#outputformat-text" data-toggle="tab" class="no-scroll">Text</a></li>
   <li><a href="#outputformat-asciidoc" data-toggle="tab" class="no-scroll">AsciiDoc</a></li>
