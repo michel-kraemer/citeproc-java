@@ -50,6 +50,13 @@
 
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#license"><i class="icon-file-alt"></i>&nbsp;&nbsp;License</a></li>
+            <li class="dropdown">
+              <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-book"></i>&nbsp;&nbsp;API <b class="caret"></b></a>
+              <ul class="dropdown-menu" role="menu">
+                <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}api/latest">Latest</a></li>
+                <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}api/0.1">0.1</a></li>
+              </ul>
+            </li>
             <li><a href="https://github.com/michel-kraemer/citeproc-java"><i class="icon-github"></i>&nbsp;&nbsp;GitHub</a></li>
           </ul>
 
@@ -82,9 +89,13 @@
             <ul class="list-unstyled">
               <li class="pull-right"><a href="#top"><i class="icon-chevron-sign-up"></i>&nbsp;&nbsp;Back to top</a></li>
               <li><a href="https://github.com/michel-kraemer/citeproc-java">GitHub</a></li>
-              <!-- TODO
-              <li><a href="">JavaDoc API</a></li>
-              -->
+              <li class="dropdown">
+                <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">JavaDoc API <b class="caret"></b></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}api/latest">Latest</a></li>
+                  <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}api/0.1">0.1</a></li>
+                </ul>
+              </li>
             </ul>
             <p>Copyright &copy; {{ site.time | date: "%Y" }} <a href="http://www.michel-kraemer.com">Michel Kr&auml;mer</a>. All rights reserved.</p>
             <p>Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License v2.0</a>.</p>
