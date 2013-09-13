@@ -72,7 +72,9 @@ processor tries to load the style from the classpath, but you may
 also pass your own style as a serialized CSL string to the
 constructor.
 
-The next step is to introduce citation item IDs to the processor.
+In order to create a bibliography that contains a set of citation
+items, call the `registerCitationItems(String...)` method to
+introduce the item IDs to the processor.
 
 {% highlight java %}
 citeproc.registerCitationItems("ID-1", "ID-2", "ID-3", ...);
@@ -81,8 +83,8 @@ citeproc.registerCitationItems("ID-1", "ID-2", "ID-3", ...);
 The processor will request the corresponding citation item data
 from your `ItemDataProvider`.
 
-You can now generate citation strings that you can insert into
-your document:
+Alternatively, you can call `makeCitation(String)` to generate
+citation strings that you can insert into your document.
 
 {% highlight java %}
 String s1 = citeproc.makeCitation("ID-1");
@@ -94,8 +96,8 @@ System.out.println(s2)
 //=> [2]
 {% endhighlight %}
 
-Finally, you can generate a bibliography from all citations
-you used in your document.
+The processor saves each ID so you can generate a bibliography
+that contains all citations you used in your document.
 
 {% highlight java %}
 import de.undercouch.citeproc.output.Bibliography;
@@ -127,8 +129,7 @@ BibTeXDatabase db = BibTeXConverter.loadDatabase(new FileInputStream("mydb.bib")
 {% endhighlight %}
 
 After that, you can create a `ItemDataProvider` and pass it to the
-CSL processor. Make sure you call `registerCitationItems(CSL)` to
-introduce all citations in your database to the processor.
+CSL processor.
 
 {% highlight java %}
 import de.undercouch.citeproc.CSL;
@@ -138,10 +139,15 @@ BibTeXItemDataProvider provider = new BibTeXItemDataProvider();
 provider.addDatabase(db);
 
 CSL citeproc = new CSL(provider, "ieee");
-provider.registerCitationItems(CSL);
 {% endhighlight %}
 
-Now you can use the CSL processor as described above.
+Now you can use the CSL processor as described above. You can
+even call the `registerCitationItems(CSL)` method to generate a
+bibliography that contains all items from your BibTeX database.
+
+{% highlight java %}
+provider.registerCitationItems(citeproc);
+{% endhighlight %}
 
 Output formats
 --------------
