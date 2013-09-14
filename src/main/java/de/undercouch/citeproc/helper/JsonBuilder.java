@@ -12,18 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var Sys = function() {};
+package de.undercouch.citeproc.helper;
 
-Sys.prototype.retrieveLocale = function(lang) {
-	return new String(__localeProvider__.retrieveLocale(lang));
-};
+/**
+ * Builds JSON objects
+ * @author Michel Kraemer
+ */
+public interface JsonBuilder {
+	/**
+	 * Adds a property to the object to build
+	 * @param name the property's name
+	 * @param o the property's value
+	 * @return the {@link JsonBuilder}
+	 */
+	JsonBuilder add(String name, Object o);
 
-Sys.prototype.retrieveItem = function(id) {
-	var item = __itemDataProvider__.retrieveItem(id);
-	if (item == null) {
-		return null;
-	}
-	return JSON.parse(item.toJson(__scriptRunner__.createJsonBuilder()));
-};
+	/**
+	 * Builds the JSON object
+	 * @return the object
+	 */
+	Object build();
 
-Sys = new Sys();
+	/**
+	 * Converts an array of Strings to a JSON array
+	 * @param arr the array of Strings
+	 * @return the JSON array
+	 */
+	Object toJson(String[] arr);
+}

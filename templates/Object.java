@@ -15,7 +15,7 @@
 package $package$;
 
 $if(!noJsonObject)$
-import de.undercouch.citeproc.helper.JsonHelper;
+import de.undercouch.citeproc.helper.JsonBuilder;
 import de.undercouch.citeproc.helper.JsonObject;
 $endif$
 
@@ -67,24 +67,14 @@ public class $name$ $if(!noJsonObject)$implements JsonObject$endif$ {
 
 	$if(!noJsonObject)$
 	@Override
-	public String toJson() {
-		StringBuilder r = new StringBuilder("{");
-		$requiredProperties:{p | r.append("\"$p.name$\": " + JsonHelper.toJson($p.normalizedName$));
-		};separator="r.append(\",\");"$
+	public Object toJson(JsonBuilder builder) {
+		$requiredProperties:{p | builder.add("$p.name$", $p.normalizedName$);
+		}$
 		$properties:{p | if ($p.normalizedName$ != null) {
-			$if(requiredProperties.empty)$
-			if (r.length() > 1) r.append(",");
-			$endif$
-			r.append("$if(!requiredProperties.empty)$,$endif$\"$p.name$\": " + JsonHelper.toJson($p.normalizedName$));
+			builder.add("$p.name$", $p.normalizedName$);
 		\}
 		}$
-		r.append("}");
-		return r.toString();
-	}
-	
-	@Override
-	public String toString() {
-		return toJson();
+		return builder.build();
 	}
 	$endif$
 	

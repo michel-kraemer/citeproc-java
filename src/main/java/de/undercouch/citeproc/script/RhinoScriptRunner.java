@@ -29,6 +29,8 @@ import org.mozilla.javascript.SecurityController;
 import org.mozilla.javascript.Wrapper;
 
 import de.undercouch.citeproc.helper.CSLUtils;
+import de.undercouch.citeproc.helper.JsonBuilder;
+import de.undercouch.citeproc.helper.StringJsonBuilder;
 
 /**
  * Executes JavaScript scripts using Mozilla Rhino
@@ -40,6 +42,9 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	
 	private final Scriptable scope;
 	
+	/**
+	 * Default constructor
+	 */
 	public RhinoScriptRunner() {
 		Context context = Context.enter();
 		try {
@@ -143,4 +148,9 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 		}
 		return o;
 	}
-}	
+
+	@Override
+	public JsonBuilder createJsonBuilder() {
+		return new StringJsonBuilder(this);
+	}
+}

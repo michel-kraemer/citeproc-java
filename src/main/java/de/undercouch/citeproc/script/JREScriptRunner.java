@@ -20,6 +20,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import de.undercouch.citeproc.helper.JsonBuilder;
+import de.undercouch.citeproc.helper.StringJsonBuilder;
+
 /**
  * Executes JavaScript scripts through the Java Scripting API (using
  * Mozilla Rhino that is bundled with the JRE)
@@ -28,6 +31,9 @@ import javax.script.ScriptException;
 public class JREScriptRunner extends AbstractScriptRunner {
 	private final ScriptEngine engine;
 	
+	/**
+	 * Default constructor
+	 */
 	public JREScriptRunner() {
 		engine = new ScriptEngineManager().getEngineByName("javascript");
 	}
@@ -53,5 +59,10 @@ public class JREScriptRunner extends AbstractScriptRunner {
 		} catch (ScriptException e) {
 			throw new ScriptRunnerException("Could not evaluate code", e);
 		}
+	}
+
+	@Override
+	public JsonBuilder createJsonBuilder() {
+		return new StringJsonBuilder(this);
 	}
 }

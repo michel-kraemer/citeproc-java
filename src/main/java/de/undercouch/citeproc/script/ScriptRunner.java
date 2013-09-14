@@ -17,11 +17,14 @@ package de.undercouch.citeproc.script;
 import java.io.IOException;
 import java.io.Reader;
 
+import de.undercouch.citeproc.helper.JsonBuilderFactory;
+import de.undercouch.citeproc.helper.JsonObject;
+
 /**
  * Executes JavaScript scripts
  * @author Michel Kraemer
  */
-public interface ScriptRunner {
+public interface ScriptRunner extends JsonBuilderFactory {
 	/**
 	 * Sets a key/value pair in the runner's global scope
 	 * @param key the key
@@ -53,4 +56,24 @@ public interface ScriptRunner {
 	 * @throws IOException if the script could not be read from the reader
 	 */
 	Object eval(Reader reader) throws ScriptRunnerException, IOException;
+	
+	/**
+	 * Calls an object's method
+	 * @param obj the object's name
+	 * @param name the method's name
+	 * @param args the arguments
+	 * @return the return value
+	 * @throws ScriptRunnerException if the method could not be called
+	 */
+	Object callMethod(String obj, String name, JsonObject... args) throws ScriptRunnerException;
+	
+	/**
+	 * Calls an object's method
+	 * @param obj the object's name
+	 * @param name the method's name
+	 * @param args the arguments
+	 * @return the return value
+	 * @throws ScriptRunnerException if the method could not be called
+	 */
+	Object callMethod(String obj, String name, String... args) throws ScriptRunnerException;
 }

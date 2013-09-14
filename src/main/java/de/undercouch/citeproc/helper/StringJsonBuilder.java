@@ -19,21 +19,59 @@ import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 import java.lang.reflect.Array;
 
 /**
- * Contains methods that convert objects to JSON strings
+ * A JSON builder that creates JSON strings
  * @author Michel Kraemer
  */
-public class JsonHelper {
+public class StringJsonBuilder implements JsonBuilder {
+	private final JsonBuilderFactory factory;
+	private final StringBuilder b;
+	private int c = 0;
+
 	/**
-	 * Converts an object to a JSON string. The given object can be a
+	 * Creates a JSON builder
+	 * @param factory the factory that created this builder
+	 */
+	public StringJsonBuilder(JsonBuilderFactory factory) {
+		this.factory = factory;
+		b = new StringBuilder("{");
+	}
+	
+	@Override
+	public JsonBuilder add(String name, Object o) {
+		if (c > 0) {
+			b.append(",");
+		}
+		++c;
+		
+		b.append("\"" + name + "\":");
+		b.append(toJson(o, factory).toString());
+		
+		return this;
+	}
+	
+	@Override
+	public Object build() {
+		b.append("}");
+		return b.toString();
+	}
+	
+	@Override
+	public Object toJson(String[] arr) {
+		return toJson(arr, factory);
+	}
+	
+	/**
+	 * Converts an object to a JSON object. The given object can be a
 	 * {@link JsonObject}, a primitive, a string, or an array. Converts
 	 * the object to a string via {@link Object#toString()} if its type
 	 * is unknown and then converts this string to JSON.
 	 * @param obj the object to convert
-	 * @return the JSON string
+	 * @param factory a factory used to create JSON builders
+	 * @return the JSON object
 	 */
-	public static String toJson(Object obj) {
+	private static Object toJson(Object obj, JsonBuilderFactory factory) {
 		if (obj instanceof JsonObject) {
-			return toJson((JsonObject)obj);
+			return toJson((JsonObject)obj, factory);
 		} else if (obj instanceof Number) {
 			return toJson((Number)obj);
 		} else if (obj instanceof Boolean) {
@@ -46,20 +84,11 @@ public class JsonHelper {
 				if (r.length() > 0) {
 					r.append(",");
 				}
-				r.append(toJson(ao));
+				r.append(toJson(ao, factory));
 			}
 			return "[" + r.toString() + "]";
 		}
 		return toJson(String.valueOf(obj));
-	}
-	
-	/**
-	 * Converts a {@link JsonObject} to a JSON string
-	 * @param obj the object to convert
-	 * @return the JSON string
-	 */
-	public static String toJson(JsonObject obj) {
-		return obj.toJson();
 	}
 	
 	/**
@@ -68,7 +97,7 @@ public class JsonHelper {
 	 * @param s the string to convert
 	 * @return the JSON string
 	 */
-	public static String toJson(String s) {
+	private static String toJson(String s) {
 		//we use escapeJava() instead of escapeJavaScript() here because
 		//we enclose the string in double quotes ourselves, so single
 		//quotes do not have to be escaped (and in fact shouldn't, because
@@ -81,7 +110,7 @@ public class JsonHelper {
 	 * @param b the boolean to convert
 	 * @return the JSON string
 	 */
-	public static String toJson(boolean b) {
+	private static String toJson(boolean b) {
 		return String.valueOf(b);
 	}
 	
@@ -90,7 +119,17 @@ public class JsonHelper {
 	 * @param n the number to convert
 	 * @return the JSON string
 	 */
-	public static String toJson(Number n) {
+	private static String toJson(Number n) {
 		return String.valueOf(n);
+	}
+	
+	/**
+	 * Converts a {@link JsonObject} to a JSON string
+	 * @param obj the object to convert
+	 * @param factory a factory used to create JSON builders
+	 * @return the JSON string
+	 */
+	private static Object toJson(JsonObject obj, JsonBuilderFactory factory) {
+		return obj.toJson(factory.createJsonBuilder());
 	}
 }

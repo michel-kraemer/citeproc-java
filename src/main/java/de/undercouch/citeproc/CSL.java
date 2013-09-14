@@ -27,7 +27,6 @@ import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.CSLUtils;
-import de.undercouch.citeproc.helper.JsonHelper;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
 import de.undercouch.citeproc.output.FormattingParameters;
@@ -93,6 +92,7 @@ public class CSL {
 		runner = ScriptRunnerFactory.createRunner();
 		
 		//initialize global variables
+		runner.put("__scriptRunner__", runner);
 		runner.put("__itemDataProvider__", itemDataProvider);
 		runner.put("__localeProvider__", localeProvider);
 		
@@ -192,7 +192,7 @@ public class CSL {
 	 */
 	public void registerCitationItems(String... ids) {
 		try {
-			runner.eval("__engine__.updateItems(" + JsonHelper.toJson(ids) + ");");
+			runner.callMethod("__engine__", "updateItems", ids);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not update items", e);
 		}
@@ -232,8 +232,8 @@ public class CSL {
 		List<Object> r;
 		try {
 			@SuppressWarnings("unchecked")
-			List<Object> rr = (List<Object>)runner.eval(
-					"__engine__.appendCitationCluster(" + JsonHelper.toJson(citation) + ");");
+			List<Object> rr = (List<Object>)runner.callMethod("__engine__",
+					"appendCitationCluster", citation);
 			r = rr;
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not append citation cluster", e);
