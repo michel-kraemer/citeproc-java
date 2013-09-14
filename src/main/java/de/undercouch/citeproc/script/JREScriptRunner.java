@@ -25,7 +25,7 @@ import javax.script.ScriptException;
  * Mozilla Rhino that is bundled with the JRE)
  * @author Michel Kraemer
  */
-public class JREScriptRunner implements ScriptRunner {
+public class JREScriptRunner extends AbstractScriptRunner {
 	private final ScriptEngine engine;
 	
 	public JREScriptRunner() {

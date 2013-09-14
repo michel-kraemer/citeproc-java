@@ -30,6 +30,14 @@ public interface ScriptRunner {
 	void put(String key, Object value);
 	
 	/**
+	 * Loads a script from the classpath and evaluates it
+	 * @param filename the script's filename
+	 * @throws IOException if the script could not be loaded
+	 * @throws ScriptRunnerException if the script is invalid
+	 */
+	public void loadScript(String filename) throws IOException, ScriptRunnerException;
+	
+	/**
 	 * Executes the given code
 	 * @param code the code
 	 * @return the return value from the executed script

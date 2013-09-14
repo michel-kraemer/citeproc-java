@@ -16,17 +16,28 @@ package de.undercouch.citeproc.script;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.GeneratedClassLoader;
 import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.SecurityController;
 import org.mozilla.javascript.Wrapper;
+
+import de.undercouch.citeproc.helper.CSLUtils;
 
 /**
  * Executes JavaScript scripts using Mozilla Rhino
  * @author Michel Kraemer
  */
-public class RhinoScriptRunner implements ScriptRunner {
+public class RhinoScriptRunner extends AbstractScriptRunner {
+	private static Map<String, Script> compiledScripts =
+			new ConcurrentHashMap<String, Script>();
+	
 	private final Scriptable scope;
 	
 	public RhinoScriptRunner() {
@@ -41,6 +52,60 @@ public class RhinoScriptRunner implements ScriptRunner {
 	@Override
 	public void put(String key, Object value) {
 		scope.put(key, scope, value);
+	}
+	
+	@Override
+	public void loadScript(String filename) throws IOException, ScriptRunnerException {
+		//try to load a previously compiled script
+		Script s = compiledScripts.get(filename);
+		if (s != null) {
+			Context context = Context.enter();
+			try {
+				s.exec(context, scope);
+				return;
+			} finally {
+				Context.exit();
+			}
+		}
+		
+		//try to load a precompiled script from a file
+		if (filename.endsWith(".js")) {
+			String name = filename.substring(0, filename.length() - 3);
+			String classFileName = name + ".dat";
+			URL fileUrl = getClass().getResource(classFileName);
+			if (fileUrl != null) {
+				if (name.startsWith("/")) {
+					name = name.substring(1);
+				}
+				
+				Context context = Context.enter();
+				try {
+					byte[] data = CSLUtils.readStream(fileUrl.openStream());
+				
+					GeneratedClassLoader loader = SecurityController.createLoader(
+							context.getApplicationClassLoader(), null);
+					Class<?> clazz = loader.defineClass(name, data);
+					loader.linkClass(clazz);
+					
+					s = (Script)clazz.newInstance();
+					
+					//cache compile script
+					compiledScripts.put(filename, s);
+					
+					s.exec(context, scope);
+					return;
+				} catch (InstantiationException e) {
+					//ignore. fall through to normal script evaluation.
+				} catch (IllegalAccessException e) {
+					//ignore. fall through to normal script evaluation.
+				} finally {
+					Context.exit();
+				}
+			}
+		}
+		
+		//evaluate script without compiling
+		super.loadScript(filename);
 	}
 
 	@Override

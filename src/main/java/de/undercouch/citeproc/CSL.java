@@ -18,7 +18,6 @@ import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,10 +98,10 @@ public class CSL {
 		
 		//load bundles scripts
 		try {
-			evaluateScript("/xmle4x.js");
-			evaluateScript("/citeproc.js");
-			evaluateScript("/formats.js");
-			evaluateScript("/loadsys.js");
+			runner.loadScript("/xmle4x.js");
+			runner.loadScript("/citeproc.js");
+			runner.loadScript("/formats.js");
+			runner.loadScript("/loadsys.js");
 		} catch (ScriptRunnerException e) {
 			//should never happen because bundled JavaScript files should be OK indeed
 			throw new RuntimeException("Invalid bundled javascript file", e);
@@ -119,26 +118,6 @@ public class CSL {
 					escapeJava(lang) + "\", " + forceLang + ");");
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not parse arguments", e);
-		}
-	}
-	
-	/**
-	 * Loads a script from the classpath and evaluates it
-	 * @param filename the script's filename
-	 * @throws IOException if the script could not be loaded
-	 * @throws ScriptRunnerException if the script is invalid
-	 */
-	private void evaluateScript(String filename) throws IOException, ScriptRunnerException {
-		URL citeProcURL = getClass().getResource(filename);
-		if (citeProcURL == null) {
-			throw new FileNotFoundException("Could not find " + filename + " in classpath");
-		}
-		
-		InputStreamReader reader = new InputStreamReader(citeProcURL.openStream());
-		try {
-			runner.eval(reader);
-		} finally {
-			reader.close();
 		}
 	}
 	
