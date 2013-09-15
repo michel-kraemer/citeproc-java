@@ -320,6 +320,17 @@ public class CSL {
 	}
 	
 	/**
+	 * Resets the processor's state
+	 */
+	public void reset() {
+		try {
+			runner.eval("__engine__.restoreProcessorState();");
+		} catch (ScriptRunnerException e) {
+			throw new IllegalArgumentException("Could not reset processor state", e);
+		}
+	}
+	
+	/**
 	 * Creates an ad hoc bibliography from the given citation items using the
 	 * <code>"html"</code> output format. Calling this method is rather
 	 * expensive as it initializes the CSL processor. If you need to create

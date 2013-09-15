@@ -273,4 +273,26 @@ public class CSLTest {
 				+ "  </fo:table>\n"
 				+ "</fo:block>\n", b.getEntries()[0]);
 	}
+	
+	/**
+	 * Tests if the processor's state can be reset
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void reset() throws Exception {
+		CSL citeproc = new CSL(new TestItemDataProvider(), "ieee");
+		citeproc.setOutputFormat("text");
+		
+		List<Citation> a = citeproc.makeCitation(items[0].getId());
+		assertEquals(0, a.get(0).getIndex());
+		assertEquals("[1]", a.get(0).getText());
+		
+		Bibliography b = citeproc.makeBibliography();
+		assertEquals(1, b.getEntries().length);
+		
+		citeproc.reset();
+		
+		b = citeproc.makeBibliography();
+		assertEquals(0, b.getEntries().length);
+	}
 }
