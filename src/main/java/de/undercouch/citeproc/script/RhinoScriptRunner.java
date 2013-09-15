@@ -25,12 +25,13 @@ import org.mozilla.javascript.GeneratedClassLoader;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.SecurityController;
 import org.mozilla.javascript.Wrapper;
 
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.JsonBuilder;
-import de.undercouch.citeproc.helper.StringJsonBuilder;
+import de.undercouch.citeproc.helper.JsonObject;
 
 /**
  * Executes JavaScript scripts using Mozilla Rhino
@@ -85,7 +86,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 				
 				Context context = Context.enter();
 				try {
-					byte[] data = CSLUtils.readStream(fileUrl.openStream());
+					byte[] data = CSLUtils.readURL(fileUrl);
 				
 					GeneratedClassLoader loader = SecurityController.createLoader(
 							context.getApplicationClassLoader(), null);
@@ -151,6 +152,38 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 
 	@Override
 	public JsonBuilder createJsonBuilder() {
-		return new StringJsonBuilder(this);
+		return new RhinoJsonBuilder(scope, this);
+	}
+	
+	@Override
+	public Object callMethod(String obj, String name, JsonObject... args) throws ScriptRunnerException {
+		Context.enter();
+		try {
+			Object p[] = new Object[args.length];
+			for (int i = 0; i < args.length; ++i) {
+				p[i] = args[i].toJson(createJsonBuilder());
+			}
+			ScriptableObject so = (ScriptableObject)scope.get(obj, scope);
+			return ScriptableObject.callMethod(so, name, p);
+		} catch (RhinoException e) {
+			throw new ScriptRunnerException("Could not call method script", e);
+		} finally {
+			Context.exit();
+		}
+	}
+
+	@Override
+	public Object callMethod(String obj, String name, String[] argument)
+			throws ScriptRunnerException {
+		Context.enter();
+		try {
+			Object p = createJsonBuilder().toJson(argument);
+			ScriptableObject so = (ScriptableObject)scope.get(obj, scope);
+			return ScriptableObject.callMethod(so, name, new Object[] { p });
+		} catch (RhinoException e) {
+			throw new ScriptRunnerException("Could not call method script", e);
+		} finally {
+			Context.exit();
+		}
 	}
 }

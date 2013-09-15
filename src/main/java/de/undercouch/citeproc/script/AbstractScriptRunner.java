@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import de.undercouch.citeproc.helper.JsonObject;
-
 /**
  * Abstract base class for {@link ScriptRunner} implementations
  * @author Michel Kraemer
@@ -39,31 +37,5 @@ public abstract class AbstractScriptRunner implements ScriptRunner {
 		} finally {
 			reader.close();
 		}
-	}
-	
-	@Override
-	public Object callMethod(String obj, String name, JsonObject... args) throws ScriptRunnerException {
-		String p = "";
-		if (args != null && args.length > 0) {
-			if (args.length == 1) {
-				p = args[0].toJson(createJsonBuilder()).toString();
-			} else {
-				StringBuilder b = new StringBuilder();
-				for (JsonObject o : args) {
-					if (b.length() > 0) {
-						b.append(",");
-					}
-					b.append(o.toJson(createJsonBuilder()).toString());
-				}
-				p = b.toString();
-			}
-		}
-		return eval(obj + "." + name + "(" + p + ");");
-	}
-
-	@Override
-	public Object callMethod(String obj, String name, String... args)
-			throws ScriptRunnerException {
-		return eval(obj + "." + name + "(" + createJsonBuilder().toJson(args) + ");");
 	}
 }

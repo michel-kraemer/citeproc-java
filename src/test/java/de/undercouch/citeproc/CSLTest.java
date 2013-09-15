@@ -181,6 +181,10 @@ public class CSLTest {
 		citeproc.makeCitation("foobar");
 	}
 	
+	/**
+	 * Tests if the processor correctly produces links for URLs
+	 * @throws Exception if something goes wrong
+	 */
 	@Test
 	public void links() throws Exception {
 		CSLItemData item = new CSLItemDataBuilder("citeproc-java", CSLType.WEBPAGE)

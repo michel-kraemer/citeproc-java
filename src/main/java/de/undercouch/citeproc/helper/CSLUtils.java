@@ -53,7 +53,7 @@ public class CSLUtils {
 	 * @param is the stream
 	 * @param encoding the character encoding
 	 * @return the string
-	 * @throws IOException if the URL contents could not be read
+	 * @throws IOException if the stream contents could not be read
 	 */
 	public static String readStreamToString(InputStream is, String encoding) throws IOException {
 		try {
@@ -70,10 +70,20 @@ public class CSLUtils {
 	}
 	
 	/**
+	 * Reads a byte array from a URL
+	 * @param url the URL
+	 * @return the byte array
+	 * @throws IOException if the URL contents could not be read
+	 */
+	public static byte[] readURL(URL url) throws IOException {
+		return readStream(url.openStream());
+	}
+	
+	/**
 	 * Reads a byte array from a stream. Closes the stream after reading.
 	 * @param is the stream
 	 * @return the byte array
-	 * @throws IOException if the URL contents could not be read
+	 * @throws IOException if the stream contents could not be read
 	 */
 	public static byte[] readStream(InputStream is) throws IOException {
 		try {

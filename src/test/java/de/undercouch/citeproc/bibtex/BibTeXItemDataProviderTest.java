@@ -36,6 +36,10 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 	private static BibTeXDatabase db;
 	private static BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
 	
+	/**
+	 * Set up this test
+	 * @throws Exception if something goes wrong
+	 */
 	@BeforeClass
 	public static void setUp() throws Exception {
 		db = loadUnixDatabase();

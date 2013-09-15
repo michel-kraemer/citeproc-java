@@ -23,7 +23,11 @@ Sys.prototype.retrieveItem = function(id) {
 	if (item == null) {
 		return null;
 	}
-	return JSON.parse(item.toJson(__scriptRunner__.createJsonBuilder()));
+	var ji = item.toJson(__scriptRunner__.createJsonBuilder());
+	if (ji.hasOwnProperty('length')) {
+		return JSON.parse(ji);
+	}
+	return ji;
 };
 
 Sys = new Sys();

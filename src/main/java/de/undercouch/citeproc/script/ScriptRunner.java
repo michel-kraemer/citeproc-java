@@ -38,7 +38,7 @@ public interface ScriptRunner extends JsonBuilderFactory {
 	 * @throws IOException if the script could not be loaded
 	 * @throws ScriptRunnerException if the script is invalid
 	 */
-	public void loadScript(String filename) throws IOException, ScriptRunnerException;
+	void loadScript(String filename) throws IOException, ScriptRunnerException;
 	
 	/**
 	 * Executes the given code
@@ -65,15 +65,17 @@ public interface ScriptRunner extends JsonBuilderFactory {
 	 * @return the return value
 	 * @throws ScriptRunnerException if the method could not be called
 	 */
-	Object callMethod(String obj, String name, JsonObject... args) throws ScriptRunnerException;
+	Object callMethod(String obj, String name, JsonObject... args)
+			throws ScriptRunnerException;
 	
 	/**
 	 * Calls an object's method
 	 * @param obj the object's name
 	 * @param name the method's name
-	 * @param args the arguments
+	 * @param argument a string array that will be passed as the method's first argument
 	 * @return the return value
 	 * @throws ScriptRunnerException if the method could not be called
 	 */
-	Object callMethod(String obj, String name, String... args) throws ScriptRunnerException;
+	Object callMethod(String obj, String name, String[] argument)
+			throws ScriptRunnerException;
 }

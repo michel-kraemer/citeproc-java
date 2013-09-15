@@ -63,6 +63,7 @@ dependencies {
     testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
     testCompile 'org.citationstyles:locales:1.0.1-SNAPSHOT'
     testCompile 'junit:junit:4.11'
+    testCompile 'com.carrotsearch:junit-benchmarks:0.7.0'
 }
 
 tasks.withType(Compile) { 
