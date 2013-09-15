@@ -16,8 +16,11 @@ package de.undercouch.citeproc.script;
 
 import java.lang.reflect.Array;
 
-import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.TopLevel;
 
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.helper.JsonBuilder;
@@ -41,12 +44,9 @@ public class RhinoJsonBuilder implements JsonBuilder {
 	public RhinoJsonBuilder(Scriptable scope, JsonBuilderFactory factory) {
 		this.scope = scope;
 		this.factory = factory;
-		Context ctx = Context.enter();
-		try {
-			obj = ctx.newObject(scope);
-		} finally {
-			Context.exit();
-		}
+		NativeObject no = new NativeObject();
+		ScriptRuntime.setBuiltinProtoAndParent(no, scope, TopLevel.Builtins.Object);
+		obj = no;
 	}
 	
 	@Override
@@ -67,13 +67,8 @@ public class RhinoJsonBuilder implements JsonBuilder {
 			obj = ((JsonObject)obj).toJson(factory.createJsonBuilder());
 		} else if (obj.getClass().isArray()) {
 			int len = Array.getLength(obj);
-			Context ctx = Context.enter();
-			Scriptable na;
-			try {
-				na = ctx.newArray(scope, len);
-			} finally {
-				Context.exit();
-			}
+			NativeArray na = new NativeArray(len);
+			ScriptRuntime.setBuiltinProtoAndParent(na, scope, TopLevel.Builtins.Array);
 			for (int i = 0; i < len; ++i) {
 				Object ao = Array.get(obj, i);
 				na.put(i, na, toJson(ao, scope, factory));
@@ -93,13 +88,9 @@ public class RhinoJsonBuilder implements JsonBuilder {
 	@Override
 	public Object toJson(String[] arr) {
 		int len = arr.length;
-		Context ctx = Context.enter();
-		Scriptable na;
-		try {
-			na = ctx.newArray(scope, len);
-		} finally {
-			Context.exit();
-		}
+		
+		NativeArray na = new NativeArray(len);
+		ScriptRuntime.setBuiltinProtoAndParent(na, scope, TopLevel.Builtins.Array);
 		
 		for (int i = 0; i < len; ++i) {
 			na.put(i, na, arr[i]);

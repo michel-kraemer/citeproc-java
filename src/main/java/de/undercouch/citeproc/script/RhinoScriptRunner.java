@@ -157,7 +157,6 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	
 	@Override
 	public Object callMethod(String obj, String name, JsonObject... args) throws ScriptRunnerException {
-		Context.enter();
 		try {
 			Object p[] = new Object[args.length];
 			for (int i = 0; i < args.length; ++i) {
@@ -167,23 +166,18 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 			return ScriptableObject.callMethod(so, name, p);
 		} catch (RhinoException e) {
 			throw new ScriptRunnerException("Could not call method", e);
-		} finally {
-			Context.exit();
 		}
 	}
 
 	@Override
 	public Object callMethod(String obj, String name, String[] argument)
 			throws ScriptRunnerException {
-		Context.enter();
 		try {
 			Object p = createJsonBuilder().toJson(argument);
 			ScriptableObject so = (ScriptableObject)scope.get(obj, scope);
 			return ScriptableObject.callMethod(so, name, new Object[] { p });
 		} catch (RhinoException e) {
 			throw new ScriptRunnerException("Could not call method", e);
-		} finally {
-			Context.exit();
 		}
 	}
 }
