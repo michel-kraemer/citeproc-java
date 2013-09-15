@@ -166,7 +166,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 			ScriptableObject so = (ScriptableObject)scope.get(obj, scope);
 			return ScriptableObject.callMethod(so, name, p);
 		} catch (RhinoException e) {
-			throw new ScriptRunnerException("Could not call method script", e);
+			throw new ScriptRunnerException("Could not call method", e);
 		} finally {
 			Context.exit();
 		}
@@ -181,7 +181,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 			ScriptableObject so = (ScriptableObject)scope.get(obj, scope);
 			return ScriptableObject.callMethod(so, name, new Object[] { p });
 		} catch (RhinoException e) {
-			throw new ScriptRunnerException("Could not call method script", e);
+			throw new ScriptRunnerException("Could not call method", e);
 		} finally {
 			Context.exit();
 		}
