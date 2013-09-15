@@ -15,10 +15,12 @@
 package de.undercouch.citeproc.script;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.SystemUtils;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.Key;
 import org.junit.BeforeClass;
@@ -102,6 +104,11 @@ public class ScriptRunnerBenchmark extends AbstractBibTeXTest {
 	@BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 1)
 	@Test
 	public void jre() throws Exception {
+		if (!SystemUtils.isJavaVersionAtLeast(170)) {
+			//skip test for Java 1.6. It would fail anyway
+			return;
+		}
+		
 		RunnerType prev = ScriptRunnerFactory.setRunnerType(RunnerType.JRE);
 		try {
 			runTest();
