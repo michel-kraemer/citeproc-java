@@ -57,7 +57,7 @@ public class CSLUtils {
 	 */
 	public static String readStreamToString(InputStream is, String encoding) throws IOException {
 		try {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			byte[] buf = new byte[1024 * 10];
 			int read;
 			while ((read = is.read(buf)) >= 0) {

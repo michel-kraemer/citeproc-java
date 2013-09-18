@@ -77,7 +77,7 @@ public class StringJsonBuilder implements JsonBuilder {
 		} else if (obj instanceof Boolean) {
 			return toJson(((Boolean)obj).booleanValue());
 		} else if (obj.getClass().isArray()) {
-			StringBuffer r = new StringBuffer();
+			StringBuilder r = new StringBuilder();
 			int len = Array.getLength(obj);
 			for (int i = 0; i < len; ++i) {
 				Object ao = Array.get(obj, i);
