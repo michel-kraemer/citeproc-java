@@ -115,6 +115,9 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 	
 	private Map<String, Object> performRequest(String url)
 			throws MendeleyRequestException, IOException {
+		if (accessToken == null) {
+			throw new UnauthorizedException("Access token has not yet been requested");
+		}
 		OAuthRequest request = new OAuthRequest(Verb.GET, url);
 		service.signRequest(accessToken, request);
 		Response response = request.send();
@@ -136,9 +139,6 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 	
 	@Override
 	public List<String> getDocuments() throws MendeleyRequestException, IOException {
-		if (accessToken == null) {
-			throw new UnauthorizedException("Access token has not yet been requested");
-		}
 		Map<String, Object> response = performRequest(MENDELEY_LIBRARY_ENDPOINT);
 		@SuppressWarnings("unchecked")
 		List<String> documentIds = (List<String>)response.get("document_ids");
@@ -160,9 +160,6 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 	@Override
 	public CSLItemData getDocument(String documentId)
 			throws MendeleyRequestException, IOException {
-		if (accessToken == null) {
-			throw new UnauthorizedException("Access token has not yet been requested");
-		}
 		Map<String, Object> response = performRequest(MENDELEY_DOCUMENTS_ENDPOINT + documentId);
 		return MendeleyConverter.convert(documentId, response);
 	}
