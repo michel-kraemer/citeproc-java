@@ -52,6 +52,7 @@ dependencies {
     compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
     compile 'org.jbibtex:jbibtex:1.0.8'
     compile 'org.antlr:antlr4-runtime:4.1'
+    compile 'org.scribe:scribe:1.3.5'
     
     provided 'org.mozilla:rhino:1.7R4'
     
