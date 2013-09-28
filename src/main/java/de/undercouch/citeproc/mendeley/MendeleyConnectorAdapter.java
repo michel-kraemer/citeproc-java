@@ -17,6 +17,8 @@ package de.undercouch.citeproc.mendeley;
 import java.io.IOException;
 import java.util.List;
 
+import de.undercouch.citeproc.csl.CSLItemData;
+
 /**
  * Can be used by {@link MendeleyConnector} implementations to delegate to
  * an underlying connector
@@ -64,5 +66,11 @@ public class MendeleyConnectorAdapter implements MendeleyConnector {
 	@Override
 	public List<String> getDocuments() throws MendeleyRequestException, IOException {
 		return delegate.getDocuments();
+	}
+
+	@Override
+	public CSLItemData getDocument(String documentId)
+			throws MendeleyRequestException, IOException {
+		return delegate.getDocument(documentId);
 	}
 }

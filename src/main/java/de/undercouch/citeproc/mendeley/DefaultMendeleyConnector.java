@@ -30,6 +30,7 @@ import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
 
+import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.JsonLexer;
 import de.undercouch.citeproc.helper.JsonParser;
 
@@ -41,7 +42,14 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 	/**
 	 * The REST end-point used to request a Mendeley user's library
 	 */
-	private static final String MENDELEY_LIBRARY_ENDPOINT = "http://api.mendeley.com/oapi/library/";
+	private static final String MENDELEY_LIBRARY_ENDPOINT =
+			"http://api.mendeley.com/oapi/library/";
+	
+	/**
+	 * The REST end-point used to request a document
+	 */
+	private static final String MENDELEY_DOCUMENTS_ENDPOINT =
+			"http://api.mendeley.com/oapi/library/documents/";
 
 	/**
 	 * OAuth service that is used to authenticate the Mendeley user
@@ -105,13 +113,9 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 		return accessToken.getSecret();
 	}
 	
-	@Override
-	public List<String> getDocuments() throws MendeleyRequestException, IOException {
-		if (accessToken == null) {
-			throw new UnauthorizedException("Access token has not yet been requested");
-		}
-		
-		OAuthRequest request = new OAuthRequest(Verb.GET, MENDELEY_LIBRARY_ENDPOINT);
+	private Map<String, Object> performRequest(String url)
+			throws MendeleyRequestException, IOException {
+		OAuthRequest request = new OAuthRequest(Verb.GET, url);
 		service.signRequest(accessToken, request);
 		Response response = request.send();
 		InputStream is = response.getStream();
@@ -120,10 +124,7 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 				throw new UnauthorizedException("Not authenticated");
 			} else if (response.getCode() == 200) {
 				Reader r = new BufferedReader(new InputStreamReader(is));
-				Map<String, Object> m = new JsonParser(new JsonLexer(r)).parseObject();
-				@SuppressWarnings("unchecked")
-				List<String> documentIds = (List<String>)m.get("document_ids");
-				return documentIds;
+				return new JsonParser(new JsonLexer(r)).parseObject();
 			}
 			throw new MendeleyRequestException("Mendeley server returned an error. "
 					+ "Response code: " + response.getCode());
@@ -131,6 +132,17 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 			consumeResponse(is);
 			is.close();
 		}
+	}
+	
+	@Override
+	public List<String> getDocuments() throws MendeleyRequestException, IOException {
+		if (accessToken == null) {
+			throw new UnauthorizedException("Access token has not yet been requested");
+		}
+		Map<String, Object> response = performRequest(MENDELEY_LIBRARY_ENDPOINT);
+		@SuppressWarnings("unchecked")
+		List<String> documentIds = (List<String>)response.get("document_ids");
+		return documentIds;
 	}
 	
 	/**
@@ -143,5 +155,15 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 	private void consumeResponse(InputStream is) throws IOException {
 		byte[] buf = new byte[1024 * 8];
 		while (is.read(buf) >= 0);
+	}
+
+	@Override
+	public CSLItemData getDocument(String documentId)
+			throws MendeleyRequestException, IOException {
+		if (accessToken == null) {
+			throw new UnauthorizedException("Access token has not yet been requested");
+		}
+		Map<String, Object> response = performRequest(MENDELEY_DOCUMENTS_ENDPOINT + documentId);
+		return MendeleyConverter.convert(documentId, response);
 	}
 }

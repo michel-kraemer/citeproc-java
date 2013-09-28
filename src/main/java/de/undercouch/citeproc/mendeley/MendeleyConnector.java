@@ -17,6 +17,8 @@ package de.undercouch.citeproc.mendeley;
 import java.io.IOException;
 import java.util.List;
 
+import de.undercouch.citeproc.csl.CSLItemData;
+
 /**
  * Reads documents from the Mendeley REST services. Needs an OAuth API key and
  * secret in order to authenticate. Users of this class should
@@ -81,4 +83,15 @@ public interface MendeleyConnector {
 	 * @throws IOException if the documents could not be read from the server
 	 */
 	List<String> getDocuments() throws MendeleyRequestException, IOException;
+	
+	/**
+	 * Requests a document from the service. The user has to be
+	 * authenticated before this method can be called.
+	 * @param documentId the document's ID
+	 * @return the document
+	 * @throws UnauthorizedException if the user is not authenticated
+	 * @throws MendeleyRequestException if the server returns an error code
+	 * @throws IOException if the document could not be read from the server
+	 */
+	CSLItemData getDocument(String documentId) throws MendeleyRequestException, IOException;
 }
