@@ -212,7 +212,7 @@ public class JsonLexer {
 			} else if (c == '\\') {
 				int c2 = r.read();
 				if (c2 == '"' || c2 == '\\' || c2 == '/') {
-					result.append(c2);
+					result.append((char)c2);
 				} else if (c2 == 'b') {
 					result.append("\b");
 				} else if (c2 == 'f') {

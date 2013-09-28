@@ -256,4 +256,33 @@ public class JsonLexerTest {
 		t = p.readNextToken();
 		assertEquals(Type.END_OBJECT, t);
 	}
+	
+	/**
+	 * Tests if a string with a slash can be read
+	 * @throws IOException if the test failed
+	 */
+	@Test
+	public void slash() throws IOException {
+		String obj = "{\"name\":\"Michel\\/Kraemer\"}";
+		JsonLexer p = new JsonLexer(new StringReader(obj));
+		
+		Type t = p.readNextToken();
+		assertEquals(Type.START_OBJECT, t);
+		
+		t = p.readNextToken();
+		assertEquals(Type.STRING, t);
+		String name = p.readString();
+		assertEquals("name", name);
+		
+		t = p.readNextToken();
+		assertEquals(Type.COLON, t);
+		
+		t = p.readNextToken();
+		assertEquals(Type.STRING, t);
+		String value = p.readString();
+		assertEquals("Michel/Kraemer", value);
+		
+		t = p.readNextToken();
+		assertEquals(Type.END_OBJECT, t);
+	}
 }
