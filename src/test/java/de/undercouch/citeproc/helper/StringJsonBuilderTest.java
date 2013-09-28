@@ -23,12 +23,7 @@ import org.junit.Test;
  * @author Michel Kraemer
  */
 public class StringJsonBuilderTest {
-	private JsonBuilderFactory factory = new JsonBuilderFactory() {
-		@Override
-		public JsonBuilder createJsonBuilder() {
-			return new StringJsonBuilder(this);
-		}
-	};
+	private JsonBuilderFactory factory = new StringJsonBuilderFactory();
 	
 	/**
 	 * Tests if a string array is converted correctly
