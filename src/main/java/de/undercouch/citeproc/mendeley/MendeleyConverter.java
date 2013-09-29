@@ -17,6 +17,7 @@ package de.undercouch.citeproc.mendeley;
 import java.util.List;
 import java.util.Map;
 
+import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
@@ -121,7 +122,10 @@ public class MendeleyConverter {
 		if (document.containsKey(FIELD_EDITORS)) {
 			@SuppressWarnings("unchecked")
 			List<Map<String, Object>> el = (List<Map<String, Object>>)document.get(FIELD_EDITORS);
-			builder.editor(toAuthors(el));
+			CSLName[] editors = toAuthors(el);
+			builder.editor(editors);
+			builder.collectionEditor(editors);
+			builder.containerAuthor(editors);
 		}
 		
 		//convert issue date
@@ -139,7 +143,9 @@ public class MendeleyConverter {
 			} else {
 				db.dateParts(year);
 			}
-			builder.issued(db.build());
+			CSLDate d = db.build();
+			builder.issued(d);
+			builder.eventDate(d);
 		}
 		
 		//convert number
@@ -152,24 +158,27 @@ public class MendeleyConverter {
 		}
 		
 		//convert container title
+		String containerTitle;
 		if (mtype.equalsIgnoreCase(TYPE_BOOK_SECTION) && document.containsKey(FIELD_BOOK)) {
-			builder.containerTitle(strOrNull(document.get(FIELD_BOOK)));
-		} else if (mtype.equalsIgnoreCase(TYPE_PATENT) && document.containsKey(FIELD_SOURCE)) {
-			builder.publisher(strOrNull(document.get(FIELD_SOURCE)));
+			containerTitle = strOrNull(document.get(FIELD_BOOK));
 		} else if (mtype.equalsIgnoreCase(TYPE_ENCYCLOPEDIA_ARTICLE) &&
 				document.containsKey(FIELD_ENCYCLOPEDIA)) {
-			builder.containerTitle(strOrNull(document.get(FIELD_ENCYCLOPEDIA)));
+			containerTitle = strOrNull(document.get(FIELD_ENCYCLOPEDIA));
 		} else if (document.containsKey(FIELD_PUBLISHED_IN)) {
-			builder.containerTitle(strOrNull(document.get(FIELD_PUBLISHED_IN)));
+			containerTitle = strOrNull(document.get(FIELD_PUBLISHED_IN));
 		} else if (document.containsKey(FIELD_PUBLICATION_OUTLET)) {
-			builder.containerTitle(strOrNull(document.get(FIELD_PUBLICATION_OUTLET)));
+			containerTitle = strOrNull(document.get(FIELD_PUBLICATION_OUTLET));
 		} else {
-			builder.containerTitle(strOrNull(document.get(FIELD_PUBLICATION)));
+			containerTitle = strOrNull(document.get(FIELD_PUBLICATION));
 		}
+		builder.containerTitle(containerTitle);
+		builder.collectionTitle(containerTitle);
 		
 		//convert publisher
 		if (mtype.equalsIgnoreCase(TYPE_PATENT) && document.containsKey(FIELD_ISSUER)) {
 			builder.publisher(strOrNull(document.get(FIELD_ISSUER)));
+		} else if (mtype.equalsIgnoreCase(TYPE_PATENT) && document.containsKey(FIELD_SOURCE)) {
+			builder.publisher(strOrNull(document.get(FIELD_SOURCE)));
 		} else if (mtype.equalsIgnoreCase(TYPE_FILM) && document.containsKey(FIELD_DISTRIBUTOR)) {
 			builder.publisher(strOrNull(document.get(FIELD_DISTRIBUTOR)));
 		} else {
@@ -185,6 +194,7 @@ public class MendeleyConverter {
 		//convert other fields
 		builder.abstrct(strOrNull(document.get(FIELD_ABSTRACT)));
 		builder.chapterNumber(strOrNull(document.get(FIELD_CHAPTER)));
+		builder.eventplace(strOrNull(document.get(FIELD_CITY)));
 		builder.publisherPlace(strOrNull(document.get(FIELD_CITY)));
 		builder.DOI(strOrNull(document.get(FIELD_DOI)));
 		builder.edition(strOrNull(document.get(FIELD_EDITION)));
