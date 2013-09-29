@@ -26,8 +26,8 @@ import org.junit.Test;
 
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLType;
-import de.undercouch.citeproc.helper.JsonLexer;
-import de.undercouch.citeproc.helper.JsonParser;
+import de.undercouch.citeproc.helper.json.JsonLexer;
+import de.undercouch.citeproc.helper.json.JsonParser;
 
 /**
  * Tests the {@link MendeleyConverter}

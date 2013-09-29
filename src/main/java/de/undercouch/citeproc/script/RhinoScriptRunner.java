@@ -30,8 +30,8 @@ import org.mozilla.javascript.SecurityController;
 import org.mozilla.javascript.Wrapper;
 
 import de.undercouch.citeproc.helper.CSLUtils;
-import de.undercouch.citeproc.helper.JsonBuilder;
-import de.undercouch.citeproc.helper.JsonObject;
+import de.undercouch.citeproc.helper.json.JsonBuilder;
+import de.undercouch.citeproc.helper.json.JsonObject;
 
 /**
  * Executes JavaScript scripts using Mozilla Rhino

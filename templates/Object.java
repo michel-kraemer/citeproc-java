@@ -15,8 +15,8 @@
 package $package$;
 
 $if(!noJsonObject)$
-import de.undercouch.citeproc.helper.JsonBuilder;
-import de.undercouch.citeproc.helper.JsonObject;
+import de.undercouch.citeproc.helper.json.JsonBuilder;
+import de.undercouch.citeproc.helper.json.JsonObject;
 $endif$
 
 /**

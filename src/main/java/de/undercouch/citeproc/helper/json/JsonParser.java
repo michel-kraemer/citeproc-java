@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.helper;
+package de.undercouch.citeproc.helper.json;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.undercouch.citeproc.helper.JsonLexer.Type;
+import de.undercouch.citeproc.helper.json.JsonLexer.Type;
 
 /**
  * Parses JSON tokens to maps

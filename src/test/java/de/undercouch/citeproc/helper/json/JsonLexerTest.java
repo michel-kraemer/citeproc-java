@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.helper;
+package de.undercouch.citeproc.helper.json;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,7 +21,7 @@ import java.io.StringReader;
 
 import org.junit.Test;
 
-import de.undercouch.citeproc.helper.JsonLexer.Type;
+import de.undercouch.citeproc.helper.json.JsonLexer.Type;
 
 /**
  * Tests the {@link JsonLexer}

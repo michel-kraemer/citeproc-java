@@ -20,9 +20,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import de.undercouch.citeproc.helper.JsonBuilder;
-import de.undercouch.citeproc.helper.JsonObject;
-import de.undercouch.citeproc.helper.StringJsonBuilder;
+import de.undercouch.citeproc.helper.json.JsonBuilder;
+import de.undercouch.citeproc.helper.json.JsonObject;
+import de.undercouch.citeproc.helper.json.StringJsonBuilder;
 
 /**
  * Executes JavaScript scripts through the Java Scripting API (using

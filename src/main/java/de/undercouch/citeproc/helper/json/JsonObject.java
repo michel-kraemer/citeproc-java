@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.helper;
+package de.undercouch.citeproc.helper.json;
 
 /**
- * A factory for {@link JsonBuilder} objects
+ * Classes that implement this interface are able to convert their
+ * contents to a JSON object
  * @author Michel Kraemer
  */
-public interface JsonBuilderFactory {
+public interface JsonObject {
 	/**
-	 * @return a new JSON builder
+	 * Converts this object to a JSON object
+	 * @param builder a builder that can be used to perform the conversion
+	 * @return the JSON object
 	 */
-	JsonBuilder createJsonBuilder();
+	Object toJson(JsonBuilder builder);
 }

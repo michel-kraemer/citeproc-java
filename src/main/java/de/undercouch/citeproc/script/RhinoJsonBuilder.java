@@ -23,9 +23,9 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.TopLevel;
 
 import de.undercouch.citeproc.csl.CSLType;
-import de.undercouch.citeproc.helper.JsonBuilder;
-import de.undercouch.citeproc.helper.JsonBuilderFactory;
-import de.undercouch.citeproc.helper.JsonObject;
+import de.undercouch.citeproc.helper.json.JsonBuilder;
+import de.undercouch.citeproc.helper.json.JsonBuilderFactory;
+import de.undercouch.citeproc.helper.json.JsonObject;
 
 /**
  * Creates Rhino JSON objects

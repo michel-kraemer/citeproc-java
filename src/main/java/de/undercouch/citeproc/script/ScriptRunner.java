@@ -17,8 +17,8 @@ package de.undercouch.citeproc.script;
 import java.io.IOException;
 import java.io.Reader;
 
-import de.undercouch.citeproc.helper.JsonBuilderFactory;
-import de.undercouch.citeproc.helper.JsonObject;
+import de.undercouch.citeproc.helper.json.JsonBuilderFactory;
+import de.undercouch.citeproc.helper.json.JsonObject;
 
 /**
  * Executes JavaScript scripts

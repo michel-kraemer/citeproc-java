@@ -12,18 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.helper;
+package de.undercouch.citeproc.helper.json;
 
 /**
- * Classes that implement this interface are able to convert their
- * contents to a JSON object
+ * Builds JSON objects
  * @author Michel Kraemer
  */
-public interface JsonObject {
+public interface JsonBuilder {
 	/**
-	 * Converts this object to a JSON object
-	 * @param builder a builder that can be used to perform the conversion
-	 * @return the JSON object
+	 * Adds a property to the object to build
+	 * @param name the property's name
+	 * @param o the property's value
+	 * @return the {@link JsonBuilder}
 	 */
-	Object toJson(JsonBuilder builder);
+	JsonBuilder add(String name, Object o);
+
+	/**
+	 * Builds the JSON object
+	 * @return the object
+	 */
+	Object build();
+
+	/**
+	 * Converts an array of Strings to a JSON array
+	 * @param arr the array of Strings
+	 * @return the JSON array
+	 */
+	Object toJson(String[] arr);
 }

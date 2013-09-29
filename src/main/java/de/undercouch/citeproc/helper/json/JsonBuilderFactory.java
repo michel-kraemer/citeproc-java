@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.helper;
+package de.undercouch.citeproc.helper.json;
 
 /**
- * A {@link JsonBuilderFactory} that always builds {@link StringJsonBuilder}s
+ * A factory for {@link JsonBuilder} objects
  * @author Michel Kraemer
  */
-public class StringJsonBuilderFactory implements JsonBuilderFactory {
-	@Override
-	public JsonBuilder createJsonBuilder() {
-		return new StringJsonBuilder(this);
-	}
+public interface JsonBuilderFactory {
+	/**
+	 * @return a new JSON builder
+	 */
+	JsonBuilder createJsonBuilder();
 }
