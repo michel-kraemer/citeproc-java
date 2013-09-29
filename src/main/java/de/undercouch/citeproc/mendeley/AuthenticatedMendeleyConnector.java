@@ -16,6 +16,8 @@ package de.undercouch.citeproc.mendeley;
 
 import java.io.IOException;
 
+import de.undercouch.citeproc.helper.oauth.AuthenticationStore;
+
 /**
  * A Mendeley connector that saves its access token in an authentication
  * store, so you don't have to authenticate again until the access token
