@@ -19,26 +19,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
-
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
-import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.model.Verifier;
-import org.scribe.oauth.OAuthService;
 
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
+import de.undercouch.citeproc.helper.oauth.OAuth;
+import de.undercouch.citeproc.helper.oauth.OAuth.Method;
+import de.undercouch.citeproc.helper.oauth.Token;
+import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
 
 /**
  * Default implementation of a {@link MendeleyConnector}
  * @author Michel Kraemer
  */
 public class DefaultMendeleyConnector implements MendeleyConnector {
+	private static final String OAUTH_REQUEST_TOKEN_URL =
+			"http://api.mendeley.com/oauth/request_token/";
+	private static final String OAUTH_AUTHORIZATION_URL =
+			"http://api.mendeley.com/oauth/authorize/?oauth_token=";
+	private static final String OAUTH_ACCESS_TOKEN_URL =
+			"http://api.mendeley.com/oauth/access_token/";
+	
 	/**
 	 * The REST end-point used to request a Mendeley user's library
 	 */
@@ -52,9 +57,9 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 			"http://api.mendeley.com/oapi/library/documents/";
 
 	/**
-	 * OAuth service that is used to authenticate the Mendeley user
+	 * OAuth client that is used to authenticate the Mendeley user
 	 */
-	private final OAuthService service;
+	private final OAuth auth;
 	
 	/**
 	 * The request token used to authorize the app
@@ -68,28 +73,36 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 	
 	/**
 	 * Constructs a new connector
-	 * @param apiKey the app's API key
-	 * @param apiSecret the app's API secret
+	 * @param consumerKey the app's consumer key
+	 * @param consumerSecret the app's consumer secret
 	 */
-	public DefaultMendeleyConnector(String apiKey, String apiSecret) {
-		service = new ServiceBuilder()
-			.provider(MendeleyApi.class)
-			.apiKey(apiKey)
-			.apiSecret(apiSecret)
-			.callback("oob")
-			.build();
+	public DefaultMendeleyConnector(String consumerKey, String consumerSecret) {
+		auth = new OAuth(consumerKey, consumerSecret);
 	}
 	
 	@Override
-	public String getAuthorizationURL() {
-		requestToken = service.getRequestToken();
-		return service.getAuthorizationUrl(requestToken);
+	public String getAuthorizationURL() throws IOException {
+		try {
+			requestToken = auth.requestTemporaryCredentials(
+					new URL(OAUTH_REQUEST_TOKEN_URL), Method.GET,
+					OAuth.CALLBACK_OOB);
+		} catch (MalformedURLException e) {
+			//should never happen
+			throw new RuntimeException(e);
+		}
+		return OAUTH_AUTHORIZATION_URL + requestToken.getToken();
 	}
 	
 	@Override
-	public void authorize(String verificationCode) {
-		Verifier verifier = new Verifier(verificationCode);
-		accessToken = service.getAccessToken(requestToken, verifier);
+	public void authorize(String verificationCode) throws IOException {
+		try {
+			accessToken = auth.requestTokenCredentials(
+					new URL(OAUTH_ACCESS_TOKEN_URL), Method.GET,
+					requestToken, verificationCode);
+		} catch (MalformedURLException e) {
+			//should never happen
+			throw new RuntimeException(e);
+		}
 	}
 	
 	@Override
@@ -113,24 +126,15 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 		return accessToken.getSecret();
 	}
 	
-	private Map<String, Object> performRequest(String url)
-			throws MendeleyRequestException, IOException {
+	private Map<String, Object> performRequest(String url) throws IOException {
 		if (accessToken == null) {
 			throw new UnauthorizedException("Access token has not yet been requested");
 		}
-		OAuthRequest request = new OAuthRequest(Verb.GET, url);
-		service.signRequest(accessToken, request);
-		Response response = request.send();
-		InputStream is = response.getStream();
+		URL u = new URL(url);
+		InputStream is = auth.request(u, Method.GET, accessToken);
 		try {
-			if (response.getCode() == 401) {
-				throw new UnauthorizedException("Not authenticated");
-			} else if (response.getCode() == 200) {
-				Reader r = new BufferedReader(new InputStreamReader(is));
-				return new JsonParser(new JsonLexer(r)).parseObject();
-			}
-			throw new MendeleyRequestException("Mendeley server returned an error. "
-					+ "Response code: " + response.getCode());
+			Reader r = new BufferedReader(new InputStreamReader(is));
+			return new JsonParser(new JsonLexer(r)).parseObject();
 		} finally {
 			consumeResponse(is);
 			is.close();
@@ -138,7 +142,7 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 	}
 	
 	@Override
-	public List<String> getDocuments() throws MendeleyRequestException, IOException {
+	public List<String> getDocuments() throws IOException {
 		Map<String, Object> response = performRequest(MENDELEY_LIBRARY_ENDPOINT);
 		@SuppressWarnings("unchecked")
 		List<String> documentIds = (List<String>)response.get("document_ids");
@@ -158,8 +162,7 @@ public class DefaultMendeleyConnector implements MendeleyConnector {
 	}
 
 	@Override
-	public CSLItemData getDocument(String documentId)
-			throws MendeleyRequestException, IOException {
+	public CSLItemData getDocument(String documentId) throws IOException {
 		Map<String, Object> response = performRequest(MENDELEY_DOCUMENTS_ENDPOINT + documentId);
 		return MendeleyConverter.convert(documentId, response);
 	}

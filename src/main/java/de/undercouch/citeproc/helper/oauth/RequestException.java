@@ -12,40 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.mendeley;
+package de.undercouch.citeproc.helper.oauth;
+
+import java.io.IOException;
 
 /**
- * This exception is thrown when a user is not authenticated
+ * This exception is thrown when an HTTP request fails
  * @author Michel Kraemer
  */
-public class UnauthorizedException extends MendeleyRequestException {
-	private static final long serialVersionUID = -4587555569639659798L;
-	
+public class RequestException extends IOException {
+	private static final long serialVersionUID = 3499522813501819757L;
+
 	/**
 	 * @see Exception#Exception()
 	 */
-	public UnauthorizedException() {
+	public RequestException() {
 		//nothing to do here
 	}
 
 	/**
 	 * @see Exception#Exception(String)
 	 */
-	public UnauthorizedException(String message) {
+	public RequestException(String message) {
 		super(message);
 	}
 
 	/**
 	 * @see Exception#Exception(Throwable)
 	 */
-	public UnauthorizedException(Throwable cause) {
+	public RequestException(Throwable cause) {
 		super(cause);
 	}
 
 	/**
 	 * @see Exception#Exception(String, Throwable)
 	 */
-	public UnauthorizedException(String message, Throwable cause) {
+	public RequestException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

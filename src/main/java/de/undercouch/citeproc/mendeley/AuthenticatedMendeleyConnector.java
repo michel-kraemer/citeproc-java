@@ -46,7 +46,7 @@ public class AuthenticatedMendeleyConnector extends MendeleyConnectorAdapter {
 	}
 
 	@Override
-	public void authorize(String verificationCode) {
+	public void authorize(String verificationCode) throws IOException {
 		super.authorize(verificationCode);
 		try {
 			store.save(getAccessTokenValue(), getAccessTokenSecret());

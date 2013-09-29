@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.util.List;
 
 import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.helper.oauth.RequestException;
+import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
 
 /**
  * Reads documents from the Mendeley REST services. Needs an OAuth API key and
@@ -33,8 +35,9 @@ public interface MendeleyConnector {
 	 * visit the authorization URL and grant access to this app. Then they
 	 * will get an verification code which has to be passed to {@link #authorize(String)}
 	 * @return the URL the authorization URL
+	 * @throws IOException if the authorization URL could not be retrieved
 	 */
-	String getAuthorizationURL();
+	String getAuthorizationURL() throws IOException;
 
 	/**
 	 * Authorizes the app. This is the third step in the OAuth authorization
@@ -43,8 +46,9 @@ public interface MendeleyConnector {
 	 * called to finish authorization
 	 * @param verificationCode the verification code the user received from
 	 * the authorization URL
+	 * @throws IOException if authorization failed
 	 */
-	void authorize(String verificationCode);
+	void authorize(String verificationCode) throws IOException;
 
 	/**
 	 * <p>Authorizes the app. If you already know a valid OAuth access token
@@ -79,10 +83,10 @@ public interface MendeleyConnector {
 	 * authenticated before this method can be called.
 	 * @return the document IDs
 	 * @throws UnauthorizedException if the user is not authenticated
-	 * @throws MendeleyRequestException if the server returns an error code
+	 * @throws RequestException if the server returns an error code
 	 * @throws IOException if the documents could not be read from the server
 	 */
-	List<String> getDocuments() throws MendeleyRequestException, IOException;
+	List<String> getDocuments() throws IOException;
 	
 	/**
 	 * Requests a document from the service. The user has to be
@@ -90,8 +94,8 @@ public interface MendeleyConnector {
 	 * @param documentId the document's ID
 	 * @return the document
 	 * @throws UnauthorizedException if the user is not authenticated
-	 * @throws MendeleyRequestException if the server returns an error code
+	 * @throws RequestException if the server returns an error code
 	 * @throws IOException if the document could not be read from the server
 	 */
-	CSLItemData getDocument(String documentId) throws MendeleyRequestException, IOException;
+	CSLItemData getDocument(String documentId) throws IOException;
 }

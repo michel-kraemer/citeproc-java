@@ -12,40 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.mendeley;
+package de.undercouch.citeproc.helper.oauth;
 
 /**
- * This exception is thrown when the Mendeley server returns an error code
+ * This exception is thrown when a user is not authenticated
  * @author Michel Kraemer
  */
-public class MendeleyRequestException extends Exception {
-	private static final long serialVersionUID = 3499522813501819757L;
-
+public class UnauthorizedException extends RequestException {
+	private static final long serialVersionUID = -4587555569639659798L;
+	
 	/**
 	 * @see Exception#Exception()
 	 */
-	public MendeleyRequestException() {
+	public UnauthorizedException() {
 		//nothing to do here
 	}
 
 	/**
 	 * @see Exception#Exception(String)
 	 */
-	public MendeleyRequestException(String message) {
+	public UnauthorizedException(String message) {
 		super(message);
 	}
 
 	/**
 	 * @see Exception#Exception(Throwable)
 	 */
-	public MendeleyRequestException(Throwable cause) {
+	public UnauthorizedException(Throwable cause) {
 		super(cause);
 	}
 
 	/**
 	 * @see Exception#Exception(String, Throwable)
 	 */
-	public MendeleyRequestException(String message, Throwable cause) {
+	public UnauthorizedException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

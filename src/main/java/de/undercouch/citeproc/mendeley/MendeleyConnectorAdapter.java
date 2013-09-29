@@ -39,12 +39,12 @@ public class MendeleyConnectorAdapter implements MendeleyConnector {
 	}
 
 	@Override
-	public String getAuthorizationURL() {
+	public String getAuthorizationURL() throws IOException {
 		return delegate.getAuthorizationURL();
 	}
 
 	@Override
-	public void authorize(String verificationCode) {
+	public void authorize(String verificationCode) throws IOException {
 		delegate.authorize(verificationCode);
 	}
 
@@ -64,13 +64,12 @@ public class MendeleyConnectorAdapter implements MendeleyConnector {
 	}
 
 	@Override
-	public List<String> getDocuments() throws MendeleyRequestException, IOException {
+	public List<String> getDocuments() throws IOException {
 		return delegate.getDocuments();
 	}
 
 	@Override
-	public CSLItemData getDocument(String documentId)
-			throws MendeleyRequestException, IOException {
+	public CSLItemData getDocument(String documentId) throws IOException {
 		return delegate.getDocument(documentId);
 	}
 }
