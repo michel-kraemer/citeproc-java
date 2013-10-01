@@ -222,6 +222,12 @@ task generateSources {
         dstFile.delete()
         new File(dstRes, 'de/undercouch/citeproc/' + name + 'class').renameTo(dstFile)
     }
+    
+    // generate version file
+    def versionFile = new File(dstRes, 'de/undercouch/citeproc/version.dat')
+    versionFile.withWriter { w ->
+        w << project.version
+    }
 }
 
 task cleanGeneratedSources(type: Delete) {
