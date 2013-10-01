@@ -38,8 +38,8 @@ import de.undercouch.citeproc.helper.json.JsonObject;
  * @author Michel Kraemer
  */
 public class RhinoScriptRunner extends AbstractScriptRunner {
-	private static Map<String, Script> compiledScripts =
-			new ConcurrentHashMap<String, Script>();
+	private static Map<URL, Script> compiledScripts =
+			new ConcurrentHashMap<URL, Script>();
 	
 	private final Scriptable scope;
 	
@@ -61,9 +61,9 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
-	public void loadScript(String filename) throws IOException, ScriptRunnerException {
+	public void loadScript(URL url) throws IOException, ScriptRunnerException {
 		//try to load a previously compiled script
-		Script s = compiledScripts.get(filename);
+		Script s = compiledScripts.get(url);
 		if (s != null) {
 			Context context = Context.enter();
 			try {
@@ -75,28 +75,24 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 		}
 		
 		//try to load a precompiled script from a file
-		if (filename.endsWith(".js")) {
-			String name = filename.substring(0, filename.length() - 3);
+		if (url.getPath().endsWith(".js")) {
+			String name = url.getPath().substring(0, url.getPath().length() - 3);
 			String classFileName = name + ".dat";
-			URL fileUrl = getClass().getResource(classFileName);
+			URL fileUrl = new URL(url, classFileName);
 			if (fileUrl != null) {
-				if (name.startsWith("/")) {
-					name = name.substring(1);
-				}
-				
 				Context context = Context.enter();
 				try {
 					byte[] data = CSLUtils.readURL(fileUrl);
 				
 					GeneratedClassLoader loader = SecurityController.createLoader(
 							context.getApplicationClassLoader(), null);
-					Class<?> clazz = loader.defineClass(name, data);
+					Class<?> clazz = loader.defineClass(null, data);
 					loader.linkClass(clazz);
 					
 					s = (Script)clazz.newInstance();
 					
 					//cache compile script
-					compiledScripts.put(filename, s);
+					compiledScripts.put(url, s);
 					
 					s.exec(context, scope);
 					return;
@@ -111,7 +107,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 		}
 		
 		//evaluate script without compiling
-		super.loadScript(filename);
+		super.loadScript(url);
 	}
 
 	@Override

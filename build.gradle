@@ -166,7 +166,8 @@ def renderGrammar(name, dst) {
 }
 
 task generateSources {
-    inputs.files fileTree(dir: projectDir, includes: [ 'templates/*', 'grammars/*', 'src/main/resources/*.js' ])
+    inputs.files fileTree(dir: projectDir, includes: [ 'templates/*', 'grammars/*',
+        'src/main/resources/de/undercouch/citeproc/*.js' ])
     outputs.files fileTree(dir: 'src-gen', includes: [ '**/*.java', '**/*.dat' ])
 } << {
     def ar = new AttributeRenderer() {
@@ -212,13 +213,14 @@ task generateSources {
     
     // compile scripts
     def dstRes = new File('src-gen/main/resources')
-    for (s in fileTree(dir: 'src/main/resources', include: '*.js')) {
+    for (s in fileTree(dir: 'src/main/resources/de/undercouch/citeproc', include: '*.js')) {
         org.mozilla.javascript.tools.jsc.Main.main([ '-opt', '9',
-            '-nosource', '-d', dstRes.toString(), s.toString() ] as String[])
+            '-package', 'de.undercouch.citeproc', '-nosource',
+            '-d', dstRes.toString(), s.toString() ] as String[])
         def name = s.getName().substring(0, s.getName().length() - 2)
-        def dstFile = new File(dstRes, name + 'dat')
+        def dstFile = new File(dstRes, 'de/undercouch/citeproc/' + name + 'dat')
         dstFile.delete()
-        new File(dstRes, name + 'class').renameTo(dstFile)
+        new File(dstRes, 'de/undercouch/citeproc/' + name + 'class').renameTo(dstFile)
     }
 }
 

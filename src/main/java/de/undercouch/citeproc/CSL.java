@@ -98,10 +98,10 @@ public class CSL {
 		
 		//load bundles scripts
 		try {
-			runner.loadScript("/xmle4x.js");
-			runner.loadScript("/citeproc.js");
-			runner.loadScript("/formats.js");
-			runner.loadScript("/loadsys.js");
+			runner.loadScript(getClass().getResource("xmle4x.js"));
+			runner.loadScript(getClass().getResource("citeproc.js"));
+			runner.loadScript(getClass().getResource("formats.js"));
+			runner.loadScript(getClass().getResource("loadsys.js"));
 		} catch (ScriptRunnerException e) {
 			//should never happen because bundled JavaScript files should be OK indeed
 			throw new RuntimeException("Invalid bundled javascript file", e);

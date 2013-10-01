@@ -16,6 +16,7 @@ package de.undercouch.citeproc.script;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
 
 import de.undercouch.citeproc.helper.json.JsonBuilderFactory;
 import de.undercouch.citeproc.helper.json.JsonObject;
@@ -33,12 +34,12 @@ public interface ScriptRunner extends JsonBuilderFactory {
 	void put(String key, Object value);
 	
 	/**
-	 * Loads a script from the classpath and evaluates it
-	 * @param filename the script's filename
+	 * Loads a script from a URL and evaluates it
+	 * @param url the script's URL
 	 * @throws IOException if the script could not be loaded
 	 * @throws ScriptRunnerException if the script is invalid
 	 */
-	void loadScript(String filename) throws IOException, ScriptRunnerException;
+	void loadScript(URL url) throws IOException, ScriptRunnerException;
 	
 	/**
 	 * Executes the given code

@@ -14,7 +14,6 @@
 
 package de.undercouch.citeproc.script;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -25,13 +24,8 @@ import java.net.URL;
  */
 public abstract class AbstractScriptRunner implements ScriptRunner {
 	@Override
-	public void loadScript(String filename) throws IOException, ScriptRunnerException {
-		URL citeProcURL = getClass().getResource(filename);
-		if (citeProcURL == null) {
-			throw new FileNotFoundException("Could not find " + filename + " in classpath");
-		}
-		
-		InputStreamReader reader = new InputStreamReader(citeProcURL.openStream());
+	public void loadScript(URL url) throws IOException, ScriptRunnerException {
+		InputStreamReader reader = new InputStreamReader(url.openStream());
 		try {
 			eval(reader);
 		} finally {
