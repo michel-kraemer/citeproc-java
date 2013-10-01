@@ -77,8 +77,9 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 		//try to load a precompiled script from a file
 		if (url.getPath().endsWith(".js")) {
 			String name = url.getPath().substring(0, url.getPath().length() - 3);
-			String classFileName = name + ".dat";
-			URL fileUrl = new URL(url, classFileName);
+			name = name.substring(name.lastIndexOf('/') + 1);
+			name = name + ".dat";
+			URL fileUrl = new URL(url, name);
 			if (fileUrl != null) {
 				Context context = Context.enter();
 				try {
