@@ -19,6 +19,7 @@ apply plugin: 'osgi'
 apply plugin: 'signing'
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'application'
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.antlr.v4.Tool
@@ -35,6 +36,8 @@ version = '0.2'
 group = 'de.undercouch'
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
+
+mainClassName = 'de.undercouch.citeproc.CSLTool'
 
 repositories {
     mavenCentral()
@@ -54,6 +57,10 @@ dependencies {
     compile 'org.antlr:antlr4-runtime:4.1'
     
     provided 'org.mozilla:rhino:1.7R4'
+    
+    runtime 'org.mozilla:rhino:1.7R4'
+    runtime 'org.citationstyles:styles:1.0.1-SNAPSHOT'
+    runtime 'org.citationstyles:locales:1.0.1-SNAPSHOT'
     
     testCompile 'org.mozilla:rhino:1.7R4'
     testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
@@ -254,6 +261,7 @@ jar {
         vendor = 'Michel Kraemer'
         instruction 'Import-Package', '*,org.mozilla.javascript;resolution:=optional'
         instruction 'Export-Package', "de.undercouch.*;version=${version}"
+        instruction 'Main-Class', project.mainClassName
     }
     
     // include license into jar
