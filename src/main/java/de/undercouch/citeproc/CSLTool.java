@@ -376,19 +376,22 @@ public class CSLTool {
 	/**
 	 * Checks the first 100 KB of the given input stream and tries to
 	 * determine the file format. Resets the input stream to the position
-	 * it had when the method was called (unless the method has exceeded 100 KB
-	 * without being able to determine the file format; in this case an
-	 * {@link IOException} will be thrown)
+	 * it had when the method was called.
 	 * @param bis the input stream
 	 * @return the file format
 	 * @throws IOException if the input stream could not be read
 	 */
 	private FileFormat determineFileFormat(BufferedInputStream bis) throws IOException {
-		bis.mark(1024 * 100);
+		int len = 1024 * 100;
+		bis.mark(len);
 		try {
 			while (true) {
 				int c = bis.read();
+				--len;
 				if (c < 0) {
+					return FileFormat.UNKNOWN;
+				}
+				if (len < 2) {
 					return FileFormat.UNKNOWN;
 				}
 				if (!Character.isWhitespace(c)) {
