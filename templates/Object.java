@@ -114,6 +114,13 @@ public class $name$ $if(!noJsonObject)$implements JsonObject$endif$ {
 		
 		return builder.build();
 	}
+	
+	private static int toInt(Object o) {
+		if (o instanceof String) {
+			return Integer.parseInt((String)o);
+		}
+		return ((Number)o).intValue();
+	}
 	$endif$
 	
 	$additionalMethods; separator="\n"$

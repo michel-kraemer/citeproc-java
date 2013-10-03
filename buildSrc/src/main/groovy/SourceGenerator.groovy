@@ -152,7 +152,7 @@ class SourceGenerator {
                     if (s.equals("String")) {
                         return ""
                     } else if (s.equals("int") || s.equals("Integer")) {
-                        return "((Number)"
+                        return "toInt("
                     } else {
                         return "(" + s + ")";
                     }
@@ -160,7 +160,7 @@ class SourceGenerator {
                     if (s.equals("String")) {
                         return ".toString()"
                     } else if (s.equals("int") || s.equals("Integer")) {
-                        return ").intValue()"
+                        return ")"
                     } else {
                         return ""
                     }
