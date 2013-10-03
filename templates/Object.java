@@ -15,6 +15,9 @@
 package $package$;
 
 $if(!noJsonObject)$
+import java.util.Collection;
+import java.util.Map;
+
 import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.JsonObject;
 $endif$
@@ -74,6 +77,40 @@ public class $name$ $if(!noJsonObject)$implements JsonObject$endif$ {
 			builder.add("$p.name$", $p.normalizedName$);
 		\}
 		}$
+		return builder.build();
+	}
+	
+	/**
+	 * Converts a JSON object to a $name$ object. $if(!requiredProperties.empty)$The JSON object must at least contain the following required properties: $requiredProperties:{p | <code>$p.name$</code>}; separator=", "$$endif$
+	 * @param obj the JSON object to convert
+	 * @return the converted $name$ object
+	 */
+	public static $name$ fromJson(Map<String, Object> obj) {
+		$requiredProperties:{p | $p.type$ $p.normalizedName$;
+		}$
+		
+		$requiredProperties:{p | {
+			Object v = obj.get("$p.name$");
+			if (v == null) {
+				throw new IllegalArgumentException("Missing property `$p.name$'");
+			\}
+			$propertyTemplate(p, "v")$
+		\}}$
+		
+		$name$Builder builder = new $name$Builder($requiredProperties:{p | $p.normalizedName$ }; separator=","$);
+		
+		$properties:{p | {
+			Object v = obj.get("$p.name$");
+			if (v != null) {
+				$propertyTemplate(p, "v")$
+			\}
+			$if(p.default)$
+			else {
+				builder.$p.normalizedName$($p.default$);
+			\}
+			$endif$
+		\}}$
+		
 		return builder.build();
 	}
 	$endif$

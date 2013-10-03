@@ -29,7 +29,7 @@ import org.eclipse.jdt.core.formatter.CodeFormatter
 import org.eclipse.jface.text.Document
 import org.stringtemplate.v4.AttributeRenderer
 import org.stringtemplate.v4.ST
-import org.stringtemplate.v4.STGroup
+import org.stringtemplate.v4.STGroupFile
 import org.apache.commons.io.FileUtils
 
 version = '0.2'
@@ -124,8 +124,27 @@ def renderTemplates(name, dst, stg, type = false) {
             if (p.normalizedName == null) {
                 p.normalizedName = normalize(p.name)
             }
+            if (p.required == null) {
+                p.required = false
+            }
             if (p.required) {
                 attrs.requiredProperties += p
+            }
+            p.enumType = (p.type.equals("CSLType") || p.type.equals("CSLLabel"))
+            p.cslType = (p.type.startsWith("CSL"))
+            if (p.type.endsWith("[]")) {
+                p.arrayType = true
+                p.typeNoArray = p.type.substring(0, p.type.length() - 2)
+            } else {
+                p.arrayType = false
+                p.typeNoArray = p.type
+            }
+            if (p.type.endsWith("[][]")) {
+                p.arrayArrayType = true
+                p.typeNoArrayNoArray = p.type.substring(0, p.type.length() - 4)
+            } else {
+                p.arrayArrayType = false
+                p.typeNoArrayNoArray = p.type
             }
         }
         attrs.properties.removeAll(attrs.requiredProperties)
@@ -179,24 +198,39 @@ task generateSources {
 } << {
     def ar = new AttributeRenderer() {
         String toString(Object o, String formatString, Locale locale) {
+            def s = o.toString()
             if (formatString.equals('toEnum')) {
-                return o.toString().toUpperCase().replaceAll('-', '_')
+                return s.toUpperCase().replaceAll('-', '_')
             } else if (formatString.equals('toGetter')) {
-                def s = o.toString()
                 s = Character.toUpperCase(s.charAt(0)).toString() + s.substring(1)
                 return "get${s}"
             } else if (formatString.equals('toEllipse')) {
-                def s = o.toString()
                 if (s.endsWith('[]')) {
                     s = s.substring(0, s.length() - 2) + '...'
                 }
                 return s
+            } else if (formatString.equals('castBefore')) {
+                if (s.equals("String")) {
+                    return ""
+                } else if (s.equals("int") || s.equals("Integer")) {
+                    return "((Number)"
+                } else {
+                    return "(" + s + ")";
+                }
+            } else if (formatString.equals('castAfter')) {
+                if (s.equals("String")) {
+                    return ".toString()"
+                } else if (s.equals("int") || s.equals("Integer")) {
+                    return ").intValue()"
+                } else {
+                    return ""
+                }
             }
-            return o.toString()
+            return s
         }
     }
     
-    def stg = new STGroup('$' as char, '$' as char)
+    def stg = new STGroupFile('templates/functions.stg', '$' as char, '$' as char)
     stg.registerRenderer(String, ar)
     
     def dst = new File('src-gen/main/java')

@@ -1,0 +1,75 @@
+castTemplate(type, v) ::= <<
+	$type; format="castBefore"$$v$$type; format="castAfter"$
+>>
+
+fromJsonTemplate(type, v) ::= <<
+	$type$.fromJson((Map<String, Object>)$v$)
+>>
+
+constructArrayTemplate(p) ::= <<
+	if (!(v instanceof Collection)) {
+		throw new IllegalArgumentException("`$p.name$' must be an array");
+	\}
+	Collection cv = (Collection)v;
+	$p.normalizedName$ = $if(p.arrayArrayType)$
+		new $p.typeNoArrayNoArray$[cv.size()][];
+	$else$
+		new $p.typeNoArray$[cv.size()];
+	$endif$
+	int i = 0;
+	for (Object vo : cv) {
+		$if(p.arrayArrayType)$
+			if (!(vo instanceof Collection)) {
+				throw new IllegalArgumentException("`$p.name$' must be an array of arrays");
+			\}
+			Collection icv = (Collection)vo;
+			$p.normalizedName$[i] = new $p.typeNoArrayNoArray$[icv.size()];
+			int j = 0;
+			for (Object ivo : icv) {
+				$if(p.cslType)$
+					$p.normalizedName$[i][j] = $fromJsonTemplate(p.typeNoArrayNoArray, "ivo")$;
+				$else$
+					$p.normalizedName$[i][j] = $castTemplate(p.typeNoArrayNoArray, "ivo")$;
+				$endif$
+				++j;
+			}
+		$else$
+			$if(p.cslType)$
+				if (!(vo instanceof Map)) {
+					throw new IllegalArgumentException("`$p.name$' must be an array of objects");
+				\}
+				$p.normalizedName$[i] = $fromJsonTemplate(p.typeNoArray, "vo")$;
+			$else$
+				$p.normalizedName$[i] = $castTemplate(p.typeNoArray, "vo")$;
+			$endif$
+		$endif$
+		++i;
+	\}
+>>
+
+propertyTemplate(p, v) ::= <<
+	$if(!p.required)$
+		$p.type$ $p.normalizedName$;
+	$endif$
+	$if(p.enumType)$
+		$p.normalizedName$ = $p.type$.fromString($v$.toString());
+	$elseif(p.cslType)$
+		$if(p.arrayType)$
+			$constructArrayTemplate(p)$
+		$else$
+			if (!($v$ instanceof Map)) {
+				throw new IllegalArgumentException("`$p.name$' must be an object");
+			\}
+			$p.normalizedName$ = $fromJsonTemplate(p.type, v)$;
+		$endif$
+	$else$
+		$if(p.arrayType)$
+			$constructArrayTemplate(p)$
+		$else$
+			$p.normalizedName$ = $castTemplate(p.type, v)$;
+		$endif$
+	$endif$
+	$if(!p.required)$
+		builder.$p.normalizedName$($p.normalizedName$);
+	$endif$
+>>

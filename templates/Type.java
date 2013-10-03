@@ -20,8 +20,8 @@ package $package$;
  */
 public enum $name$ {
 	$types:{t | $t; format="toEnum"$("$t$")};separator=",\n"$;
-    
-    private String name;
+	
+	private String name;
 	
 	private $name$(String name) {
 		this.name = name;
@@ -30,5 +30,17 @@ public enum $name$ {
 	@Override
 	public String toString() {
 		return name;
+	}
+	
+	/**
+	 * Converts the given string to a $name$
+	 * @param str the string
+	 * @return the converted $name$
+	 */
+	public static $name$ fromString(String str) {
+		$types:{t | if (str.equals("$t$")) {
+			return $t; format="toEnum"$;
+		\}}$
+		throw new IllegalArgumentException("Unknown $name$: " + str);
 	}
 }
