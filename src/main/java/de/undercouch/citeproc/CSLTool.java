@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jbibtex.BibTeXDatabase;
@@ -28,6 +29,7 @@ import org.jbibtex.ParseException;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import de.undercouch.citeproc.helper.CSLUtils;
+import de.undercouch.citeproc.helper.Levenshtein;
 import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionBuilder;
@@ -189,6 +191,8 @@ public class CSLTool {
 		for (String id : citationIds) {
 			if (provider.retrieveItem(id) == null) {
 				System.err.println("citeproc-java: unknown citation id: " + id);
+				String min = Levenshtein.findMinimum(Arrays.asList(provider.getIds()), id);
+				System.err.println("Did you mean `" + min + "'?");
 				return 1;
 			}
 		}
