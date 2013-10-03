@@ -132,9 +132,11 @@ signing {
     sign configurations.archives
 }
 
-// remove test dependencies from configuration-to-scope mapping
+// remove test dependencies and runtime dependencies
+// from configuration-to-scope mapping
 // this also removes them from the maven pom file
 conf2ScopeMappings.mappings.remove(configurations.testCompile)
+conf2ScopeMappings.mappings.remove(configurations.runtime)
 
 uploadArchives {
     repositories {
