@@ -14,14 +14,17 @@
 
 package de.undercouch.citeproc;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.ParseException;
@@ -32,6 +35,8 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.Levenshtein;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
+import de.undercouch.citeproc.helper.json.JsonLexer;
+import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.helper.json.StringJsonBuilderFactory;
 import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
@@ -63,10 +68,20 @@ public class CSLTool {
 	}
 	
 	/**
+	 * File formats for bibliography files
+	 */
+	private static enum FileFormat {
+		BIBTEX,
+		JSON_OBJECT,
+		JSON_ARRAY,
+		UNKNOWN
+	}
+	
+	/**
 	 * A list of possible command line options for this tool
 	 */
 	private static List<Option<OID>> options = new OptionBuilder<OID>()
-		.add(OID.BIBLIOGRAPHY, "bibliography", "b", "input bibliography FILE (*.bib)",
+		.add(OID.BIBLIOGRAPHY, "bibliography", "b", "input bibliography FILE (*.bib, *.json)",
 				"FILE", ArgumentType.STRING)
 		.add(OID.STYLE, "style", "s", "citation STYLE name (default: ieee)",
 				"STYLE", ArgumentType.STRING)
@@ -174,21 +189,52 @@ public class CSLTool {
 			return 1;
 		}
 		
-		//load bibliography file
-		FileInputStream fis = new FileInputStream(new File(bibliography));
-		BibTeXDatabase db;
+		//open buffered input stream to bibliography file
+		File bibfile = new File(bibliography);
+		if (!bibfile.exists()) {
+			System.err.println("citeproc-java: bibliography file `" + bibliography + "' does not exist.");
+			return 1;
+		}
+		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(bibfile));
+		
+		ItemDataProvider provider;
 		try {
-			db = new BibTeXConverter().loadDatabase(fis);
+			//determine file format
+			FileFormat ff = determineFileFormat(bis);
+			
+			//load bibliography file
+			if (ff == FileFormat.BIBTEX) {
+				BibTeXDatabase db = new BibTeXConverter().loadDatabase(bis);
+				BibTeXItemDataProvider bibtexprovider = new BibTeXItemDataProvider();
+				bibtexprovider.addDatabase(db);
+				provider = bibtexprovider;
+			} else if (ff == FileFormat.JSON_ARRAY || ff == FileFormat.JSON_OBJECT) {
+				JsonParser parser = new JsonParser(new JsonLexer(new InputStreamReader(bis)));
+				List<Object> objs;
+				if (ff == FileFormat.JSON_ARRAY) {
+					objs = parser.parseArray();
+				} else {
+					objs = new ArrayList<Object>();
+					objs.add(parser.parseObject());
+				}
+				CSLItemData[] items = new CSLItemData[objs.size()];
+				for (int i = 0; i < items.length; ++i) {
+					@SuppressWarnings("unchecked")
+					Map<String, Object> obj = (Map<String, Object>)objs.get(i);
+					items[i] = CSLItemData.fromJson(obj);
+				}
+				provider = new ListItemDataProvider(items);
+			} else {
+				System.err.println("citeproc-java: unknown bibliography file format");
+				return 1;
+			}
 		} catch (ParseException e) {
 			System.err.println("citeproc-java: could not parse bibliography file.");
 			System.err.println(e.getMessage());
 			return 1;
 		} finally {
-			fis.close();
+			bis.close();
 		}
-		
-		BibTeXItemDataProvider provider = new BibTeXItemDataProvider();
-		provider.addDatabase(db);
 		
 		//check provided citation ids
 		if (citation && citationIds.isEmpty()) {
@@ -325,5 +371,39 @@ public class CSLTool {
 	private void usage() {
 		OptionParser.usage("citeproc-java [OPTION]... [CITATION ID]...",
 				"Generate styled citations and bibliographies", options, System.out);
+	}
+	
+	/**
+	 * Checks the first 100 KB of the given input stream and tries to
+	 * determine the file format. Resets the input stream to the position
+	 * it had when the method was called (unless the method has exceeded 100 KB
+	 * without being able to determine the file format; in this case an
+	 * {@link IOException} will be thrown)
+	 * @param bis the input stream
+	 * @return the file format
+	 * @throws IOException if the input stream could not be read
+	 */
+	private FileFormat determineFileFormat(BufferedInputStream bis) throws IOException {
+		bis.mark(1024 * 100);
+		try {
+			while (true) {
+				int c = bis.read();
+				if (c < 0) {
+					return FileFormat.UNKNOWN;
+				}
+				if (!Character.isWhitespace(c)) {
+					if (c == '%' || c == '@') {
+						return FileFormat.BIBTEX;
+					} else if (c == '[') {
+						return FileFormat.JSON_ARRAY;
+					} else if (c == '{') {
+						return FileFormat.JSON_OBJECT;
+					}
+					return FileFormat.UNKNOWN;
+				}
+			}
+		} finally {
+			bis.reset();
+		}
 	}
 }
