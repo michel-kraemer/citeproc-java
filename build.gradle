@@ -1,36 +1,9 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    
-    dependencies {
-        classpath 'org.apache.directory.studio:org.apache.commons.io:2.4'
-        classpath 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
-        classpath 'org.eclipse.tycho:org.eclipse.jdt.core:3.9.0.v20130604-1421'
-        classpath 'org.mod4j.org.eclipse.jface:text:3.5.0'
-        classpath 'org.mod4j.org.eclipse.core:resources:3.5.0'
-        classpath 'org.antlr:antlr4:4.1'
-        classpath 'org.mozilla:rhino:1.7R4'
-    }
-}
-
 apply plugin: 'maven'
 apply plugin: 'osgi'
 apply plugin: 'signing'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
-
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.antlr.v4.Tool
-import org.eclipse.jdt.core.JavaCore
-import org.eclipse.jdt.core.ToolFactory
-import org.eclipse.jdt.core.formatter.CodeFormatter
-import org.eclipse.jface.text.Document
-import org.stringtemplate.v4.AttributeRenderer
-import org.stringtemplate.v4.ST
-import org.stringtemplate.v4.STGroupFile
-import org.apache.commons.io.FileUtils
 
 version = '0.2'
 group = 'de.undercouch'
@@ -73,202 +46,16 @@ tasks.withType(Compile) {
     options.compilerArgs << "-Xlint" 
 }
 
-def normalize(String s, String c) {
-    int da
-    while ((da = s.indexOf(c)) > 0) {
-        s = s.substring(0, da) + Character.toUpperCase(s.charAt(da + 1)).toString() +
-            s.substring(da + 2)
-    }
-    return s
-}
-
-def normalize(String s) {
-    s = normalize(normalize(s, '-'), '_')
-    if (s.equals('abstract')) {
-        s = 'abstrct'
-    }
-    return s
-}
-
-def renderTemplate(template, attrs, dst, outName, stg) {
-    def t = FileUtils.readFileToString(new File('templates', template), 'UTF-8')
-    def st = new ST(stg, t)
-    for (def e in attrs) {
-        st.add(e.key, e.value)
-    }
-    
-    def r = st.render()
-    
-    def options = [
-        (JavaCore.COMPILER_SOURCE): "1.6",
-        (JavaCore.COMPILER_COMPLIANCE): "1.6",
-        (JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM): "1.6"
-    ]
-    def codeFormatter = ToolFactory.createCodeFormatter(options)
-    def textEdit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS,
-        r, 0, r.length(), 0, null)
-    def doc = new Document(r)
-    if (textEdit != null) {
-        textEdit.apply(doc)
-    }
-    FileUtils.writeStringToFile(new File(dst, outName), doc.get(), 'UTF-8')
-}
-
-def renderTemplates(name, dst, stg, type = false) {
-    def om = new ObjectMapper()
-    def attrs = om.readValue(new File('templates', "${name}.json"), Map)
-    
-    if (attrs.properties != null) {
-        attrs.requiredProperties = []
-        for (p in attrs.properties) {
-            if (p.normalizedName == null) {
-                p.normalizedName = normalize(p.name)
-            }
-            if (p.required == null) {
-                p.required = false
-            }
-            if (p.required) {
-                attrs.requiredProperties += p
-            }
-            p.enumType = (p.type.equals("CSLType") || p.type.equals("CSLLabel"))
-            p.cslType = (p.type.startsWith("CSL"))
-            if (p.type.endsWith("[]")) {
-                p.arrayType = true
-                p.typeNoArray = p.type.substring(0, p.type.length() - 2)
-            } else {
-                p.arrayType = false
-                p.typeNoArray = p.type
-            }
-            if (p.type.endsWith("[][]")) {
-                p.arrayArrayType = true
-                p.typeNoArrayNoArray = p.type.substring(0, p.type.length() - 4)
-            } else {
-                p.arrayArrayType = false
-                p.typeNoArrayNoArray = p.type
-            }
-        }
-        attrs.properties.removeAll(attrs.requiredProperties)
-    }
-    
-    if (attrs.additionalMethods == null) {
-        attrs.additionalMethods = []
-    }
-    
-    if (attrs.additionalBuilderMethods == null) {
-        attrs.additionalBuilderMethods = []
-    }
-    
-    if (attrs.noJsonObject == null) {
-        attrs.noJsonObject = false
-    }
-    
-    if (attrs.shortname == null) {
-        attrs.shortname = ""
-    }
-    
-    dst = new File(dst, attrs.package.replaceAll('\\.', '/'))
-    dst.mkdirs()
-    
-    if (type) {
-        renderTemplate("Type.java", attrs, dst, "${name}.java", stg)
-    } else {
-        renderTemplate("Object.java", attrs, dst, "${name}.java", stg)
-        if (attrs.noBuilder == null || !attrs.noBuilder) {
-            renderTemplate("Builder.java", attrs, dst, "${name}Builder.java", stg)
-        }
-    }
-}
-
-def renderGrammar(name, dst) {
-    def filename = "grammars/${name}.g4"
-    def tool = new Tool()
-    tool.outputDirectory = dst
-    tool.haveOutputDir = true
-    def grast = tool.loadGrammar(filename)
-    grast.fileName = filename
-    def g = tool.createGrammar(grast)
-    g.fileName = filename
-    tool.process(g, true)
-}
-
 task generateSources {
     inputs.files fileTree(dir: projectDir, includes: [ 'templates/*', 'grammars/*',
         'src/main/resources/de/undercouch/citeproc/*.js' ])
     outputs.files fileTree(dir: 'src-gen', includes: [ '**/*.java', '**/*.dat' ])
 } << {
-    def ar = new AttributeRenderer() {
-        String toString(Object o, String formatString, Locale locale) {
-            def s = o.toString()
-            if (formatString.equals('toEnum')) {
-                return s.toUpperCase().replaceAll('-', '_')
-            } else if (formatString.equals('toGetter')) {
-                s = Character.toUpperCase(s.charAt(0)).toString() + s.substring(1)
-                return "get${s}"
-            } else if (formatString.equals('toEllipse')) {
-                if (s.endsWith('[]')) {
-                    s = s.substring(0, s.length() - 2) + '...'
-                }
-                return s
-            } else if (formatString.equals('castBefore')) {
-                if (s.equals("String")) {
-                    return ""
-                } else if (s.equals("int") || s.equals("Integer")) {
-                    return "((Number)"
-                } else {
-                    return "(" + s + ")";
-                }
-            } else if (formatString.equals('castAfter')) {
-                if (s.equals("String")) {
-                    return ".toString()"
-                } else if (s.equals("int") || s.equals("Integer")) {
-                    return ").intValue()"
-                } else {
-                    return ""
-                }
-            }
-            return s
-        }
-    }
-    
-    def stg = new STGroupFile('templates/functions.stg', '$' as char, '$' as char)
-    stg.registerRenderer(String, ar)
-    
-    def dst = new File('src-gen/main/java')
-    dst.mkdirs()
-    
-    renderTemplates('CSLType', dst, stg, true)
-    renderTemplates('CSLLabel', dst, stg, true)
-    renderTemplates('CSLCitation', dst, stg)
-    renderTemplates('CSLCitationItem', dst, stg)
-    renderTemplates('CSLDate', dst, stg)
-    renderTemplates('CSLItemData', dst, stg)
-    renderTemplates('CSLName', dst, stg)
-    renderTemplates('CSLProperties', dst, stg)
-    
-    renderTemplates('Bibliography', dst, stg)
-    renderTemplates('Citation', dst, stg)
-    renderTemplates('FormattingParameters', dst, stg)
-    
-    renderGrammar('InternalName', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
-    renderGrammar('InternalPage', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
-    
-    // compile scripts
-    def dstRes = new File('src-gen/main/resources')
-    for (s in fileTree(dir: 'src/main/resources/de/undercouch/citeproc', include: '*.js')) {
-        org.mozilla.javascript.tools.jsc.Main.main([ '-opt', '9',
-            '-package', 'de.undercouch.citeproc', '-nosource',
-            '-d', dstRes.toString(), s.toString() ] as String[])
-        def name = s.getName().substring(0, s.getName().length() - 2)
-        def dstFile = new File(dstRes, 'de/undercouch/citeproc/' + name + 'dat')
-        dstFile.delete()
-        new File(dstRes, 'de/undercouch/citeproc/' + name + 'class').renameTo(dstFile)
-    }
-    
-    // generate version file
-    def versionFile = new File(dstRes, 'de/undercouch/citeproc/version.dat')
-    versionFile.withWriter { w ->
-        w << project.version
-    }
+    SourceGenerator sg = new SourceGenerator(project)
+    sg.renderTemplates()
+    sg.renderGrammars()
+    sg.compileScripts()
+    sg.generateVersionFile()
 }
 
 task cleanGeneratedSources(type: Delete) {
