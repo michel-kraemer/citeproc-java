@@ -93,27 +93,12 @@ public class CSLTest {
 	};
 	
 	/**
-	 * Retrieves citation items from {@link CSLTest#items}
-	 */
-	private static class TestItemDataProvider implements ItemDataProvider {
-		@Override
-		public CSLItemData retrieveItem(String id) {
-			for (CSLItemData i : items) {
-				if (i.getId().equals(id)) {
-					return i;
-				}
-			}
-			return null;
-		}
-	}
-	
-	/**
 	 * Tests if a valid bibliography can be generated
 	 * @throws Exception if anything goes wrong
 	 */
 	@Test
 	public void bibliography() throws Exception {
-		CSL citeproc = new CSL(new TestItemDataProvider(), "ieee");
+		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
 		citeproc.setOutputFormat("text");
 		
 		List<Citation> a = citeproc.makeCitation(items[0].getId());
@@ -177,7 +162,7 @@ public class CSLTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void missingItem() throws Exception {
-		CSL citeproc = new CSL(new TestItemDataProvider(), "ieee");
+		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
 		citeproc.makeCitation("foobar");
 	}
 	
@@ -247,7 +232,7 @@ public class CSLTest {
 	 */
 	@Test
 	public void asciiFOFormat() throws Exception {
-		CSL citeproc = new CSL(new TestItemDataProvider(), "ieee");
+		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
 		citeproc.setOutputFormat("fo");
 		citeproc.makeCitation(items[0].getId());
 		
@@ -280,7 +265,7 @@ public class CSLTest {
 	 */
 	@Test
 	public void reset() throws Exception {
-		CSL citeproc = new CSL(new TestItemDataProvider(), "ieee");
+		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
 		citeproc.setOutputFormat("text");
 		
 		List<Citation> a = citeproc.makeCitation(items[0].getId());

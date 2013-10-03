@@ -24,7 +24,10 @@ import de.undercouch.citeproc.csl.CSLItemData;
  * @author Michel Kraemer
  */
 public class ListItemDataProvider implements ItemDataProvider {
-	private Map<String, CSLItemData> items = new HashMap<String, CSLItemData>();
+	/**
+	 * The items that this provider holds
+	 */
+	protected Map<String, CSLItemData> items = new HashMap<String, CSLItemData>();
 	
 	/**
 	 * Creates a data provider that serves items from the given list
@@ -39,5 +42,15 @@ public class ListItemDataProvider implements ItemDataProvider {
 	@Override
 	public CSLItemData retrieveItem(String id) {
 		return items.get(id);
+	}
+
+	@Override
+	public String[] getIds() {
+		String[] ids = new String[items.size()];
+		int i = 0;
+		for (Map.Entry<String, CSLItemData> e : items.entrySet()) {
+			ids[i++] = e.getKey();
+		}
+		return ids;
 	}
 }

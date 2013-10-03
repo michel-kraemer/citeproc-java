@@ -27,4 +27,9 @@ public interface ItemDataProvider {
 	 * @return the item
 	 */
 	CSLItemData retrieveItem(String id);
+	
+	/**
+	 * @return an array of all item IDs this provider can serve
+	 */
+	String[] getIds();
 }

@@ -14,22 +14,16 @@
 
 package de.undercouch.citeproc.bibtex;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jbibtex.BibTeXDatabase;
 
 import de.undercouch.citeproc.CSL;
-import de.undercouch.citeproc.ItemDataProvider;
-import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.ListItemDataProvider;
 
 /**
  * Loads citation items from a BibTeX database
  * @author Michel Kraemer
  */
-public class BibTeXItemDataProvider implements ItemDataProvider {
-	private Map<String, CSLItemData> items = new HashMap<String, CSLItemData>();
-	
+public class BibTeXItemDataProvider extends ListItemDataProvider {
 	/**
 	 * Adds the given database
 	 * @param db the database to add
@@ -45,16 +39,6 @@ public class BibTeXItemDataProvider implements ItemDataProvider {
 	 * @param citeproc the CSL processor
 	 */
 	public void registerCitationItems(CSL citeproc) {
-		String[] ids = new String[items.size()];
-		int i = 0;
-		for (Map.Entry<String, CSLItemData> e : items.entrySet()) {
-			ids[i++] = e.getKey();
-		}
-		citeproc.registerCitationItems(ids);
-	}
-	
-	@Override
-	public CSLItemData retrieveItem(String id) {
-		return items.get(id);
+		citeproc.registerCitationItems(getIds());
 	}
 }
