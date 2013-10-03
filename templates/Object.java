@@ -85,6 +85,7 @@ public class $name$ $if(!noJsonObject)$implements JsonObject$endif$ {
 	 * @param obj the JSON object to convert
 	 * @return the converted $name$ object
 	 */
+	@SuppressWarnings("unchecked")
 	public static $name$ fromJson(Map<String, Object> obj) {
 		$requiredProperties:{p | $p.type$ $p.normalizedName$;
 		}$

@@ -10,7 +10,7 @@ constructArrayTemplate(p) ::= <<
 	if (!(v instanceof Collection)) {
 		throw new IllegalArgumentException("`$p.name$' must be an array");
 	\}
-	Collection cv = (Collection)v;
+	Collection<?> cv = (Collection<?>)v;
 	$p.normalizedName$ = $if(p.arrayArrayType)$
 		new $p.typeNoArrayNoArray$[cv.size()][];
 	$else$
@@ -22,7 +22,7 @@ constructArrayTemplate(p) ::= <<
 			if (!(vo instanceof Collection)) {
 				throw new IllegalArgumentException("`$p.name$' must be an array of arrays");
 			\}
-			Collection icv = (Collection)vo;
+			Collection<?> icv = (Collection<?>)vo;
 			$p.normalizedName$[i] = new $p.typeNoArrayNoArray$[icv.size()];
 			int j = 0;
 			for (Object ivo : icv) {
