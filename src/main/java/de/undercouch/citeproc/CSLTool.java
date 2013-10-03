@@ -28,8 +28,11 @@ import org.jbibtex.ParseException;
 
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
+import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.Levenshtein;
+import de.undercouch.citeproc.helper.json.JsonBuilder;
+import de.undercouch.citeproc.helper.json.StringJsonBuilderFactory;
 import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionBuilder;
@@ -188,6 +191,10 @@ public class CSLTool {
 		provider.addDatabase(db);
 		
 		//check provided citation ids
+		if (citation && citationIds.isEmpty()) {
+			System.err.println("citeproc-java: no citation id specified.");
+			return 1;
+		}
 		for (String id : citationIds) {
 			if (provider.retrieveItem(id) == null) {
 				System.err.println("citeproc-java: unknown citation id: " + id);
@@ -197,6 +204,72 @@ public class CSLTool {
 			}
 		}
 		
+		//run conversion
+		int ret;
+		if (style.equals("json")) {
+			ret = generateJSON(citation, citationIds, provider);
+		} else {
+			ret = generateCSL(style, locale, format, citation, citationIds, provider);
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Generates JSON
+	 * @param citation true if an array of citation ids should be generated
+	 * @param citationIds the citation ids given on the command line
+	 * @param provider a provider containing all citation item data
+	 * @return the exit code
+	 */
+	private int generateJSON(boolean citation, List<String> citationIds,
+			ItemDataProvider provider) {
+		StringJsonBuilderFactory factory = new StringJsonBuilderFactory();
+		if (citation) {
+			//create an array of citation ids
+			JsonBuilder b = factory.createJsonBuilder();
+			String s = (String)b.toJson(citationIds.toArray(new String[citationIds.size()]));
+			System.out.println(s);
+		} else {
+			//create an array of citation item data objects (either for
+			//the whole bibliography or for the given citation ids only)
+			System.out.print("[");
+			List<String> ids = citationIds;
+			if (ids.isEmpty()) {
+				ids = Arrays.asList(provider.getIds());
+			}
+			
+			int i = 0;
+			for (String id : ids) {
+				if (i > 0) {
+					System.out.print(",");
+				}
+				CSLItemData item = provider.retrieveItem(id);
+				JsonBuilder b = factory.createJsonBuilder();
+				System.out.print(item.toJson(b));
+				++i;
+			}
+			
+			System.out.println("]");
+		}
+		return 0;
+	}
+	
+	/**
+	 * Performs CSL conversion and generates citations or a bibliography
+	 * @param style the CSL style
+	 * @param locale the CSL locale
+	 * @param format the output format
+	 * @param citation true if citations should be created instead of
+	 * a bibliography
+	 * @param citationIds the citation ids given on the command line
+	 * @param provider a provider containing all citation item data
+	 * @return the exit code
+	 * @throws IOException if the CSL processor could not be initialized
+	 */
+	private int generateCSL(String style, String locale, String format,
+			boolean citation, List<String> citationIds,
+			ItemDataProvider provider) throws IOException {
 		//initialize citation processor
 		CSL citeproc;
 		try {
@@ -213,17 +286,13 @@ public class CSLTool {
 		String[] citationIdsArr = new String[citationIds.size()];
 		citationIdsArr = citationIds.toArray(citationIdsArr);
 		if (citationIds.isEmpty()) {
-			provider.registerCitationItems(citeproc);
+			citeproc.registerCitationItems(provider.getIds());
 		} else {
 			citeproc.registerCitationItems(citationIdsArr);
 		}
 		
 		//generate citation(s) or bibliography
 		if (citation) {
-			if (citationIds.isEmpty()) {
-				System.err.println("citeproc-java: no citation id specified.");
-				return 1;
-			}
 			List<Citation> cits = citeproc.makeCitation(citationIdsArr);
 			for (Citation c : cits) {
 				System.out.println(c.getText());
