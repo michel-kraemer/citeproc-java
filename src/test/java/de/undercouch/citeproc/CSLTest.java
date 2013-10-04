@@ -18,10 +18,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
+import de.undercouch.citeproc.csl.CSLAbbreviationList;
+import de.undercouch.citeproc.csl.CSLAbbreviationListBuilder;
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLDateBuilder;
@@ -340,5 +344,30 @@ public class CSLTest {
 		assertEquals(2, a4.get(1).getIndex());
 		assertEquals("[3]", a4.get(2).getText());
 		assertEquals(3, a4.get(2).getIndex());
+	}
+	
+	/**
+	 * Tests if abbreviations can be used
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void abbreviations() throws Exception {
+		Map<String, String> titleAbbreviations = new HashMap<String, String>();
+		titleAbbreviations.put("The Programming Language B", "B");
+		
+		CSLAbbreviationList abbrevs = new CSLAbbreviationListBuilder()
+			.title(titleAbbreviations)
+			.build();
+		
+		DefaultAbbreviationProvider prov = new DefaultAbbreviationProvider();
+		prov.add(AbbreviationProvider.DEFAULT_LIST_NAME, abbrevs);
+		
+		CSL citeproc = new CSL(new ListItemDataProvider(items), prov, "chicago-note-bibliography");
+		citeproc.setOutputFormat("text");
+		citeproc.setAbbreviations(AbbreviationProvider.DEFAULT_LIST_NAME);
+		
+		List<Citation> a = citeproc.makeCitation(items[0].getId());
+		assertEquals(0, a.get(0).getIndex());
+		assertEquals("Johnson and Kernighan, B.", a.get(0).getText());
 	}
 }

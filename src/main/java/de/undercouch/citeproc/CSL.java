@@ -62,6 +62,22 @@ public class CSL {
 	/**
 	 * Constructs a new citation processor
 	 * @param itemDataProvider an object that provides citation item data
+	 * @param abbreviationProvider an object that provides abbreviations
+	 * @param style the citation style to use. May either be a serialized
+	 * XML representation of the style or a style's name such as <code>ieee</code>.
+	 * In the latter case, the processor loads the style from the classpath (e.g.
+	 * <code>/ieee.csl</code>)
+	 * @throws IOException if the underlying JavaScript files or the CSL style
+	 * could not be loaded 
+	 */
+	public CSL(ItemDataProvider itemDataProvider, AbbreviationProvider abbreviationProvider,
+			String style) throws IOException {
+		this(itemDataProvider, abbreviationProvider, style, "en-US");
+	}
+	
+	/**
+	 * Constructs a new citation processor
+	 * @param itemDataProvider an object that provides citation item data
 	 * @param style the citation style to use. May either be a serialized
 	 * XML representation of the style or a style's name such as <code>ieee</code>.
 	 * In the latter case, the processor loads the style from the classpath (e.g.
@@ -72,6 +88,24 @@ public class CSL {
 	 */
 	public CSL(ItemDataProvider itemDataProvider, String style, String lang) throws IOException {
 		this(itemDataProvider, new DefaultLocaleProvider(), style, lang, false);
+	}
+	
+	/**
+	 * Constructs a new citation processor
+	 * @param itemDataProvider an object that provides citation item data
+	 * @param abbreviationProvider an object that provides abbreviations
+	 * @param style the citation style to use. May either be a serialized
+	 * XML representation of the style or a style's name such as <code>ieee</code>.
+	 * In the latter case, the processor loads the style from the classpath (e.g.
+	 * <code>/ieee.csl</code>)
+	 * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
+	 * @throws IOException if the underlying JavaScript files or the CSL style
+	 * could not be loaded 
+	 */
+	public CSL(ItemDataProvider itemDataProvider, AbbreviationProvider abbreviationProvider,
+			String style, String lang) throws IOException {
+		this(itemDataProvider, new DefaultLocaleProvider(), abbreviationProvider,
+				style, lang, false);
 	}
 	
 	/**
@@ -89,6 +123,27 @@ public class CSL {
 	 */
 	public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
 			String style, String lang, boolean forceLang) throws IOException {
+		this(itemDataProvider, localeProvider, new DefaultAbbreviationProvider(),
+				style, lang, forceLang);
+	}
+	
+	/**
+	 * Constructs a new citation processor
+	 * @param itemDataProvider an object that provides citation item data
+	 * @param localeProvider an object that provides CSL locales
+	 * @param abbreviationProvider an object that provides abbreviations
+	 * @param style the citation style to use. May either be a serialized
+	 * XML representation of the style or a style's name such as <code>ieee</code>.
+	 * In the latter case, the processor loads the style from the classpath (e.g.
+	 * <code>/ieee.csl</code>)
+	 * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
+	 * @param forceLang true if the given locale should overwrite any default locale
+	 * @throws IOException if the underlying JavaScript files or the CSL style
+	 * could not be loaded 
+	 */
+	public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
+			AbbreviationProvider abbreviationProvider, String style,
+			String lang, boolean forceLang) throws IOException {
 		//create JavaScript runner
 		runner = ScriptRunnerFactory.createRunner();
 		
@@ -96,6 +151,7 @@ public class CSL {
 		runner.put("__scriptRunner__", runner);
 		runner.put("__itemDataProvider__", itemDataProvider);
 		runner.put("__localeProvider__", localeProvider);
+		runner.put("__abbreviationProvider__", abbreviationProvider);
 		
 		//load bundles scripts
 		try {
@@ -184,6 +240,20 @@ public class CSL {
 			runner.eval("__engine__.opt.development_extensions.wrap_url_and_doi = " + convert + ";");
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not set option", e);
+		}
+	}
+	
+	/**
+	 * Enables the abbreviation list with the given name. The processor will
+	 * call {@link AbbreviationProvider#getAbbreviations(String)} with the
+	 * given String to get the abbreviations that should be used from here on.
+	 * @param name the name of the abbreviation list to enable
+	 */
+	public void setAbbreviations(String name) {
+		try {
+			runner.eval("__engine__.setAbbreviations(\"" + escapeJava(name) + "\");");
+		} catch (ScriptRunnerException e) {
+			throw new IllegalArgumentException("Could not set abbreviations", e);
 		}
 	}
 

@@ -14,6 +14,8 @@
 
 package $package$;
 
+import java.util.Map;
+
 /**
  * Builder for {@link $name$}
  * @author Michel Kraemer

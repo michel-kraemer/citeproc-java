@@ -1,0 +1,45 @@
+{
+    "name": "CSLAbbreviationList",
+    "shortname": "abbreviation list",
+    "package": "de.undercouch.citeproc.csl",
+    "description": "A list of abbreviations for titles, authorities, institution names, etc.",
+    
+    "properties": [
+        {
+            "type": "Map<String, String>",
+            "name": "title"
+        },
+        {
+            "type": "Map<String, String>",
+            "name": "collection-title"
+        },
+        {
+            "type": "Map<String, String>",
+            "name": "container-title"
+        },
+        {
+            "type": "Map<String, String>",
+            "name": "number"
+        },
+        {
+            "type": "Map<String, String>",
+            "name": "place"
+        },
+        {
+            "type": "Map<String, String>",
+            "name": "nickname"
+        },
+        {
+            "type": "Map<String, String>",
+            "name": "classic"
+        },
+        {
+            "type": "Map<String, String>",
+            "name": "institution"
+        },
+        {
+            "type": "Map<String, String>",
+            "name": "hereinafter"
+        }
+    ]
+}

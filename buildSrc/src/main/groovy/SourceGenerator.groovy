@@ -177,6 +177,7 @@ class SourceGenerator {
         
         renderTemplatesInternal('CSLType', dst, stg, true)
         renderTemplatesInternal('CSLLabel', dst, stg, true)
+        renderTemplatesInternal('CSLAbbreviationList', dst, stg)
         renderTemplatesInternal('CSLCitation', dst, stg)
         renderTemplatesInternal('CSLCitationItem', dst, stg)
         renderTemplatesInternal('CSLDate', dst, stg)

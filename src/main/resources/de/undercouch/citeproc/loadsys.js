@@ -12,22 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var Sys = function() {};
+var Sys = function() {
+	this.abbrevsname = "default";
+};
+
+function __handleReturnValue__(val) {
+	if (val == null) {
+		return null;
+	}
+	var ji = val.toJson(__scriptRunner__.createJsonBuilder());
+	if (ji.hasOwnProperty('length')) {
+		return JSON.parse(ji);
+	}
+	return ji;
+}
 
 Sys.prototype.retrieveLocale = function(lang) {
 	return new String(__localeProvider__.retrieveLocale(lang));
 };
 
 Sys.prototype.retrieveItem = function(id) {
-	var item = __itemDataProvider__.retrieveItem(id);
-	if (item == null) {
-		return null;
+	return __handleReturnValue__(__itemDataProvider__.retrieveItem(id));
+};
+
+Sys.prototype.getAbbreviation = function(styleID, abbrevs, name, category, orig, itemType) {
+	var r = __handleReturnValue__(__abbreviationProvider__.getAbbreviations(this.abbrevsname));
+	if (r == null) {
+		return;
 	}
-	var ji = item.toJson(__scriptRunner__.createJsonBuilder());
-	if (ji.hasOwnProperty('length')) {
-		return JSON.parse(ji);
+	if (r[category] && r[category][orig]) {
+		abbrevs[name][category][orig] = r[category][orig];
+	} else {
+		abbrevs[name][category][orig] = "";
 	}
-	return ji;
+};
+
+Sys.prototype.setAbbreviations = function(name) {
+	this.abbrevsname = name;
 };
 
 Sys = new Sys();

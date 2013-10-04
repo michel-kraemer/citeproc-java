@@ -14,9 +14,10 @@
 
 package $package$;
 
+import java.util.Map;
+
 $if(!noJsonObject)$
 import java.util.Collection;
-import java.util.Map;
 
 import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.JsonObject;
