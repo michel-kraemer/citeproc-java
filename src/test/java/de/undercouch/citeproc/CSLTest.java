@@ -32,7 +32,7 @@ import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLNameBuilder;
-import de.undercouch.citeproc.csl.CSLProperties;
+import de.undercouch.citeproc.csl.CSLPropertiesBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.csl.CitationIDIndexPair;
 import de.undercouch.citeproc.output.Bibliography;
@@ -301,13 +301,17 @@ public class CSLTest {
 		citeproc.setOutputFormat("text");
 		
 		CSLCitation cit1 = new CSLCitation(new CSLCitationItem[] {
-				new CSLCitationItem(items[0].getId()) }, "CITATION-1", new CSLProperties(1));
+				new CSLCitationItem(items[0].getId()) }, "CITATION-1",
+				new CSLPropertiesBuilder().noteIndex(1).build());
 		CSLCitation cit2 = new CSLCitation(new CSLCitationItem[] {
-				new CSLCitationItem(items[2].getId()) }, "CITATION-2", new CSLProperties(2));
+				new CSLCitationItem(items[2].getId()) }, "CITATION-2",
+				new CSLPropertiesBuilder().noteIndex(2).build());
 		CSLCitation cit3 = new CSLCitation(new CSLCitationItem[] {
-				new CSLCitationItem(items[3].getId()) }, "CITATION-3", new CSLProperties(3));
+				new CSLCitationItem(items[3].getId()) }, "CITATION-3",
+				new CSLPropertiesBuilder().noteIndex(3).build());
 		CSLCitation cit4 = new CSLCitation(new CSLCitationItem[] {
-				new CSLCitationItem(items[2].getId()) }, "CITATION-4", new CSLProperties(2));
+				new CSLCitationItem(items[2].getId()) }, "CITATION-4",
+				new CSLPropertiesBuilder().noteIndex(2).build());
 		
 		List<Citation> a1 = citeproc.makeCitation(cit1,
 				Collections.<CitationIDIndexPair>emptyList(),
