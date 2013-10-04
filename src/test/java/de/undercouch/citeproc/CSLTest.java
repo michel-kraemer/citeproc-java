@@ -15,6 +15,7 @@
 package de.undercouch.citeproc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -373,5 +374,31 @@ public class CSLTest {
 		List<Citation> a = citeproc.makeCitation(items[0].getId());
 		assertEquals(0, a.get(0).getIndex());
 		assertEquals("Johnson and Kernighan, B.", a.get(0).getText());
+	}
+	
+	/**
+	 * Tests if citation items can be registered unsorted
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void registerUnsorted() throws Exception {
+		CSL citeproc = new CSL(new ListItemDataProvider(items), "chicago-note-bibliography");
+		citeproc.setOutputFormat("text");
+		
+		String[] ids = new String[] { items[0].getId(), items[1].getId(), items[3].getId() };
+		citeproc.registerCitationItems(ids);
+		
+		Bibliography b = citeproc.makeBibliography();
+		assertEquals(3, b.getEntries().length);
+		assertTrue(b.getEntries()[0].startsWith("Johnson"));
+		assertTrue(b.getEntries()[1].startsWith("Lycklama"));
+		assertTrue(b.getEntries()[2].startsWith("Ritchie"));
+		
+		citeproc.registerCitationItems(ids, true);
+		b = citeproc.makeBibliography();
+		assertEquals(3, b.getEntries().length);
+		assertTrue(b.getEntries()[0].startsWith("Johnson"));
+		assertTrue(b.getEntries()[1].startsWith("Ritchie"));
+		assertTrue(b.getEntries()[2].startsWith("Lycklama"));
 	}
 }
