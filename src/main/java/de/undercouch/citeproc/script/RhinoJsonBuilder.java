@@ -23,6 +23,7 @@ import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.TopLevel;
 
+import de.undercouch.citeproc.csl.CSLLabel;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.JsonBuilderFactory;
@@ -75,7 +76,7 @@ public class RhinoJsonBuilder implements JsonBuilder {
 				na.put(i, na, toJson(ao, scope, factory));
 			}
 			obj = na;
-		} else if (obj instanceof CSLType) {
+		} else if (obj instanceof CSLType || obj instanceof CSLLabel) {
 			obj = obj.toString();
 		} else if (obj instanceof Map) {
 			Map<?, ?> m = (Map<?, ?>)obj;
