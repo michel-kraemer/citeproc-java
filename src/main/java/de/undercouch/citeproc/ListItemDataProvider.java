@@ -14,7 +14,7 @@
 
 package de.undercouch.citeproc;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import de.undercouch.citeproc.csl.CSLItemData;
@@ -27,7 +27,7 @@ public class ListItemDataProvider implements ItemDataProvider {
 	/**
 	 * The items that this provider holds
 	 */
-	protected Map<String, CSLItemData> items = new HashMap<String, CSLItemData>();
+	protected Map<String, CSLItemData> items = new LinkedHashMap<String, CSLItemData>();
 	
 	/**
 	 * Creates a data provider that serves items from the given list
