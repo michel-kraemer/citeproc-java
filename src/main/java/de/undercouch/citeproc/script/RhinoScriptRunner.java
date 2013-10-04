@@ -31,7 +31,6 @@ import org.mozilla.javascript.Wrapper;
 
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
-import de.undercouch.citeproc.helper.json.JsonObject;
 
 /**
  * Executes JavaScript scripts using Mozilla Rhino
@@ -153,12 +152,9 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
-	public Object callMethod(String obj, String name, JsonObject... args) throws ScriptRunnerException {
+	public Object callMethod(String obj, String name, Object... args) throws ScriptRunnerException {
 		try {
-			Object p[] = new Object[args.length];
-			for (int i = 0; i < args.length; ++i) {
-				p[i] = args[i].toJson(createJsonBuilder());
-			}
+			Object p[] = convertArguments(args);
 			ScriptableObject so = (ScriptableObject)scope.get(obj, scope);
 			return ScriptableObject.callMethod(so, name, p);
 		} catch (RhinoException e) {

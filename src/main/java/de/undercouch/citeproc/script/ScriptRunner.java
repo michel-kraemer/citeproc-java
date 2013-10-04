@@ -19,7 +19,6 @@ import java.io.Reader;
 import java.net.URL;
 
 import de.undercouch.citeproc.helper.json.JsonBuilderFactory;
-import de.undercouch.citeproc.helper.json.JsonObject;
 
 /**
  * Executes JavaScript scripts
@@ -66,7 +65,7 @@ public interface ScriptRunner extends JsonBuilderFactory {
 	 * @return the return value
 	 * @throws ScriptRunnerException if the method could not be called
 	 */
-	Object callMethod(String obj, String name, JsonObject... args)
+	Object callMethod(String obj, String name, Object... args)
 			throws ScriptRunnerException;
 	
 	/**

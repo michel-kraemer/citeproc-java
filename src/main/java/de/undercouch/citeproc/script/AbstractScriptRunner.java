@@ -16,7 +16,11 @@ package de.undercouch.citeproc.script;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.URL;
+import java.util.Collection;
+
+import de.undercouch.citeproc.helper.json.JsonObject;
 
 /**
  * Abstract base class for {@link ScriptRunner} implementations
@@ -31,5 +35,34 @@ public abstract class AbstractScriptRunner implements ScriptRunner {
 		} finally {
 			reader.close();
 		}
+	}
+	
+	/**
+	 * Recursively converts the given list of arguments using
+	 * {@link JsonObject#toJson(de.undercouch.citeproc.helper.json.JsonBuilder)}
+	 * and {@link #createJsonBuilder()}
+	 * @param args the arguments to convert
+	 * @return the converted arguments
+	 */
+	protected Object[] convertArguments(Object[] args) {
+		Object[] result = new Object[args.length];
+		for (int i = 0; i < args.length; ++i) {
+			Object a = args[i];
+			if (a instanceof JsonObject) {
+				result[i] = ((JsonObject)a).toJson(createJsonBuilder());
+			} else if (a instanceof Collection) {
+				Collection<?> coll = (Collection<?>)a;
+				result[i] = createJsonBuilder().toJson(coll.toArray(new Object[coll.size()]));
+			} else if (a.getClass().isArray()) {
+				Object[] ao = new Object[Array.getLength(a)];
+				for (int j = 0; j < ao.length; ++j) {
+					ao[j] = Array.get(a, j);
+				}
+				result[i] = createJsonBuilder().toJson(ao);
+			} else {
+				result[i] = a;
+			}
+		}
+		return result;
 	}
 }

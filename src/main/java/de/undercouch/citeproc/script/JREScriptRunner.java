@@ -21,7 +21,6 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import de.undercouch.citeproc.helper.json.JsonBuilder;
-import de.undercouch.citeproc.helper.json.JsonObject;
 import de.undercouch.citeproc.helper.json.StringJsonBuilder;
 
 /**
@@ -68,22 +67,19 @@ public class JREScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
-	public Object callMethod(String obj, String name, JsonObject... args)
+	public Object callMethod(String obj, String name, Object... args)
 			throws ScriptRunnerException {
 		String p = "";
 		if (args != null && args.length > 0) {
-			if (args.length == 1) {
-				p = args[0].toJson(createJsonBuilder()).toString();
-			} else {
-				StringBuilder b = new StringBuilder();
-				for (JsonObject o : args) {
-					if (b.length() > 0) {
-						b.append(",");
-					}
-					b.append(o.toJson(createJsonBuilder()).toString());
+			Object[] ca = convertArguments(args);
+			StringBuilder b = new StringBuilder();
+			for (Object o : ca) {
+				if (b.length() > 0) {
+					b.append(",");
 				}
-				p = b.toString();
+				b.append(o.toString());
 			}
+			p = b.toString();
 		}
 		return eval(obj + "." + name + "(" + p + ");");
 	}
