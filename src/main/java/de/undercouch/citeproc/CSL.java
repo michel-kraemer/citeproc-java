@@ -145,7 +145,13 @@ public class CSL {
 	 * @throws IOException if the style could not be loaded
 	 */
 	private String loadStyle(String styleName) throws IOException {
-		URL url = getClass().getResource("/" + styleName + ".csl");
+		if (!styleName.endsWith(".csl")) {
+			styleName = styleName + ".csl";
+		}
+		if (!styleName.startsWith("/")) {
+			styleName = "/" + styleName;
+		}
+		URL url = getClass().getResource(styleName);
 		if (url == null) {
 			throw new FileNotFoundException("Could not find style in classpath: " + styleName);
 		}
