@@ -122,6 +122,15 @@ public class $name$ $if(!noJsonObject)$implements JsonObject$endif$ {
 		}
 		return ((Number)o).intValue();
 	}
+	
+	private static boolean toBool(Object o) {
+		if (o instanceof String) {
+			return Boolean.parseBoolean((String)o);
+		} else if (o instanceof Number) {
+			return ((Number)o).intValue() != 0;
+		}
+		return (Boolean)o;
+	}
 	$endif$
 	
 	$additionalMethods; separator="\n"$

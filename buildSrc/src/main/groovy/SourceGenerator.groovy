@@ -153,13 +153,16 @@ class SourceGenerator {
                         return ""
                     } else if (s.equals("int") || s.equals("Integer")) {
                         return "toInt("
+                    } else if (s.equals("boolean") || s.equals("Boolean")) {
+                        return "toBool("
                     } else {
                         return "(" + s + ")";
                     }
                 } else if (formatString.equals('castAfter')) {
                     if (s.equals("String")) {
                         return ".toString()"
-                    } else if (s.equals("int") || s.equals("Integer")) {
+                    } else if (s.equals("int") || s.equals("Integer") ||
+                            s.equals("boolean") || s.equals("Boolean")) {
                         return ")"
                     } else {
                         return ""
