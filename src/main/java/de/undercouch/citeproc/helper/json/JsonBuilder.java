@@ -34,9 +34,9 @@ public interface JsonBuilder {
 	Object build();
 
 	/**
-	 * Converts an array of Strings to a JSON array
-	 * @param arr the array of Strings
+	 * Converts an array to a JSON array
+	 * @param arr the array to convert
 	 * @return the JSON array
 	 */
-	Object toJson(String[] arr);
+	Object toJson(Object[] arr);
 }

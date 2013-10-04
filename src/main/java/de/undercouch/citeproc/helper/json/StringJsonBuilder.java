@@ -56,7 +56,7 @@ public class StringJsonBuilder implements JsonBuilder {
 	}
 	
 	@Override
-	public Object toJson(String[] arr) {
+	public Object toJson(Object[] arr) {
 		return toJson(arr, factory);
 	}
 	

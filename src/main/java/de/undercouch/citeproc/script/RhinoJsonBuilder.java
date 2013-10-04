@@ -86,14 +86,14 @@ public class RhinoJsonBuilder implements JsonBuilder {
 	}
 
 	@Override
-	public Object toJson(String[] arr) {
+	public Object toJson(Object[] arr) {
 		int len = arr.length;
 		
 		NativeArray na = new NativeArray(len);
 		ScriptRuntime.setBuiltinProtoAndParent(na, scope, TopLevel.Builtins.Array);
 		
 		for (int i = 0; i < len; ++i) {
-			na.put(i, na, arr[i]);
+			na.put(i, na, toJson(arr[i], scope, factory));
 		}
 		
 		return na;
