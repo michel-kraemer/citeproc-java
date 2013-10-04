@@ -26,6 +26,7 @@ import java.util.Map;
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.csl.CitationIDIndexPair;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
@@ -235,14 +236,42 @@ public class CSL {
 	 * refers to citation item data that does not exist
 	 */
 	public List<Citation> makeCitation(CSLCitation citation) {
-		List<Object> r;
+		return makeCitation(citation, null, null);
+	}
+	
+	/**
+	 * Generates citation strings that can be inserted into the text. The
+	 * method calls {@link ItemDataProvider#retrieveItem(String)} for each item in the
+	 * given set to request the corresponding citation item data. Additionally,
+	 * it saves the requested citation IDs, so {@link #makeBibliography()} will
+	 * generate a bibliography that only consists of the retrieved items.
+	 * @param citation a set of citation items for which strings should be generated
+	 * @param citationsPre citations that precede <code>citation</code>
+	 * @param citationsPost citations that come after <code>citation</code>
+	 * @return citations strings that can be inserted into the text
+	 * @throws IllegalArgumentException if the given set of citation items
+	 * refers to citation item data that does not exist
+	 */
+	public List<Citation> makeCitation(CSLCitation citation,
+			List<CitationIDIndexPair> citationsPre,
+			List<CitationIDIndexPair> citationsPost) {
+		List<?> r;
 		try {
-			@SuppressWarnings("unchecked")
-			List<Object> rr = (List<Object>)runner.callMethod("__engine__",
-					"appendCitationCluster", citation);
-			r = rr;
+			if (citationsPre == null && citationsPost == null) {
+				r = (List<?>)runner.callMethod("__engine__",
+						"appendCitationCluster", citation);
+			} else {
+				r = (List<?>)runner.callMethod("__engine__",
+						"processCitationCluster", citation, citationsPre, citationsPost);
+				for (Object o : r) {
+					if (o instanceof List) {
+						r = (List<?>) o;
+						break;
+					}
+				}
+			}
 		} catch (ScriptRunnerException e) {
-			throw new IllegalArgumentException("Could not append citation cluster", e);
+			throw new IllegalArgumentException("Could not make citation", e);
 		}
 		
 		List<Citation> result = new ArrayList<Citation>();

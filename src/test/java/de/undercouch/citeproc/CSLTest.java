@@ -16,15 +16,21 @@ package de.undercouch.citeproc;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
 
+import de.undercouch.citeproc.csl.CSLCitation;
+import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLNameBuilder;
+import de.undercouch.citeproc.csl.CSLProperties;
 import de.undercouch.citeproc.csl.CSLType;
+import de.undercouch.citeproc.csl.CitationIDIndexPair;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
 
@@ -279,5 +285,60 @@ public class CSLTest {
 		
 		b = citeproc.makeBibliography();
 		assertEquals(0, b.getEntries().length);
+	}
+	
+	/**
+	 * Tests the {@link CSL#makeCitation(CSLCitation, List, List)} method
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void makeCitationPrePost() throws Exception {
+		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
+		citeproc.setOutputFormat("text");
+		
+		CSLCitation cit1 = new CSLCitation(new CSLCitationItem[] {
+				new CSLCitationItem(items[0].getId()) }, "CITATION-1", new CSLProperties(1));
+		CSLCitation cit2 = new CSLCitation(new CSLCitationItem[] {
+				new CSLCitationItem(items[2].getId()) }, "CITATION-2", new CSLProperties(2));
+		CSLCitation cit3 = new CSLCitation(new CSLCitationItem[] {
+				new CSLCitationItem(items[3].getId()) }, "CITATION-3", new CSLProperties(3));
+		CSLCitation cit4 = new CSLCitation(new CSLCitationItem[] {
+				new CSLCitationItem(items[2].getId()) }, "CITATION-4", new CSLProperties(2));
+		
+		List<Citation> a1 = citeproc.makeCitation(cit1,
+				Collections.<CitationIDIndexPair>emptyList(),
+				Collections.<CitationIDIndexPair>emptyList());
+		List<Citation> a2 = citeproc.makeCitation(cit2,
+				Arrays.asList(new CitationIDIndexPair(cit1)),
+				Collections.<CitationIDIndexPair>emptyList());
+		List<Citation> a3 = citeproc.makeCitation(cit3,
+				Arrays.asList(new CitationIDIndexPair(cit1)),
+				Arrays.asList(new CitationIDIndexPair(cit2)));
+		List<Citation> a4 = citeproc.makeCitation(cit4,
+				Arrays.asList(new CitationIDIndexPair(cit1)),
+				Arrays.asList(new CitationIDIndexPair(cit2), new CitationIDIndexPair(cit3)));
+		
+		assertEquals(1, a1.size());
+		assertEquals("[1]", a1.get(0).getText());
+		assertEquals(0, a1.get(0).getIndex());
+		
+		assertEquals(1, a2.size());
+		assertEquals("[2]", a2.get(0).getText());
+		assertEquals(1, a2.get(0).getIndex());
+		
+		assertEquals(2, a3.size());
+		assertEquals("[2]", a3.get(0).getText());
+		assertEquals(1, a3.get(0).getIndex());
+		assertEquals("[3]", a3.get(1).getText());
+		assertEquals(2, a3.get(1).getIndex());
+		
+		//we should now have to items with ID [2], but different indexes
+		assertEquals(3, a4.size());
+		assertEquals("[2]", a4.get(0).getText());
+		assertEquals(1, a4.get(0).getIndex());
+		assertEquals("[2]", a4.get(1).getText());
+		assertEquals(2, a4.get(1).getIndex());
+		assertEquals("[3]", a4.get(2).getText());
+		assertEquals(3, a4.get(2).getIndex());
 	}
 }
