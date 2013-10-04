@@ -15,6 +15,7 @@
 package de.undercouch.citeproc.script;
 
 import java.lang.reflect.Array;
+import java.util.Map;
 
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
@@ -76,6 +77,15 @@ public class RhinoJsonBuilder implements JsonBuilder {
 			obj = na;
 		} else if (obj instanceof CSLType) {
 			obj = obj.toString();
+		} else if (obj instanceof Map) {
+			Map<?, ?> m = (Map<?, ?>)obj;
+			NativeObject no = new NativeObject();
+			ScriptRuntime.setBuiltinProtoAndParent(no, scope, TopLevel.Builtins.Object);
+			for (Map.Entry<?, ?> e : m.entrySet()) {
+				String key = e.getKey().toString();
+				no.put(key, no, toJson(e.getValue(), scope, factory));
+			}
+			obj = no;
 		}
 		return obj;
 	}

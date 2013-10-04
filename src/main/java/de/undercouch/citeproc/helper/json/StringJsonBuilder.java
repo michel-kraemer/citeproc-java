@@ -17,6 +17,7 @@ package de.undercouch.citeproc.helper.json;
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 import java.lang.reflect.Array;
+import java.util.Map;
 
 /**
  * A JSON builder that creates JSON strings
@@ -87,6 +88,18 @@ public class StringJsonBuilder implements JsonBuilder {
 				r.append(toJson(ao, factory));
 			}
 			return "[" + r.toString() + "]";
+		} else if (obj instanceof Map) {
+			Map<?, ?> m = (Map<?, ?>)obj;
+			StringBuilder r = new StringBuilder();
+			for (Map.Entry<?, ?> e : m.entrySet()) {
+				if (r.length() > 0) {
+					r.append(",");
+				}
+				r.append(toJson(e.getKey(), factory));
+				r.append(":");
+				r.append(toJson(e.getValue(), factory));
+			}
+			return "{" + r.toString() + "}";
 		}
 		return toJson(String.valueOf(obj));
 	}
