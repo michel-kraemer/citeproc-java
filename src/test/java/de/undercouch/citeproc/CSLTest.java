@@ -48,7 +48,9 @@ public class CSLTest {
 	 * Example citation items
 	 */
 	private static CSLItemData[] items = new CSLItemData[] {
-		new CSLItemDataBuilder("Johnson:1973:PLB", CSLType.REPORT)
+		new CSLItemDataBuilder()
+			.id("Johnson:1973:PLB")
+			.type(CSLType.REPORT)
 			.title("The Programming Language B")
 			.author(
 					new CSLNameBuilder().given("S. C. ").family("Johnson").build(),
@@ -60,7 +62,9 @@ public class CSLTest {
 			.issued(1973)
 			.build(),
 		
-		new CSLItemDataBuilder("Ritchie:1973:UTS", CSLType.ARTICLE_JOURNAL)
+		new CSLItemDataBuilder()
+			.id("Ritchie:1973:UTS")
+			.type(CSLType.ARTICLE_JOURNAL)
 			.title("The UNIX time-sharing system")
 			.author(
 					new CSLNameBuilder().given("Dennis M.").family("Ritchie").build(),
@@ -75,7 +79,9 @@ public class CSLTest {
 			.ISSN("0163-5980 (print), 1943-586X (electronic)")
 			.build(),
 		
-		new CSLItemDataBuilder("Ritchie:1974:UTS", CSLType.ARTICLE_JOURNAL)
+		new CSLItemDataBuilder()
+			.id("Ritchie:1974:UTS")
+			.type(CSLType.ARTICLE_JOURNAL)
 			.title("The UNIX Time-Sharing System")
 			.author(
 					new CSLNameBuilder().given("Dennis M.").family("Ritchie").build(),
@@ -90,7 +96,9 @@ public class CSLTest {
 			.ISSN("0001-0782 (print), 1557-7317 (electronic)")
 			.build(),
 		
-		new CSLItemDataBuilder("Lycklama:1978:UTSb", CSLType.ARTICLE_JOURNAL)
+		new CSLItemDataBuilder()
+			.id("Lycklama:1978:UTSb")
+			.type(CSLType.ARTICLE_JOURNAL)
 			.title("UNIX Time-Sharing System: UNIX on a Microprocessor")
 			.author("H.", "Lycklama")
 			.volume(57)
@@ -152,7 +160,9 @@ public class CSLTest {
 	 */
 	@Test
 	public void makeAdhocBibliography() throws Exception {
-		CSLItemData item = new CSLItemDataBuilder("citeproc-java", CSLType.WEBPAGE)
+		CSLItemData item = new CSLItemDataBuilder()
+			.id("citeproc-java")
+			.type(CSLType.WEBPAGE)
 			.title("citeproc-java: A Citation Style Language (CSL) processor for Java")
 			.author("Michel", "Kr\u00E4mer")
 			.issued(2013, 9, 7)
@@ -183,7 +193,9 @@ public class CSLTest {
 	 */
 	@Test
 	public void links() throws Exception {
-		CSLItemData item = new CSLItemDataBuilder("citeproc-java", CSLType.WEBPAGE)
+		CSLItemData item = new CSLItemDataBuilder()
+			.id("citeproc-java")
+			.type(CSLType.WEBPAGE)
 			.title("citeproc-java: A Citation Style Language (CSL) processor for Java")
 			.author("Michel", "Kr\u00E4mer")
 			.issued(2013, 9, 9)
@@ -216,7 +228,9 @@ public class CSLTest {
 	 */
 	@Test
 	public void asciiDocFormat() throws Exception {
-		CSLItemData item = new CSLItemDataBuilder("citeproc-java", CSLType.WEBPAGE)
+		CSLItemData item = new CSLItemDataBuilder()
+			.id("citeproc-java")
+			.type(CSLType.WEBPAGE)
 			.title("citeproc-java: A Citation Style Language (CSL) processor for Java")
 			.author("Michel", "Kr\u00E4mer")
 			.issued(2013, 9, 9)

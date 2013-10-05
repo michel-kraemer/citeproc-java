@@ -7,13 +7,11 @@
     "properties": [
         {
             "type": "String",
-            "name": "id",
-            "required": true
+            "name": "id"
         },
         {
             "type": "CSLType",
-            "name": "type",
-            "required": true
+            "name": "type"
         },
         {
             "type": "String[]",

@@ -172,7 +172,8 @@ public class BibTeXConverter {
 		//map type
 		CSLType type = toType(e.getType());
 		
-		CSLItemDataBuilder builder = new CSLItemDataBuilder(e.getKey().getValue(), type);
+		CSLItemDataBuilder builder = new CSLItemDataBuilder()
+			.id(e.getKey().getValue()).type(type);
 		
 		//map address
 		if (entries.containsKey(FIELD_LOCATION)) {

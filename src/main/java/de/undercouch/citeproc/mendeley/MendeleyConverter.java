@@ -109,7 +109,7 @@ public class MendeleyConverter {
 		String mtype = strOrNull(document.get(FIELD_TYPE));
 		CSLType type = toType(mtype);
 		
-		CSLItemDataBuilder builder = new CSLItemDataBuilder(id, type);
+		CSLItemDataBuilder builder = new CSLItemDataBuilder().id(id).type(type);
 		
 		//convert authors
 		if (document.containsKey(FIELD_AUTHORS)) {

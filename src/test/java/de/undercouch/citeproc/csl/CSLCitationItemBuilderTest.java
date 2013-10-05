@@ -42,7 +42,9 @@ public class CSLCitationItemBuilderTest {
 	 */
 	@Test
 	public void fromJson() throws IOException {
-		CSLItemData data = new CSLItemDataBuilder("DATA_ID", CSLType.REPORT)
+		CSLItemData data = new CSLItemDataBuilder()
+			.id("DATA_ID")
+			.type(CSLType.REPORT)
 			.abstrct("Abstract")
 			.accessed(2013, 10, 3)
 			.author(
