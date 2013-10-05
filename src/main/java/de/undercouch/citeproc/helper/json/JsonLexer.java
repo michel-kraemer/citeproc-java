@@ -172,7 +172,7 @@ public class JsonLexer {
 		}
 		
 		if (currentTokenType == null) {
-			throw new IllegalStateException("Unrecognized token: " + c);
+			throw new IllegalStateException("Unrecognized token: " + (char)c);
 		}
 		
 		return currentTokenType;
