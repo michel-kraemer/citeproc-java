@@ -13,6 +13,20 @@
             "required": true
         },
         {
+            "type": "String",
+            "name": "bibstart",
+            "normalizedName": "bibStart"
+        },
+        {
+            "type": "String",
+            "name": "bibend",
+            "normalizedName": "bibEnd"
+        },
+        {
+            "type": "String[]",
+            "name": "entry_ids"
+        },
+        {
             "type": "Integer",
             "name": "maxoffset",
             "normalizedName": "maxOffset"
@@ -34,17 +48,11 @@
         },
         {
             "type": "Boolean",
+            "name": "done"
+        },
+        {
+            "type": "SecondFieldAlign",
             "name": "second-field-align"
-        },
-        {
-            "type": "String",
-            "name": "bibstart",
-            "normalizedName": "bibStart"
-        },
-        {
-            "type": "String",
-            "name": "bibend",
-            "normalizedName": "bibEnd"
         }
     ],
     

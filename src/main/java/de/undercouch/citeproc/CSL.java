@@ -34,6 +34,7 @@ import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.MapJsonBuilderFactory;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
+import de.undercouch.citeproc.output.SecondFieldAlign;
 import de.undercouch.citeproc.script.ScriptRunner;
 import de.undercouch.citeproc.script.ScriptRunnerException;
 import de.undercouch.citeproc.script.ScriptRunnerFactory;
@@ -450,12 +451,31 @@ public class CSL {
 		int entrySpacing = getFromMap(fpm, "entryspacing", 0);
 		int lineSpacing = getFromMap(fpm, "linespacing", 0);
 		int hangingIndent = getFromMap(fpm, "hangingindent", 0);
-		boolean secondFieldAlign = getFromMap(fpm, "second-field-align", false);
+		boolean done = getFromMap(fpm, "done", false);
+		Collection<?> srcEntryIds = (Collection<?>)fpm.get("entry_ids");
+		List<String> dstEntryIds = new ArrayList<String>();
+		for (Object o : srcEntryIds) {
+			if (o instanceof Collection) {
+				Collection<?> oc = (Collection<?>)o;
+				for (Object oco : oc) {
+					dstEntryIds.add(oco.toString());
+				}
+			} else {
+				dstEntryIds.add(o.toString());
+			}
+		}
+		String[] entryIds = dstEntryIds.toArray(new String[dstEntryIds.size()]);
+		SecondFieldAlign secondFieldAlign = SecondFieldAlign.FALSE;
+		Object sfa = fpm.get("second-field-align");
+		if (sfa != null) {
+			secondFieldAlign = SecondFieldAlign.fromString(sfa.toString());
+		}
 		String bibStart = getFromMap(fpm, "bibstart", "");
 		String bibEnd = getFromMap(fpm, "bibend", "");
 		
-		return new Bibliography(entries, maxOffset, entrySpacing,
-				lineSpacing, hangingIndent, secondFieldAlign, bibStart, bibEnd);
+		return new Bibliography(entries, bibStart, bibEnd, entryIds,
+				maxOffset, entrySpacing, lineSpacing, hangingIndent,
+				done, secondFieldAlign);
 	}
 	
 	/**

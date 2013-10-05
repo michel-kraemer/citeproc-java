@@ -1,0 +1,11 @@
+{
+    "name": "SecondFieldAlign",
+    "package": "de.undercouch.citeproc.output",
+    "description": "Specifies whether subsequent lines of bibliographies should be aligned along the second field",
+    
+    "types": [
+        "flush",
+        "margin",
+        "false"
+    ]
+}

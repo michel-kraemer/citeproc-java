@@ -186,6 +186,7 @@ class SourceGenerator {
         
         renderTemplatesInternal('CSLType', dst, stg, true)
         renderTemplatesInternal('CSLLabel', dst, stg, true)
+        renderTemplatesInternal('SecondFieldAlign', dst, stg, true)
         renderTemplatesInternal('SelectionMode', dst, stg, true)
         
         renderTemplatesInternal('CSLAbbreviationList', dst, stg)
