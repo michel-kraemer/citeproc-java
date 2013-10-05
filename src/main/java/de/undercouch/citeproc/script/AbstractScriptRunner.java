@@ -27,7 +27,7 @@ import de.undercouch.citeproc.helper.json.JsonBuilder;
 public abstract class AbstractScriptRunner implements ScriptRunner {
 	@Override
 	public void loadScript(URL url) throws IOException, ScriptRunnerException {
-		InputStreamReader reader = new InputStreamReader(url.openStream());
+		InputStreamReader reader = new InputStreamReader(url.openStream(), "UTF-8");
 		try {
 			eval(reader);
 		} finally {

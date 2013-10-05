@@ -207,7 +207,7 @@ class SourceGenerator {
         def dstRes = new File('src-gen/main/resources')
         for (s in project.fileTree(dir: 'src/main/resources/de/undercouch/citeproc', include: '*.js')) {
             org.mozilla.javascript.tools.jsc.Main.main([ '-opt', '9',
-                '-package', 'de.undercouch.citeproc', '-nosource',
+                '-package', 'de.undercouch.citeproc', '-nosource', '-encoding', 'UTF-8',
                 '-d', dstRes.toString(), s.toString() ] as String[])
             def name = s.getName().substring(0, s.getName().length() - 2)
             def dstFile = new File(dstRes, 'de/undercouch/citeproc/' + name + 'dat')
