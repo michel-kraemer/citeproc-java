@@ -15,6 +15,7 @@
 package de.undercouch.citeproc;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +42,11 @@ public class DefaultLocaleProvider implements LocaleProvider {
 		String r = locales.get(lang);
 		if (r == null) {
 			try {
-				r = CSLUtils.readURLToString(getClass().getResource(
-						"/locales-" + lang + ".xml"), "UTF-8");
+				URL u = getClass().getResource("/locales-" + lang + ".xml");
+				if (u == null) {
+					return null;
+				}
+				r = CSLUtils.readURLToString(u, "UTF-8");
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
