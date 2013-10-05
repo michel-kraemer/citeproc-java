@@ -494,6 +494,11 @@ public class CSL {
 			Map<String, Object> mi = (Map<String, Object>)item.toJson(jb);
 			for (Map.Entry<String, Object> e : mi.entrySet()) {
 				Object v = e.getValue();
+				if (e.getKey().equals("id") && v instanceof String &&
+						((String)v).startsWith("-GEN-")) {
+					//skip generated ids
+					continue;
+				}
 				if (v instanceof Collection) {
 					Collection<?> coll = (Collection<?>)v;
 					if (coll.isEmpty()) {
