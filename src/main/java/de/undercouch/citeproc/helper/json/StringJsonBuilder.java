@@ -52,7 +52,7 @@ public class StringJsonBuilder implements JsonBuilder {
 	}
 	
 	@Override
-	public Object build() {
+	public String build() {
 		b.append("}");
 		return b.toString();
 	}
