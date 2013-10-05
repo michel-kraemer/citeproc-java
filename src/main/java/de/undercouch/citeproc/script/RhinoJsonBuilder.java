@@ -15,6 +15,7 @@
 package de.undercouch.citeproc.script;
 
 import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Map;
 
 import org.mozilla.javascript.NativeArray;
@@ -76,6 +77,16 @@ public class RhinoJsonBuilder implements JsonBuilder {
 				na.put(i, na, toJson(ao, scope, factory));
 			}
 			obj = na;
+		} else if (obj instanceof Collection) {
+			Collection<?> coll = (Collection<?>)obj;
+			NativeArray na = new NativeArray(coll.size());
+			ScriptRuntime.setBuiltinProtoAndParent(na, scope, TopLevel.Builtins.Array);
+			int i = 0;
+			for (Object ao : coll) {
+				na.put(i, na, toJson(ao, scope, factory));
+				++i;
+			}
+			obj = na;
 		} else if (obj instanceof CSLType || obj instanceof CSLLabel) {
 			obj = obj.toString();
 		} else if (obj instanceof Map) {
@@ -95,18 +106,9 @@ public class RhinoJsonBuilder implements JsonBuilder {
 	public Object build() {
 		return obj;
 	}
-
+	
 	@Override
-	public Object toJson(Object[] arr) {
-		int len = arr.length;
-		
-		NativeArray na = new NativeArray(len);
-		ScriptRuntime.setBuiltinProtoAndParent(na, scope, TopLevel.Builtins.Array);
-		
-		for (int i = 0; i < len; ++i) {
-			na.put(i, na, toJson(arr[i], scope, factory));
-		}
-		
-		return na;
+	public Object toJson(Object o) {
+		return toJson(o, scope, factory);
 	}
 }

@@ -17,6 +17,7 @@ package de.undercouch.citeproc.helper.json;
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -57,7 +58,7 @@ public class StringJsonBuilder implements JsonBuilder {
 	}
 	
 	@Override
-	public Object toJson(Object[] arr) {
+	public Object toJson(Object arr) {
 		return toJson(arr, factory);
 	}
 	
@@ -82,6 +83,16 @@ public class StringJsonBuilder implements JsonBuilder {
 			int len = Array.getLength(obj);
 			for (int i = 0; i < len; ++i) {
 				Object ao = Array.get(obj, i);
+				if (r.length() > 0) {
+					r.append(",");
+				}
+				r.append(toJson(ao, factory));
+			}
+			return "[" + r.toString() + "]";
+		} else if (obj instanceof Collection) {
+			Collection<?> coll = (Collection<?>)obj;
+			StringBuilder r = new StringBuilder();
+			for (Object ao : coll) {
 				if (r.length() > 0) {
 					r.append(",");
 				}

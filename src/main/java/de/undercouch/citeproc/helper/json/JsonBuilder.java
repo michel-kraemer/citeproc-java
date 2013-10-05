@@ -32,11 +32,11 @@ public interface JsonBuilder {
 	 * @return the object
 	 */
 	Object build();
-
+	
 	/**
-	 * Converts an array to a JSON array
-	 * @param arr the array to convert
-	 * @return the JSON array
+	 * Converts the given object to a JSON object
+	 * @param o the object to convert
+	 * @return the JSON object
 	 */
-	Object toJson(Object[] arr);
+	Object toJson(Object o);
 }
