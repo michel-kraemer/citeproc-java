@@ -20,6 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +30,8 @@ import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CitationIDIndexPair;
 import de.undercouch.citeproc.helper.CSLUtils;
+import de.undercouch.citeproc.helper.json.JsonBuilder;
+import de.undercouch.citeproc.helper.json.MapJsonBuilderFactory;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
 import de.undercouch.citeproc.output.FormattingParameters;
@@ -384,11 +388,51 @@ public class CSL {
 	 * @return the bibliography
 	 */
 	public Bibliography makeBibliography() {
-		List<Object> r;
+		return makeBibliography(null);
+	}
+	
+	/**
+	 * Generates a bibliography for the registered citations. Depending
+	 * on the selection mode selects, includes, or excludes bibliography
+	 * items whose fields and field values match the fields and field values
+	 * from the given example item data objects.
+	 * @param mode the selection mode
+	 * @param selection the example item data objects that contain
+	 * the fields and field values to match
+	 * @return the bibliography
+	 */
+	public Bibliography makeBibliography(SelectionMode mode, CSLItemData... selection) {
+		return makeBibliography(mode, selection, null);
+	}
+	
+	/**
+	 * Generates a bibliography for the registered citations. Depending
+	 * on the selection mode selects, includes, or excludes bibliography
+	 * items whose fields and field values match the fields and field values
+	 * from the given example item data objects.
+	 * @param mode the selection mode
+	 * @param selection the example item data objects that contain
+	 * the fields and field values to match
+	 * @param quash regardless of the item data in <code>selection</code>
+	 * skip items if all fields/values from this list match
+	 * @return the bibliography
+	 */
+	public Bibliography makeBibliography(SelectionMode mode,
+			CSLItemData[] selection, CSLItemData[] quash) {
+		List<?> r;
 		try {
-			@SuppressWarnings("unchecked")
-			List<Object> rr = (List<Object>)runner.eval("__engine__.makeBibliography();");
-			r = rr;
+			if ((selection == null || mode == null) && quash == null) {
+				r = (List<?>)runner.eval("__engine__.makeBibliography();");
+			} else {
+				Map<String, Object> args = new HashMap<String, Object>();
+				if (selection != null && mode != null) {
+					args.put(mode.toString(), selectionToList(selection));
+				}
+				if (quash != null) {
+					args.put("quash", selectionToList(quash));
+				}
+				r = (List<?>)runner.callMethod("__engine__", "makeBibliography", args);
+			}
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not make bibliography", e);
 		}
@@ -414,6 +458,49 @@ public class CSL {
 		FormattingParameters fp = new FormattingParameters(maxOffset, entrySpacing,
 				lineSpacing, hangingIndent, secondFieldAlign, bibStart, bibEnd);
 		return new Bibliography(entries, fp);
+	}
+	
+	/**
+	 * Converts the given CSLItemData objects to a list of field/value pairs
+	 * that can be used to filter bibliography items. Only those fields will
+	 * be included that are actually set in the given objects.
+	 * @param selection the CSLItemData objects
+	 * @return the list of field/value pairs
+	 */
+	private List<Map<String, Object>> selectionToList(CSLItemData[] selection) {
+		MapJsonBuilderFactory mjbf = new MapJsonBuilderFactory();
+		List<Map<String, Object>> sl = new ArrayList<Map<String, Object>>();
+		for (CSLItemData item : selection) {
+			JsonBuilder jb = mjbf.createJsonBuilder();
+			@SuppressWarnings("unchecked")
+			Map<String, Object> mi = (Map<String, Object>)item.toJson(jb);
+			for (Map.Entry<String, Object> e : mi.entrySet()) {
+				Object v = e.getValue();
+				if (v instanceof Collection) {
+					Collection<?> coll = (Collection<?>)v;
+					if (coll.isEmpty()) {
+						putSelectionFieldValue(sl, e, "");
+					} else {
+						for (Object ao : coll) {
+							putSelectionFieldValue(sl, e, ao);
+						}
+					}
+				} else if (v instanceof Map && ((Map<?, ?>)v).isEmpty()) {
+					putSelectionFieldValue(sl, e, "");
+				} else {
+					putSelectionFieldValue(sl, e, v);
+				}
+			}
+		}
+		return sl;
+	}
+
+	private void putSelectionFieldValue(List<Map<String, Object>> sl,
+			Map.Entry<String, Object> e, Object v) {
+		Map<String, Object> sf = new HashMap<String, Object>(2);
+		sf.put("field", e.getKey());
+		sf.put("value", v);
+		sl.add(sf);
 	}
 	
 	private int getFromMap(Map<String, Object> m, String key, int def) {

@@ -1,0 +1,11 @@
+{
+    "name": "SelectionMode",
+    "package": "de.undercouch.citeproc",
+    "description": "Selection modes for {@link CSL#makeBibliography(SelectionMode, de.undercouch.citeproc.csl.CSLCitationItem[]).",
+    
+    "types": [
+        "select",
+        "include",
+        "exclude"
+    ]
+}

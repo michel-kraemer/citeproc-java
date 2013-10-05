@@ -155,6 +155,29 @@ public class CSLTest {
 	}
 	
 	/**
+	 * Tests if a valid bibliography can be generated with a selection
+	 * @throws Exception if anything goes wrong
+	 */
+	@Test
+	public void bibliographySelection() throws Exception {
+		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
+		citeproc.setOutputFormat("text");
+		
+		List<Citation> a = citeproc.makeCitation(items[0].getId());
+		assertEquals(0, a.get(0).getIndex());
+		assertEquals("[1]", a.get(0).getText());
+		
+		a = citeproc.makeCitation(items[1].getId());
+		assertEquals(1, a.get(0).getIndex());
+		assertEquals("[2]", a.get(0).getText());
+		
+		Bibliography b = citeproc.makeBibliography(SelectionMode.SELECT,
+				new CSLItemDataBuilder().title("The Programming Language B").build());
+		assertEquals(1, b.getEntries().length);
+		assertTrue(b.getEntries()[0].startsWith("[1]S. C. Johnson"));
+	}
+	
+	/**
 	 * Tests if an ad hoc bibliography can be created
 	 * @throws Exception if something goes wrong
 	 */
