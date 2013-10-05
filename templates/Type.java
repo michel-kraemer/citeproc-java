@@ -38,7 +38,7 @@ public enum $name$ {
 	 * @return the converted $name$
 	 */
 	public static $name$ fromString(String str) {
-		$types:{t | if (str.equals("$t$")) {
+		$types:{t | if ($t; format="toStrEqualsT"$) {
 			return $t; format="toEnum"$;
 		\}}$
 		throw new IllegalArgumentException("Unknown $name$: " + str);

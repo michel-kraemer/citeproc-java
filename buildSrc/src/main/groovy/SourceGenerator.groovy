@@ -148,6 +148,12 @@ class SourceGenerator {
                         s = s.substring(0, s.length() - 2) + '...'
                     }
                     return s
+                } else if (formatString.equals('toStrEqualsT')) {
+                    def r = 'str.equals("' + s + '")'
+                    if (s.indexOf('-') >= 0) {
+                        return r + ' || str.equals("' + s.replace('-', ' ') + '")'
+                    }
+                    return r
                 } else if (formatString.equals('castBefore')) {
                     if (s.equals("String")) {
                         return ""
