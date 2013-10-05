@@ -198,7 +198,6 @@ class SourceGenerator {
         
         renderTemplatesInternal('Bibliography', dst, stg)
         renderTemplatesInternal('Citation', dst, stg)
-        renderTemplatesInternal('FormattingParameters', dst, stg)
     }
     
     def renderGrammars() {

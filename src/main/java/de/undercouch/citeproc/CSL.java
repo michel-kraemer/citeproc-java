@@ -34,7 +34,6 @@ import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.MapJsonBuilderFactory;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
-import de.undercouch.citeproc.output.FormattingParameters;
 import de.undercouch.citeproc.script.ScriptRunner;
 import de.undercouch.citeproc.script.ScriptRunnerException;
 import de.undercouch.citeproc.script.ScriptRunnerFactory;
@@ -455,9 +454,8 @@ public class CSL {
 		String bibStart = getFromMap(fpm, "bibstart", "");
 		String bibEnd = getFromMap(fpm, "bibend", "");
 		
-		FormattingParameters fp = new FormattingParameters(maxOffset, entrySpacing,
+		return new Bibliography(entries, maxOffset, entrySpacing,
 				lineSpacing, hangingIndent, secondFieldAlign, bibStart, bibEnd);
-		return new Bibliography(entries, fp);
 	}
 	
 	/**

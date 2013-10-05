@@ -13,12 +13,42 @@
             "required": true
         },
         {
-            "type": "FormattingParameters",
-            "name": "parameters"
+            "type": "Integer",
+            "name": "maxoffset",
+            "normalizedName": "maxOffset"
+        },
+        {
+            "type": "Integer",
+            "name": "entryspacing",
+            "normalizedName": "entrySpacing"
+        },
+        {
+            "type": "Integer",
+            "name": "linespacing",
+            "normalizedName": "lineSpacing"
+        },
+        {
+            "type": "Integer",
+            "name": "hangingindent",
+            "normalizedName": "hangingIndent"
+        },
+        {
+            "type": "Boolean",
+            "name": "second-field-align"
+        },
+        {
+            "type": "String",
+            "name": "bibstart",
+            "normalizedName": "bibStart"
+        },
+        {
+            "type": "String",
+            "name": "bibend",
+            "normalizedName": "bibEnd"
         }
     ],
     
     "additionalMethods":[
-        "/**\n* Converts this bibliography to a String that can be inserted into the text\n*/\npublic String makeString() { StringBuilder b = new StringBuilder(); if (parameters != null && parameters.getBibStart() != null) b.append(parameters.getBibStart()); if (entries != null) { for (String e : entries) b.append(e); } if (parameters != null && parameters.getBibEnd() != null) b.append(parameters.getBibEnd()); return b.toString(); }"
+        "/**\n* Converts this bibliography to a String that can be inserted into the text\n*/\npublic String makeString() { StringBuilder b = new StringBuilder(); if (getBibStart() != null) b.append(getBibStart()); if (entries != null) { for (String e : entries) b.append(e); } if (getBibEnd() != null) b.append(getBibEnd()); return b.toString(); }"
     ]
 }
