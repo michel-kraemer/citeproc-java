@@ -27,6 +27,22 @@
             "name": "locator"
         },
         {
+            "type": "Integer",
+            "name": "position"
+        },
+        {
+            "type": "Boolean",
+            "name": "near-note"
+        },
+        {
+            "type": "Integer",
+            "name": "note-number"
+        },
+        {
+            "type": "Integer",
+            "name": "first-reference-note-number"
+        },
+        {
             "type": "CSLLabel",
             "name": "label"
         },

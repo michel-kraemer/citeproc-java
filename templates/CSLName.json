@@ -30,6 +30,10 @@
         },
         {
             "type": "Boolean",
+            "name": "comma-suffix"
+        },
+        {
+            "type": "Boolean",
             "name": "static-ordering"
         },
         {
