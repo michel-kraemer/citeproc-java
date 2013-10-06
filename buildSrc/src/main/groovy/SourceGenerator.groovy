@@ -101,6 +101,10 @@ class SourceGenerator {
             attrs.additionalBuilderMethods = []
         }
         
+        if (attrs.additionalFromJsonCode == null) {
+            attrs.additionalFromJsonCode = []
+        }
+        
         if (attrs.noJsonObject == null) {
             attrs.noJsonObject = false
         }

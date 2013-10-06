@@ -113,6 +113,8 @@ public class $name$ $if(!noJsonObject)$implements JsonObject$endif$ {
 			$endif$
 		\}}$
 		
+		$additionalFromJsonCode; separator="\n"$
+		
 		return builder.build();
 	}
 	

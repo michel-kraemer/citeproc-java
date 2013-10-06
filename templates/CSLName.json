@@ -40,5 +40,9 @@
             "type": "Boolean",
             "name": "parse-names"
         }
+    ],
+    
+    "additionalFromJsonCode": [
+        "{ Object v = obj.get(\"multi\"); if (v != null && v instanceof Map) { Map<?, ?> vc = (Map<?, ?>)v; Object vcmain = vc.get(\"main\"); if (vcmain != null && vcmain instanceof String) { String mstr = (String)vcmain; mstr = mstr.toLowerCase().substring(0, 2); if (mstr.equals(\"hu\") || mstr.equals(\"vn\")) { builder.staticOrdering(true); } } } }"
     ]
 }
