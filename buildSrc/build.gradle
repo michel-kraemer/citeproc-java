@@ -15,4 +15,5 @@ dependencies {
     compile 'org.mod4j.org.eclipse.jface:text:3.5.0'
     compile 'org.mod4j.org.eclipse.core:resources:3.5.0'
     compile 'org.mozilla:rhino:1.7R4'
+    compile 'org.python:jython-standalone:2.7-b1'
 }

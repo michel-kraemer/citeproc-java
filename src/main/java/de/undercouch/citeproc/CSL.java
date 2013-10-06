@@ -183,6 +183,13 @@ public class CSL {
 	}
 	
 	/**
+	 * @return the JavaScript runner used to execute citeproc-js
+	 */
+	protected ScriptRunner getScriptRunner() {
+		return runner;
+	}
+	
+	/**
 	 * Checks if the given String contains the serialized XML representation
 	 * of a style
 	 * @param style the string to examine

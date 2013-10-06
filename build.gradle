@@ -1,9 +1,20 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'de.undercouch:gradle-download-task:0.2'
+    }
+}
+
 apply plugin: 'maven'
 apply plugin: 'osgi'
 apply plugin: 'signing'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
+
+import de.undercouch.gradle.tasks.download.Download
 
 version = '0.2'
 group = 'de.undercouch'
@@ -35,6 +46,7 @@ dependencies {
     runtime 'org.citationstyles:styles:1.0.1-SNAPSHOT'
     runtime 'org.citationstyles:locales:1.0.1-SNAPSHOT'
     
+    testCompile 'org.fusesource.jansi:jansi:1.11'
     testCompile 'org.mozilla:rhino:1.7R4'
     testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
     testCompile 'org.citationstyles:locales:1.0.1-SNAPSHOT'
@@ -60,6 +72,21 @@ task generateSources {
 
 task cleanGeneratedSources(type: Delete) {
     delete 'src-gen'
+}
+
+task downloadTestSuite(type: Download) {
+    def dst = new File(buildDir, 'test-suite')
+    dst.mkdirs()
+    src 'https://bitbucket.org/bdarcus/citeproc-test/get/d9a77787962c.zip'
+    dest new File(dst, 'test-suite.zip')
+    overwrite false
+}
+
+task runTestSuite(dependsOn: [ downloadTestSuite, testClasses ]) << {
+    def tr = new TestSuite(project, new File(buildDir, 'test-suite/test-suite.zip'))
+    tr.compile()
+    tr.fix()
+    tr.run()
 }
 
 // include generated sources

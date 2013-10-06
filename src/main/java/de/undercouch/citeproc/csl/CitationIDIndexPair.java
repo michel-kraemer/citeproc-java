@@ -14,6 +14,8 @@
 
 package de.undercouch.citeproc.csl;
 
+import java.util.List;
+
 import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.JsonObject;
 
@@ -62,5 +64,16 @@ public class CitationIDIndexPair implements JsonObject {
 	@Override
 	public Object toJson(JsonBuilder builder) {
 		return builder.toJson(new Object[] { citationId, noteIndex });
+	}
+	
+	/**
+	 * Converts a JSON array to a CitationIDIndexPair object.
+	 * @param arr the JSON array to convert
+	 * @return the converted CitationIDIndexPair object
+	 */
+	public static CitationIDIndexPair fromJson(List<?> arr) {
+		String citationId = (String)arr.get(0);
+		int noteIndex = ((Number)arr.get(1)).intValue();
+		return new CitationIDIndexPair(citationId, noteIndex);
 	}
 }
