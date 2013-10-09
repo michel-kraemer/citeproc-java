@@ -2,4 +2,4 @@ name: citeproc-java
 markdown: kramdown
 pygments: true
 baseurl: http://michel-kraemer.github.io/citeproc-java/
-exclude: [ 'Gemfile', 'Gemfile.lock', 'README.md', 'README_WINDOWS.md' ]
+exclude: [ 'Gemfile', 'Gemfile.lock', 'README.md', 'README_WINDOWS.md', 'Vagrantfile' ]
