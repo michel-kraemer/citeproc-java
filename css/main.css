@@ -61,6 +61,10 @@ h2 {
   padding-bottom: 14px;
 }
 
+h2.page-title {
+  font-size: 3em;
+}
+
 h3 {
   padding-top: 20px;
   margin-top: 0px;
@@ -86,6 +90,12 @@ footer p {
 pre {
   margin-top: 1.5em;
   margin-bottom: 1.5em;
+}
+
+.pager li>a, .pager li>span {
+  background-color: transparent;
+  border: 1px solid #ddd;
+  color: #18bc9c;
 }
 
 .sample {

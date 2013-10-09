@@ -2,7 +2,7 @@ $(document).ready(function() {
     //enable smooth scrolling
     //$('a').smoothScroll({ speed: 'auto' });
     
-    var dontscroll = false;
+    /*var dontscroll = false;
     
     //enable smooth scrolling with back button support
     $(document).on('click', 'a[href*="#"]:not(.no-scroll)', function() {
@@ -39,7 +39,7 @@ $(document).ready(function() {
     if (window.location.hash) {
       dontscroll = true;
       $(window).trigger('hashchange');
-    }
+    }*/
     
     //set last accessed data in samples to today
     var date = new Date();

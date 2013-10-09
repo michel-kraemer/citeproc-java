@@ -37,10 +37,12 @@ GEM
     safe_yaml (0.7.1)
     sass (3.2.10)
     syntax (1.0.0)
+    yajl-ruby (1.1.0)
     yajl-ruby (1.1.0-x86-mingw32)
     yui-compressor (0.11.0)
 
 PLATFORMS
+  ruby
   x86-mingw32
 
 DEPENDENCIES
