@@ -173,3 +173,12 @@ pre {
   margin-left: -0.36em;
   margin-right: -0.15em;
 }
+
+dl.man-page {
+  font-size: 18px;
+}
+
+dl.man-page dd {
+  padding-left: 5em;
+  padding-bottom: 0.7em;
+}
