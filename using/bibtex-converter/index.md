@@ -8,7 +8,7 @@ nexttitle: Output formats
 ---
 
 With citeproc-java you can also generate citations and bibliographies
-from your Bib<span class="tex">T<sub>e</sub>X</span> databases.
+from your [Bib<span class="tex">T<sub>e</sub>X</span>](http://www.bibtex.org/) databases.
 
 First you have to load a database:
 

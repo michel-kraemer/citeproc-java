@@ -16,9 +16,19 @@ Introduction
 
 citeproc-java is a [Citation Style Language (CSL)](http://citationstyles.org/)
 processor for Java. It interprets CSL styles and generates citations and
-bibliographies. In addition to that, citeproc-java contains a
-[Bib<span class="tex">T<sub>e</sub>X</span>](http://www.bibtex.org/) converter that is able to map Bib<span class="tex">T<sub>e</sub>X</span>
-database entries to CSL citations.
+bibliographies. Some of the highlights in citeproc-java are:
+
+* With the [Bib<span class="tex">T<sub>e</sub>X</span> importer]({{ site.baseurl }}using/bibtex-converter)
+  it is possible to create citations and bibliographies from BibTeX files.
+* The [command line tool]({{ site.baseurl }}using/command-line-tool) can
+  be used to execute the library without setting up a development environment.
+  This is great for testing, in particular if you are a CSL style author
+  and want to test your style files in an easy and quick manner.
+* The library supports a wide range of [output formats]({{ site.baseurl }}using/output-formats)
+  such as `html`, `text`, `asciidoc`, `rtf`, and `fo`.
+* citeproc-java is CSL 1.0.1 compliant and all tests from the
+  [CSL test suite](https://bitbucket.org/bdarcus/citeproc-test) run
+  successfully.
 
 Installing
 ----------
