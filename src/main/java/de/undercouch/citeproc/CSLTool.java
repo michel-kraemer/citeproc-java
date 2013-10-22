@@ -14,17 +14,24 @@
 
 package de.undercouch.citeproc;
 
+import java.awt.Desktop;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
 
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.ParseException;
@@ -38,12 +45,19 @@ import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.helper.json.StringJsonBuilderFactory;
+import de.undercouch.citeproc.helper.oauth.AuthenticationStore;
+import de.undercouch.citeproc.helper.oauth.FileAuthenticationStore;
+import de.undercouch.citeproc.helper.oauth.RequestException;
+import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
 import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionBuilder;
 import de.undercouch.citeproc.helper.tool.OptionParser;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.helper.tool.Value;
+import de.undercouch.citeproc.mendeley.AuthenticatedMendeleyConnector;
+import de.undercouch.citeproc.mendeley.DefaultMendeleyConnector;
+import de.undercouch.citeproc.mendeley.MendeleyConnector;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
 
@@ -58,6 +72,7 @@ public class CSLTool {
 	 */
 	private static enum OID {
 		BIBLIOGRAPHY,
+		MENDELEY,
 		STYLE,
 		LOCALE,
 		FORMAT,
@@ -83,6 +98,7 @@ public class CSLTool {
 	private static List<Option<OID>> options = new OptionBuilder<OID>()
 		.add(OID.BIBLIOGRAPHY, "bibliography", "b", "input bibliography FILE (*.bib, *.json)",
 				"FILE", ArgumentType.STRING)
+		.add(OID.MENDELEY, "mendeley", "read input bibliography from Mendeley server")
 		.add(OID.STYLE, "style", "s", "citation STYLE name (default: ieee)",
 				"STYLE", ArgumentType.STRING)
 		.add(OID.LOCALE, "locale", "l", "citation LOCALE (default: en-US)",
@@ -93,6 +109,11 @@ public class CSLTool {
 		.add(OID.HELP, "help", "h", "display this help and exit")
 		.add(OID.VERSION, "version", "v", "output version information and exit")
 		.build();
+	
+	/**
+	 * Path to the tool's configuration directory
+	 */
+	private File configDir;
 	
 	/**
 	 * The main method of the CSL tool. Use <code>citeproc-java --help</code>
@@ -116,6 +137,9 @@ public class CSLTool {
 	 * @throws IOException if a stream could not be read
 	 */
 	public int run(String[] args) throws IOException {
+		configDir = new File(System.getProperty("user.home"), ".citeproc-java");
+		configDir.mkdirs();
+		
 		//parse command line
 		List<Value<OID>> values;
 		try {
@@ -133,6 +157,7 @@ public class CSLTool {
 		
 		//evaluate option values
 		String bibliography = null;
+		boolean mendeley = false;
 		String style = "ieee";
 		String locale = "en-US";
 		String format = "text";
@@ -144,7 +169,11 @@ public class CSLTool {
 			case BIBLIOGRAPHY:
 				bibliography = v.getValue().toString();
 				break;
-				
+			
+			case MENDELEY:
+				mendeley = true;
+				break;
+			
 			case STYLE:
 				style = v.getValue().toString();
 				break;
@@ -176,8 +205,15 @@ public class CSLTool {
 		}
 		
 		//check if there is a bibliography file
-		if (bibliography == null) {
+		if (bibliography == null && !mendeley) {
 			System.err.println("citeproc-java: no input bibliography specified.");
+			return 1;
+		}
+		
+		if (bibliography != null && mendeley) {
+			System.err.println("citeproc-java: You can either specify an "
+					+ "input bibliography file or let the tool read it from "
+					+ "the Mendeley server, but not both.");
 			return 1;
 		}
 		
@@ -189,11 +225,56 @@ public class CSLTool {
 			return 1;
 		}
 		
+		ItemDataProvider provider;
+		if (bibliography != null) {
+			provider = readBibliographyFile(bibliography);
+		} else {
+			provider = readMendeley();
+		}
+		if (provider == null) {
+			return 1;
+		}
+		
+		//check provided citation ids
+		if (citation && citationIds.isEmpty()) {
+			System.err.println("citeproc-java: no citation id specified.");
+			return 1;
+		}
+		for (String id : citationIds) {
+			if (provider.retrieveItem(id) == null) {
+				System.err.println("citeproc-java: unknown citation id: " + id);
+				String min = Levenshtein.findMinimum(Arrays.asList(provider.getIds()), id);
+				System.err.println("Did you mean `" + min + "'?");
+				return 1;
+			}
+		}
+		
+		//run conversion
+		int ret;
+		if (style.equals("json")) {
+			ret = generateJSON(citation, citationIds, provider);
+		} else {
+			ret = generateCSL(style, locale, format, citation, citationIds, provider);
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Reads all items from an input bibliography file and returns a provider
+	 * serving these items
+	 * @param bibliography the input file
+	 * @return the provider
+	 * @throws FileNotFoundException if the input file was not found
+	 * @throws IOException if the input file could not be read
+	 */
+	private ItemDataProvider readBibliographyFile(String bibliography)
+			throws FileNotFoundException, IOException {
 		//open buffered input stream to bibliography file
 		File bibfile = new File(bibliography);
 		if (!bibfile.exists()) {
 			System.err.println("citeproc-java: bibliography file `" + bibliography + "' does not exist.");
-			return 1;
+			return null;
 		}
 		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(bibfile));
 		
@@ -226,39 +307,180 @@ public class CSLTool {
 				provider = new ListItemDataProvider(items);
 			} else {
 				System.err.println("citeproc-java: unknown bibliography file format");
-				return 1;
+				return null;
 			}
 		} catch (ParseException e) {
 			System.err.println("citeproc-java: could not parse bibliography file.");
 			System.err.println(e.getMessage());
-			return 1;
+			return null;
 		} finally {
 			bis.close();
 		}
 		
-		//check provided citation ids
-		if (citation && citationIds.isEmpty()) {
-			System.err.println("citeproc-java: no citation id specified.");
-			return 1;
+		return provider;
+	}
+	
+	/**
+	 * Reads documents from the Mendeley server
+	 * @return an item data provider providing all documents from the
+	 * Mendeley server
+	 */
+	private ItemDataProvider readMendeley() {
+		//read app's consumer key and secret
+		String[] consumer;
+		try {
+			consumer = readConsumer();
+		} catch (Exception e) {
+			//should never happen
+			throw new RuntimeException("Could not read Mendeley consumer key and secret");
 		}
-		for (String id : citationIds) {
-			if (provider.retrieveItem(id) == null) {
-				System.err.println("citeproc-java: unknown citation id: " + id);
-				String min = Levenshtein.findMinimum(Arrays.asList(provider.getIds()), id);
-				System.err.println("Did you mean `" + min + "'?");
-				return 1;
+		
+		//use previously stored authentication
+		File authStoreFile = new File(configDir, "mendeley-auth-store.conf");
+		AuthenticationStore authStore;
+		try {
+			authStore = new FileAuthenticationStore(authStoreFile);
+		} catch (IOException e) {
+			System.err.println("citeproc-java: could not read user's "
+					+ "authentication store: " + authStoreFile.getPath());
+			return null;
+		}
+		
+		//connect to Mendeley server
+		MendeleyConnector mc = new DefaultMendeleyConnector(consumer[1], consumer[0]);
+		mc = new AuthenticatedMendeleyConnector(mc, authStore);
+
+		CSLItemData[] items;
+		int retries = 1;
+		while (true) {
+			try {
+				//download list of document IDs
+				List<String> docs = mc.getDocuments();
+				
+				//download all documents
+				items = new CSLItemData[docs.size()];
+				int i = 0;
+				for (String did : docs) {
+					String msg = String.format("Downloading document %03d/%03d ...\r",
+							i + 1, docs.size());
+					System.out.print(msg);
+					CSLItemData item = mc.getDocument(did);
+					items[i] = item;
+					++i;
+				}
+				System.out.println();
+			} catch (UnauthorizedException e) {
+				if (retries == 0) {
+					System.err.println("citeproc-java: failed to authorize.");
+					return null;
+				}
+				--retries;
+				
+				//app is not authenticated yet
+				if (!mendeleyAuthorize(mc)) {
+					return null;
+				}
+				
+				continue;
+			} catch (RequestException e) {
+				System.err.println("citeproc-java: " + e.getMessage());
+				return null;
+			} catch (IOException e) {
+				System.err.println("citeproc-java: could not get list of "
+						+ "documents from Mendeley server.");
+				return null;
+			}
+			
+			break;
+		}
+		
+		//return provider that contains all items from the server
+		return new ListItemDataProvider(items);
+	}
+	
+	/**
+	 * Request authorization for the tool from the Mendeley server
+	 * @param mc the Mendeley connector
+	 * @return true if authorization was successful
+	 */
+	private boolean mendeleyAuthorize(MendeleyConnector mc) {
+		//get authorization URL
+		String authUrl;
+		try {
+			authUrl = mc.getAuthorizationURL();
+		} catch (IOException e) {
+			System.err.println("citeproc-java: could not get authorization "
+					+ "URL from Mendeley server.");
+			return false;
+		}
+		
+		//ask user to point browser to authorization URL
+		System.out.println("This tool requires authorization. Please point your "
+				+ "web browser to the following URL and follow the instructions:");
+		System.out.println(authUrl);
+		
+		//open authorization tool in browser
+		if (Desktop.isDesktopSupported()) {
+			Desktop d = Desktop.getDesktop();
+			if (d.isSupported(Desktop.Action.BROWSE)) {
+				try {
+					d.browse(new URI(authUrl));
+				} catch (Exception e) {
+					//ignore. let the user open the browser manually.
+				}
 			}
 		}
 		
-		//run conversion
-		int ret;
-		if (style.equals("json")) {
-			ret = generateJSON(citation, citationIds, provider);
-		} else {
-			ret = generateCSL(style, locale, format, citation, citationIds, provider);
+		//read verification code from console
+		System.out.print("Verification code: ");
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		String verificationCode;
+		try {
+			verificationCode = br.readLine();
+		} catch (IOException e) {
+			throw new RuntimeException("Could not read from console.");
 		}
 		
-		return ret;
+		//authorize...
+		try {
+			System.out.println("Connecting ...");
+			mc.authorize(verificationCode);
+		} catch (IOException e) {
+			System.err.println("citeproc-java: Mendeley server refused "
+					+ "authorization.");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Reads the Mendeley consumer key and consumer secret from an encrypted
+	 * file. This is indeed not the most secure way to save these tokens, but
+	 * it's certainly better than putting them unencrypted in this file.
+	 * @return the key and secret
+	 * @throws Exception if something goes wrong
+	 */
+	private String[] readConsumer() throws Exception {
+		String str = CSLUtils.readStreamToString(CSLTool.class.getResourceAsStream(
+				"helper/tool/internal/citeproc-java-tool-consumer"), "UTF-8");
+		byte[] arr = DatatypeConverter.parseBase64Binary(str);
+		
+		SecretKeySpec k = new SecretKeySpec("#x$gbf5zs%4QvzAx".getBytes(), "AES");
+		Cipher c = Cipher.getInstance("AES");
+		c.init(Cipher.DECRYPT_MODE, k);
+		arr = c.doFinal(arr);
+		arr = DatatypeConverter.parseBase64Binary(new String(arr));
+		
+		String[] result = new String[] { "", "" };
+		for (int i = 0; i < 32; ++i) {
+			result[0] += (char)arr[i + 31];
+		}
+		for (int i = 0; i < 41; ++i) {
+			result[1] += (char)arr[i + 1857];
+		}
+		
+		return result;
 	}
 	
 	/**
