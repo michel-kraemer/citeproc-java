@@ -150,7 +150,7 @@ public class OptionParser {
 				//handle short name options
 				String an = a.substring(1);
 				for (Option<T> o : options) {
-					if (o.getShortName().equals(an)) {
+					if (o.getShortName() != null && o.getShortName().equals(an)) {
 						i += parseValue(o, args, i, result);
 						found = true;
 						break;
