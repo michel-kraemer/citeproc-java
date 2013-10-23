@@ -6,9 +6,11 @@ title: Download citeproc-java
 Everything you need to use citeproc-java has already been prepared
 for you in the following binary package:
 
+<div class="download-section">
 <a href="https://github.com/michel-kraemer/citeproc-java/releases/download/0.6/citeproc-java-0.6.zip" class="btn btn-primary btn-lg download-link-main"><i class="icon-download-alt"></i> Download citeproc-java 0.6 (binaries)</a>
 <a href="https://github.com/michel-kraemer/citeproc-java/releases/download/0.6/citeproc-java-0.6-javadoc.jar" class="btn btn-default btn-lg download-link-main"><i class="icon-download-alt"></i> JavaDoc</a>
 <a href="https://github.com/michel-kraemer/citeproc-java/archive/0.6.tar.gz" class="btn btn-default btn-lg download-link-main"><i class="icon-download-alt"></i> Source code</a>
+</div>
 
 Alternatively, you can download citeproc-java from Maven central:
 
