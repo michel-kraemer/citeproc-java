@@ -14,18 +14,31 @@
 
 package de.undercouch.citeproc.helper.tool;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 
 /**
- * Builder for a list of command line options
+ * Builder for a group of command line options
  * @author Michel Kraemer
  * @param <T> identifier type
  */
 public class OptionBuilder<T> {
-	private List<Option<T>> options = new ArrayList<Option<T>>();
+	private final OptionGroup<T> options;
+	
+	/**
+	 * Creates a new option builder
+	 */
+	public OptionBuilder() {
+		options = new OptionGroup<T>();
+	}
+	
+	/**
+	 * Creates a new option builder
+	 * @param groupName the name of the option group the builder will create
+	 * when calling {@link #build()}
+	 */
+	public OptionBuilder(String groupName) {
+		options = new OptionGroup<T>(groupName);
+	}
 
 	/**
 	 * Adds a new option without arguments
@@ -35,7 +48,7 @@ public class OptionBuilder<T> {
 	 * @return this option builder
 	 */
 	public OptionBuilder<T> add(T id, String longName, String description) {
-		options.add(new Option<T>(id, longName, description));
+		options.addOption(new Option<T>(id, longName, description));
 		return this;
 	}
 	
@@ -49,7 +62,7 @@ public class OptionBuilder<T> {
 	 * @return this option builder
 	 */
 	public OptionBuilder<T> add(T id, String longName, String shortName, String description) {
-		options.add(new Option<T>(id, longName, shortName, description));
+		options.addOption(new Option<T>(id, longName, shortName, description));
 		return this;
 	}
 	
@@ -68,14 +81,24 @@ public class OptionBuilder<T> {
 	 */
 	public OptionBuilder<T> add(T id, String longName, String shortName, String description,
 			String argumentName, ArgumentType argumentType) {
-		options.add(new Option<T>(id, longName, shortName, description, argumentName, argumentType));
+		options.addOption(new Option<T>(id, longName, shortName, description, argumentName, argumentType));
 		return this;
 	}
 	
 	/**
-	 * @return the built list of options
+	 * Adds a new option group
+	 * @param group the group to add
+	 * @return this option builder
 	 */
-	public List<Option<T>> build() {
+	public OptionBuilder<T> add(OptionGroup<T> group) {
+		options.addChild(group);
+		return this;
+	}
+	
+	/**
+	 * @return the built group of options
+	 */
+	public OptionGroup<T> build() {
 		return options;
 	}
 }

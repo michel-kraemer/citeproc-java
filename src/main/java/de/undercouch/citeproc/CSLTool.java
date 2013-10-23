@@ -50,9 +50,9 @@ import de.undercouch.citeproc.helper.oauth.AuthenticationStore;
 import de.undercouch.citeproc.helper.oauth.FileAuthenticationStore;
 import de.undercouch.citeproc.helper.oauth.RequestException;
 import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
-import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionBuilder;
+import de.undercouch.citeproc.helper.tool.OptionGroup;
 import de.undercouch.citeproc.helper.tool.OptionParser;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.helper.tool.Value;
@@ -99,12 +99,9 @@ public class CSLTool {
 	/**
 	 * A list of possible command line options for this tool
 	 */
-	private static List<Option<OID>> options = new OptionBuilder<OID>()
+	private static OptionGroup<OID> options = new OptionBuilder<OID>()
 		.add(OID.BIBLIOGRAPHY, "bibliography", "b", "input bibliography FILE (*.bib, *.json)",
 				"FILE", ArgumentType.STRING)
-		.add(OID.MENDELEY, "mendeley", "read input bibliography from Mendeley Web")
-		.add(OID.MENDELEY_SYNC, "mendeley-sync", "synchronize with Mendeley Web, "
-				+ "implies --mendeley")
 		.add(OID.STYLE, "style", "s", "citation STYLE name (default: ieee)",
 				"STYLE", ArgumentType.STRING)
 		.add(OID.LOCALE, "locale", "l", "citation LOCALE (default: en-US)",
@@ -113,8 +110,17 @@ public class CSLTool {
 				"FORMAT", ArgumentType.STRING)
 		.add(OID.CITATION, "citation", "c", "generate citations and not a bibliography")
 		.add(OID.LIST, "list", "display sorted list of available citation IDs")
-		.add(OID.HELP, "help", "h", "display this help and exit")
-		.add(OID.VERSION, "version", "V", "output version information and exit")
+		.add(new OptionBuilder<OID>("Mendeley:")
+				.add(OID.MENDELEY, "mendeley", "read input bibliography from Mendeley Web")
+				.add(OID.MENDELEY_SYNC, "mendeley-sync", "synchronize with Mendeley Web, "
+						+ "implies --mendeley")
+				.build()
+		)
+		.add(new OptionBuilder<OID>("Miscellaneous:")
+				.add(OID.HELP, "help", "h", "display this help and exit")
+				.add(OID.VERSION, "version", "V", "output version information and exit")
+				.build()
+		)
 		.build();
 	
 	/**

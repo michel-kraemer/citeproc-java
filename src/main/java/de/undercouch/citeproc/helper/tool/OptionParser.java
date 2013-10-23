@@ -35,7 +35,7 @@ public class OptionParser {
 	 * @param out destination stream
 	 */
 	public static <T> void usage(String command, String description,
-			List<Option<T>> options, PrintStream out) {
+			OptionGroup<T> options, PrintStream out) {
 		out.println("Usage: " + command);
 		out.println(description);
 		out.println();
@@ -43,7 +43,7 @@ public class OptionParser {
 		//calculate column widths
 		int firstColumnWidth = 0;
 		int secondColumnWidth = 0;
-		for (Option<T> o : options) {
+		for (Option<T> o : options.getFlatOptions()) {
 			//calculate width of first column (short name)
 			if (o.getShortName() != null) {
 				int fcw = o.getShortName().length() + 1;
@@ -63,7 +63,18 @@ public class OptionParser {
 		}
 		
 		//output options
-		for (Option<T> o : options) {
+		printOptions(options, out, firstColumnWidth, secondColumnWidth);
+	}
+
+	private static <T> void printOptions(OptionGroup<T> options, PrintStream out,
+			int firstColumnWidth, int secondColumnWidth) {
+		//print group name (if any)
+		if (options.getName() != null && !options.getName().isEmpty()) {
+			System.out.println();
+			System.out.println(options.getName());
+		}
+		
+		for (Option<T> o : options.getOptions()) {
 			out.print("  ");
 			
 			//output short name
@@ -115,6 +126,11 @@ public class OptionParser {
 			}
 			out.println(desc);
 		}
+		
+		//print children
+		for (OptionGroup<T> c : options.getChildren()) {
+			printOptions(c, out, firstColumnWidth, secondColumnWidth);
+		}
 	}
 	
 	/**
@@ -128,7 +144,7 @@ public class OptionParser {
 	 * @throws MissingArgumentException if an option misses a required argument
 	 * @throws InvalidOptionException if one of the arguments is unknown
 	 */
-	public static <T> List<Value<T>> parse(String[] args, List<Option<T>> options,
+	public static <T> List<Value<T>> parse(String[] args, OptionGroup<T> options,
 			T def) throws MissingArgumentException, InvalidOptionException {
 		List<Value<T>> result = new ArrayList<Value<T>>();
 		for (int i = 0; i < args.length; ++i) {
@@ -139,7 +155,7 @@ public class OptionParser {
 			if (a.startsWith("--")) {
 				//handle long name options
 				String an = a.substring(2);
-				for (Option<T> o : options) {
+				for (Option<T> o : options.getFlatOptions()) {
 					if (o.getLongName().equals(an)) {
 						i += parseValue(o, args, i, result);
 						found = true;
@@ -149,7 +165,7 @@ public class OptionParser {
 			} else if (a.startsWith("-")) {
 				//handle short name options
 				String an = a.substring(1);
-				for (Option<T> o : options) {
+				for (Option<T> o : options.getFlatOptions()) {
 					if (o.getShortName() != null && o.getShortName().equals(an)) {
 						i += parseValue(o, args, i, result);
 						found = true;
