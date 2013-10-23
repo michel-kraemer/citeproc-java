@@ -5,7 +5,7 @@ prev: using/output-formats/
 prevtitle: Output formats
 ---
 
-The [binary distribution]({{ site.baseurl}}#installing) of citeproc-java
+The [binary bundle]({{ site.baseurl}}#download) of citeproc-java
 contains a command line tool which you can use to execute the library
 without setting up a full development environment. The tool allows you
 to create citations and bibliographies in an easy and fast manner. In

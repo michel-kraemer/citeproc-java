@@ -30,17 +30,19 @@ bibliographies. Some of the highlights in citeproc-java are:
   [CSL test suite](https://bitbucket.org/bdarcus/citeproc-test) run
   successfully.
 
-Installing
-----------
+Download
+--------
 
-<div class="alert alert-success" markdown="1">
-In order to use citeproc-java you need three things: the library itself,
-the Citation Style Language Styles, and the locales (see [below](#installing-csl-styles-and-locales)).
+Everything you need to use citeproc-java has already been prepared
+for you in the following binary package:
+
+<div class="well">
+<i class="icon-download-alt download-link-main"></i> <a class="download-link-main" href="https://github.com/michel-kraemer/citeproc-java/releases/download/0.6/citeproc-java-0.6.zip">Download citeproc-java 0.6 (binaries)</a>
 </div>
 
-You can download citeproc-java from Maven central:
+Alternatively, you can download citeproc-java from Maven central:
 
-[http://central.maven.org/maven2/de/undercouch/citeproc-java/0.1](http://central.maven.org/maven2/de/undercouch/citeproc-java/0.1)
+[http://central.maven.org/maven2/de/undercouch/citeproc-java/0.6](http://central.maven.org/maven2/de/undercouch/citeproc-java/0.6)
 
 The library has dependencies to [JBibTeX 1.0.8](https://code.google.com/p/java-bibtex/),
 [ANTLR 4.1](http://www.antlr.org/), and [Apache Commons Lang 2.6](http://commons.apache.org/proper/commons-lang/).
@@ -63,7 +65,7 @@ The following snippet can be added to your build file:
   <dependency>
     <groupId>de.undercouch</groupId>
     <artifactId>citeproc-java</artifactId>
-    <version>0.1</version>
+    <version>0.6</version>
   </dependency>
 </dependencies>
 {% endhighlight %}
@@ -78,7 +80,7 @@ repositories {
 }
 
 dependencies {
-    compile 'de.undercouch:citeproc-java:0.1'
+    compile 'de.undercouch:citeproc-java:0.6'
 }
 {% endhighlight %}
 
@@ -88,11 +90,15 @@ dependencies {
 
 ### Installing CSL Styles and locales
 
-In addition to citeproc-java you will need the CSL styles and locales which
-the library interprets to generate citations and bibliographies.
+In order to use citeproc-java you need three things: the library itself,
+the Citation Style Language Styles, and the locales. The [binary bundle](#download)
+includes all what you need. However, if you don't use the binary
+package (e.g. because you're installing citeproc-java via Maven) you
+will certainly need to download the CSL styles and locales.
 
 <div class="alert alert-success" markdown="1">
-Please note that without these files citeproc-java will be rather useless.
+Please note that without these files the citeproc-java library alone
+will be rather useless.
 </div>
 
 You can download the styles and locales from the following GitHub repositories:
@@ -101,7 +107,7 @@ You can download the styles and locales from the following GitHub repositories:
 
 [https://github.com/citation-style-language/locales](https://github.com/citation-style-language/locales)
 
-For convenience we provide the styles and locales as Maven artifacts through
+For convenience we provide them as Maven artifacts through
 the Sonatype OSS repository. The snapshots are updated daily, so you'll always
 get the latest styles and locales.
 
