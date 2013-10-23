@@ -189,8 +189,11 @@ dl.man-page dd {
 
 .download-link-main {
   font-size: 20px;
+  margin-top: 15px;
+  margin-bottom: 40px;
+  margin-right: 10px;
 }
 
-i.download-link-main {
+.download-link-main i {
   padding-right: 5px;
 }
