@@ -102,8 +102,9 @@ public class CSLTool {
 	private static List<Option<OID>> options = new OptionBuilder<OID>()
 		.add(OID.BIBLIOGRAPHY, "bibliography", "b", "input bibliography FILE (*.bib, *.json)",
 				"FILE", ArgumentType.STRING)
-		.add(OID.MENDELEY, "mendeley", "read input bibliography from Mendeley server")
-		.add(OID.MENDELEY_SYNC, "mendeley-sync", "synchronize with Mendeley server")
+		.add(OID.MENDELEY, "mendeley", "read input bibliography from Mendeley Web")
+		.add(OID.MENDELEY_SYNC, "mendeley-sync", "synchronize with Mendeley Web, "
+				+ "implies --mendeley")
 		.add(OID.STYLE, "style", "s", "citation STYLE name (default: ieee)",
 				"STYLE", ArgumentType.STRING)
 		.add(OID.LOCALE, "locale", "l", "citation LOCALE (default: en-US)",
@@ -183,6 +184,7 @@ public class CSLTool {
 				break;
 			
 			case MENDELEY_SYNC:
+				mendeley = true;
 				mendeleySync = true;
 				break;
 			
