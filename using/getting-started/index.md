@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Getting started with citeproc-java
-next: using/bibtex-converter/
-nexttitle: Bib<span class="tex">T<sub>e</sub>X</span> converter
+next: using/building/
+nexttitle: Building
 ---
 
 Generally, citeproc-java runs on JRE 6 or higher. However, JRE 7 or higher is

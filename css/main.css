@@ -29,6 +29,10 @@ footer p {
   .container {
     max-width: 750px;
   }
+  
+  .navbar-right .dropdown-menu.dropdown-left {
+    right: inherit;
+  }
 }
 
 @media (min-width: 992px) {

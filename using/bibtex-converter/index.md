@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Using the Bib<span class="tex">T<sub>e</sub>X</span> converter
-prev: using/getting-started/
-prevtitle: Getting started
+prev: using/building/
+prevtitle: Building
 next: using/output-formats/
 nexttitle: Output formats
 ---

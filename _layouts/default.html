@@ -31,32 +31,26 @@
           </button>
         </div>
         <div class="navbar-collapse collapse" id="navbar-main">
-          <ul class="nav navbar-nav">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{ site.baseurl }}download"><i class="icon-download-alt"></i>&nbsp;&nbsp;Download</a></li>
             <li class="dropdown">
-              <a href="{{ site.baseurl }}using/" role="button" class="dropdown-toggle" data-toggle="dropdown">Using <b class="caret"></b></a>
-              <ul class="dropdown-menu" role="menu">
+              <a href="{{ site.baseurl }}using/" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-file-alt"></i>&nbsp;&nbsp;Using <b class="caret"></b></a>
+              <ul class="dropdown-menu dropdown-left" role="menu">
                 <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}using/getting-started/">Getting started</a></li>
+                <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}using/building/">Building</a></li>
                 <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}using/bibtex-converter/">Bib<span class="tex">T<sub>e</sub>X</span> converter</a></li>
                 <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}using/output-formats">Output formats</a></li>
                 <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}using/command-line-tool">Command line tool</a></li>
               </ul>
             </li>
-            <li>
-              <a href="{{ site.baseurl }}#building">Building</a>
-            </li>
-          </ul>
-
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="{{ site.baseurl }}#license"><i class="icon-file-alt"></i>&nbsp;&nbsp;License</a></li>
             <li class="dropdown">
               <a href="{{ site.baseurl }}api/latest" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-book"></i>&nbsp;&nbsp;API <b class="caret"></b></a>
-              <ul class="dropdown-menu" role="menu">
+              <ul class="dropdown-menu dropdown-left" role="menu">
                 <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}api/latest">Latest</a></li>
                 <li role="presentation"><a role="menuitem" href="{{ site.baseurl }}api/0.1">0.1</a></li>
               </ul>
             </li>
             <li><a href="https://github.com/michel-kraemer/citeproc-java"><i class="icon-github"></i>&nbsp;&nbsp;GitHub</a></li>
-            <li><a href="{{ site.baseurl }}#download"><i class="icon-download-alt"></i>&nbsp;&nbsp;Download</a></li>
           </ul>
 
         </div>
