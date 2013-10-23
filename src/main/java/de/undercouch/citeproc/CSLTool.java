@@ -114,7 +114,7 @@ public class CSLTool {
 		.add(OID.CITATION, "citation", "c", "generate citations and not a bibliography")
 		.add(OID.LIST, "list", "display sorted list of available citation IDs")
 		.add(OID.HELP, "help", "h", "display this help and exit")
-		.add(OID.VERSION, "version", "v", "output version information and exit")
+		.add(OID.VERSION, "version", "V", "output version information and exit")
 		.build();
 	
 	/**
