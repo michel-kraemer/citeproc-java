@@ -75,6 +75,7 @@ public class CSLTool {
 	private static enum OID {
 		BIBLIOGRAPHY,
 		MENDELEY,
+		MENDELEY_SYNC,
 		STYLE,
 		LOCALE,
 		FORMAT,
@@ -102,6 +103,7 @@ public class CSLTool {
 		.add(OID.BIBLIOGRAPHY, "bibliography", "b", "input bibliography FILE (*.bib, *.json)",
 				"FILE", ArgumentType.STRING)
 		.add(OID.MENDELEY, "mendeley", "read input bibliography from Mendeley server")
+		.add(OID.MENDELEY_SYNC, "mendeley-sync", "synchronize with Mendeley server")
 		.add(OID.STYLE, "style", "s", "citation STYLE name (default: ieee)",
 				"STYLE", ArgumentType.STRING)
 		.add(OID.LOCALE, "locale", "l", "citation LOCALE (default: en-US)",
@@ -162,6 +164,7 @@ public class CSLTool {
 		//evaluate option values
 		String bibliography = null;
 		boolean mendeley = false;
+		boolean mendeleySync = false;
 		String style = "ieee";
 		String locale = "en-US";
 		String format = "text";
@@ -177,6 +180,10 @@ public class CSLTool {
 			
 			case MENDELEY:
 				mendeley = true;
+				break;
+			
+			case MENDELEY_SYNC:
+				mendeleySync = true;
 				break;
 			
 			case STYLE:
@@ -239,7 +246,7 @@ public class CSLTool {
 		if (bibliography != null) {
 			provider = readBibliographyFile(bibliography);
 		} else {
-			provider = readMendeley();
+			provider = readMendeley(mendeleySync);
 		}
 		if (provider == null) {
 			return 1;
@@ -342,10 +349,11 @@ public class CSLTool {
 	
 	/**
 	 * Reads documents from the Mendeley server
+	 * @param sync true if synchronization should be forced
 	 * @return an item data provider providing all documents from the
 	 * Mendeley server
 	 */
-	private ItemDataProvider readMendeley() {
+	private ItemDataProvider readMendeley(boolean sync) {
 		//read app's consumer key and secret
 		String[] consumer;
 		try {
@@ -373,6 +381,11 @@ public class CSLTool {
 		//enable cache
 		File cacheFile = new File(configDir, "mendeley-cache.dat");
 		CachingMendeleyConnector mc = new CachingMendeleyConnector(dmc, cacheFile);
+		
+		//clear cache if necessary
+		if (sync) {
+			mc.clear();
+		}
 
 		CSLItemData[] items;
 		int retries = 1;

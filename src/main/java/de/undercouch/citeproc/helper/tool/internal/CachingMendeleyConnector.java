@@ -141,6 +141,14 @@ public class CachingMendeleyConnector extends MendeleyConnectorAdapter {
 	}
 	
 	/**
+	 * Clears the cache
+	 */
+	public void clear() {
+		_documentIds.clear();
+		_documents.clear();
+	}
+	
+	/**
 	 * Commit database transaction. This method is a NOOP if there is no database.
 	 */
 	private void commit() {
