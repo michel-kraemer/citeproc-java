@@ -26,6 +26,9 @@ bibliographies. Some of the highlights in citeproc-java are:
   and want to test your style files in an easy and quick manner.
 * The library supports a wide range of [output formats]({{ site.baseurl }}using/output-formats)
   such as `html`, `text`, `asciidoc`, `rtf`, and `fo`.
+* citeproc-java contains a [Mendeley connector]({{ site.baseurl }}using/mendeley)
+  that allows you to read documents from Mendeley Web and to use them
+  as input for citations or bibliographies.
 * citeproc-java is CSL 1.0.1 compliant and all tests from the
   [CSL test suite](https://bitbucket.org/bdarcus/citeproc-test) run
   successfully.

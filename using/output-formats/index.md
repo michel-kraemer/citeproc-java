@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Output formats
-prev: using/bibtex-converter/
-prevtitle: BibTeX converter
+prev: using/mendeley/
+prevtitle: Mendeley connector
 next: using/command-line-tool/
 nexttitle: Command line tool
 ---
