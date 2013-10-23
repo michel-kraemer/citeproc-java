@@ -51,6 +51,7 @@ import de.undercouch.citeproc.helper.oauth.RequestException;
 import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
 import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
+import de.undercouch.citeproc.helper.tool.internal.CachingMendeleyConnector;
 import de.undercouch.citeproc.helper.tool.OptionBuilder;
 import de.undercouch.citeproc.helper.tool.OptionParser;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
@@ -347,8 +348,12 @@ public class CSLTool {
 		}
 		
 		//connect to Mendeley server
-		MendeleyConnector mc = new DefaultMendeleyConnector(consumer[1], consumer[0]);
-		mc = new AuthenticatedMendeleyConnector(mc, authStore);
+		MendeleyConnector dmc = new DefaultMendeleyConnector(consumer[1], consumer[0]);
+		dmc = new AuthenticatedMendeleyConnector(dmc, authStore);
+		
+		//enable cache
+		File cacheFile = new File(configDir, "mendeley-cache.dat");
+		CachingMendeleyConnector mc = new CachingMendeleyConnector(dmc, cacheFile);
 
 		CSLItemData[] items;
 		int retries = 1;
@@ -360,15 +365,23 @@ public class CSLTool {
 				//download all documents
 				items = new CSLItemData[docs.size()];
 				int i = 0;
+				int printed = 0;
 				for (String did : docs) {
-					String msg = String.format("Downloading document %03d/%03d ...\r",
-							i + 1, docs.size());
-					System.out.print(msg);
+					if (!mc.containsDocumentId(did)) {
+						String msg = String.format("\rSynchronizing (%d/%d) ...",
+								i + 1, docs.size());
+						System.out.print(msg);
+						++printed;
+					}
+					
 					CSLItemData item = mc.getDocument(did);
 					items[i] = item;
 					++i;
 				}
-				System.out.println();
+				
+				if (printed > 0) {
+					System.out.println();
+				}
 			} catch (UnauthorizedException e) {
 				if (retries == 0) {
 					System.err.println("citeproc-java: failed to authorize.");
