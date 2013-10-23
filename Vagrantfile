@@ -4,5 +4,7 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 4000, host: 4000
   config.vm.provision :shell, :path => "_vagrant/install.sh"
   config.vm.provision :shell, :path => "_vagrant/install-gems.sh"
-  config.cache.auto_detect = true
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.auto_detect = true
+  end
 end
