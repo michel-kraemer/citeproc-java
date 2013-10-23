@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -51,11 +52,11 @@ import de.undercouch.citeproc.helper.oauth.RequestException;
 import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
 import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
-import de.undercouch.citeproc.helper.tool.internal.CachingMendeleyConnector;
 import de.undercouch.citeproc.helper.tool.OptionBuilder;
 import de.undercouch.citeproc.helper.tool.OptionParser;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.helper.tool.Value;
+import de.undercouch.citeproc.helper.tool.internal.CachingMendeleyConnector;
 import de.undercouch.citeproc.mendeley.AuthenticatedMendeleyConnector;
 import de.undercouch.citeproc.mendeley.DefaultMendeleyConnector;
 import de.undercouch.citeproc.mendeley.MendeleyConnector;
@@ -78,6 +79,7 @@ public class CSLTool {
 		LOCALE,
 		FORMAT,
 		CITATION,
+		LIST,
 		HELP,
 		VERSION,
 		CITATIONID
@@ -107,6 +109,7 @@ public class CSLTool {
 		.add(OID.FORMAT, "format", "f", "output format: text (default), html, asciidoc, fo, rtf",
 				"FORMAT", ArgumentType.STRING)
 		.add(OID.CITATION, "citation", "c", "generate citations and not a bibliography")
+		.add(OID.LIST, "list", "display sorted list of available citation IDs")
 		.add(OID.HELP, "help", "h", "display this help and exit")
 		.add(OID.VERSION, "version", "v", "output version information and exit")
 		.build();
@@ -163,6 +166,7 @@ public class CSLTool {
 		String locale = "en-US";
 		String format = "text";
 		boolean citation = false;
+		boolean list = false;
 		List<String> citationIds = new ArrayList<String>();
 		
 		for (Value<OID> v : values) {
@@ -189,6 +193,10 @@ public class CSLTool {
 			
 			case CITATION:
 				citation = true;
+				break;
+			
+			case LIST:
+				list = true;
 				break;
 			
 			case HELP:
@@ -226,6 +234,7 @@ public class CSLTool {
 			return 1;
 		}
 		
+		//load input bibliography
 		ItemDataProvider provider;
 		if (bibliography != null) {
 			provider = readBibliographyFile(bibliography);
@@ -234,6 +243,16 @@ public class CSLTool {
 		}
 		if (provider == null) {
 			return 1;
+		}
+		
+		if (list) {
+			//list available citation ids and exit
+			List<String> ids = new ArrayList<String>(Arrays.asList(provider.getIds()));
+			Collections.sort(ids);
+			for (String id : ids) {
+				System.out.println(id);
+			}
+			return 0;
 		}
 		
 		//check provided citation ids
