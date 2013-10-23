@@ -133,6 +133,14 @@ public class CachingMendeleyConnector extends MendeleyConnectorAdapter {
 	}
 	
 	/**
+	 * @return true if the cache contains a list of document IDs, false
+	 * if the cache is empty
+	 */
+	public boolean hasDocumentList() {
+		return !_documentIds.isEmpty();
+	}
+	
+	/**
 	 * Commit database transaction. This method is a NOOP if there is no database.
 	 */
 	private void commit() {

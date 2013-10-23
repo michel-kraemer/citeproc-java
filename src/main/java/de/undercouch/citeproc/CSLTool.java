@@ -379,7 +379,15 @@ public class CSLTool {
 		while (true) {
 			try {
 				//download list of document IDs
+				boolean cacheempty = false;
+				if (!mc.hasDocumentList()) {
+					System.out.print("Retrieving documents ...");
+					cacheempty = true;
+				}
 				List<String> docs = mc.getDocuments();
+				if (cacheempty) {
+					System.out.println();
+				}
 				
 				//download all documents
 				items = new CSLItemData[docs.size()];
@@ -448,8 +456,9 @@ public class CSLTool {
 		
 		//ask user to point browser to authorization URL
 		System.out.println("This tool requires authorization. Please point your "
-				+ "web browser to the following URL and follow the instructions:");
+				+ "web browser to the\nfollowing URL and follow the instructions:\n");
 		System.out.println(authUrl);
+		System.out.println();
 		
 		//open authorization tool in browser
 		if (Desktop.isDesktopSupported()) {
@@ -464,7 +473,7 @@ public class CSLTool {
 		}
 		
 		//read verification code from console
-		System.out.print("Verification code: ");
+		System.out.print("Enter verification code: ");
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String verificationCode;
 		try {
