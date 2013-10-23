@@ -206,3 +206,7 @@ dl.man-page dt code {
   margin-top: 20px;
   margin-bottom: 35px;
 }
+
+.pager {
+  padding-top: 20px;
+}
