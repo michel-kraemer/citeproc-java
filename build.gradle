@@ -16,7 +16,7 @@ apply plugin: 'application'
 
 import de.undercouch.gradle.tasks.download.Download
 
-version = '0.2'
+version = '0.6'
 group = 'de.undercouch'
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
