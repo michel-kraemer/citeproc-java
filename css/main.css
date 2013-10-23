@@ -187,6 +187,10 @@ dl.man-page dd {
   padding-bottom: 0.7em;
 }
 
+dl.man-page dt code {
+  font-size: inherit;
+}
+
 .download-link-main {
   font-size: 20px;
   margin-right: 10px;

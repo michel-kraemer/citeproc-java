@@ -29,14 +29,15 @@ The tool accepts the following command line options:
 `-b, --bibliography <FILE>`
 : Specifies the input bibliography file. Valid input files are
   Bib<span class="tex">T<sub>e</sub>X</span> files (`*.bib`) and CSL
-  citations in JSON format (`*.json`).
+  citations in JSON format (`*.json`). This option cannot be used
+  together with `--mendeley`.
 
 `-s, --style <STYLE>`
 : The citation style name. Can either be a simple name specifying one
   of the 6500+ CSL styles distributed with the command line tool (such
   as `ieee`, `apa`, or `chicago-author-date`), or a string containing
   an XML-serialized representation of a CSL style. The default value
-  of this argument is `ieee`.
+  for this argument is `ieee`.
 
 `-l, --locale <LOCALE>`
 : Specifies the locale to use for citations and bibliographies. The
@@ -48,13 +49,35 @@ The tool accepts the following command line options:
 
 `-c, --citation`
 : Specifies that citations should be generated instead of a bibliography.
-  If you use this argument, you have to provide one or more citation IDs
+  If you use this argument you have to provide one or more citation IDs
   to the command line tool.
 
+Mendeley:
+
+{:.man-page}
+`--mendeley`
+: Connects to Mendeley Web to create citations and bibliographies for
+  the documents the user stored there. When connecting for the first
+  time the tool will synchronize its internal database (stored in the
+  user's home directory) with the server. Apart from that, the tool
+  will ask for authorization if it has not connected to the Mendeley
+  server before. Authorization can be granted by pointing the web
+  browser to the URL given by the tool, accepting the requesting,
+  and then entering the displayed validation code.
+
+`--mendeley-sync`
+: Forces synchronization of the internal database with Mendeley Web.
+  This option has to be used if new documents have been added to the
+  user's web catalog or if a document's details have changed. This option
+  implies `--mendeley`.
+
+Miscellaneous:
+
+{:.man-page}
 `-h, --help`
 : Displays the help text
 
-`-v, --version`
+`-V, --version`
 : Displays the command line tool's version
 
 The citeproc-java tool also accepts one or more citation IDs. How these
@@ -68,6 +91,14 @@ IDs are interpreted depends on the generation mode:
   the tool will create citations that can be inserted into the text.
   In this case you have to specify at least one citation ID. The
   tool will only create citations for items with the specified IDs.
+
+In addition to the more than 6500 CSL styles bundled with the command
+line tool you can also specify `json` as style. This will make the tool
+output citations or bibliographies in JSON format which can be saved
+to a file and used as input later:
+
+    citeproc-java -b references.bib -s json > references.json
+    citeproc-java -b references.json
 
 Examples
 --------
@@ -100,3 +131,17 @@ will output
 
     citeproc-java: unknown citation id: Fwler_2010
     Did you mean `Fowler_2010'?
+
+Generate a bibliography from all documents stored in Mendeley Web:
+
+    citeproc-java --mendeley
+
+Generate a bibliography from Mendeley Web but only include items with
+the citation IDs `Fowler_2010` and `Kisker_2012`:
+
+    citeproc-java --mendeley Fowler_2010 Kisker_2012
+
+Generate a bibliography from all documents stored in Mendeley Web but
+synchronize with the server first:
+
+    citeproc-java --mendeley-sync
