@@ -157,20 +157,6 @@ CSL.Output.Formats.fo = {
 	},
 	
 	"@bibliography/entry": function (state, str) {
-		var maxoffset = 0;
-		var len = state.registry.reflist.length;
-		for (pos = 0; pos < len; pos += 1) {
-			var item = state.registry.reflist[pos];
-			if (item.offset > maxoffset) {
-				maxoffset = item.offset;
-			}
-		}
-		
-		//make reasonable margin for an average character width
-		var em = Math.max(2.5, maxoffset * 0.6);
-		
-		str = str.replace("$$$__COLUMN_WIDTH_1__$$$", em + "em");
-		
 		var insert = "";
 		if (state.sys.embedBibliographyEntry) {
 			insert = state.sys.embedBibliographyEntry(this.item_id) + "\n";

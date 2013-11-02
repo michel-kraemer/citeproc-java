@@ -50,6 +50,12 @@ public class CSL {
 	private final ScriptRunner runner;
 	
 	/**
+	 * The output format
+	 * @see #setOutputFormat(String)
+	 */
+	private String outputFormat = "html";
+	
+	/**
 	 * Constructs a new citation processor
 	 * @param itemDataProvider an object that provides citation item data
 	 * @param style the citation style to use. May either be a serialized
@@ -235,6 +241,7 @@ public class CSL {
 	public void setOutputFormat(String format) {
 		try {
 			runner.eval("__engine__.setOutputFormat(\"" + escapeJava(format) + "\");");
+			outputFormat = format;
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not set output format", e);
 		}
@@ -479,6 +486,15 @@ public class CSL {
 		}
 		String bibStart = getFromMap(fpm, "bibstart", "");
 		String bibEnd = getFromMap(fpm, "bibend", "");
+		
+		//special treatment for some output formats
+		if (outputFormat.equals("fo")) {
+			//make reasonable margin for an average character width
+			String em = Math.max(2.5, maxOffset * 0.6) + "em";
+			for (int i = 0; i < entries.length; ++i) {
+				entries[i] = entries[i].replace("$$$__COLUMN_WIDTH_1__$$$", em);
+			}
+		}
 		
 		return new Bibliography(entries, bibStart, bibEnd, entryIds,
 				maxOffset, entrySpacing, lineSpacing, hangingIndent,
