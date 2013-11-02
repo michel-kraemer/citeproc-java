@@ -38,6 +38,8 @@ import javax.xml.bind.DatatypeConverter;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.ParseException;
 
+import de.undercouch.citeproc.bibtex.AuxFile;
+import de.undercouch.citeproc.bibtex.AuxFileParser;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import de.undercouch.citeproc.csl.CSLItemData;
@@ -77,6 +79,7 @@ public class CSLTool {
 		BIBLIOGRAPHY,
 		MENDELEY,
 		MENDELEY_SYNC,
+		BIBTEX_SIMPLE,
 		STYLE,
 		LOCALE,
 		FORMAT,
@@ -118,6 +121,12 @@ public class CSLTool {
 				.add(OID.MENDELEY, "mendeley", "read input bibliography from Mendeley Web")
 				.add(OID.MENDELEY_SYNC, "mendeley-sync", "synchronize with Mendeley Web, "
 						+ "implies --mendeley")
+				.build()
+		)
+		.add(new OptionBuilder<OID>("BibTeX:")
+				.add(OID.BIBTEX_SIMPLE, "bibtex-simple", null,
+						"generate a LaTeX bibliography from an AUXFILE",
+						"AUXFILE", ArgumentType.STRING)
 				.build()
 		)
 		.add(new OptionBuilder<OID>("Miscellaneous:")
@@ -176,6 +185,7 @@ public class CSLTool {
 		String bibliography = null;
 		boolean mendeley = false;
 		boolean mendeleySync = false;
+		boolean bibtex = false;
 		String style = "ieee";
 		String locale = "en-US";
 		String format = "text";
@@ -197,6 +207,11 @@ public class CSLTool {
 			case MENDELEY_SYNC:
 				mendeley = true;
 				mendeleySync = true;
+				break;
+			
+			case BIBTEX_SIMPLE:
+				bibtex = true;
+				bibliography = v.getValue().toString();
 				break;
 			
 			case STYLE:
@@ -253,14 +268,37 @@ public class CSLTool {
 		//check output format
 		if (!format.equals("text") && !format.equals("html") &&
 				!format.equals("asciidoc") && !format.equals("fo") &&
-				!format.equals("rtf")) {
+				!format.equals("rtf") && !format.equals("latexbbl")) {
 			System.err.println("citeproc-java: invalid output format: " + format);
 			return 1;
+		}
+		
+		//override output format if we're using bibtex mode
+		if (bibtex) {
+			format = "latexbbl";
 		}
 		
 		//load input bibliography
 		ItemDataProvider provider;
 		if (bibliography != null) {
+			if (bibtex) {
+				//handle LaTeX auxiliary file
+				AuxFile af= AuxFileParser.parse(bibliography);
+				if (af.getStyle() != null) {
+					style = af.getStyle();
+				}
+				if (af.getInput() == null) {
+					System.err.println("citeproc-java: aux file does not "
+							+ "specify an input bibliography.");
+					return 1;
+				}
+				bibliography = af.getInput();
+				if (!bibliography.toLowerCase().endsWith(".bib")) {
+					bibliography = bibliography + ".bib";
+				}
+				citationIds = af.getCitations();
+			}
+			
 			provider = readBibliographyFile(bibliography);
 		} else {
 			provider = readMendeley(mendeleySync);
@@ -663,6 +701,14 @@ public class CSLTool {
 	 * Prints out version information
 	 */
 	private void version() {
+		version("citeproc-java");
+	}
+	
+	/**
+	 * Prints out version information for a given application
+	 * @param applicationName the application's name
+	 */
+	public static void version(String applicationName) {
 		URL u = CSLTool.class.getResource("version.dat");
 		String version;
 		try {
@@ -670,7 +716,7 @@ public class CSLTool {
 		} catch (IOException e) {
 			throw new RuntimeException("Could not read version information", e);
 		}
-		System.out.println("citeproc-java " + version);
+		System.out.println(applicationName + " " + version);
 	}
 	
 	/**

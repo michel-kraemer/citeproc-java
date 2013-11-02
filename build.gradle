@@ -148,6 +148,22 @@ task packageSources(type: Jar) {
     classifier = 'sources'
 }
 
+// configure start scripts for the bibtex tool
+task bibtexStartScripts(type: CreateStartScripts) {
+    applicationName = 'citeproc-java-bibtex'
+    classpath = startScripts.classpath
+    mainClassName = 'de.undercouch.citeproc.bibtex.BibTeXTool'
+    outputDir = startScripts.outputDir
+}
+
+startScripts.dependsOn(bibtexStartScripts)
+
+// include bibtex start scripts into distribution
+applicationDistribution.from(bibtexStartScripts.outputDir) {
+    include bibtexStartScripts.applicationName + '*'
+    into 'bin'
+}
+
 // define artifacts for upload
 artifacts {
     archives jar

@@ -40,6 +40,10 @@ public class OptionParser {
 		out.println(description);
 		out.println();
 		
+		if (options == null) {
+			return;
+		}
+		
 		//calculate column widths
 		int firstColumnWidth = 0;
 		int secondColumnWidth = 0;
