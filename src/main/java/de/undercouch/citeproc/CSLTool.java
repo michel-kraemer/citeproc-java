@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public class CSLTool {
 		FORMAT,
 		CITATION,
 		LIST,
+		OUT,
 		HELP,
 		VERSION,
 		CITATIONID
@@ -110,6 +112,8 @@ public class CSLTool {
 				"FORMAT", ArgumentType.STRING)
 		.add(OID.CITATION, "citation", "c", "generate citations and not a bibliography")
 		.add(OID.LIST, "list", "display sorted list of available citation IDs")
+		.add(OID.OUT, "output", "o", "write output to FILE instead of stdout",
+				"FILE", ArgumentType.STRING)
 		.add(new OptionBuilder<OID>("Mendeley:")
 				.add(OID.MENDELEY, "mendeley", "read input bibliography from Mendeley Web")
 				.add(OID.MENDELEY_SYNC, "mendeley-sync", "synchronize with Mendeley Web, "
@@ -178,6 +182,7 @@ public class CSLTool {
 		boolean citation = false;
 		boolean list = false;
 		List<String> citationIds = new ArrayList<String>();
+		String outputFile = null;
 		
 		for (Value<OID> v : values) {
 			switch (v.getId()) {
@@ -212,6 +217,10 @@ public class CSLTool {
 			
 			case LIST:
 				list = true;
+				break;
+			
+			case OUT:
+				outputFile = v.getValue().toString();
 				break;
 			
 			case HELP:
@@ -284,12 +293,25 @@ public class CSLTool {
 			}
 		}
 		
+		//prepare output
+		PrintStream out = System.out;
+		if (outputFile != null) {
+			out = new PrintStream(outputFile);
+		}
+		
 		//run conversion
 		int ret;
-		if (style.equals("json")) {
-			ret = generateJSON(citation, citationIds, provider);
-		} else {
-			ret = generateCSL(style, locale, format, citation, citationIds, provider);
+		try {
+			if (style.equals("json")) {
+				ret = generateJSON(citation, citationIds, provider, out);
+			} else {
+				ret = generateCSL(style, locale, format, citation, citationIds, provider, out);
+			}
+			out.flush();
+		} finally {
+			if (outputFile != null) {
+				out.close();
+			}
 		}
 		
 		return ret;
@@ -550,20 +572,21 @@ public class CSLTool {
 	 * @param citation true if an array of citation ids should be generated
 	 * @param citationIds the citation ids given on the command line
 	 * @param provider a provider containing all citation item data
+	 * @param out the print stream to write the output to
 	 * @return the exit code
 	 */
 	private int generateJSON(boolean citation, List<String> citationIds,
-			ItemDataProvider provider) {
+			ItemDataProvider provider, PrintStream out) {
 		StringJsonBuilderFactory factory = new StringJsonBuilderFactory();
 		if (citation) {
 			//create an array of citation ids
 			JsonBuilder b = factory.createJsonBuilder();
 			String s = (String)b.toJson(citationIds.toArray(new String[citationIds.size()]));
-			System.out.println(s);
+			out.println(s);
 		} else {
 			//create an array of citation item data objects (either for
 			//the whole bibliography or for the given citation ids only)
-			System.out.print("[");
+			out.print("[");
 			List<String> ids = citationIds;
 			if (ids.isEmpty()) {
 				ids = Arrays.asList(provider.getIds());
@@ -572,15 +595,15 @@ public class CSLTool {
 			int i = 0;
 			for (String id : ids) {
 				if (i > 0) {
-					System.out.print(",");
+					out.print(",");
 				}
 				CSLItemData item = provider.retrieveItem(id);
 				JsonBuilder b = factory.createJsonBuilder();
-				System.out.print(item.toJson(b));
+				out.print(item.toJson(b));
 				++i;
 			}
 			
-			System.out.println("]");
+			out.println("]");
 		}
 		return 0;
 	}
@@ -594,12 +617,13 @@ public class CSLTool {
 	 * a bibliography
 	 * @param citationIds the citation ids given on the command line
 	 * @param provider a provider containing all citation item data
+	 * @param out the print stream to write the output to
 	 * @return the exit code
 	 * @throws IOException if the CSL processor could not be initialized
 	 */
 	private int generateCSL(String style, String locale, String format,
 			boolean citation, List<String> citationIds,
-			ItemDataProvider provider) throws IOException {
+			ItemDataProvider provider, PrintStream out) throws IOException {
 		//initialize citation processor
 		CSL citeproc;
 		try {
@@ -625,11 +649,11 @@ public class CSLTool {
 		if (citation) {
 			List<Citation> cits = citeproc.makeCitation(citationIdsArr);
 			for (Citation c : cits) {
-				System.out.println(c.getText());
+				out.println(c.getText());
 			}
 		} else {
 			Bibliography bibl = citeproc.makeBibliography();
-			System.out.println(bibl.makeString());
+			out.println(bibl.makeString());
 		}
 		
 		return 0;
