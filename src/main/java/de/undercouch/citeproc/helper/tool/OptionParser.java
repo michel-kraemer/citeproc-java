@@ -74,8 +74,8 @@ public class OptionParser {
 			int firstColumnWidth, int secondColumnWidth) {
 		//print group name (if any)
 		if (options.getName() != null && !options.getName().isEmpty()) {
-			System.out.println();
-			System.out.println(options.getName());
+			out.println();
+			out.println(options.getName());
 		}
 		
 		for (Option<T> o : options.getOptions()) {
