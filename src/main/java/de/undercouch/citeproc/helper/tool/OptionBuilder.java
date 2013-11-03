@@ -96,6 +96,18 @@ public class OptionBuilder<T> {
 	}
 	
 	/**
+	 * Adds a new command
+	 * @param id the commands's identifier
+	 * @param longName the commands's long name
+	 * @param description a human-readable description
+	 * @return this option builder
+	 */
+	public OptionBuilder<T> addCommand(T id, String longName, String description) {
+		this.options.addCommand(new Option<T>(id, longName, description));
+		return this;
+	}
+	
+	/**
 	 * @return the built group of options
 	 */
 	public OptionGroup<T> build() {

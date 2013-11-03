@@ -167,16 +167,16 @@ public class CSLTool {
 		configDir.mkdirs();
 		
 		//parse command line
-		List<Value<OID>> values;
+		OptionParser.Result<OID> parsedOptions;
 		try {
-			values = OptionParser.parse(args, options, OID.CITATIONID);
+			parsedOptions = OptionParser.parse(args, options, OID.CITATIONID);
 		} catch (OptionParserException e) {
 			System.err.println("citeproc-java: " + e.getMessage());
 			return 1;
 		}
 		
-		//if there are no values print usage and exit
-		if (values.isEmpty()) {
+		//if there are no commands and values print usage and exit
+		if (parsedOptions.isEmpty()) {
 			usage();
 			return 0;
 		}
@@ -194,7 +194,7 @@ public class CSLTool {
 		List<String> citationIds = new ArrayList<String>();
 		String outputFile = null;
 		
-		for (Value<OID> v : values) {
+		for (Value<OID> v : parsedOptions.getValues()) {
 			switch (v.getId()) {
 			case BIBLIOGRAPHY:
 				bibliography = v.getValue().toString();

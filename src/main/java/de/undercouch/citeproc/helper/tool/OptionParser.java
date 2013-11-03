@@ -26,6 +26,47 @@ import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
  */
 public class OptionParser {
 	/**
+	 * Parser results
+	 * @param <T> option identifier type
+	 */
+	public static class Result<T> {
+		private final List<Value<T>> values;
+		private final String[] remainingArgs;
+		
+		/**
+		 * Constructs new parser results
+		 * @param values the parsed values
+		 * @param remainingArgs the command line arguments that have not
+		 * been parsed
+		 */
+		public Result(List<Value<T>> values, String[] remainingArgs) {
+			this.values = values;
+			this.remainingArgs = remainingArgs;
+		}
+		
+		/**
+		 * @return the parsed values
+		 */
+		public List<Value<T>> getValues() {
+			return values;
+		}
+		
+		/**
+		 * @return the command line arguments that have not been parsed
+		 */
+		public String[] getRemainingArgs() {
+			return remainingArgs;
+		}
+		
+		/**
+		 * @return true if the list of values is empty
+		 */
+		public boolean isEmpty() {
+			return values.isEmpty();
+		}
+	}
+	
+	/**
 	 * Print usage information
 	 * @param <T> option identifier type
 	 * @param command the command that has to be called in order
@@ -66,8 +107,34 @@ public class OptionParser {
 			}
 		}
 		
+		//extend columns if there are commands
+		if (options.getCommands() != null && !options.getCommands().isEmpty()) {
+			for (Option<T> cmd : options.getCommands()) {
+				int scw = cmd.getLongName().length() - firstColumnWidth - 1;
+				if (scw > secondColumnWidth) {
+					secondColumnWidth = scw;
+				}
+			}
+		}
+		
 		//output options
 		printOptions(options, out, firstColumnWidth, secondColumnWidth);
+		
+		//output commands
+		if (options.getCommands() != null && !options.getCommands().isEmpty()) {
+			out.println();
+			out.println("Commands:");
+			for (Option<T> cmd : options.getCommands()) {
+				out.print("  " + cmd.getLongName());
+				int lnl = cmd.getLongName().length();
+				int pad = secondColumnWidth + firstColumnWidth - lnl + 3;
+				while (pad > 0) {
+					out.print(" ");
+					--pad;
+				}
+				out.println(cmd.getDescription());
+			}
+		}
 	}
 
 	private static <T> void printOptions(OptionGroup<T> options, PrintStream out,
@@ -138,23 +205,28 @@ public class OptionParser {
 	}
 	
 	/**
-	 * Parses a command line and returns a list of parsed values
+	 * Parses a command line and returns an object containing a list of
+	 * parsed values. The method stops at the first command it encounters. The
+	 * remaining arguments not parsed can be retrieved via the result object's
+	 * {@link Result#getRemainingArgs()} method.
 	 * @param <T> option identifier type
 	 * @param args the command line
 	 * @param options the options to parse
 	 * @param def the default option identifier for parameters
-	 * that are not options
-	 * @return a list of parsed values
+	 * that are neither options or commands
+	 * @return the parsed options
 	 * @throws MissingArgumentException if an option misses a required argument
 	 * @throws InvalidOptionException if one of the arguments is unknown
 	 */
-	public static <T> List<Value<T>> parse(String[] args, OptionGroup<T> options,
+	public static <T> Result<T> parse(String[] args, OptionGroup<T> options,
 			T def) throws MissingArgumentException, InvalidOptionException {
 		List<Value<T>> result = new ArrayList<Value<T>>();
-		for (int i = 0; i < args.length; ++i) {
+		int i;
+		for (i = 0; i < args.length; ++i) {
 			String a = args[i];
 			
 			boolean found = false;
+			boolean foundCommand = false;
 			
 			if (a.startsWith("--")) {
 				//handle long name options
@@ -178,15 +250,38 @@ public class OptionParser {
 				}
 			} else {
 				//handle arguments that are not options
-				result.add(new Value<T>(def, a));
-				found = true;
+				for (Option<T> cd : options.getCommands()) {
+					if (cd.getLongName().equals(a)) {
+						result.add(new Value<T>(cd.getId(), a));
+						found = true;
+						foundCommand = true;
+						break;
+					}
+				}
+				
+				//handle generic arguments
+				if (!found && def != null) {
+					result.add(new Value<T>(def, a));
+					found = true;
+				}
 			}
 			
 			if (!found) {
 				throw new InvalidOptionException(args[i]);
 			}
+			
+			if (foundCommand) {
+				//we found a command. stop parsing here
+				++i; //skip command
+				break;
+			}
 		}
-		return result;
+		
+		//save arguments not parsed
+		String[] remainingArgs = new String[args.length - i];
+		System.arraycopy(args, i, remainingArgs, 0, remainingArgs.length);
+		
+		return new Result<T>(result, remainingArgs);
 	}
 	
 	/**

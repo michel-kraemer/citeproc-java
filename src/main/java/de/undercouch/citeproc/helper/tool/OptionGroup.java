@@ -26,6 +26,7 @@ public class OptionGroup<T> {
 	private final String name;
 	private final List<Option<T>> options = new ArrayList<Option<T>>();
 	private final List<OptionGroup<T>> children = new ArrayList<OptionGroup<T>>();
+	private final List<Option<T>> commands = new ArrayList<Option<T>>();
 	
 	/**
 	 * Creates a new option group with no name
@@ -76,6 +77,13 @@ public class OptionGroup<T> {
 	}
 	
 	/**
+	 * @return the group's commands
+	 */
+	public List<Option<T>> getCommands() {
+		return commands;
+	}
+	
+	/**
 	 * Adds an option to this group
 	 * @param o the option to add
 	 */
@@ -89,5 +97,13 @@ public class OptionGroup<T> {
 	 */
 	public void addChild(OptionGroup<T> c) {
 		children.add(c);
+	}
+	
+	/**
+	 * Adds a command to this group
+	 * @param c the command to add
+	 */
+	public void addCommand(Option<T> c) {
+		commands.add(c);
 	}
 }

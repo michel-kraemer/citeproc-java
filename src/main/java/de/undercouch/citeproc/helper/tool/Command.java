@@ -15,19 +15,15 @@
 package de.undercouch.citeproc.helper.tool;
 
 /**
- * This exception will be thrown if the {@link OptionParser} finds an
- * unknown option
+ * A command line interface command
  * @author Michel Kraemer
  */
-public class InvalidOptionException extends OptionParserException {
-	private static final long serialVersionUID = -6410586963277418040L;
-
+public interface Command {
 	/**
-	 * Constructs a new exception
-	 * @param name the option
+	 * Executes the command
+	 * @param args the command's arguments
+	 * @return the command's exit code
+	 * @throws OptionParserException if the arguments could not be parsed
 	 */
-	public InvalidOptionException(String name) {
-		super((name.startsWith("-") ? "invalid option" : "invalid command") +
-				" `" + name + "'");
-	}
+	int run(String[] args) throws OptionParserException;
 }

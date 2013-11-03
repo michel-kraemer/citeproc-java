@@ -15,7 +15,6 @@
 package de.undercouch.citeproc.bibtex;
 
 import java.io.IOException;
-import java.util.List;
 
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.OptionBuilder;
@@ -71,23 +70,23 @@ public class BibTeXTool {
 	 */
 	public int run(String[] args) throws IOException {
 		//parse command line
-		List<Value<OID>> values;
+		OptionParser.Result<OID> parsedOptions;
 		try {
-			values = OptionParser.parse(args, options, OID.AUXFILE);
+			parsedOptions = OptionParser.parse(args, options, OID.AUXFILE);
 		} catch (OptionParserException e) {
 			System.err.println("citeproc-java-bibtex: " + e.getMessage());
 			return 1;
 		}
 		
 		//we need exactly one AUXFILE or one option
-		if (values.size() != 1) {
+		if (parsedOptions.getValues().size() != 1) {
 			usage();
 			return 0;
 		}
 		
 		String auxfile = null;
 		
-		for (Value<OID> v : values) {
+		for (Value<OID> v : parsedOptions.getValues()) {
 			switch (v.getId()) {
 			case HELP:
 				usage();
