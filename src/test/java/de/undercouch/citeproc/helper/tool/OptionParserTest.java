@@ -157,7 +157,7 @@ public class OptionParserTest {
 		OptionParser.usage("test", "desc", options, ps);
 		ps.flush();
 		String str = baos.toString("UTF-8");
-		String n = System.lineSeparator();
+		String n = System.getProperty("line.separator");
 		assertEquals("Usage: test" + n
 				+ "desc" + n
 				+ n
