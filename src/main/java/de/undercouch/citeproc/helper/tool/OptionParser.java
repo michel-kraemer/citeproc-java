@@ -132,7 +132,8 @@ public class OptionParser {
 					out.print(" ");
 					--pad;
 				}
-				out.println(cmd.getDescription());
+				printDescription(cmd.getDescription(), out,
+						firstColumnWidth, secondColumnWidth);
 			}
 		}
 	}
@@ -179,29 +180,34 @@ public class OptionParser {
 			
 			//output description (wrap it if needed)
 			out.print(" ");
-			int w = firstColumnWidth + secondColumnWidth + 4;
-			if (firstColumnWidth > 0) {
-				w++;
-			}
-			String desc = o.getDescription();
-			while (w + desc.length() > 75) {
-				int sp = desc.lastIndexOf(' ', 74 - w);
-				if (sp == -1) {
-					break;
-				}
-				out.println(desc.substring(0, sp));
-				for (int i = 0; i < w; ++i) {
-					out.print(" ");
-				}
-				desc = desc.substring(sp + 1);
-			}
-			out.println(desc);
+			printDescription(o.getDescription(), out,
+					firstColumnWidth, secondColumnWidth);
 		}
 		
 		//print children
 		for (OptionGroup<T> c : options.getChildren()) {
 			printOptions(c, out, firstColumnWidth, secondColumnWidth);
 		}
+	}
+
+	private static void printDescription(String desc, PrintStream out,
+			int firstColumnWidth, int secondColumnWidth) {
+		int w = firstColumnWidth + secondColumnWidth + 4;
+		if (firstColumnWidth > 0) {
+			w++;
+		}
+		while (w + desc.length() > 75) {
+			int sp = desc.lastIndexOf(' ', 74 - w);
+			if (sp == -1) {
+				break;
+			}
+			out.println(desc.substring(0, sp));
+			for (int i = 0; i < w; ++i) {
+				out.print(" ");
+			}
+			desc = desc.substring(sp + 1);
+		}
+		out.println(desc);
 	}
 	
 	/**
