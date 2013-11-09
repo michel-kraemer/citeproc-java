@@ -156,7 +156,7 @@ public class CSLTool extends AbstractCSLToolCommand {
 		
 		//prepare output
 		if (outputFile != null) {
-			out = new PrintStream(outputFile);
+			out = new PrintStream(outputFile, "UTF-8");
 		}
 		
 		try {
