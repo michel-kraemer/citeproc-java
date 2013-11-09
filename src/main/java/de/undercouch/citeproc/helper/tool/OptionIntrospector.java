@@ -293,4 +293,16 @@ public class OptionIntrospector {
 		}
 		return false;
 	}
+	
+	/**
+	 * Returns the class of the command with the given identifier
+	 * @param id the identifier
+	 * @return the command's class or null if there is no such command
+	 */
+	public static Class<? extends Command> getCommand(ID id) {
+		if (id instanceof CommandID) {
+			return ((CommandID)id).getCommandClass();
+		}
+		return null;
+	}
 }

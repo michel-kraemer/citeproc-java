@@ -26,13 +26,14 @@ import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
-import de.undercouch.citeproc.tool.ListCommand;
 import de.undercouch.citeproc.tool.BibTeXCommand;
 import de.undercouch.citeproc.tool.BibliographyCommand;
 import de.undercouch.citeproc.tool.CSLToolContext;
 import de.undercouch.citeproc.tool.CitationCommand;
+import de.undercouch.citeproc.tool.HelpCommand;
 import de.undercouch.citeproc.tool.InputFileCommand;
 import de.undercouch.citeproc.tool.JsonCommand;
+import de.undercouch.citeproc.tool.ListCommand;
 import de.undercouch.citeproc.tool.MendeleyCommand;
 import de.undercouch.citeproc.tool.ProviderCommand;
 
@@ -96,7 +97,10 @@ public class CSLTool extends AbstractCSLToolCommand {
 				command = MendeleyCommand.class),
 		@CommandDesc(longName = "bibtex",
 				description = "generate a LaTeX bibliography",
-				command = BibTeXCommand.class)
+				command = BibTeXCommand.class),
+		@CommandDesc(longName = "help",
+				description = "display help for a given command",
+				command = HelpCommand.class)
 	})
 	public void setCommand(AbstractCSLToolCommand command) {
 		if (command instanceof ProviderCommand) {
