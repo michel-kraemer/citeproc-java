@@ -28,7 +28,7 @@ import de.undercouch.citeproc.helper.tool.UnknownAttributes;
  * A base class for commands that accept citation IDs as arguments
  * @author Michel Kraemer
  */
-public abstract class InputFileIdsCommand extends AbstractCSLToolCommand implements ProviderCommand {
+public abstract class CitationIdsCommand extends AbstractCSLToolCommand implements ProviderCommand {
 	/**
 	 * The item data provider
 	 */

@@ -28,7 +28,7 @@ import de.undercouch.citeproc.helper.json.StringJsonBuilderFactory;
  * CLI command that converts input bibliographies to JSON files
  * @author Michel Kraemer
  */
-public class JsonCommand extends InputFileIdsCommand {
+public class JsonCommand extends CitationIdsCommand {
 	@Override
 	public String getUsageDescription() {
 		return "Convert input bibliography to JSON";

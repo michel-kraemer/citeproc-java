@@ -29,7 +29,7 @@ import de.undercouch.citeproc.output.Bibliography;
  * CLI command that generates a bibliography
  * @author Michel Kraemer
  */
-public class BibliographyCommand extends InputFileIdsCommand {
+public class BibliographyCommand extends CitationIdsCommand {
 	private String style = "ieee";
 	private String locale = "en-US";
 	private String format = "text";
