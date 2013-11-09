@@ -199,6 +199,7 @@ public class MendeleyCommand extends AbstractCSLToolCommand {
 				--retries;
 				
 				//app is not authenticated yet
+				System.out.print("\r"); //overwrite 'Retrieving documents' message
 				if (!mendeleyAuthorize(mc)) {
 					return null;
 				}
@@ -262,6 +263,11 @@ public class MendeleyCommand extends AbstractCSLToolCommand {
 			verificationCode = br.readLine();
 		} catch (IOException e) {
 			throw new RuntimeException("Could not read from console.");
+		}
+		
+		if (verificationCode == null || verificationCode.isEmpty()) {
+			//user aborted process
+			return false;
 		}
 		
 		//authorize...
