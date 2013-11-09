@@ -115,9 +115,14 @@ public abstract class AbstractCSLToolCommand implements Command, CSLToolCommand 
 	 * Prints out usage information
 	 */
 	protected void usage() {
+		String footnotes = null;
+		if (!getOptions().getCommands().isEmpty()) {
+			footnotes = "Use `" + CSLToolContext.current().getToolName() +
+					" help <command>' to read about a specific command.";
+		}
 		OptionParser.usage(CSLToolContext.current().getToolName() + " " +
 				getUsageArguments(), getUsageDescription(),
-				getOptions(), System.out);
+				getOptions(), footnotes, System.out);
 	}
 	
 	@Override

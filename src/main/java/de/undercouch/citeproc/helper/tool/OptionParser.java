@@ -77,6 +77,22 @@ public class OptionParser {
 	 */
 	public static <T> void usage(String command, String description,
 			OptionGroup<T> options, PrintStream out) {
+		usage(command, description, options, null, out);
+	}
+	
+	/**
+	 * Print usage information
+	 * @param <T> option identifier type
+	 * @param command the command that has to be called in order
+	 * to use the application
+	 * @param description the application's description
+	 * @param options the options to print out
+	 * @param footnotes footnotes to be displayed at the end of the
+	 * usage information (may be null)
+	 * @param out destination stream
+	 */
+	public static <T> void usage(String command, String description,
+			OptionGroup<T> options, String footnotes, PrintStream out) {
 		out.println("Usage: " + command);
 		out.println(description);
 		out.println();
@@ -135,6 +151,12 @@ public class OptionParser {
 				printDescription(cmd.getDescription(), out,
 						firstColumnWidth, secondColumnWidth);
 			}
+		}
+		
+		//display footnotes
+		if (footnotes != null) {
+			out.println();
+			out.println(footnotes);
 		}
 	}
 

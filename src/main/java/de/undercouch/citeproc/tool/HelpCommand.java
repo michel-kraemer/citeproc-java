@@ -52,7 +52,7 @@ public class HelpCommand extends AbstractCSLToolCommand {
 
 	@Override
 	public String getUsageArguments() {
-		return "help [COMMAND] [SUBCOMMAND]";
+		return "help [COMMAND] [SUBCOMMAND]...";
 	}
 
 	@Override
