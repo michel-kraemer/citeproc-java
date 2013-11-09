@@ -37,7 +37,7 @@ public class OptionParserTest {
 				.build();
 		
 		@Override
-		public int run(String[] args) throws OptionParserException {
+		public int run(String[] args, PrintStream out) throws OptionParserException {
 			//should not throw
 			OptionParser.Result<Integer> r = OptionParser.parse(args, options, null);
 			assertEquals(0, r.getRemainingArgs().length);
@@ -83,7 +83,7 @@ public class OptionParserTest {
 		assertEquals(1, values.size());
 		assertEquals(0, values.get(0).getId().intValue());
 		assertArrayEquals(new String[] { "--arg1", "--arg2" }, result.getRemainingArgs());
-		new SimpleCommand().run(result.getRemainingArgs());
+		new SimpleCommand().run(result.getRemainingArgs(), null);
 	}
 	
 	/**
@@ -112,27 +112,29 @@ public class OptionParserTest {
 	}
 	
 	/**
-	 * Tests if the parser fails to parse an unknown default argument
+	 * Tests if the parser fails to parse an unknown argument that is neither
+	 * an option or a command
 	 * @throws Exception if something goes wrong
 	 */
 	@Test(expected = InvalidOptionException.class)
-	public void unknownDefault() throws Exception {
-		OptionParser.parse(new String[] { "default" }, SIMPLE_OPTIONS, null);
+	public void unknownArgument() throws Exception {
+		OptionParser.parse(new String[] { "argument" }, SIMPLE_OPTIONS, null);
 	}
 	
 	/**
-	 * Tests if the parser can parse a default argument
+	 * Tests if the parser can parse an argument that is neither an
+	 * option or a command
 	 * @throws Exception if something goes wrong
 	 */
 	@Test
-	public void defaultValue() throws Exception {
+	public void otherArgument() throws Exception {
 		OptionParser.Result<Integer> result = OptionParser.parse(
-				new String[] { "--opt", "default" }, SIMPLE_OPTIONS, -1);
+				new String[] { "--opt", "argument" }, SIMPLE_OPTIONS, -1);
 		List<Value<Integer>> values = result.getValues();
 		assertEquals(2, values.size());
 		assertEquals(0, values.get(0).getId().intValue());
 		assertEquals(-1, values.get(1).getId().intValue());
-		assertEquals("default", values.get(1).getValue().toString());
+		assertEquals("argument", values.get(1).getValue().toString());
 	}
 	
 	/**

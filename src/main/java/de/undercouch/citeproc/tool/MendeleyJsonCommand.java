@@ -12,24 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.helper.tool;
-
-import java.io.IOException;
-import java.io.PrintStream;
+package de.undercouch.citeproc.tool;
 
 /**
- * A command line interface command
+ * Reads the input bibliography from Mendeley Web
  * @author Michel Kraemer
  */
-public interface Command {
-	/**
-	 * Executes the command
-	 * @param args the command's arguments
-	 * @param out a stream to write the output to
-	 * @return the command's exit code
-	 * @throws OptionParserException if the arguments could not be parsed
-	 * @throws IOException if input files could not be read or the output
-	 * stream could not be written
-	 */
-	int run(String[] args, PrintStream out) throws OptionParserException, IOException;
+public class MendeleyJsonCommand extends JsonCommand {
+	@Override
+	public String getUsageDescription() {
+		return "Convert Mendeley Web catalog to JSON";
+	}
+	
+	@Override
+	public String getUsageArguments() {
+		return "mendeley json [OPTION]... [CITATION ID]...";
+	}
 }

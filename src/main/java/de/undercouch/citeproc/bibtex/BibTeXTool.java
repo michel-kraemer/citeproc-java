@@ -22,6 +22,7 @@ import de.undercouch.citeproc.helper.tool.OptionGroup;
 import de.undercouch.citeproc.helper.tool.OptionParser;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.helper.tool.Value;
+import de.undercouch.citeproc.tool.CSLToolContext;
 
 /**
  * Command line tool that allows citeproc-java to be used as an alternative
@@ -54,10 +55,22 @@ public class BibTeXTool {
 	 * @throws IOException if a stream could not be read
 	 */
 	public static void main(String[] args) throws IOException {
-		BibTeXTool tool = new BibTeXTool();
-		int exitCode = tool.run(args);
-		if (exitCode != 0) {
-			System.exit(exitCode);
+		CSLToolContext ctx = CSLToolContext.enter();
+		try {
+			ctx.setToolName("citeproc-java-bibtex");
+			BibTeXTool tool = new BibTeXTool();
+			int exitCode;
+			try {
+				exitCode = tool.run(args);
+			} catch (OptionParserException e) {
+				System.err.println("citeproc-java-bibtex: " + e.getMessage());
+				exitCode = 1;
+			}
+			if (exitCode != 0) {
+				System.exit(exitCode);
+			}
+		} finally {
+			CSLToolContext.exit();
 		}
 	}
 	
@@ -66,15 +79,17 @@ public class BibTeXTool {
 	 * for more information.
 	 * @param args the command line
 	 * @return the application's exit code
+	 * @throws OptionParserException if the arguments could not be parsed
 	 * @throws IOException if a stream could not be read
 	 */
-	public int run(String[] args) throws IOException {
+	public int run(String[] args) throws OptionParserException, IOException {
 		//parse command line
 		OptionParser.Result<OID> parsedOptions;
 		try {
 			parsedOptions = OptionParser.parse(args, options, OID.AUXFILE);
 		} catch (OptionParserException e) {
-			System.err.println("citeproc-java-bibtex: " + e.getMessage());
+			System.err.println(CSLToolContext.current().getToolName() +
+					": " + e.getMessage());
 			return 1;
 		}
 		
@@ -86,6 +101,8 @@ public class BibTeXTool {
 		
 		String auxfile = null;
 		
+		CSLTool cslTool = new CSLTool();
+		
 		for (Value<OID> v : parsedOptions.getValues()) {
 			switch (v.getId()) {
 			case HELP:
@@ -93,7 +110,7 @@ public class BibTeXTool {
 				return 0;
 			
 			case VERSION:
-				CSLTool.version("citeproc-java-bibtex");
+				cslTool.run(new String[] { "-V" }, System.out);
 				return 0;
 			
 			case AUXFILE:
@@ -108,15 +125,15 @@ public class BibTeXTool {
 		}
 		bblfile = bblfile + ".bbl";
 		
-		CSLTool cslTool = new CSLTool();
-		return cslTool.run(new String[] { "--bibtex-simple", auxfile, "-o", bblfile });
+		return cslTool.run(new String[] { "-o", bblfile, "bibtex",
+				"--simple", auxfile }, System.out);
 	}
 	
 	/**
 	 * Prints out usage information
 	 */
 	private static void usage() {
-		OptionParser.usage("citeproc-java-bibtex AUXFILE",
+		OptionParser.usage(CSLToolContext.current().getToolName() + " AUXFILE",
 				"Generate bibliographies for LaTeX documents", options, System.out);
 	}
 }

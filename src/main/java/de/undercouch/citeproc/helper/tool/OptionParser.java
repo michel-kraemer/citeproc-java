@@ -213,7 +213,7 @@ public class OptionParser {
 	 * @param args the command line
 	 * @param options the options to parse
 	 * @param def the default option identifier for parameters
-	 * that are neither options or commands
+	 * that are neither options nor commands
 	 * @return the parsed options
 	 * @throws MissingArgumentException if an option misses a required argument
 	 * @throws InvalidOptionException if one of the arguments is unknown

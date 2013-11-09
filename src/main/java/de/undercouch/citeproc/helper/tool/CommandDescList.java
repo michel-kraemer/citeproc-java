@@ -14,22 +14,20 @@
 
 package de.undercouch.citeproc.helper.tool;
 
-import java.io.IOException;
-import java.io.PrintStream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A command line interface command
+ * A descriptor for a CLI command
  * @author Michel Kraemer
  */
-public interface Command {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface CommandDescList {
 	/**
-	 * Executes the command
-	 * @param args the command's arguments
-	 * @param out a stream to write the output to
-	 * @return the command's exit code
-	 * @throws OptionParserException if the arguments could not be parsed
-	 * @throws IOException if input files could not be read or the output
-	 * stream could not be written
+	 * @return the commands in this list
 	 */
-	int run(String[] args, PrintStream out) throws OptionParserException, IOException;
+	CommandDesc[] value();
 }
