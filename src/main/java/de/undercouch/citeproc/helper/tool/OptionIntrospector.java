@@ -97,7 +97,7 @@ public class OptionIntrospector {
 
 		@Override
 		public int compareTo(IntrospectedDesc<T> o) {
-			return Integer.compare(priority, o.priority);
+			return (priority < o.priority ? -1 : (priority == o.priority ? 0 : 1));
 		}
 	}
 	
