@@ -40,10 +40,10 @@ import de.undercouch.citeproc.helper.tool.CommandDesc;
 import de.undercouch.citeproc.helper.tool.CommandDescList;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
-import de.undercouch.citeproc.helper.tool.internal.CachingMendeleyConnector;
-import de.undercouch.citeproc.mendeley.AuthenticatedMendeleyConnector;
-import de.undercouch.citeproc.mendeley.DefaultMendeleyConnector;
+import de.undercouch.citeproc.helper.tool.internal.CachingRemoteConnector;
 import de.undercouch.citeproc.mendeley.MendeleyConnector;
+import de.undercouch.citeproc.remote.AuthenticatedRemoteConnector;
+import de.undercouch.citeproc.remote.RemoteConnector;
 
 /**
  * Generates bibliographies and citations from Mendeley Web
@@ -143,13 +143,13 @@ public class MendeleyCommand extends AbstractCSLToolCommand {
 		}
 		
 		//connect to Mendeley server
-		MendeleyConnector dmc = new DefaultMendeleyConnector(consumer[1], consumer[0]);
-		dmc = new AuthenticatedMendeleyConnector(dmc, authStore);
+		RemoteConnector dmc = new MendeleyConnector(consumer[1], consumer[0]);
+		dmc = new AuthenticatedRemoteConnector(dmc, authStore);
 		
 		//enable cache
 		File cacheFile = new File(CSLToolContext.current().getConfigDir(),
 				"mendeley-cache.dat");
-		CachingMendeleyConnector mc = new CachingMendeleyConnector(dmc, cacheFile);
+		CachingRemoteConnector mc = new CachingRemoteConnector(dmc, cacheFile);
 		
 		//clear cache if necessary
 		if (sync) {
@@ -162,11 +162,11 @@ public class MendeleyCommand extends AbstractCSLToolCommand {
 			try {
 				//download list of document IDs
 				boolean cacheempty = false;
-				if (!mc.hasDocumentList()) {
+				if (!mc.hasItemList()) {
 					System.out.print("Retrieving documents ...");
 					cacheempty = true;
 				}
-				List<String> docs = mc.getDocuments();
+				List<String> docs = mc.getItems();
 				if (cacheempty) {
 					System.out.println();
 				}
@@ -176,14 +176,14 @@ public class MendeleyCommand extends AbstractCSLToolCommand {
 				int i = 0;
 				int printed = 0;
 				for (String did : docs) {
-					if (!mc.containsDocumentId(did)) {
+					if (!mc.containsItemId(did)) {
 						String msg = String.format("\rSynchronizing (%d/%d) ...",
 								i + 1, docs.size());
 						System.out.print(msg);
 						++printed;
 					}
 					
-					CSLItemData item = mc.getDocument(did);
+					CSLItemData item = mc.getItem(did);
 					items[i] = item;
 					++i;
 				}
@@ -226,7 +226,7 @@ public class MendeleyCommand extends AbstractCSLToolCommand {
 	 * @param mc the Mendeley connector
 	 * @return true if authorization was successful
 	 */
-	private boolean mendeleyAuthorize(MendeleyConnector mc) {
+	private boolean mendeleyAuthorize(RemoteConnector mc) {
 		//get authorization URL
 		String authUrl;
 		try {

@@ -12,28 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.mendeley;
+package de.undercouch.citeproc.remote;
 
 import java.io.IOException;
 
 import de.undercouch.citeproc.helper.oauth.AuthenticationStore;
 
 /**
- * A Mendeley connector that saves its access token in an authentication
+ * A remote connector that saves its access token in an authentication
  * store, so you don't have to authenticate again until the access token
  * becomes invalid.
  * @author Michel Kraemer
  */
-public class AuthenticatedMendeleyConnector extends MendeleyConnectorAdapter {
+public class AuthenticatedRemoteConnector extends RemoteConnectorAdapter {
 	private final AuthenticationStore store;
 	
 	/**
-	 * Creates a Mendeley connector that delegates to an underlying connector
+	 * Creates a connector that delegates to an underlying connector
 	 * and saves its access token in an authentication store
-	 * @param delegate the underlying Mendeley connector
+	 * @param delegate the underlying connector
 	 * @param store the authentication store
 	 */
-	public AuthenticatedMendeleyConnector(MendeleyConnector delegate,
+	public AuthenticatedRemoteConnector(RemoteConnector delegate,
 			AuthenticationStore store) {
 		super(delegate);
 		this.store = store;

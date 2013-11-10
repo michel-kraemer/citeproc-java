@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.mendeley;
+package de.undercouch.citeproc.remote;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,21 +20,21 @@ import java.util.List;
 import de.undercouch.citeproc.csl.CSLItemData;
 
 /**
- * Can be used by {@link MendeleyConnector} implementations to delegate to
+ * Can be used by {@link RemoteConnector} implementations to delegate to
  * an underlying connector
  * @author Michel Kraemer
  */
-public class MendeleyConnectorAdapter implements MendeleyConnector {
+public class RemoteConnectorAdapter implements RemoteConnector {
 	/**
 	 * The underlying connector
 	 */
-	private final MendeleyConnector delegate;
+	private final RemoteConnector delegate;
 
 	/**
 	 * Creates a new adapter for the given underlying connector
 	 * @param delegate the underlying connector
 	 */
-	public MendeleyConnectorAdapter(MendeleyConnector delegate) {
+	public RemoteConnectorAdapter(RemoteConnector delegate) {
 		this.delegate = delegate;
 	}
 
@@ -64,12 +64,12 @@ public class MendeleyConnectorAdapter implements MendeleyConnector {
 	}
 
 	@Override
-	public List<String> getDocuments() throws IOException {
-		return delegate.getDocuments();
+	public List<String> getItems() throws IOException {
+		return delegate.getItems();
 	}
 
 	@Override
-	public CSLItemData getDocument(String documentId) throws IOException {
-		return delegate.getDocument(documentId);
+	public CSLItemData getItem(String itemId) throws IOException {
+		return delegate.getItem(itemId);
 	}
 }

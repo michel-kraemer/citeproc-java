@@ -29,36 +29,36 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.helper.json.StringJsonBuilderFactory;
-import de.undercouch.citeproc.mendeley.MendeleyConnector;
-import de.undercouch.citeproc.mendeley.MendeleyConnectorAdapter;
+import de.undercouch.citeproc.remote.RemoteConnectorAdapter;
+import de.undercouch.citeproc.remote.RemoteConnector;
 
 /**
- * <p>A {@link de.undercouch.citeproc.mendeley.MendeleyConnector} that caches
- * documents read from the server.</p>
+ * <p>A {@link de.undercouch.citeproc.remote.RemoteConnector} that caches
+ * items read from the server.</p>
  * <p>Note: if MapDB is in the classpath this class uses a disk cache.
- * Otherwise it just caches documents in memory.</p>
+ * Otherwise it just caches items in memory.</p>
  * @author Michel Kraemer
  */
-public class CachingMendeleyConnector extends MendeleyConnectorAdapter {
+public class CachingRemoteConnector extends RemoteConnectorAdapter {
 	private final Object _db;
-	private final Set<String> _documentIds;
-	private final Map<String, String> _documents;
+	private final Set<String> _itemIds;
+	private final Map<String, String> _items;
 	
 	/**
-	 * Creates a Mendeley connector that caches documents read from the server
-	 * @param delegate the underlying Mendeley connector
-	 * @param cacheFile a file used to cache documents
+	 * Creates a connector that caches items read from the server
+	 * @param delegate the underlying connector
+	 * @param cacheFile a file used to cache items
 	 */
 	@SuppressWarnings("unchecked")
-	public CachingMendeleyConnector(MendeleyConnector delegate, File cacheFile) {
+	public CachingRemoteConnector(RemoteConnector delegate, File cacheFile) {
 		super(delegate);
 		
 		Object db;
-		Set<String> documentIds;
-		Map<String, String> documents;
+		Set<String> itemIds;
+		Map<String, String> items;
 		try {
 			//use reflection to get a disk-based cache
-			Class<?> dbMakerClass = CachingMendeleyConnector.class
+			Class<?> dbMakerClass = CachingRemoteConnector.class
 					.getClassLoader().loadClass("org.mapdb.DBMaker");
 			
 			Method newFileDB = dbMakerClass.getMethod("newFileDB", File.class);
@@ -70,29 +70,29 @@ public class CachingMendeleyConnector extends MendeleyConnectorAdapter {
 			
 			Class<?> dbClass = db.getClass();
 			Method getTreeSet = dbClass.getMethod("getTreeSet", String.class);
-			documentIds = (Set<String>)getTreeSet.invoke(db, "documentIds");
+			itemIds = (Set<String>)getTreeSet.invoke(db, "itemIds");
 			Method getHashMap = dbClass.getMethod("getHashMap", String.class);
-			documents = (Map<String, String>)getHashMap.invoke(db, "documents");
+			items = (Map<String, String>)getHashMap.invoke(db, "items");
 		} catch (Exception e) {
 			//disk cache is not available. use in-memory cache
 			db = null;
-			documentIds = new HashSet<String>();
-			documents = new HashMap<String, String>();
+			itemIds = new HashSet<String>();
+			items = new HashMap<String, String>();
 		}
 		
 		_db = db;
-		_documentIds = documentIds;
-		_documents = documents;
+		_itemIds = itemIds;
+		_items = items;
 	}
 	
 	@Override
-	public List<String> getDocuments() throws IOException {
-		if (!_documentIds.isEmpty()) {
-			return new ArrayList<String>(_documentIds);
+	public List<String> getItems() throws IOException {
+		if (!_itemIds.isEmpty()) {
+			return new ArrayList<String>(_itemIds);
 		}
-		List<String> ids = super.getDocuments();
+		List<String> ids = super.getItems();
 		try {
-			_documentIds.addAll(ids);
+			_itemIds.addAll(ids);
 			commit();
 		} catch (RuntimeException e) {
 			rollback();
@@ -102,14 +102,14 @@ public class CachingMendeleyConnector extends MendeleyConnectorAdapter {
 	}
 
 	@Override
-	public CSLItemData getDocument(String documentId) throws IOException {
-		String doc = _documents.get(documentId);
-		CSLItemData item;
-		if (doc == null) {
-			item = super.getDocument(documentId);
-			doc = (String)item.toJson(new StringJsonBuilderFactory().createJsonBuilder());
+	public CSLItemData getItem(String itemId) throws IOException {
+		String item = _items.get(itemId);
+		CSLItemData itemData;
+		if (item == null) {
+			itemData = super.getItem(itemId);
+			item = (String)itemData.toJson(new StringJsonBuilderFactory().createJsonBuilder());
 			try {
-				_documents.put(documentId, doc);
+				_items.put(itemId, item);
 				commit();
 			} catch (RuntimeException e) {
 				rollback();
@@ -117,35 +117,35 @@ public class CachingMendeleyConnector extends MendeleyConnectorAdapter {
 			}
 		} else {
 			Map<String, Object> m = new JsonParser(
-					new JsonLexer(new StringReader(doc))).parseObject();
-			item = CSLItemData.fromJson(m);
+					new JsonLexer(new StringReader(item))).parseObject();
+			itemData = CSLItemData.fromJson(m);
 		}
-		return item;
+		return itemData;
 	}
 	
 	/**
-	 * Checks if the cache contains a document with the given ID
-	 * @param documentId the document ID
-	 * @return true if the cache contains such a document, false otherwise
+	 * Checks if the cache contains an item with the given ID
+	 * @param itemId the item ID
+	 * @return true if the cache contains such an item, false otherwise
 	 */
-	public boolean containsDocumentId(String documentId) {
-		return _documents.containsKey(documentId);
+	public boolean containsItemId(String itemId) {
+		return _items.containsKey(itemId);
 	}
 	
 	/**
-	 * @return true if the cache contains a list of document IDs, false
+	 * @return true if the cache contains a list of item IDs, false
 	 * if the cache is empty
 	 */
-	public boolean hasDocumentList() {
-		return !_documentIds.isEmpty();
+	public boolean hasItemList() {
+		return !_itemIds.isEmpty();
 	}
 	
 	/**
 	 * Clears the cache
 	 */
 	public void clear() {
-		_documentIds.clear();
-		_documents.clear();
+		_itemIds.clear();
+		_items.clear();
 	}
 	
 	/**
