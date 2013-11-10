@@ -14,13 +14,22 @@
 
 package de.undercouch.citeproc.tool;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
+import de.undercouch.citeproc.helper.Levenshtein;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.output.Bibliography;
@@ -93,6 +102,73 @@ public class BibliographyCommand extends CitationIdsCommand {
 		return super.checkArguments();
 	}
 	
+	/**
+	 * Checks if the given style exists and output possible alternatives if
+	 * it does not
+	 * @param style the style
+	 * @return true if the style exists, false otherwise
+	 * @throws IOException if the style could not be loaded
+	 */
+	private boolean checkStyle(String style) throws IOException {
+		//check if style exists
+		String styleFileName = style;
+		if (!styleFileName.endsWith(".csl")) {
+			styleFileName = styleFileName + ".csl";
+		}
+		if (!styleFileName.startsWith("/")) {
+			styleFileName = "/" + styleFileName;
+		}
+		URL url = getClass().getResource(styleFileName);
+		if (url != null) {
+			//style exists
+			return true;
+		}
+		
+		String message = "Could not find style in classpath: " + style;
+		
+		List<String> availableStyles = new ArrayList<String>();
+		
+		//try to find an alternative
+		//first load a style that is known to exist
+		URL ieee = getClass().getResource("/ieee.csl");
+		if (ieee != null) {
+			String path = ieee.getPath();
+			//get the jar file containing the style
+			if (path.toLowerCase().endsWith(".jar!/ieee.csl")) {
+				String jarPath = path.substring(0, path.length() - 10);
+				URI jarUri;
+				try {
+					jarUri = new URI(jarPath);
+				} catch (URISyntaxException e) {
+					//ignore
+					return false;
+				}
+				ZipFile zip = new ZipFile(new File(jarUri));
+				try {
+					Enumeration<? extends ZipEntry> entries = zip.entries();
+					while (entries.hasMoreElements()) {
+						ZipEntry e = entries.nextElement();
+						if (e.getName().endsWith(".csl")) {
+							availableStyles.add(e.getName().substring(
+									0, e.getName().length() - 4));
+						}
+					}
+				} finally {
+					zip.close();
+				}
+			}
+		}
+		
+		//output alternative
+		if (!availableStyles.isEmpty()) {
+			String min = Levenshtein.findMinimum(availableStyles, style);
+			message += "\nDid you mean `" + min + "'?";
+		}
+		
+		error(message);
+		return false;
+	}
+	
 	@Override
 	public int doRun(String[] remainingArgs, PrintStream out) throws IOException {
 		int ret = super.doRun(remainingArgs, out);
@@ -119,6 +195,10 @@ public class BibliographyCommand extends CitationIdsCommand {
 	private int generateCSL(String style, String locale, String format,
 			List<String> citationIds, ItemDataProvider provider,
 			PrintStream out) throws IOException {
+		if (!checkStyle(style)) {
+			return 1;
+		}
+		
 		//initialize citation processor
 		CSL citeproc;
 		try {
