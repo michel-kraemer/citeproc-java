@@ -40,14 +40,22 @@ import de.undercouch.citeproc.helper.CSLUtils;
  * @author Michel Kraemer
  */
 public class OAuth {
+	/**
+	 * Service response item specifying a token's value
+	 */
+	protected static final String OAUTH_TOKEN = "oauth_token";
+	
+	/**
+	 * Service response item specifying a token's secret
+	 */
+	protected static final String OAUTH_TOKEN_SECRET = "oauth_token_secret";
+	
 	private static final String OAUTH_CALLBACK = "oauth_callback";
 	private static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key";
 	private static final String OAUTH_NONCE = "oauth_nonce";
 	private static final String OAUTH_SIGNATURE = "oauth_signature";
 	private static final String OAUTH_SIGNATURE_METHOD = "oauth_signature_method";
 	private static final String OAUTH_TIMESTAMP = "oauth_timestamp";
-	private static final String OAUTH_TOKEN = "oauth_token";
-	private static final String OAUTH_TOKEN_SECRET = "oauth_token_secret";
 	private static final String OAUTH_VERIFIER = "oauth_verifier";
 	private static final String OAUTH_VERSION = "oauth_version";
 
@@ -175,13 +183,32 @@ public class OAuth {
 	 * @param method the HTTP request method
 	 * @param token a token used for authorization (may be null if the
 	 * authorization is not required for this request)
-	 * @return the input stream
+	 * @return a response
 	 * @throws IOException if the request was not successful
 	 * @throws RequestException if the server returned an error
 	 * @throws UnauthorizedException if the request is not authorized
 	 */
-	public InputStream request(URL url, Method method, Token token) throws IOException {
+	public Response request(URL url, Method method, Token token) throws IOException {
 		return request(url, method, token, null);
+	}
+	
+	/**
+	 * Sends a request to the server and returns an input stream from which
+	 * the response can be read. The caller is responsible for consuming
+	 * the input stream's content and for closing the stream.
+	 * @param url the URL to send the request to
+	 * @param method the HTTP request method
+	 * @param token a token used for authorization (may be null if the
+	 * authorization is not required for this request)
+	 * @param additionalHeaders additional HTTP headers (may be null)
+	 * @return a response
+	 * @throws IOException if the request was not successful
+	 * @throws RequestException if the server returned an error
+	 * @throws UnauthorizedException if the request is not authorized
+	 */
+	public Response request(URL url, Method method, Token token,
+			Map<String, String> additionalHeaders) throws IOException {
+		return requestInternal(url, method, token, null, additionalHeaders);
 	}
 	
 	/**
@@ -199,12 +226,22 @@ public class OAuth {
 	 */
 	private Token requestCredentials(URL url, Method method, Token token,
 			Map<String, String> additionalAuthParams) throws IOException {
-		InputStream is = request(url, method, token, additionalAuthParams);
+		Response r = requestInternal(url, method, token, additionalAuthParams, null);
+		InputStream is = r.getInputStream();
 		String response = CSLUtils.readStreamToString(is, UTF8);
 		
 		//create token for temporary credentials
 		Map<String, String> sr = splitResponse(response);
-		return new Token(sr.get(OAUTH_TOKEN), sr.get(OAUTH_TOKEN_SECRET));
+		return responseToToken(sr);
+	}
+	
+	/**
+	 * Parses a service response and creates a token
+	 * @param response the response
+	 * @return the token
+	 */
+	protected Token responseToToken(Map<String, String> response) {
+		return new Token(response.get(OAUTH_TOKEN), response.get(OAUTH_TOKEN_SECRET));
 	}
 	
 	/**
@@ -217,13 +254,15 @@ public class OAuth {
 	 * app is not authorized yet)
 	 * @param additionalAuthParams additional parameters that should be
 	 * added to the <code>Authorization</code> header (may be null)
-	 * @return the input stream
+	 * @param additionalHeaders additional HTTP headers (may be null)
+	 * @return a response
 	 * @throws IOException if the request was not successful
 	 * @throws RequestException if the server returned an error
 	 * @throws UnauthorizedException if the request is not authorized
 	 */
-	private InputStream request(URL url, Method method, Token token,
-			Map<String, String> additionalAuthParams) throws IOException {
+	private Response requestInternal(URL url, Method method, Token token,
+			Map<String, String> additionalAuthParams,
+			Map<String, String> additionalHeaders) throws IOException {
 		//prepare HTTP connection
 		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 		conn.setInstanceFollowRedirects(true);
@@ -260,6 +299,12 @@ public class OAuth {
 		
 		conn.setRequestProperty(HEADER_AUTHORIZATION, "OAuth " + sb.toString());
 		
+		if (additionalHeaders != null) {
+			for (Map.Entry<String, String> e : additionalHeaders.entrySet()) {
+				conn.setRequestProperty(e.getKey(), e.getValue());
+			}
+		}
+		
 		//perform request
 		conn.connect();
 		
@@ -271,7 +316,7 @@ public class OAuth {
 					conn.getResponseCode());
 		}
 		
-		return conn.getInputStream();
+		return new Response(conn);
 	}
 	
 	/**

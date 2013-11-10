@@ -72,7 +72,7 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	
 	@Override
 	public List<String> getItems() throws IOException {
-		Map<String, Object> response = performRequest(MENDELEY_LIBRARY_ENDPOINT);
+		Map<String, Object> response = performRequest(MENDELEY_LIBRARY_ENDPOINT, null);
 		@SuppressWarnings("unchecked")
 		List<String> documentIds = (List<String>)response.get("document_ids");
 		return documentIds;
@@ -80,7 +80,8 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	
 	@Override
 	public CSLItemData getItem(String documentId) throws IOException {
-		Map<String, Object> response = performRequest(MENDELEY_DOCUMENTS_ENDPOINT + documentId);
+		Map<String, Object> response = performRequest(
+				MENDELEY_DOCUMENTS_ENDPOINT + documentId, null);
 		return MendeleyConverter.convert(documentId, response);
 	}
 }

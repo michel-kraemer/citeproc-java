@@ -27,6 +27,7 @@ import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.helper.oauth.OAuth;
 import de.undercouch.citeproc.helper.oauth.OAuth.Method;
+import de.undercouch.citeproc.helper.oauth.Response;
 import de.undercouch.citeproc.helper.oauth.Token;
 import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
 
@@ -48,7 +49,7 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	/**
 	 * The access token used to sign requests
 	 */
-	private Token accessToken;
+	protected Token accessToken;
 	
 	/**
 	 * Constructs a new connector
@@ -56,7 +57,7 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	 * @param consumerSecret the app's consumer secret
 	 */
 	public AbstractRemoteConnector(String consumerKey, String consumerSecret) {
-		auth = new OAuth(consumerKey, consumerSecret);
+		auth = createOAuth(consumerKey, consumerSecret);
 	}
 	
 	/**
@@ -73,6 +74,16 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	 * @return the remote service's end-point for access tokens
 	 */
 	protected abstract String getOAuthAccessTokenURL();
+	
+	/**
+	 * Creates an OAuth object
+	 * @param consumerKey the app's consumer key
+	 * @param consumerSecret the app's consumer secret
+	 * @return the created object
+	 */
+	protected OAuth createOAuth(String consumerKey, String consumerSecret) {
+		return new OAuth(consumerKey, consumerSecret);
+	}
 	
 	@Override
 	public String getAuthorizationURL() throws IOException {
@@ -123,22 +134,37 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	/**
 	 * Performs a request
 	 * @param url the URL to query
+	 * @param additionalHeaders additional HTTP request headers (may be null)
 	 * @return the parsed response
 	 * @throws IOException if the request was not successful
 	 */
-	protected Map<String, Object> performRequest(String url) throws IOException {
+	protected Map<String, Object> performRequest(String url,
+			Map<String, String> additionalHeaders) throws IOException {
 		if (accessToken == null) {
 			throw new UnauthorizedException("Access token has not yet been requested");
 		}
 		URL u = new URL(url);
-		InputStream is = auth.request(u, Method.GET, accessToken);
+		Response response = auth.request(u, Method.GET, accessToken, additionalHeaders);
+		InputStream is = response.getInputStream();
 		try {
-			Reader r = new BufferedReader(new InputStreamReader(is));
-			return new JsonParser(new JsonLexer(r)).parseObject();
+			return parseResponse(response);
 		} finally {
 			consumeResponse(is);
 			is.close();
 		}
+	}
+	
+	/**
+	 * Parses the given response. The response's input stream doesn't have
+	 * to be closed. The caller will already do this.
+	 * @param response the HTTP response to parse
+	 * @return the parsed result
+	 * @throws IOException if the response could not be read
+	 */
+	protected Map<String, Object> parseResponse(Response response) throws IOException {
+		InputStream is = response.getInputStream();
+		Reader r = new BufferedReader(new InputStreamReader(is));
+		return new JsonParser(new JsonLexer(r)).parseObject();
 	}
 
 	/**
