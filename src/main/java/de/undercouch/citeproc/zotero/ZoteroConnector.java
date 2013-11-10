@@ -62,6 +62,8 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 	
 	private static final String ENDPOINT_USERS = "https://api.zotero.org/users/";
 	
+	private static final String CSLJSON = "csljson";
+	
 	private String userId;
 	
 	private static final Map<String, String> REQUEST_HEADERS = new HashMap<String, String>();
@@ -146,7 +148,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 		
 		Map<String, Object> res = performRequest(ENDPOINT_USERS +
 				userId + "/items/" + itemId + "?key=" + key +
-				"&content=csljson", REQUEST_HEADERS);
+				"&content=" + CSLJSON, REQUEST_HEADERS);
 		return CSLItemData.fromJson(res);
 	}
 	
@@ -177,7 +179,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 			for (int i = 0; i < contents.getLength(); ++i) {
 				Node n = contents.item(i);
 				Node type = n.getAttributes().getNamedItemNS("http://zotero.org/ns/api", "type");
-				if (type != null && type.getTextContent().equals("csljson")) {
+				if (type != null && type.getTextContent().equals(CSLJSON)) {
 					csljson = n.getTextContent().trim();
 					break;
 				}
