@@ -22,10 +22,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import org.apache.commons.lang.StringUtils;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
@@ -161,8 +164,10 @@ public class BibliographyCommand extends CitationIdsCommand {
 		
 		//output alternative
 		if (!availableStyles.isEmpty()) {
-			String min = Levenshtein.findMinimum(availableStyles, style);
-			message += "\nDid you mean `" + min + "'?";
+			Collection<String> mins = Levenshtein.findMinimum(
+					availableStyles, style, 5);
+			String min = StringUtils.join(mins, "', `");
+			message += "\nCandidates are: `" + min + "'.";
 		}
 		
 		error(message);

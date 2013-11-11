@@ -14,7 +14,11 @@
 
 package de.undercouch.citeproc.helper;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Calculates the Levenshtein distance according to the iterative algorithm
@@ -24,6 +28,21 @@ import java.util.Collection;
  * @author Michel Kraemer
  */
 public class Levenshtein {
+	private static class Item<T> implements Comparable<Item<T>> {
+		private final T str;
+		private final int distance;
+		
+		public Item(T str, int distance) {
+			this.str = str;
+			this.distance = distance;
+		}
+		
+		@Override
+		public int compareTo(Item<T> o) {
+			return (distance < o.distance ? -1 : (distance == o.distance ? 0 : 1));
+		}
+	}
+	
 	/**
 	 * Calculates the Levenshtein distance between two strings. The Levenshtein
 	 * distance is the number of insertions, deletions and substitutions you
@@ -73,7 +92,7 @@ public class Levenshtein {
 	 * has the lowest Levenshtein distance to a given second string <code>t</code>.
 	 * If the collection contains multiple strings with the same distance to
 	 * <code>t</code> only the first one will be returned.
-	 * @param <T> the type of the string in the given collection
+	 * @param <T> the type of the strings in the given collection
 	 * @param ss the collection to search
 	 * @param t the second string
 	 * @return the string with the lowest Levenshtein distance
@@ -89,5 +108,41 @@ public class Levenshtein {
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * Searches the given collection of strings and returns a collection of at
+	 * most <code>n</code> strings that have the lowest Levenshtein distance
+	 * to a given string <code>t</code>. The returned collection will be
+	 * sorted according to the distance with the string with the lowest
+	 * distance at the first position.
+	 * @param <T> the type of the strings in the given collection
+	 * @param ss the collection to search
+	 * @param t the string to compare to
+	 * @param n the maximum number of strings to return
+	 * @return the strings with the lowest Levenshtein distance
+	 */
+	public static <T extends CharSequence> Collection<T> findMinimum(
+			Collection<T> ss, CharSequence t, int n) {
+		LinkedList<Item<T>> result = new LinkedList<Item<T>>();
+		for (T s : ss) {
+			int d = distance(s, t);
+			result.offer(new Item<T>(s, d));
+			
+			if (result.size() > n + 10) {
+				//resort, but not too often
+				Collections.sort(result);
+				while (result.size() > n) result.removeLast();
+			}
+		}
+		
+		Collections.sort(result);
+		while (result.size() > n) result.removeLast();
+		
+		List<T> arr = new ArrayList<T>(n);
+		for (Item<T> i : result) {
+			arr.add(i.str);
+		}
+		return arr;
 	}
 }

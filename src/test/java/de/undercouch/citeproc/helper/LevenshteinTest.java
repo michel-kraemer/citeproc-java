@@ -17,6 +17,7 @@ package de.undercouch.citeproc.helper;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -45,5 +46,15 @@ public class LevenshteinTest {
 		List<String> ss = Arrays.asList("Holla", "World", "Hello", "Hippo", "Hiplo");
 		CharSequence min = Levenshtein.findMinimum(ss, "Hillo");
 		assertEquals("Hello", min);
+	}
+	
+	/**
+	 * Tests the {@link Levenshtein#findMinimum(Collection, CharSequence, int)} method
+	 */
+	@Test
+	public void findThreeMinumums() {
+		List<String> ss = Arrays.asList("Holla", "World", "Hello", "Hippo", "Hiplo");
+		Collection<String> min = Levenshtein.findMinimum(ss, "Hillo", 3);
+		assertEquals(Arrays.asList("Hello", "Hiplo", "Holla"), min);
 	}
 }
