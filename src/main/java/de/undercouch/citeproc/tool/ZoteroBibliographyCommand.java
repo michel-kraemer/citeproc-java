@@ -15,17 +15,17 @@
 package de.undercouch.citeproc.tool;
 
 /**
- * Generate citations from Mendeley Web
+ * Generate bibliography from Zotero
  * @author Michel Kraemer
  */
-public class MendeleyCitationCommand extends CitationCommand {
+public class ZoteroBibliographyCommand extends BibliographyCommand {
 	@Override
 	public String getUsageDescription() {
-		return "Generate citations from Mendeley Web";
+		return "Generate bibliography from Zotero";
 	}
 	
 	@Override
 	public String getUsageArguments() {
-		return "mendeley citation [OPTION]... [CITATION ID]...";
+		return "zotero bibliography [OPTION]... [CITATION ID]...";
 	}
 }

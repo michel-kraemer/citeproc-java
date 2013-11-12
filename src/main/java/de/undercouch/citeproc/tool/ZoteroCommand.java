@@ -19,19 +19,21 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
 import de.undercouch.citeproc.CSLTool;
+import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.tool.CommandDesc;
 import de.undercouch.citeproc.helper.tool.CommandDescList;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
-import de.undercouch.citeproc.mendeley.MendeleyConnector;
+import de.undercouch.citeproc.zotero.ZoteroConnector;
 
 /**
- * Generates bibliographies and citations from Mendeley Web
+ * Generates bibliographies and citations from Zotero
  * @author Michel Kraemer
  */
-public class MendeleyCommand extends AbstractRemoteCommand {
+public class ZoteroCommand extends AbstractRemoteCommand {
 	@OptionDesc(longName = "sync", shortName = "s",
-			description = "force synchronization with Mendeley Web")
+			description = "force synchronization with Zotero")
 	@Override
 	public void setSync(boolean sync) {
 		super.setSync(sync);
@@ -39,18 +41,18 @@ public class MendeleyCommand extends AbstractRemoteCommand {
 	
 	@CommandDescList({
 		@CommandDesc(longName = "bibliography",
-				description = "generate bibliography from Mendeley Web",
-				command = MendeleyBibliographyCommand.class),
+				description = "generate bibliography from Zotero",
+				command = ZoteroBibliographyCommand.class),
 		@CommandDesc(longName = "citation",
-				description = "generate citations from Mendeley Web",
-				command = MendeleyCitationCommand.class),
+				description = "generate citations from Zotero",
+				command = ZoteroCitationCommand.class),
 		@CommandDesc(longName = "list",
 				description = "display sorted list of available citation IDs "
-						+ "in the Mendeley Web catalog",
-				command = MendeleyListCommand.class),
+						+ "in the Zotero library",
+				command = ZoteroListCommand.class),
 		@CommandDesc(longName = "json",
-				description = "convert Mendeley Web catalog to JSON",
-				command = MendeleyJsonCommand.class)
+				description = "convert Zotero library to JSON",
+				command = ZoteroJsonCommand.class)
 	})
 	@Override
 	public void setSubcommand(ProviderCommand subcommand) {
@@ -59,32 +61,40 @@ public class MendeleyCommand extends AbstractRemoteCommand {
 	
 	@Override
 	public String getUsageDescription() {
-		return "Connect to Mendeley Web and generate styled citations and bibliographies";
+		return "Connect to Zotero and generate styled citations and bibliographies";
 	}
 	
 	@Override
 	public String getUsageArguments() {
-		return "mendeley [OPTION]... [COMMAND] [COMMAND OPTION]...";
+		return "zotero [OPTION]... [COMMAND] [COMMAND OPTION]...";
 	}
 	
 	@Override
-	protected MendeleyConnector createRemoteConnector(String consumerKey,
+	protected ZoteroConnector createRemoteConnector(String consumerKey,
 			String consumerSecret) {
-		return new MendeleyConnector(consumerKey, consumerSecret);
+		return new ZoteroConnector(consumerKey, consumerSecret);
 	}
 	
 	@Override
 	protected String getAuthStoreFileName() {
-		return "mendeley-auth-store.conf";
+		return "zotero-auth-store.conf";
 	}
 	
 	@Override
 	protected String getCacheFileName() {
-		return "mendeley-cache.dat";
+		return "zotero-cache.dat";
+	}
+	
+	@Override
+	protected boolean filter(CSLItemData itemData) {
+		//Zotero uses the 'article' type only for attachments and not
+		//for bibliography items. we can safely filter out all attachments
+		//by testing for this type.
+		return (itemData.getType() != null && itemData.getType() != CSLType.ARTICLE);
 	}
 	
 	/**
-	 * Reads the Mendeley consumer key and consumer secret from an encrypted
+	 * Reads the Zotero consumer key and consumer secret from an encrypted
 	 * file. This is indeed not the most secure way to save these tokens, but
 	 * it's certainly better than putting them unencrypted in this file.
 	 * @return the key and secret
@@ -92,21 +102,21 @@ public class MendeleyCommand extends AbstractRemoteCommand {
 	 */
 	protected String[] readConsumer() throws Exception {
 		String str = CSLUtils.readStreamToString(CSLTool.class.getResourceAsStream(
-				"helper/tool/internal/citeproc-java-tool-consumer"), "UTF-8");
+				"helper/tool/internal/citeproc-java-tool-consumer2"), "UTF-8");
 		byte[] arr = DatatypeConverter.parseBase64Binary(str);
 		
-		SecretKeySpec k = new SecretKeySpec("#x$gbf5zs%4QvzAx".getBytes(), "AES");
+		SecretKeySpec k = new SecretKeySpec("5zt&%3,oc\"??823_".getBytes(), "AES");
 		Cipher c = Cipher.getInstance("AES");
 		c.init(Cipher.DECRYPT_MODE, k);
 		arr = c.doFinal(arr);
 		arr = DatatypeConverter.parseBase64Binary(new String(arr));
 		
 		String[] result = new String[] { "", "" };
-		for (int i = 0; i < 32; ++i) {
-			result[1] += (char)arr[i + 31];
+		for (int i = 0; i < 20; ++i) {
+			result[0] += (char)arr[i + 789];
 		}
-		for (int i = 0; i < 41; ++i) {
-			result[0] += (char)arr[i + 1857];
+		for (int i = 0; i < 20; ++i) {
+			result[1] += (char)arr[i + 1478];
 		}
 		
 		return result;

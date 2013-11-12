@@ -15,7 +15,7 @@
 package de.undercouch.citeproc.tool;
 
 /**
- * Reads the input bibliography from Mendeley Web
+ * Generate bibliography from Mendeley Web
  * @author Michel Kraemer
  */
 public class MendeleyBibliographyCommand extends BibliographyCommand {

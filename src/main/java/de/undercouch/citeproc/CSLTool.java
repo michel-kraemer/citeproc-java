@@ -36,6 +36,7 @@ import de.undercouch.citeproc.tool.JsonCommand;
 import de.undercouch.citeproc.tool.ListCommand;
 import de.undercouch.citeproc.tool.MendeleyCommand;
 import de.undercouch.citeproc.tool.ProviderCommand;
+import de.undercouch.citeproc.tool.ZoteroCommand;
 
 /**
  * Command line tool for the CSL processor. Use <code>citeproc-java --help</code>
@@ -95,6 +96,9 @@ public class CSLTool extends AbstractCSLToolCommand {
 		@CommandDesc(longName = "mendeley",
 				description = "connect to Mendeley Web",
 				command = MendeleyCommand.class),
+		@CommandDesc(longName = "zotero",
+				description = "connect to Zotero",
+				command = ZoteroCommand.class),
 		@CommandDesc(longName = "bibtex",
 				description = "generate a LaTeX bibliography",
 				command = BibTeXCommand.class),

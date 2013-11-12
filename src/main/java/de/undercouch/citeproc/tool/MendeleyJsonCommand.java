@@ -15,7 +15,7 @@
 package de.undercouch.citeproc.tool;
 
 /**
- * Reads the input bibliography from Mendeley Web
+ * Convert Mendeley Web catalog to JSON
  * @author Michel Kraemer
  */
 public class MendeleyJsonCommand extends JsonCommand {

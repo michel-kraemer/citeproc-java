@@ -15,17 +15,17 @@
 package de.undercouch.citeproc.tool;
 
 /**
- * Generate citations from Mendeley Web
+ * Convert Zotero library to JSON
  * @author Michel Kraemer
  */
-public class MendeleyCitationCommand extends CitationCommand {
+public class ZoteroJsonCommand extends JsonCommand {
 	@Override
 	public String getUsageDescription() {
-		return "Generate citations from Mendeley Web";
+		return "Convert Zotero library to JSON";
 	}
 	
 	@Override
 	public String getUsageArguments() {
-		return "mendeley citation [OPTION]... [CITATION ID]...";
+		return "zotero json [OPTION]... [CITATION ID]...";
 	}
 }
