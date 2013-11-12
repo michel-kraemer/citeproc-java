@@ -14,15 +14,13 @@
 
 package de.undercouch.citeproc.zotero;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.Map;
 
 import de.undercouch.citeproc.helper.oauth.OAuth;
 import de.undercouch.citeproc.helper.oauth.Token;
 
 /**
- * Extends {@link OAuth} to create {@link ZoteroToken}s
+ * Extends {@link OAuth} and creates special token credentials for Zotero
  * @author Michel Kraemer
  */
 public class ZoteroOAuth extends OAuth {
@@ -36,15 +34,12 @@ public class ZoteroOAuth extends OAuth {
 	}
 	
 	@Override
-	protected ZoteroToken responseToToken(Map<String, String> response) {
-		return new ZoteroToken(response.get(OAUTH_TOKEN),
-				response.get(OAUTH_TOKEN_SECRET), response.get(OAUTH_USERID));
-	}
-	
-	@Override
-	public ZoteroToken requestTokenCredentials(URL url, Method method,
-			Token temporaryCredentials, String verifier) throws IOException {
-		return (ZoteroToken)super.requestTokenCredentials(url, method,
-				temporaryCredentials, verifier);
+	protected Token responseToToken(Map<String, String> response) {
+		String userId = response.get(OAUTH_USERID);
+		if (userId != null) {
+			//since Zotero uses a single API key we can store the user ID in the token
+			return new Token(response.get(OAUTH_USERID), response.get(OAUTH_TOKEN_SECRET));
+		}
+		return super.responseToToken(response);
 	}
 }

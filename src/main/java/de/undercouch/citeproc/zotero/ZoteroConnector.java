@@ -64,8 +64,6 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 	
 	private static final String CSLJSON = "csljson";
 	
-	private String userId;
-	
 	private static final Map<String, String> REQUEST_HEADERS = new HashMap<String, String>();
 	static {
 		REQUEST_HEADERS.put("Zotero-API-Version", "2");
@@ -98,40 +96,15 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 		return new ZoteroOAuth(consumerKey, consumerSecret);
 	}
 	
-	/**
-	 * Sets the Zotero user's ID. Typically this ID will be set during
-	 * authorization, but you can also set it explicitly, for example,
-	 * if you cached it from previous sessions.
-	 * @param userId the ID
-	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-	
-	/**
-	 * @return the Zoter user's ID or null if the app is not yet
-	 * authenticated
-	 * @see #setUserId(String)
-	 */
-	public String getUserId() {
-		return userId;
-	}
-	
-	@Override
-	public void authorize(String verificationCode) throws IOException {
-		super.authorize(verificationCode);
-		if (accessToken != null) {
-			//the token can safely be cast to ZoteroToken because
-			//we use ZoteroOAuth which only creates ZoteroTokens
-			setUserId(((ZoteroToken)accessToken).getUserId());
-		}
-	}
-	
 	@Override
 	public List<String> getItems() throws IOException {
 		if (accessToken == null) {
 			throw new UnauthorizedException("Access token has not yet been requested");
 		}
+		
+		//since Zotero uses a single API key we store the user ID in the token
+		//see ZoteroOAuth#responseToToken(Map<String, String>)
+		String userId = accessToken.getToken();
 		String key = accessToken.getSecret();
 		
 		Map<String, Object> res = performRequest(ENDPOINT_USERS +
@@ -144,6 +117,10 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 		if (accessToken == null) {
 			throw new UnauthorizedException("Access token has not yet been requested");
 		}
+		
+		//since Zotero uses a single API key we store the user ID in the token
+		//see ZoteroOAuth#responseToToken(Map<String, String>)
+		String userId = accessToken.getToken();
 		String key = accessToken.getSecret();
 		
 		Map<String, Object> res = performRequest(ENDPOINT_USERS +
