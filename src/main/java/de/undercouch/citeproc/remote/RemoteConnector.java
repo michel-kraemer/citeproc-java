@@ -16,6 +16,7 @@ package de.undercouch.citeproc.remote;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.oauth.RequestException;
@@ -84,7 +85,7 @@ public interface RemoteConnector {
 	 * @throws RequestException if the server returns an error code
 	 * @throws IOException if the items could not be read from the server
 	 */
-	List<String> getItems() throws IOException;
+	List<String> getItemIDs() throws IOException;
 	
 	/**
 	 * Requests an item from the service. The user has to be
@@ -96,4 +97,26 @@ public interface RemoteConnector {
 	 * @throws IOException if the item could not be read from the server
 	 */
 	CSLItemData getItem(String itemId) throws IOException;
+	
+	/**
+	 * <p>Requests several items from the service. The user has to be
+	 * authenticated before this method can be called.</p>
+	 * <p>Some services support bulk loading. In this case, this method
+	 * makes as few requests as possible. The {@link #getMaxBulkItems()}
+	 * method returns the maximum number of items that can be queried
+	 * within one request.</p>
+	 * @param itemIds the IDs of the items to request
+	 * @return a map mapping item IDs to retrieved items
+	 * @throws UnauthorizedException if the user is not authenticated
+	 * @throws RequestException if the server returns an error code
+	 * @throws IOException if one of the items could not be read from the server
+	 * @see #getMaxBulkItems()
+	 */
+	Map<String, CSLItemData> getItems(List<String> itemIds) throws IOException;
+	
+	/**
+	 * @return the maximum number of items that can be queried within one request
+	 * @see #getItems(List)
+	 */
+	int getMaxBulkItems();
 }

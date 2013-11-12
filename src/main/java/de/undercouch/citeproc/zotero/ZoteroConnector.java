@@ -21,7 +21,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -97,7 +100,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 	}
 	
 	@Override
-	public List<String> getItems() throws IOException {
+	public List<String> getItemIDs() throws IOException {
 		if (accessToken == null) {
 			throw new UnauthorizedException("Access token has not yet been requested");
 		}
@@ -115,19 +118,8 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 
 	@Override
 	public CSLItemData getItem(String itemId) throws IOException {
-		if (accessToken == null) {
-			throw new UnauthorizedException("Access token has not yet been requested");
-		}
-		
-		//since Zotero uses a single API key we store the user ID in the token
-		//see ZoteroOAuth#responseToToken(Map<String, String>)
-		String userId = accessToken.getToken();
-		String key = accessToken.getSecret();
-		
-		Map<String, Object> res = performRequest(ENDPOINT_USERS +
-				userId + "/items/" + itemId + "?key=" + key +
-				"&content=" + CSLJSON, REQUEST_HEADERS);
-		return CSLItemData.fromJson(res);
+		Map<String, CSLItemData> r = getItems(Arrays.asList(itemId));
+		return r.get(itemId);
 	}
 	
 	@Override
@@ -150,27 +142,88 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 				throw new IOException("Could not create XML parser", e);
 			}
 			
+			Map<String, Object> result = new HashMap<String, Object>();
+			
 			//extract content in 'csljson' format
-			String csljson = null;
-			Element entry = doc.getDocumentElement();
-			NodeList contents = entry.getElementsByTagName("content");
-			for (int i = 0; i < contents.getLength(); ++i) {
-				Node n = contents.item(i);
-				Node type = n.getAttributes().getNamedItemNS("http://zotero.org/ns/api", "type");
-				if (type != null && type.getTextContent().equals(CSLJSON)) {
-					csljson = n.getTextContent().trim();
-					break;
+			Element feed = doc.getDocumentElement();
+			NodeList entries = feed.getElementsByTagName("entry");
+			for (int i = 0; i < entries.getLength(); ++i) {
+				String key = null;
+				String csljson = null;
+				
+				Node entry = entries.item(i);
+				if (entry instanceof Element) {
+					Element entryElem = (Element)entry;
+					NodeList keys = entryElem.getElementsByTagNameNS(
+							"http://zotero.org/ns/api", "key");
+					if (keys.getLength() > 0) {
+						key = keys.item(0).getTextContent().trim();
+						NodeList contents = entryElem.getElementsByTagName("content");
+						if (contents.getLength() > 0) {
+							Node content = contents.item(0);
+							Node type = content.getAttributes().getNamedItemNS(
+									"http://zotero.org/ns/api", "type");
+							if (type != null && type.getTextContent().equals(CSLJSON)) {
+								csljson = content.getTextContent().trim();
+							}
+						}
+					}
 				}
+				
+				if (csljson == null || csljson.isEmpty()) {
+					throw new IOException("Could not extract CSL json content from entry");
+				}
+				
+				Map<String, Object> item = new JsonParser(
+						new JsonLexer(new StringReader(csljson))).parseObject();
+				result.put(key, item);
 			}
 			
-			if (csljson == null || csljson.isEmpty()) {
-				throw new IOException("Could not extract CSL json content from entry");
-			}
-			
-			//parse JSON
-			return new JsonParser(new JsonLexer(new StringReader(csljson))).parseObject();
+			return result;
 		} else {
 			return super.parseResponse(response);
 		}
+	}
+	
+	@Override
+	public Map<String, CSLItemData> getItems(List<String> itemIds) throws IOException {
+		if (accessToken == null) {
+			throw new UnauthorizedException("Access token has not yet been requested");
+		}
+		
+		//since Zotero uses a single API key we store the user ID in the token
+		//see ZoteroOAuth#responseToToken(Map<String, String>)
+		String userId = accessToken.getToken();
+		String key = accessToken.getSecret();
+		
+		Map<String, CSLItemData> result = new LinkedHashMap<String, CSLItemData>(itemIds.size());
+		int s = 0;
+		while (s < itemIds.size()) {
+			int n = Math.min(getMaxBulkItems(), itemIds.size() - s);
+			List<String> itemsToRequest = itemIds.subList(s, s + n);
+			String istr = StringUtils.join(itemsToRequest, ',');
+			
+			Map<String, Object> res = performRequest(ENDPOINT_USERS +
+					userId + "/items?key=" + key +
+					"&content=" + CSLJSON  +
+					"&itemKey=" + istr, REQUEST_HEADERS);
+			
+			for (Map.Entry<String, Object> e : res.entrySet()) {
+				String id = e.getKey();
+				@SuppressWarnings("unchecked")
+				Map<String, Object> m = (Map<String, Object>)e.getValue();
+				CSLItemData item = CSLItemData.fromJson(m);
+				result.put(id, item);
+			}
+			
+			s += n;
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public int getMaxBulkItems() {
+		return 50;
 	}
 }

@@ -15,6 +15,7 @@
 package de.undercouch.citeproc.mendeley;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	}
 	
 	@Override
-	public List<String> getItems() throws IOException {
+	public List<String> getItemIDs() throws IOException {
 		Map<String, Object> response = performRequest(MENDELEY_LIBRARY_ENDPOINT, null);
 		@SuppressWarnings("unchecked")
 		List<String> documentIds = (List<String>)response.get("document_ids");
@@ -83,5 +84,19 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 		Map<String, Object> response = performRequest(
 				MENDELEY_DOCUMENTS_ENDPOINT + documentId, null);
 		return MendeleyConverter.convert(documentId, response);
+	}
+	
+	@Override
+	public Map<String, CSLItemData> getItems(List<String> itemIds) throws IOException {
+		Map<String, CSLItemData> result = new LinkedHashMap<String, CSLItemData>(itemIds.size());
+		for (String id : itemIds) {
+			result.put(id, getItem(id));
+		}
+		return result;
+	}
+	
+	@Override
+	public int getMaxBulkItems() {
+		return 1;
 	}
 }

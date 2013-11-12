@@ -23,6 +23,7 @@ import java.io.PrintStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.ListItemDataProvider;
@@ -132,25 +133,33 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 					System.out.print("Retrieving items ...");
 					cacheempty = true;
 				}
-				List<String> items = mc.getItems();
+				List<String> items = mc.getItemIDs();
 				if (cacheempty) {
 					System.out.println();
 				}
 				
 				//download all items
 				itemDataList = new ArrayList<CSLItemData>(items.size());
-				int i = 0;
+				int s = 0;
 				int printed = 0;
-				for (String did : items) {
-					if (!mc.containsItemId(did)) {
-						String msg = String.format("\rSynchronizing (%d/%d) ...",
-								i + 1, items.size());
-						System.out.print(msg);
-						++printed;
+				int bulk = mc.getMaxBulkItems();
+				while (s < items.size()) {
+					int n = 0;
+					List<String> itemsToRetrieve = new ArrayList<String>(bulk);
+					while (s < items.size() && n < bulk) {
+						String did = items.get(s);
+						if (!mc.containsItemId(did)) {
+							String msg = String.format("\rSynchronizing (%d/%d) ...",
+									s + 1, items.size());
+							System.out.print(msg);
+							++printed;
+							++n;
+						}
+						itemsToRetrieve.add(did);
+						++s;
 					}
-					
-					itemDataList.add(mc.getItem(did));
-					++i;
+					Map<String, CSLItemData> itemData = mc.getItems(itemsToRetrieve);
+					itemDataList.addAll(itemData.values());
 				}
 				
 				if (printed > 0) {

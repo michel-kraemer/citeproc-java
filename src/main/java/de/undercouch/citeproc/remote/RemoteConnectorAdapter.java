@@ -16,6 +16,7 @@ package de.undercouch.citeproc.remote;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import de.undercouch.citeproc.csl.CSLItemData;
 
@@ -64,12 +65,22 @@ public class RemoteConnectorAdapter implements RemoteConnector {
 	}
 
 	@Override
-	public List<String> getItems() throws IOException {
-		return delegate.getItems();
+	public List<String> getItemIDs() throws IOException {
+		return delegate.getItemIDs();
 	}
 
 	@Override
 	public CSLItemData getItem(String itemId) throws IOException {
 		return delegate.getItem(itemId);
+	}
+	
+	@Override
+	public Map<String, CSLItemData> getItems(List<String> itemIds) throws IOException {
+		return delegate.getItems(itemIds);
+	}
+	
+	@Override
+	public int getMaxBulkItems() {
+		return delegate.getMaxBulkItems();
 	}
 }

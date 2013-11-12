@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,8 +30,8 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.helper.json.StringJsonBuilderFactory;
-import de.undercouch.citeproc.remote.RemoteConnectorAdapter;
 import de.undercouch.citeproc.remote.RemoteConnector;
+import de.undercouch.citeproc.remote.RemoteConnectorAdapter;
 
 /**
  * <p>A {@link de.undercouch.citeproc.remote.RemoteConnector} that caches
@@ -86,11 +87,11 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 	}
 	
 	@Override
-	public List<String> getItems() throws IOException {
+	public List<String> getItemIDs() throws IOException {
 		if (!_itemIds.isEmpty()) {
 			return new ArrayList<String>(_itemIds);
 		}
-		List<String> ids = super.getItems();
+		List<String> ids = super.getItemIDs();
 		try {
 			_itemIds.addAll(ids);
 			commit();
@@ -121,6 +122,43 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 			itemData = CSLItemData.fromJson(m);
 		}
 		return itemData;
+	}
+	
+	@Override
+	public Map<String, CSLItemData> getItems(List<String> itemIds) throws IOException {
+		Map<String, CSLItemData> result = new LinkedHashMap<String, CSLItemData>(itemIds.size());
+		List<String> unknownIds = new ArrayList<String>();
+		
+		//load items from cache
+		for (String id : itemIds) {
+			String item = _items.get(id);
+			if (item == null) {
+				unknownIds.add(id);
+			} else {
+				Map<String, Object> m = new JsonParser(
+						new JsonLexer(new StringReader(item))).parseObject();
+				result.put(id, CSLItemData.fromJson(m));
+			}
+		}
+		
+		//load items which are not in the cache yet from remote
+		if (!unknownIds.isEmpty()) {
+			Map<String, CSLItemData> newItems = super.getItems(unknownIds);
+			try {
+				for (Map.Entry<String, CSLItemData> e : newItems.entrySet()) {
+					String s = (String)e.getValue().toJson(
+							new StringJsonBuilderFactory().createJsonBuilder());
+					_items.put(e.getKey(), s);
+				}
+				commit();
+			} catch (RuntimeException e) {
+				rollback();
+				throw e;
+			}
+			result.putAll(newItems);
+		}
+		
+		return result;
 	}
 	
 	/**
