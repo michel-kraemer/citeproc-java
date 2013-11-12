@@ -468,7 +468,7 @@ public class OAuth {
 			Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
 			mac.init(secretKey);
 			byte[] bytes = mac.doFinal(baseString.getBytes(UTF8));
-			return DatatypeConverter.printBase64Binary(bytes);
+			return PercentEncoding.encode(DatatypeConverter.printBase64Binary(bytes));
 		} catch (UnsupportedEncodingException e) {
 			//should never happen
 			throw new RuntimeException(e);
