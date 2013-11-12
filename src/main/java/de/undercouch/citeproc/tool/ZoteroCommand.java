@@ -19,8 +19,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
 import de.undercouch.citeproc.CSLTool;
-import de.undercouch.citeproc.csl.CSLItemData;
-import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.tool.CommandDesc;
 import de.undercouch.citeproc.helper.tool.CommandDescList;
@@ -83,14 +81,6 @@ public class ZoteroCommand extends AbstractRemoteCommand {
 	@Override
 	protected String getCacheFileName() {
 		return "zotero-cache.dat";
-	}
-	
-	@Override
-	protected boolean filter(CSLItemData itemData) {
-		//Zotero uses the 'article' type only for attachments and not
-		//for bibliography items. we can safely filter out all attachments
-		//by testing for this type.
-		return (itemData.getType() != null && itemData.getType() != CSLType.ARTICLE);
 	}
 	
 	/**

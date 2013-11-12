@@ -108,7 +108,8 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 		String key = accessToken.getSecret();
 		
 		Map<String, Object> res = performRequest(ENDPOINT_USERS +
-				userId + "/items?key=" + key + "&newer=0&format=versions", REQUEST_HEADERS);
+				userId + "/items?key=" + key + "&newer=0&format=versions"
+						+ "&itemType=-attachment", REQUEST_HEADERS);
 		return new ArrayList<String>(res.keySet());
 	}
 

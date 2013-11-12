@@ -149,10 +149,7 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 						++printed;
 					}
 					
-					CSLItemData itemData = mc.getItem(did);
-					if (filter(itemData)) {
-						itemDataList.add(itemData);
-					}
+					itemDataList.add(mc.getItem(did));
 					++i;
 				}
 				
@@ -189,18 +186,6 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 		return new ListItemDataProvider(itemDataArr);
 	}
 	
-	/**
-	 * Filters a given item (i.e. prevents it from being added to the
-	 * {@link ItemDataProvider} returned by {@link #connect(boolean)}). The
-	 * default implementation always returns <code>true</code> which means
-	 * that all items will be included.
-	 * @param itemData the item to filter
-	 * @return true if the item should be included, false otherwise
-	 */
-	protected boolean filter(CSLItemData itemData) {
-		return true;
-	}
-
 	/**
 	 * Creates the remote connector
 	 * @param consumerKey the OAuth consumer key
