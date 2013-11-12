@@ -149,7 +149,6 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 		try {
 			return parseResponse(response);
 		} finally {
-			consumeResponse(is);
 			is.close();
 		}
 	}
@@ -165,17 +164,5 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 		InputStream is = response.getInputStream();
 		Reader r = new BufferedReader(new InputStreamReader(is));
 		return new JsonParser(new JsonLexer(r)).parseObject();
-	}
-
-	/**
-	 * Consumes the rest of an input stream. All contents will be discarded.
-	 * Consuming a whole input stream is needed for HTTP connections
-	 * to clear all resources.
-	 * @param is the input stream
-	 * @throws IOException if the input stream could not be read
-	 */
-	private void consumeResponse(InputStream is) throws IOException {
-		byte[] buf = new byte[1024 * 8];
-		while (is.read(buf) >= 0);
 	}
 }
