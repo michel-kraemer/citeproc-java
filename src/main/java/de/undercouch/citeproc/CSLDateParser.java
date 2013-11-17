@@ -45,6 +45,8 @@ public class CSLDateParser {
 		//load bundles scripts
 		try {
 			runner.eval("var CSL = new function() {};");
+			runner.eval("CSL.DATE_PARTS_ALL = [\"year\", \"month\", \"day\", \"season\"];");
+			runner.eval("CSL.debug = function(msg) {};");
 			runner.loadScript(getClass().getResource("dateparser.js"));
 		} catch (ScriptRunnerException e) {
 			//should never happen because bundled JavaScript files should be OK indeed
