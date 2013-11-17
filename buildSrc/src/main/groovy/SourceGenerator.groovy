@@ -228,8 +228,13 @@ class SourceGenerator {
     }
     
     def compileScripts() {
+        compileScriptsFrom('src/main/resources/de/undercouch/citeproc')
+        compileScriptsFrom('src-gen/main/resources/de/undercouch/citeproc')
+    }
+    
+    def compileScriptsFrom(src) {
         def dstRes = new File('src-gen/main/resources')
-        for (s in project.fileTree(dir: 'src/main/resources/de/undercouch/citeproc', include: '*.js')) {
+        for (s in project.fileTree(dir: src, include: '*.js')) {
             org.mozilla.javascript.tools.jsc.Main.main([ '-opt', '9',
                 '-package', 'de.undercouch.citeproc', '-nosource', '-encoding', 'UTF-8',
                 '-d', dstRes.toString(), s.toString() ] as String[])

@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'de.undercouch:gradle-download-task:0.2'
+        classpath 'de.undercouch:gradle-download-task:0.3'
     }
 }
 
@@ -22,6 +22,10 @@ sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
 
 mainClassName = 'de.undercouch.citeproc.CSLTool'
+
+ext.citeprocJsUrl = 'https://bitbucket.org/fbennett/citeproc-js/raw/7ab19356968d4777b1febcb91077433174863729/citeproc.js'
+ext.citeprocTestSuiteZip = 'd9a77787962c.zip'
+ext.citeprocTestSuiteUrl = 'https://bitbucket.org/bdarcus/citeproc-test/get/' + citeprocTestSuiteZip
 
 repositories {
     mavenCentral()
@@ -60,9 +64,16 @@ tasks.withType(Compile) {
     options.compilerArgs << "-Xlint" 
 }
 
-task generateSources {
+task downloadCiteprocJs(type: Download) {
+    src citeprocJsUrl
+    dest new File(projectDir, "src-gen/main/resources/de/undercouch/citeproc/citeproc.js")
+    overwrite false
+}
+
+task generateSources(dependsOn: downloadCiteprocJs) {
     inputs.files fileTree(dir: projectDir, includes: [ 'templates/*', 'grammars/*',
-        'src/main/resources/de/undercouch/citeproc/*.js' ])
+        'src/main/resources/de/undercouch/citeproc/*.js',
+        'src-gen/main/resources/de/undercouch/citeproc/*.js' ])
     outputs.files fileTree(dir: 'src-gen', includes: [ '**/*.java', '**/*.dat' ])
 } << {
     SourceGenerator sg = new SourceGenerator(project)
@@ -77,15 +88,13 @@ task cleanGeneratedSources(type: Delete) {
 }
 
 task downloadTestSuite(type: Download) {
-    def dst = new File(buildDir, 'test-suite')
-    dst.mkdirs()
-    src 'https://bitbucket.org/bdarcus/citeproc-test/get/d9a77787962c.zip'
-    dest new File(dst, 'test-suite.zip')
+    src citeprocTestSuiteUrl
+    dest new File(buildDir, "test-suite/${citeprocTestSuiteZip}")
     overwrite false
 }
 
 task runTestSuite(dependsOn: [ downloadTestSuite, testClasses ]) << {
-    def tr = new TestSuite(project, new File(buildDir, 'test-suite/test-suite.zip'))
+    def tr = new TestSuite(project, new File(buildDir, 'test-suite/' + citeprocTestSuiteZip))
     tr.compile()
     tr.fix()
     tr.run()
