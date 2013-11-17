@@ -227,6 +227,33 @@ class SourceGenerator {
         renderGrammar('InternalPage', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
     }
     
+    def filterScripts() {
+        def src = new File('src-gen/main/resources/de/undercouch/citeproc/citeproc.js')
+        def dst = new File('src-gen/main/resources/de/undercouch/citeproc/dateparser.js')
+        filterScript(src, dst, 'CSL.DateParser = function () {', '};')
+    }
+    
+    def filterScript(src, dst, start, end) {
+        src.withReader { r ->
+            dst.withWriter { w ->
+                def include = false
+                def line
+                while (line = r.readLine()) {
+                    if (line == start) {
+                        include = true
+                    }
+                    if (include) {
+                        dst << line
+                        dst << "\n"
+                        if (line == end) {
+                            break
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     def compileScripts() {
         compileScriptsFrom('src/main/resources/de/undercouch/citeproc')
         compileScriptsFrom('src-gen/main/resources/de/undercouch/citeproc')

@@ -44,8 +44,8 @@ public class CSLDateParser {
 		
 		//load bundles scripts
 		try {
-			runner.loadScript(getClass().getResource("xmle4x.js"));
-			runner.loadScript(getClass().getResource("citeproc.js"));
+			runner.eval("var CSL = new function() {};");
+			runner.loadScript(getClass().getResource("dateparser.js"));
 		} catch (ScriptRunnerException e) {
 			//should never happen because bundled JavaScript files should be OK indeed
 			throw new RuntimeException("Invalid bundled javascript file", e);

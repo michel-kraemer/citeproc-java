@@ -79,6 +79,7 @@ task generateSources(dependsOn: downloadCiteprocJs) {
     SourceGenerator sg = new SourceGenerator(project)
     sg.renderTemplates()
     sg.renderGrammars()
+    sg.filterScripts()
     sg.compileScripts()
     sg.generateVersionFile()
 }
