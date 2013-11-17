@@ -19,11 +19,14 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
 import de.undercouch.citeproc.CSLTool;
+import de.undercouch.citeproc.ItemDataProvider;
+import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.tool.CommandDesc;
 import de.undercouch.citeproc.helper.tool.CommandDescList;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.zotero.ZoteroConnector;
+import de.undercouch.citeproc.zotero.ZoteroItemDataProvider;
 
 /**
  * Generates bibliographies and citations from Zotero
@@ -65,6 +68,11 @@ public class ZoteroCommand extends AbstractRemoteCommand {
 	@Override
 	public String getUsageArguments() {
 		return "zotero [OPTION]... [COMMAND] [COMMAND OPTION]...";
+	}
+	
+	@Override
+	protected ItemDataProvider createItemDataProvider(CSLItemData[] itemData) {
+		return new ZoteroItemDataProvider(super.createItemDataProvider(itemData));
 	}
 	
 	@Override

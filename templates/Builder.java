@@ -42,6 +42,17 @@ public class $name$Builder {
 	\}
 	}$
 	
+	/**
+	 * Creates a builder that copies properties from the given original object
+	 * @param original the original object
+	 */
+	public $name$Builder($name$ original) {
+		$requiredProperties:{p | this.$p.normalizedName$ = original.$p.normalizedName; format="toGetter"$();
+		}$
+		$properties:{p | this.$p.normalizedName$ = original.$p.normalizedName; format="toGetter"$();
+		}$
+	}
+	
 	public $name$ build() {
 		return new $name$($requiredProperties:{p | $p.normalizedName$}; separator=","$
 				$if(!requiredProperties.empty && !properties.empty)$,$endif$

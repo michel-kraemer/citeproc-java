@@ -192,7 +192,16 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 		
 		//return provider that contains all items from the server
 		CSLItemData[] itemDataArr = itemDataList.toArray(new CSLItemData[itemDataList.size()]);
-		return new ListItemDataProvider(itemDataArr);
+		return createItemDataProvider(itemDataArr);
+	}
+	
+	/**
+	 * Creates an item data provider that wraps around the given list of items
+	 * @param itemData the items to wrap around
+	 * @return the item data provider
+	 */
+	protected ItemDataProvider createItemDataProvider(CSLItemData[] itemData) {
+		return new ListItemDataProvider(itemData);
 	}
 	
 	/**
