@@ -15,7 +15,6 @@
 package de.undercouch.citeproc;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -43,7 +42,7 @@ public class CSLDateParserTest {
 		assertArrayEquals(new int[][] { new int[] { 2013 } }, date.getDateParts());
 		
 		date = parser.parse("");
-		assertNull(date.getDateParts());
+		assertArrayEquals(new int[][] { new int[0] }, date.getDateParts());
 	}
 	
 	/**

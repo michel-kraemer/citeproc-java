@@ -15,6 +15,7 @@
 package de.undercouch.citeproc;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
 import de.undercouch.citeproc.csl.CSLDate;
@@ -56,8 +57,7 @@ public class CSLDateParser {
 		//initialize parser
 		try {
 			runner.eval("var __parser__ = new CSL.DateParser();");
-			//FIXME disable this until citeproc-js bug #154 has been fixed
-			//runner.eval("__parser__.returnAsArray();");
+			runner.eval("__parser__.returnAsArray();");
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not initialize date parser", e);
 		}
@@ -79,37 +79,10 @@ public class CSLDateParser {
 			throw new IllegalArgumentException("Could not update items", e);
 		}
 		
-		//FIXME remove this once citeproc-js bug #154 has been fixed
-		Integer year = parseInt(res.get("year"));
-		Integer month = parseInt(res.get("month"));
-		Integer day = parseInt(res.get("day"));
-		int[] dateparts = null;
-		if (year != null) {
-			if (month != null) {
-				if (day != null) {
-					dateparts = new int[3];
-					dateparts[2] = day;
-				} else {
-					dateparts = new int[2];
-				}
-				dateparts[1] = month;
-			} else {
-				dateparts = new int[1];
-			}
-			dateparts[0] = year;
+		CSLDate r = CSLDate.fromJson(res);
+		if (r.getDateParts().length == 2 && Arrays.equals(r.getDateParts()[0], r.getDateParts()[1])) {
+			r = new CSLDateBuilder(r).dateParts(r.getDateParts()[0]).build();
 		}
-		
-		CSLDateBuilder builder = new CSLDateBuilder();
-		if (dateparts != null) {
-			builder.dateParts(dateparts);
-		}
-		return builder.build();
-	}
-	
-	private static Integer parseInt(Object o) {
-		if (o == null) {
-			return null;
-		}
-		return (int)Float.parseFloat(o.toString());
+		return r;
 	}
 }
