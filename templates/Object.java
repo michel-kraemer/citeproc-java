@@ -119,8 +119,8 @@ public class $name$ $if(!noJsonObject)$implements JsonObject$endif$ {
 	}
 	
 	private static int toInt(Object o) {
-		if (o instanceof String) {
-			return Integer.parseInt((String)o);
+		if (o instanceof CharSequence) {
+			return Integer.parseInt(o.toString());
 		}
 		return ((Number)o).intValue();
 	}
