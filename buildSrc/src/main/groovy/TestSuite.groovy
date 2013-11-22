@@ -25,7 +25,7 @@ class TestSuite {
     private def processorPyFile
     private def testFiles
     
-    TestSuite(project, zip) {
+    TestSuite(project, zip, citeprocZip) {
         this.project = project
         
         def zipFiles = project.zipTree(zip)
@@ -33,8 +33,12 @@ class TestSuite {
             it.toURI().getPath() =~ /.*\/processor-tests\/humans\/.*\.txt/ }
         processorPyFile = zipFiles.find { it.getPath().endsWith('processor.py') }
         
+        def citeprocZipFiles = project.zipTree(citeprocZip)
+        def citeprocLocales = citeprocZipFiles.find  { it.toURI().path =~ /.*\/locales\/.*/ }
+        citeprocLocales = citeprocLocales.parentFile.toURI().toURL()
+        
         def cp = project.test.classpath
-        def urls = cp.files.collect { it.toURI().toURL() }
+        def urls = [ citeprocLocales ] + cp.files.collect { it.toURI().toURL() }
         cl = new URLClassLoader(urls.toArray(new URL[urls.size()]))
     }
     
@@ -53,12 +57,6 @@ class TestSuite {
     
     def fix() {
         println('Fixing invalid tests ...')
-        
-        //as of 2013-10-06 these tests don't even work directly with citeproc-js 1.0.486
-        fixInFile('date_YearSuffixImplicitWithNoDate.json', 'June 01', 'June 1')
-        fixInFile('date_YearSuffixImplicitWithNoDateOneOnly.json', 'June 01', 'June 1')
-        fixInFile('date_YearSuffixWithNoDate.json', 'June 01', 'June 1')
-        fixInFile('bugreports_ikeyOne.json', '>>[0] (James Smith)', '>>[0] (Smith)')
         
         //we cannot parse '"label": 0'. use a reasonable default value.
         fixInFile('bugreports_NumericStyleFirstRefMultipleCiteFailure.json',

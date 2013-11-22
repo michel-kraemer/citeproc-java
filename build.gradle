@@ -23,8 +23,10 @@ targetCompatibility = '1.6'
 
 mainClassName = 'de.undercouch.citeproc.CSLTool'
 
-ext.citeprocJsUrl = 'https://bitbucket.org/fbennett/citeproc-js/raw/7ab19356968d4777b1febcb91077433174863729/citeproc.js'
-ext.citeprocTestSuiteZip = 'd9a77787962c.zip'
+ext.citeprocJsUrl = 'https://bitbucket.org/fbennett/citeproc-js/raw/d17472a8106afa5169ce0ac13723dfc827d5d663/citeproc.js'
+ext.citeprocJsZip = '1.0.508.zip'
+ext.citeprocJsZipUrl = 'https://bitbucket.org/fbennett/citeproc-js/get/' + citeprocJsZip
+ext.citeprocTestSuiteZip = '9942299.zip'
 ext.citeprocTestSuiteUrl = 'https://bitbucket.org/bdarcus/citeproc-test/get/' + citeprocTestSuiteZip
 
 repositories {
@@ -88,14 +90,23 @@ task cleanGeneratedSources(type: Delete) {
     delete 'src-gen'
 }
 
-task downloadTestSuite(type: Download) {
-    src citeprocTestSuiteUrl
-    dest new File(buildDir, "test-suite/${citeprocTestSuiteZip}")
+task downloadCiteprocJsZip(type: Download) {
+    src citeprocJsZipUrl
+    dest new File(buildDir, "test-suite/${citeprocJsZip}")
+    compress false
     overwrite false
 }
 
-task runTestSuite(dependsOn: [ downloadTestSuite, testClasses ]) << {
-    def tr = new TestSuite(project, new File(buildDir, 'test-suite/' + citeprocTestSuiteZip))
+task downloadTestSuite(type: Download) {
+    src citeprocTestSuiteUrl
+    dest new File(buildDir, "test-suite/${citeprocTestSuiteZip}")
+    compress false
+    overwrite false
+}
+
+task runTestSuite(dependsOn: [ downloadCiteprocJsZip, downloadTestSuite, testClasses ]) << {
+    def tr = new TestSuite(project, new File(buildDir, 'test-suite/' + citeprocTestSuiteZip),
+        new File(buildDir, 'test-suite/' + citeprocJsZip))
     tr.compile()
     tr.fix()
     tr.run()
