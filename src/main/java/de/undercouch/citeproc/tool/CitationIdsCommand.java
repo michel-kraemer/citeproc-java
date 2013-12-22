@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import de.undercouch.citeproc.ItemDataProvider;
@@ -74,8 +75,26 @@ public abstract class CitationIdsCommand extends AbstractCSLToolCommand implemen
 	protected boolean checkCitationIds(List<String> citationIds, ItemDataProvider provider) {
 		for (String id : citationIds) {
 			if (provider.retrieveItem(id) == null) {
-				String min = Levenshtein.findMinimum(Arrays.asList(provider.getIds()), id);
-				error("unknown citation id: " + id + "\nDid you mean `" + min + "'?");
+				String message = "unknown citation id: " + id;
+				
+				//find alternatives
+				List<String> availableIds = Arrays.asList(provider.getIds());
+				if (!availableIds.isEmpty()) {
+					Collection<String> mins = Levenshtein.findSimilar(availableIds, id);
+					if (mins.size() > 0) {
+						if (mins.size() == 1) {
+							message += "\n\nDid you mean this?";
+						} else {
+							message += "\n\nDid you mean one of these?";
+						}
+						for (String m : mins) {
+							message += "\n\t" + m;
+						}
+					}
+				}
+				
+				error(message);
+				
 				return false;
 			}
 		}

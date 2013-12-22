@@ -132,7 +132,7 @@ public class Levenshtein {
 		}
 		
 		//find strings according to their levenshtein distance
-		Collection<T> mins = findMinimum(ss, t, 5, t.length() - 1);
+		Collection<T> mins = findMinimum(ss, t, 5, Math.min(t.length() - 1, 7));
 		result.addAll(mins);
 		
 		return result;
