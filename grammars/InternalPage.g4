@@ -18,7 +18,7 @@ grammar InternalPage;
 package de.undercouch.citeproc.bibtex.internal;
 
 import de.undercouch.citeproc.bibtex.PageRange;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 }
 
 @members {

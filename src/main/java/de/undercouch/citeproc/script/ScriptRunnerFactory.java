@@ -16,7 +16,8 @@ package de.undercouch.citeproc.script;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.JavaVersion;
+import org.apache.commons.lang3.SystemUtils;
 
 /**
  * Creates {@link ScriptRunner} instances
@@ -68,7 +69,7 @@ public class ScriptRunnerFactory {
 	 */
 	private static ScriptRunner createJreRunner() {
 		//Rhino is not available. Check if we have the right JRE version
-		if (!SystemUtils.isJavaVersionAtLeast(170)) {
+		if (!SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_1_7)) {
 			throw new RuntimeException("You're using a JRE 6 or lower and "
 					+ "Mozilla Rhino was not found in the classpath. The "
 					+ "bundled Rhino in JRE 6 does not support E4X "

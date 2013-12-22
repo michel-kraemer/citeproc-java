@@ -14,7 +14,7 @@
 
 package de.undercouch.citeproc;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

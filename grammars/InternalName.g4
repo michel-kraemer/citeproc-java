@@ -26,7 +26,7 @@ package de.undercouch.citeproc.bibtex.internal;
 
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.CSLNameBuilder;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 }
 
 names
