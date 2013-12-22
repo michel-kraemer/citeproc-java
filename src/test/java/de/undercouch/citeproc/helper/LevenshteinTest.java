@@ -28,17 +28,6 @@ import org.junit.Test;
  */
 public class LevenshteinTest {
 	/**
-	 * Tests some simple distances
-	 */
-	@Test
-	public void distance() {
-		assertEquals(0, Levenshtein.distance("hello", "hello"));
-		assertEquals(1, Levenshtein.distance("hello", "hell"));
-		assertEquals(4, Levenshtein.distance("hello", "world"));
-		assertEquals(1, Levenshtein.distance("hello", "hullo"));
-	}
-	
-	/**
 	 * Tests the {@link Levenshtein#findMinimum(java.util.Collection, CharSequence)} method
 	 */
 	@Test
@@ -49,12 +38,22 @@ public class LevenshteinTest {
 	}
 	
 	/**
-	 * Tests the {@link Levenshtein#findMinimum(Collection, CharSequence, int)} method
+	 * Tests the {@link Levenshtein#findMinimum(Collection, CharSequence, int, int)} method
 	 */
 	@Test
 	public void findThreeMinumums() {
 		List<String> ss = Arrays.asList("Holla", "World", "Hello", "Hippo", "Hiplo");
-		Collection<String> min = Levenshtein.findMinimum(ss, "Hillo", 3);
+		Collection<String> min = Levenshtein.findMinimum(ss, "Hillo", 3, 5);
 		assertEquals(Arrays.asList("Hello", "Hiplo", "Holla"), min);
+	}
+	
+	/**
+	 * Tests the {@link Levenshtein#findMinimum(Collection, CharSequence, int, int)} method
+	 */
+	@Test
+	public void findMinumumsThreshold() {
+		List<String> ss = Arrays.asList("Holla", "World", "Hello", "Hippo", "Hiplo");
+		Collection<String> min = Levenshtein.findMinimum(ss, "Hillo", 5, 2);
+		assertEquals(Arrays.asList("Hello", "Hiplo"), min);
 	}
 }

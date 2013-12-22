@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.helper.Levenshtein;
@@ -164,10 +162,17 @@ public class BibliographyCommand extends CitationIdsCommand {
 		
 		//output alternative
 		if (!availableStyles.isEmpty()) {
-			Collection<String> mins = Levenshtein.findMinimum(
-					availableStyles, style, 5);
-			String min = StringUtils.join(mins, "', `");
-			message += "\nCandidates are: `" + min + "'.";
+			Collection<String> mins = Levenshtein.findSimilar(availableStyles, style);
+			if (mins.size() > 0) {
+				if (mins.size() == 1) {
+					message += "\n\nDid you mean this?";
+				} else {
+					message += "\n\nDid you mean one of these?";
+				}
+				for (String m : mins) {
+					message += "\n\t" + m;
+				}
+			}
 		}
 		
 		error(message);
