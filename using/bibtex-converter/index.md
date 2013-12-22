@@ -17,7 +17,8 @@ import java.io.FileInputStream;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import org.jbibtex.BibTeXDatabase;
 
-BibTeXDatabase db = BibTeXConverter.loadDatabase(new FileInputStream("mydb.bib"));
+BibTeXDatabase db = new BibTeXConverter().loadDatabase(
+    new FileInputStream("mydb.bib"));
 {% endhighlight %}
 
 After that, you can create a `ItemDataProvider` and pass it to the
