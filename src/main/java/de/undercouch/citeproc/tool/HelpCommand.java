@@ -14,7 +14,6 @@
 
 package de.undercouch.citeproc.tool;
 
-import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -22,10 +21,6 @@ import java.util.List;
 
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
-import de.undercouch.citeproc.helper.tool.Option;
-import de.undercouch.citeproc.helper.tool.OptionGroup;
-import de.undercouch.citeproc.helper.tool.OptionIntrospector;
-import de.undercouch.citeproc.helper.tool.OptionIntrospector.ID;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.helper.tool.UnknownAttributes;
 
@@ -58,35 +53,11 @@ public class HelpCommand extends AbstractCSLToolCommand {
 	@Override
 	public int doRun(String[] remainingArgs, PrintStream out)
 			throws OptionParserException, IOException {
-		Class<? extends Command> cmd = CSLTool.class;
-		
-		try {
-			for (String c : commands) {
-				OptionGroup<ID> options = OptionIntrospector.introspect(cmd);
-				boolean found = false;
-				for (Option<ID> o : options.getCommands()) {
-					if (c.equals(o.getLongName())) {
-						cmd = OptionIntrospector.getCommand(o.getId());
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					error("unknown command `" + c + "'");
-					return 1;
-				}
-			}
-		} catch (IntrospectionException e) {
-			throw new RuntimeException("Could not inspect command", e);
-		}
-		
-		try {
-			return cmd.newInstance().run(new String[] { "-h" }, out);
-		} catch (InstantiationException e) {
-			error("command could not be instantiated");
-		} catch (IllegalAccessException e) {
-			error("command could not be accessed");
-		}
+		//simply forward commands to CSLTool and append '-h'
+		Command cmd = new CSLTool();
+		String[] args = commands.toArray(new String[commands.size() + 1]);
+		args[args.length - 1] = "-h";
+		cmd.run(args, out);
 		return 1;
 	}
 }
