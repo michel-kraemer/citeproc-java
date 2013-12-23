@@ -214,21 +214,17 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 			while (true) {
 				int c = bis.read();
 				--len;
-				if (c < 0) {
+				if (c < 0 || len < 2) {
 					return FileFormat.UNKNOWN;
 				}
-				if (len < 2) {
-					return FileFormat.UNKNOWN;
-				}
+				
 				if (!Character.isWhitespace(c)) {
-					if (c == '%' || c == '@') {
-						return FileFormat.BIBTEX;
-					} else if (c == '[') {
+					if (c == '[') {
 						return FileFormat.JSON_ARRAY;
 					} else if (c == '{') {
 						return FileFormat.JSON_OBJECT;
 					}
-					return FileFormat.UNKNOWN;
+					return FileFormat.BIBTEX;
 				}
 			}
 		} finally {
