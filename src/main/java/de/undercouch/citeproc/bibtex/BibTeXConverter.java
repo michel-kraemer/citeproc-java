@@ -120,7 +120,7 @@ public class BibTeXConverter {
 	 * @throws ParseException if the database is invalid
 	 */
 	public BibTeXDatabase loadDatabase(InputStream is) throws IOException, ParseException {
-		InputStreamReader reader = new InputStreamReader(is);
+		InputStreamReader reader = new InputStreamReader(is, "UTF-8");
 		BibTeXParser parser = new BibTeXParser() {
 			@Override
 			public void checkStringResolution(Key key, BibTeXString string) {
