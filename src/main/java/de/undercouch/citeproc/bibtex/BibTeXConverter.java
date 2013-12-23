@@ -17,6 +17,7 @@ package de.undercouch.citeproc.bibtex;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
@@ -120,7 +121,7 @@ public class BibTeXConverter {
 	 * @throws ParseException if the database is invalid
 	 */
 	public BibTeXDatabase loadDatabase(InputStream is) throws IOException, ParseException {
-		InputStreamReader reader = new InputStreamReader(is, "UTF-8");
+		Reader reader = new BibTeXReader(new InputStreamReader(is, "UTF-8"));
 		BibTeXParser parser = new BibTeXParser() {
 			@Override
 			public void checkStringResolution(Key key, BibTeXString string) {
