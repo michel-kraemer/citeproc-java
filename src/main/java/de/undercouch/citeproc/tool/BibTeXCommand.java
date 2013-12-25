@@ -14,6 +14,7 @@
 
 package de.undercouch.citeproc.tool;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
@@ -85,7 +86,14 @@ public class BibTeXCommand extends AbstractCSLToolCommand {
 		if (simpleMode) {
 			BibliographyCommand bc = new BibliographyCommand();
 			
-			AuxFile af= AuxFileParser.parse(auxfiles.get(0));
+			AuxFile af;
+			try {
+				af= AuxFileParser.parse(auxfiles.get(0));
+			} catch (FileNotFoundException e) {
+				error("auxiliary file does not exist. Please run latex first.");
+				return 1;
+			}
+			
 			if (af.getStyle() != null) {
 				bc.setStyle(af.getStyle());
 			}
