@@ -1,0 +1,214 @@
+{
+    "name": "EndNoteReference",
+    "shortname": "reference",
+    "package": "de.undercouch.citeproc.endnote",
+    "description": "An EndNote reference",
+    "noJsonObject": true,
+    
+    "properties": [
+        {
+            "type": "String[]",
+            "name": "authors"
+        },
+        {
+            "type": "String",
+            "name": "bookOrConference"
+        },
+        {
+            "type": "String",
+            "name": "place"
+        },
+        {
+            "type": "Integer",
+            "name": "year"
+        },
+        {
+            "type": "String[]",
+            "name": "editors"
+        },
+        {
+            "type": "String",
+            "name": "label"
+        },
+        {
+            "type": "String",
+            "name": "language"
+        },
+        {
+            "type": "String[]",
+            "name": "translatedAuthors"
+        },
+        {
+            "type": "String",
+            "name": "publisher"
+        },
+        {
+            "type": "String",
+            "name": "journal"
+        },
+        {
+            "type": "String",
+            "name": "keywords"
+        },
+        {
+            "type": "String",
+            "name": "callNumber"
+        },
+        {
+            "type": "String",
+            "name": "accessionNumber"
+        },
+        {
+            "type": "String",
+            "name": "numberOrIssue"
+        },
+        {
+            "type": "String",
+            "name": "pages"
+        },
+        {
+            "type": "String",
+            "name": "translatedTitle"
+        },
+        {
+            "type": "String",
+            "name": "electronicResourceNumber"
+        },
+        {
+            "type": "String",
+            "name": "tertiaryTitle"
+        },
+        {
+            "type": "String",
+            "name": "title"
+        },
+        {
+            "type": "String",
+            "name": "URL"
+        },
+        {
+            "type": "String",
+            "name": "volume"
+        },
+        {
+            "type": "String",
+            "name": "databaseProvider"
+        },
+        {
+            "type": "String",
+            "name": "abstract"
+        },
+        {
+            "type": "String[]",
+            "name": "tertiaryAuthors"
+        },
+        {
+            "type": "String",
+            "name": "notes"
+        },
+        {
+            "type": "EndNoteType",
+            "name": "type"
+        },
+        {
+            "type": "String",
+            "name": "custom1"
+        },
+        {
+            "type": "String",
+            "name": "custom2"
+        },
+        {
+            "type": "String",
+            "name": "custom3"
+        },
+        {
+            "type": "String",
+            "name": "custom4"
+        },
+        {
+            "type": "String",
+            "name": "numberOfVolumes"
+        },
+        {
+            "type": "String",
+            "name": "edition"
+        },
+        {
+            "type": "String",
+            "name": "date"
+        },
+        {
+            "type": "String",
+            "name": "typeOfWork"
+        },
+        {
+            "type": "String[]",
+            "name": "subsidiaryAuthors"
+        },
+        {
+            "type": "String",
+            "name": "isbnOrIssn"
+        },
+        {
+            "type": "String",
+            "name": "shortTitle"
+        },
+        {
+            "type": "String",
+            "name": "custom5"
+        },
+        {
+            "type": "String",
+            "name": "custom6"
+        },
+        {
+            "type": "String",
+            "name": "custom7"
+        },
+        {
+            "type": "String",
+            "name": "section"
+        },
+        {
+            "type": "String",
+            "name": "originalPublication"
+        },
+        {
+            "type": "String",
+            "name": "reprintEdition"
+        },
+        {
+            "type": "String",
+            "name": "reviewedItem"
+        },
+        {
+            "type": "String",
+            "name": "authorAddress"
+        },
+        {
+            "type": "String",
+            "name": "caption"
+        },
+        {
+            "type": "String",
+            "name": "linkToPDF"
+        },
+        {
+            "type": "String",
+            "name": "researchNotes"
+        },
+        {
+            "type": "String",
+            "name": "accessDate"
+        },
+        {
+            "type": "String",
+            "name": "lastModifiedDate"
+        },
+        {
+            "type": "String",
+            "name": "nameOfDatabase"
+        }
+    ]
+}

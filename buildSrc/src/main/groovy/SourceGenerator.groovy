@@ -157,7 +157,7 @@ class SourceGenerator {
             String toString(Object o, String formatString, Locale locale) {
                 def s = o.toString()
                 if (formatString.equals('toEnum')) {
-                    return s.toUpperCase().replaceAll('-', '_')
+                    return s.toUpperCase().replace('-', '_').replace(' ', '_').replace('/', '_')
                 } else if (formatString.equals('toGetter')) {
                     s = Character.toUpperCase(s.charAt(0)).toString() + s.substring(1)
                     return "get${s}"
@@ -206,6 +206,7 @@ class SourceGenerator {
         renderTemplatesInternal('CSLLabel', dst, stg, true)
         renderTemplatesInternal('SecondFieldAlign', dst, stg, true)
         renderTemplatesInternal('SelectionMode', dst, stg, true)
+        renderTemplatesInternal('EndNoteType', dst, stg, true)
         
         renderTemplatesInternal('CSLAbbreviationList', dst, stg)
         renderTemplatesInternal('CSLCitation', dst, stg)
@@ -214,6 +215,7 @@ class SourceGenerator {
         renderTemplatesInternal('CSLItemData', dst, stg)
         renderTemplatesInternal('CSLName', dst, stg)
         renderTemplatesInternal('CSLProperties', dst, stg)
+        renderTemplatesInternal('EndNoteReference', dst, stg)
         
         renderTemplatesInternal('Bibliography', dst, stg)
         renderTemplatesInternal('Citation', dst, stg)
