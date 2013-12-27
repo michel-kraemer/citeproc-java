@@ -49,6 +49,14 @@ public class EndNoteParser {
 		while ((line = br.readLine()) != null) {
 			++lc;
 			line = line.trim();
+			if (line.isEmpty()) {
+				//end of reference
+				handleReference(builder, authors, result);
+				authors.clear();
+				builder = null;
+				continue;
+			}
+			
 			if (line.length() < 3) {
 				throw new IOException("Line " + lc + " is too short");
 			}
@@ -105,6 +113,13 @@ public class EndNoteParser {
 			}
 		}
 		
+		handleReference(builder, authors, result);
+		
+		return result;
+	}
+	
+	private void handleReference(EndNoteReferenceBuilder builder,
+			List<String> authors, EndNoteLibrary result) {
 		if (builder != null) {
 			if (!authors.isEmpty()) {
 				builder.authors(authors.toArray(new String[authors.size()]));
@@ -112,8 +127,6 @@ public class EndNoteParser {
 		
 			result.addReference(builder.build());
 		}
-		
-		return result;
 	}
 	
 	private EndNoteType parseType(String value, int lc) throws IOException {

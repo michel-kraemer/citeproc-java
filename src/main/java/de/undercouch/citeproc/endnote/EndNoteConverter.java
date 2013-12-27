@@ -14,10 +14,16 @@
 
 package de.undercouch.citeproc.endnote;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.jbibtex.ParseException;
 
 import de.undercouch.citeproc.bibtex.DateParser;
 import de.undercouch.citeproc.bibtex.NameParser;
@@ -32,6 +38,21 @@ import de.undercouch.citeproc.csl.CSLType;
  * @author Michel Kraemer
  */
 public class EndNoteConverter {
+	/**
+	 * <p>Loads an EndNote library from a stream.</p>
+	 * <p>This method does not close the given stream. The caller is
+	 * responsible for closing it.</p>
+	 * @param is the input stream to read from
+	 * @return the EndNote library
+	 * @throws IOException if the library could not be read
+	 * @throws ParseException if the library is invalid
+	 */
+	public EndNoteLibrary loadLibrary(InputStream is) throws IOException, ParseException {
+		Reader reader = new InputStreamReader(is, "UTF-8");
+		EndNoteParser parser = new EndNoteParser();
+		return parser.parse(reader);
+	}
+	
 	/**
 	 * Converts the given library to a map of CSL citation items
 	 * @param lib the library

@@ -33,6 +33,9 @@ import de.undercouch.citeproc.ListItemDataProvider;
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.endnote.EndNoteConverter;
+import de.undercouch.citeproc.endnote.EndNoteItemDataProvider;
+import de.undercouch.citeproc.endnote.EndNoteLibrary;
 import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.helper.tool.Command;
@@ -53,6 +56,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 		BIBTEX,
 		JSON_OBJECT,
 		JSON_ARRAY,
+		ENDNOTE,
 		UNKNOWN
 	}
 	
@@ -161,7 +165,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 		ItemDataProvider provider;
 		try {
 			//determine file format
-			FileFormat ff = determineFileFormat(bis);
+			FileFormat ff = determineFileFormat(bis, bibfile);
 			
 			//load bibliography file
 			if (ff == FileFormat.BIBTEX) {
@@ -185,6 +189,11 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 					items[i] = CSLItemData.fromJson(obj);
 				}
 				provider = new ListItemDataProvider(items);
+			} else if (ff == FileFormat.ENDNOTE) {
+				EndNoteLibrary lib = new EndNoteConverter().loadLibrary(bis);
+				EndNoteItemDataProvider endnoteprovider = new EndNoteItemDataProvider();
+				endnoteprovider.addLibrary(lib);
+				provider = endnoteprovider;
 			} else {
 				error("unknown bibliography file format");
 				return null;
@@ -204,11 +213,38 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 	 * determine the file format. Resets the input stream to the position
 	 * it had when the method was called.
 	 * @param bis the input stream
+	 * @param file the input file
 	 * @return the file format
 	 * @throws IOException if the input stream could not be read
 	 */
-	private FileFormat determineFileFormat(BufferedInputStream bis) throws IOException {
+	private FileFormat determineFileFormat(BufferedInputStream bis, File file) throws IOException {
 		int len = 1024 * 100;
+		
+		String ext = "";
+		int dot = file.getName().lastIndexOf('.');
+		if (dot > 0) {
+			ext = file.getName().substring(dot + 1);
+		}
+		
+		//check if it's an EndNote library
+		bis.mark(len);
+		try {
+			byte[] firstCharacters = new byte[3];
+			bis.read(firstCharacters);
+			
+			//check if the file starts with an EndNote tag, but
+			//also make sure the extension is not 'bib' because
+			//BibTeX comments look like EndNote tags
+			if (firstCharacters[0] == '%' &&
+					Character.isWhitespace(firstCharacters[2]) &&
+					!ext.equalsIgnoreCase("bib")) {
+				return FileFormat.ENDNOTE;
+			}
+		} finally {
+			bis.reset();
+		}
+		
+		//now check if it's json or bibtex
 		bis.mark(len);
 		try {
 			while (true) {
