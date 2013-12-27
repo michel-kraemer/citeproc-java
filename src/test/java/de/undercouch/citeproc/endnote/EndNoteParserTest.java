@@ -27,7 +27,7 @@ import org.junit.Test;
  */
 public class EndNoteParserTest {
 	/**
-	 * Tests if a single entry can be converted correctly
+	 * Tests if a single entry can be parsed correctly
 	 * @throws Exception if anything goes wrong
 	 */
 	@Test
