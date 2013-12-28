@@ -80,7 +80,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 	 * @param input the file
 	 */
 	@OptionDesc(longName = "input", shortName = "i",
-			description = "input bibliography FILE (*.bib, *.json)",
+			description = "input bibliography FILE (*.bib, *.enl, *.json)",
 			argumentName = "FILE", argumentType = ArgumentType.STRING,
 			priority = 1)
 	public void setInput(String input) {
