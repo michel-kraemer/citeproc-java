@@ -19,7 +19,7 @@
             "name": "place"
         },
         {
-            "type": "Integer",
+            "type": "String",
             "name": "year"
         },
         {

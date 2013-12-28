@@ -115,8 +115,9 @@ public class EndNoteConverter {
 			builder.issued(date);
 			builder.eventDate(date);
 		} else {
-			builder.issued(ref.getYear());
-			builder.eventDate(ref.getYear());
+			CSLDate date = DateParser.toDate(ref.getYear());
+			builder.issued(date);
+			builder.eventDate(date);
 		}
 		
 		//map URL

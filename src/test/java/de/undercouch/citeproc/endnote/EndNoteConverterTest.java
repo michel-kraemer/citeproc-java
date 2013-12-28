@@ -36,7 +36,7 @@ public class EndNoteConverterTest {
 			.type(EndNoteType.REPORT)
 			.title("The Programming Language B")
 			.authors("Johnson, S. C.", "Kernighan, B. W.")
-			.year(1973)
+			.year("1973")
 			.numberOrIssue("8")
 			.publisher("Bell Laboratories,")
 			.place("Murray Hill, NJ, USA")
@@ -48,9 +48,7 @@ public class EndNoteConverterTest {
 
 		assertEquals(CSLType.REPORT, item.getType());
 		assertEquals("The Programming Language B", item.getTitle());
-		assertEquals(1, item.getIssued().getDateParts().length);
-		assertEquals(1, item.getIssued().getDateParts()[0].length);
-		assertEquals(1973, item.getIssued().getDateParts()[0][0]);
+		assertEquals("1973", item.getIssued().getRaw());
 		assertEquals("8", item.getNumber());
 		assertEquals("8", item.getIssue());
 		assertEquals("Bell Laboratories,", item.getPublisher());

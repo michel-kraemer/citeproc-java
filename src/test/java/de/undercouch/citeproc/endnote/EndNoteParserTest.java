@@ -51,7 +51,7 @@ public class EndNoteParserTest {
 		EndNoteReference ref = l.getReferences().get(0);
 		assertEquals(EndNoteType.REPORT, ref.getType());
 		assertEquals("The Programming Language B", ref.getTitle());
-		assertEquals(Integer.valueOf(1973), ref.getYear());
+		assertEquals("1973", ref.getYear());
 		assertEquals("8", ref.getNumberOrIssue());
 		assertEquals("Bell Laboratories,", ref.getPublisher());
 		assertEquals("Murray Hill, NJ, USA", ref.getPlace());
