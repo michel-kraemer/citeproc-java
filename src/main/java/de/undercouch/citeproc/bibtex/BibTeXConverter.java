@@ -32,6 +32,7 @@ import org.jbibtex.LaTeXObject;
 import org.jbibtex.LaTeXParser;
 import org.jbibtex.LaTeXPrinter;
 import org.jbibtex.ParseException;
+import org.jbibtex.TokenMgrError;
 import org.jbibtex.Value;
 
 import de.undercouch.citeproc.csl.CSLDate;
@@ -130,7 +131,12 @@ public class BibTeXConverter {
 				}
 			}
 		};
-		return parser.parse(reader);
+		try {
+			return parser.parse(reader);
+		} catch (TokenMgrError err) {
+			throw new ParseException("Could not parse BibTeX library: " +
+					err.getMessage());
+		}
 	}
 	
 	/**
@@ -164,6 +170,8 @@ public class BibTeXConverter {
 			} catch (IOException ex) {
 				//ignore
 			} catch (ParseException ex) {
+				//ignore
+			} catch (TokenMgrError err) {
 				//ignore
 			}
 			
