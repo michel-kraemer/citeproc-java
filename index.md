@@ -1,18 +1,11 @@
 ---
-layout: default
+layout: home
 title: citeproc-java
 lead: A Citation Style Language (CSL) processor for Java.
 ---
 
-<div class="sample">
-{% capture sample_content %}
-{% include sample.md %}
-{% endcapture %}
-{{ sample_content | markdownify }}
-</div>
-
-Introduction
-------------
+What is citeproc-java?
+----------------------
 
 citeproc-java is a [Citation Style Language (CSL)](http://citationstyles.org/)
 processor for Java. It interprets CSL styles and generates citations and
@@ -32,6 +25,16 @@ bibliographies. Some of the highlights in citeproc-java are:
 * citeproc-java is CSL 1.0.1 compliant and all tests from the
   [CSL test suite](https://bitbucket.org/bdarcus/citeproc-test) run
   successfully.
+
+Example
+-------
+
+<div class="sample">
+{% capture sample_content %}
+{% include sample.md %}
+{% endcapture %}
+{{ sample_content | markdownify }}
+</div>
 
 License
 -------

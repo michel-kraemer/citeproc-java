@@ -35,6 +35,10 @@ footer p {
   padding-bottom: 11px;
 }
 
+.navbar-brand img {
+  padding-right: 4px;
+}
+
 .navbar-toggle {
   margin-top: 5px;
   margin-bottom: 4px;
@@ -225,4 +229,84 @@ dl.man-page dt code {
 
 .pager {
   padding-top: 20px;
+}
+
+#welcome {
+  margin-bottom: 30px;
+}
+
+#welcome-banner {
+  min-height: 820px;
+  background-color: #e9edf2;
+}
+
+#welcome-message {
+  min-height: 120px;
+  background-color: #d7dce0;
+}
+
+#welcome-banner h1 {
+  text-align: center;
+  margin-top: 120px;
+  margin-bottom: 0px;
+  font-size: 5.5em;
+}
+
+#welcome-banner h2 {
+  text-align: center;
+  padding-top: 25px;
+  margin-top: 0px;
+  margin-bottom: 15px;
+}
+
+#welcome-banner ul {
+  padding: 0;
+  margin: 50px 2px;
+  list-style-type: none;
+  float: left;
+}
+
+#welcome-banner ul li {
+  font-size: 25px;
+  line-height: 55px;
+}
+
+#welcome-banner ul li i {
+  width: 55px;
+  display: inline-block;
+  font-size: 35px;
+  line-height: 55px;
+  float: left;
+}
+
+#welcome-banner img {
+  float: right;
+  padding-top: 20px;
+}
+
+#welcome-banner .welcome-buttons {
+  float: left;
+}
+
+.welcome-buttons a {
+  font-size: 20px;
+  margin-right: 10px;
+  padding-right: 19px;
+}
+
+.welcome-buttons i {
+  width: 25px;
+  display: inline-block;
+}
+
+#welcome-message h2 {
+  font-size: 30px;
+  float: left;
+  margin-top: 0px;
+  padding-top: 42px;
+}
+
+#welcome-message .welcome-buttons {
+  float: right;
+  margin-top: 35px;
 }
