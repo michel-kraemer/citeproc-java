@@ -17,6 +17,7 @@ package de.undercouch.citeproc.helper.tool.internal;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,31 +55,45 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 	public CachingRemoteConnector(RemoteConnector delegate, File cacheFile) {
 		super(delegate);
 		
-		Object db;
-		Set<String> itemIds;
-		Map<String, String> items;
-		try {
-			//use reflection to get a disk-based cache
-			Class<?> dbMakerClass = CachingRemoteConnector.class
-					.getClassLoader().loadClass("org.mapdb.DBMaker");
-			
-			Method newFileDB = dbMakerClass.getMethod("newFileDB", File.class);
-			Object dbMaker = newFileDB.invoke(null, cacheFile);
-			Method closeOnJvmShutdown = dbMakerClass.getMethod("closeOnJvmShutdown");
-			closeOnJvmShutdown.invoke(dbMaker);
-			Method make = dbMakerClass.getMethod("make");
-			db = make.invoke(dbMaker);
-			
-			Class<?> dbClass = db.getClass();
-			Method getTreeSet = dbClass.getMethod("getTreeSet", String.class);
-			itemIds = (Set<String>)getTreeSet.invoke(db, "itemIds");
-			Method getHashMap = dbClass.getMethod("getHashMap", String.class);
-			items = (Map<String, String>)getHashMap.invoke(db, "items");
-		} catch (Exception e) {
-			//disk cache is not available. use in-memory cache
-			db = null;
-			itemIds = new HashSet<String>();
-			items = new HashMap<String, String>();
+		Object db = null;
+		Set<String> itemIds = null;
+		Map<String, String> items = null;
+		int retry = 2;
+		while (retry >= 1) {
+			try {
+				//use reflection to get a disk-based cache
+				Class<?> dbMakerClass = CachingRemoteConnector.class
+						.getClassLoader().loadClass("org.mapdb.DBMaker");
+				
+				Method newFileDB = dbMakerClass.getMethod("newFileDB", File.class);
+				Object dbMaker = newFileDB.invoke(null, cacheFile);
+				Method closeOnJvmShutdown = dbMakerClass.getMethod("closeOnJvmShutdown");
+				closeOnJvmShutdown.invoke(dbMaker);
+				Method make = dbMakerClass.getMethod("make");
+				db = make.invoke(dbMaker);
+				
+				Class<?> dbClass = db.getClass();
+				Method getTreeSet = dbClass.getMethod("getTreeSet", String.class);
+				itemIds = (Set<String>)getTreeSet.invoke(db, "itemIds");
+				Method getHashMap = dbClass.getMethod("getHashMap", String.class);
+				items = (Map<String, String>)getHashMap.invoke(db, "items");
+				
+				break;
+			} catch (Exception e) {
+				--retry;
+				if (e instanceof InvocationTargetException && retry == 1 &&
+						cacheFile.exists()) {
+					//unable to open disk cache. remove it and try again.
+					cacheFile.delete();
+					continue;
+				}
+				
+				//disk cache is not available. use in-memory cache
+				db = null;
+				itemIds = new HashSet<String>();
+				items = new HashMap<String, String>();
+				break;
+			}
 		}
 		
 		_db = db;
