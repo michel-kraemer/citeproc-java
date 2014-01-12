@@ -16,13 +16,29 @@ footer p {
   color: #888;
 }
 
+.navbar {
+  min-height: 0;
+}
+
 .navbar-nav li {
   font-size: 17px;
 }
 
+.navbar-nav li a {
+  padding-top: 9px;
+  padding-bottom: 11px;
+}
+
 .navbar-brand {
   font-size: 22px;
-  padding-top: 18px;
+  padding-top: 8px;
+  padding-bottom: 11px;
+}
+
+.navbar-toggle {
+  margin-top: 5px;
+  margin-bottom: 4px;
+  border: none;
 }
 
 @media (min-width: 768px) {
@@ -48,7 +64,7 @@ footer p {
 }
 
 .page-header {
-  margin-top: 100px;
+  margin-top: 90px;
   padding-bottom: 30px;
   margin-bottom: 40px;
 }
