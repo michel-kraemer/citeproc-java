@@ -263,7 +263,6 @@ dl.man-page dt code {
   padding: 0;
   margin: 50px 2px;
   list-style-type: none;
-  float: left;
 }
 
 #welcome-banner ul li {
@@ -284,8 +283,16 @@ dl.man-page dt code {
   padding-top: 20px;
 }
 
-#welcome-banner .welcome-buttons {
+#welcome-feature-list-and-buttons {
   float: left;
+}
+
+#welcome-banner .welcome-buttons {
+  margin-bottom: 20px;
+}
+
+#welcome-banner .welcome-buttons a {
+  margin-bottom: 10px;
 }
 
 .welcome-buttons a {
