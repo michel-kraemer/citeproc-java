@@ -59,6 +59,22 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 		scope.put(key, scope, value);
 	}
 	
+	/**
+	 * @return true if Rhino's version is exactly 1.7R4, false if it's not
+	 * or if it cannot be determined
+	 */
+	private boolean isRhino17R4() {
+		try {
+			URL u = Script.class.getProtectionDomain().getCodeSource().getLocation();
+			String jar = u.getFile();
+			jar = jar.substring(jar.lastIndexOf('/'));
+			return jar.contains("1.7R4");
+		} catch (Throwable e) {
+			//if anything goes wrong, just suppose it's not 1.7R4
+			return false;
+		}
+	}
+	
 	@Override
 	public void loadScript(URL url) throws IOException, ScriptRunnerException {
 		//try to load a previously compiled script
@@ -73,8 +89,10 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 			}
 		}
 		
-		//try to load a precompiled script from a file
-		if (url.getPath().endsWith(".js")) {
+		//try to load a precompiled script from a file (only if
+		//we're using Rhino 1.7R4 as the precompile scripts are
+		//only compatible to this version)
+		if (url.getPath().endsWith(".js") && isRhino17R4()) {
 			String name = url.getPath().substring(0, url.getPath().length() - 3);
 			name = name.substring(name.lastIndexOf('/') + 1);
 			name = name + ".dat";
