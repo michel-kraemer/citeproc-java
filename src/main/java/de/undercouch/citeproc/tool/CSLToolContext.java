@@ -18,7 +18,7 @@ import java.io.File;
 
 /**
  * A context containing information used during execution of
- * the {@de.undercouch.citeproc.CSLTool}
+ * the {@link de.undercouch.citeproc.CSLTool}
  * @author Michel Kraemer
  */
 public class CSLToolContext {
