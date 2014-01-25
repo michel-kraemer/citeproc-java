@@ -23,11 +23,14 @@ targetCompatibility = '1.6'
 
 mainClassName = 'de.undercouch.citeproc.CSLTool'
 
-ext.citeprocJsUrl = 'https://bitbucket.org/fbennett/citeproc-js/raw/d17472a8106afa5169ce0ac13723dfc827d5d663/citeproc.js'
+ext.citeprocProjectBase = 'https://bitbucket.org/fbennett/citeproc-js/'
+ext.citeprocJsUrlBase = ext.citeprocProjectBase + 'raw/d17472a8106afa5169ce0ac13723dfc827d5d663/'
+ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
+ext.xmle4xJsUrl = ext.citeprocJsUrlBase + 'xmle4x.js'
 ext.citeprocJsZip = '1.0.508.zip'
-ext.citeprocJsZipUrl = 'https://bitbucket.org/fbennett/citeproc-js/get/' + citeprocJsZip
+ext.citeprocJsZipUrl = ext.citeprocProjectBase + 'get/' + ext.citeprocJsZip
 ext.citeprocTestSuiteZip = '9942299.zip'
-ext.citeprocTestSuiteUrl = 'https://bitbucket.org/bdarcus/citeproc-test/get/' + citeprocTestSuiteZip
+ext.citeprocTestSuiteUrl = ext.citeprocProjectBase + 'get/' + ext.citeprocTestSuiteZip
 
 repositories {
     mavenCentral()
@@ -72,7 +75,13 @@ task downloadCiteprocJs(type: Download) {
     overwrite false
 }
 
-task generateSources(dependsOn: downloadCiteprocJs) {
+task downloadXmle4xJs(type: Download) {
+    src xmle4xJsUrl
+    dest new File(projectDir, "src-gen/main/resources/de/undercouch/citeproc/xmle4x.js")
+    overwrite false
+}
+
+task generateSources(dependsOn: [ downloadXmle4xJs, downloadCiteprocJs ]) {
     inputs.files fileTree(dir: projectDir, includes: [ 'templates/*', 'grammars/*',
         'src/main/resources/de/undercouch/citeproc/*.js',
         'src-gen/main/resources/de/undercouch/citeproc/*.js' ])
