@@ -26,6 +26,12 @@ import de.undercouch.citeproc.helper.json.JsonBuilderFactory;
  */
 public interface ScriptRunner extends JsonBuilderFactory {
 	/**
+	 * @return true if this script runner supports the
+	 * ECMAScript for XML extension (E4X)
+	 */
+	boolean supportsE4X();
+	
+	/**
 	 * Sets a key/value pair in the runner's global scope
 	 * @param key the key
 	 * @param value the value

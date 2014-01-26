@@ -26,6 +26,7 @@ mainClassName = 'de.undercouch.citeproc.CSLTool'
 ext.citeprocProjectBase = 'https://bitbucket.org/fbennett/citeproc-js/'
 ext.citeprocJsUrlBase = ext.citeprocProjectBase + 'raw/d17472a8106afa5169ce0ac13723dfc827d5d663/'
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
+ext.xmldomJsUrl = ext.citeprocJsUrlBase + 'xmldom.js'
 ext.xmle4xJsUrl = ext.citeprocJsUrlBase + 'xmle4x.js'
 ext.citeprocJsZip = '1.0.508.zip'
 ext.citeprocJsZipUrl = ext.citeprocProjectBase + 'get/' + ext.citeprocJsZip
@@ -75,13 +76,19 @@ task downloadCiteprocJs(type: Download) {
     overwrite false
 }
 
+task downloadXmldomJs(type: Download) {
+    src xmldomJsUrl
+    dest new File(projectDir, "src-gen/main/resources/de/undercouch/citeproc/xmldom.js")
+    overwrite false
+}
+
 task downloadXmle4xJs(type: Download) {
     src xmle4xJsUrl
     dest new File(projectDir, "src-gen/main/resources/de/undercouch/citeproc/xmle4x.js")
     overwrite false
 }
 
-task generateSources(dependsOn: [ downloadXmle4xJs, downloadCiteprocJs ]) {
+task generateSources(dependsOn: [ downloadXmldomJs, downloadXmle4xJs, downloadCiteprocJs ]) {
     inputs.files fileTree(dir: projectDir, includes: [ 'templates/*', 'grammars/*',
         'src/main/resources/de/undercouch/citeproc/*.js',
         'src-gen/main/resources/de/undercouch/citeproc/*.js' ])

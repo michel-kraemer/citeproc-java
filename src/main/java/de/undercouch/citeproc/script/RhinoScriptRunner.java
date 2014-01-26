@@ -53,6 +53,12 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 			Context.exit();
 		}
 	}
+	
+	@Override
+	public boolean supportsE4X() {
+		//Rhino always supports E4X
+		return true;
+	}
 
 	@Override
 	public void put(String key, Object value) {

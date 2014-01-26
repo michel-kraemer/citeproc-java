@@ -165,7 +165,12 @@ public class CSL {
 		
 		//load bundles scripts
 		try {
-			runner.loadScript(getClass().getResource("xmle4x.js"));
+			if (runner.supportsE4X()) {
+				runner.loadScript(getClass().getResource("xmle4x.js"));
+			} else {
+				runner.loadScript(getClass().getResource("xml2javabridge.js"));
+				runner.loadScript(getClass().getResource("xmldom.js"));
+			}
 			runner.loadScript(getClass().getResource("citeproc.js"));
 			runner.loadScript(getClass().getResource("formats.js"));
 			runner.loadScript(getClass().getResource("loadsys.js"));
