@@ -31,7 +31,7 @@ ext.xmle4xJsUrl = ext.citeprocJsUrlBase + 'xmle4x.js'
 ext.citeprocJsZip = '1.0.508.zip'
 ext.citeprocJsZipUrl = ext.citeprocProjectBase + 'get/' + ext.citeprocJsZip
 ext.citeprocTestSuiteZip = '9942299.zip'
-ext.citeprocTestSuiteUrl = ext.citeprocProjectBase + 'get/' + ext.citeprocTestSuiteZip
+ext.citeprocTestSuiteUrl = 'https://bitbucket.org/bdarcus/citeproc-test/get/' + ext.citeprocTestSuiteZip
 
 repositories {
     mavenCentral()
