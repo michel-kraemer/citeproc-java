@@ -56,9 +56,27 @@ var Xml2JavaNode = function(node) {
 	__xml2java__defineGetter(this, "firstChild", this.getFirstChild);
 	__xml2java__defineGetter(this, "nextSibling", this.getNextSibling);
 	__xml2java__defineGetter(this, "nodeName", this.getNodeName);
+	__xml2java__defineGetter(this, "nodeType", this.getNodeType);
 	__xml2java__defineGetter(this, "ownerDocument", this.getOwnerDocument);
 	__xml2java__defineGetter(this, "parentNode", this.getParentNode);
 	__xml2java__defineGetter(this, "textContent", this.getTextContent);
+};
+
+/**
+ * Adds the new child node <code>newChild</code> to this node
+ * @param newChild the node to add
+ * @return the added node
+ */
+Xml2JavaNode.prototype.appendChild = function(newChild) {
+	var nc = newChild;
+	if (nc != null) {
+		nc = nc.node;
+	}
+	var n = this.node.appendChild(nc);
+	if (n == null) {
+		return null;
+	}
+	return newChild;
 };
 
 /**
@@ -130,6 +148,13 @@ Xml2JavaNode.prototype.getNodeName = function() {
 }
 
 /**
+ * @return the node's type
+ */
+Xml2JavaNode.prototype.getNodeType = function() {
+	return this.node.nodeType;
+}
+
+/**
  * @return the document containing the node
  */
 Xml2JavaNode.prototype.getOwnerDocument = function() {
@@ -192,6 +217,23 @@ Xml2JavaNode.prototype.insertBefore = function(newChild, refChild) {
 };
 
 /**
+ * Removes the given child node from this one
+ * @param oldChild the node to remove
+ * @return the removed node
+ */
+Xml2JavaNode.prototype.removeChild = function(oldChild) {
+	var oc = oldChild;
+	if (oc != null) {
+		oc = oc.node;
+	}
+	var n = this.node.removeChild(oc);
+	if (n == null) {
+		return null;
+	}
+	return oldChild;
+};
+
+/**
  * Replaces the child node <code>oldChild</code> by the given new
  * node <code>newChild</code>
  * @param newChild the new node
@@ -225,6 +267,19 @@ var Xml2JavaDocument = function(doc) {
  * Inherit from Xml2JavaNode
  */
 Xml2JavaDocument.prototype = new Xml2JavaNode();
+
+/**
+ * Creates an element with the given name
+ * @param the new element's name
+ * @return the new element
+ */
+Xml2JavaDocument.prototype.createElement = function(tagName) {
+	var n = this.node.createElement(tagName);
+	if (n == null) {
+		return null;
+	}
+	return new Xml2JavaElement(n);
+};
 
 /**
  * Returns a node list of all elements in the document having the
