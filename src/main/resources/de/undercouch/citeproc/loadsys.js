@@ -28,7 +28,11 @@ function __handleReturnValue__(val) {
 }
 
 Sys.prototype.retrieveLocale = function(lang) {
-	return new String(__localeProvider__.retrieveLocale(lang));
+	var l = __localeProvider__.retrieveLocale(lang);
+	if (l == null) {
+		return null;
+	}
+	return new String(l);
 };
 
 Sys.prototype.retrieveItem = function(id) {
