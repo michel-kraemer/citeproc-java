@@ -72,8 +72,8 @@ public class CSLDateParser {
 		Map<String, Object> res;
 		try {
 			@SuppressWarnings("unchecked")
-			Map<String, Object> m = (Map<String, Object>)runner.callMethod(
-					"__parser__", "parse", str);
+			Map<String, Object> m = runner.callMethod(
+					"__parser__", "parse", Map.class, str);
 			res = m;
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not update items", e);

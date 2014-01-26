@@ -15,6 +15,8 @@
 package de.undercouch.citeproc.script;
 
 import java.io.Reader;
+import java.util.List;
+import java.util.Map;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -54,18 +56,27 @@ public class JREScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
-	public Object eval(String code) throws ScriptRunnerException {
+	public void eval(String code) throws ScriptRunnerException {
 		try {
-			return engine.eval(code);
+			engine.eval(code);
 		} catch (ScriptException e) {
 			throw new ScriptRunnerException("Could not evaluate code", e);
 		}
 	}
 	
 	@Override
-	public Object eval(Reader reader) throws ScriptRunnerException {
+	public <T> T eval(String code, Class<T> resultType) throws ScriptRunnerException {
 		try {
-			return engine.eval(reader);
+			return convert(engine.eval(code), resultType);
+		} catch (ScriptException e) {
+			throw new ScriptRunnerException("Could not evaluate code", e);
+		}
+	}
+	
+	@Override
+	public void eval(Reader reader) throws ScriptRunnerException {
+		try {
+			engine.eval(reader);
 		} catch (ScriptException e) {
 			throw new ScriptRunnerException("Could not evaluate code", e);
 		}
@@ -77,8 +88,8 @@ public class JREScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
-	public Object callMethod(String obj, String name, Object... args)
-			throws ScriptRunnerException {
+	public <T> T callMethod(String obj, String name, Class<T> resultType,
+			Object... args) throws ScriptRunnerException {
 		String p = "";
 		if (args != null && args.length > 0) {
 			Object[] ca = convertArguments(args);
@@ -91,13 +102,24 @@ public class JREScriptRunner extends AbstractScriptRunner {
 			}
 			p = b.toString();
 		}
-		return eval(obj + "." + name + "(" + p + ");");
+		
+		return eval(obj + "." + name + "(" + p + ");", resultType);
 	}
 
 	@Override
-	public Object callMethod(String obj, String name, String[] argument)
-			throws ScriptRunnerException {
+	public <T> T callMethod(String obj, String name, Class<T> resultType,
+			String[] argument) throws ScriptRunnerException {
 		Object p = createJsonBuilder().toJson(argument);
-		return eval(obj + "." + name + "(" + p + ");");
+		return eval(obj + "." + name + "(" + p + ");", resultType);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T convert(Object r, Class<T> resultType) {
+		if (List.class.isAssignableFrom(resultType) &&
+				r instanceof Map) {
+			r = ((Map<?, ?>)r).values();
+		}
+		return (T)r;
 	}
 }

@@ -7,7 +7,9 @@ fromJsonTemplate(type, v) ::= <<
 >>
 
 constructArrayTemplate(p) ::= <<
-	if (!(v instanceof Collection)) {
+	if (v instanceof Map) {
+		v = ((Map<?, ?>)v).values();
+	\} else if (!(v instanceof Collection)) {
 		throw new IllegalArgumentException("`$p.name$' must be an array");
 	\}
 	Collection<?> cv = (Collection<?>)v;
@@ -19,7 +21,9 @@ constructArrayTemplate(p) ::= <<
 	int i = 0;
 	for (Object vo : cv) {
 		$if(p.arrayArrayType)$
-			if (!(vo instanceof Collection)) {
+			if (vo instanceof Map) {
+				vo = ((Map<?, ?>)vo).values();
+			\} else if (!(vo instanceof Collection)) {
 				throw new IllegalArgumentException("`$p.name$' must be an array of arrays");
 			\}
 			Collection<?> icv = (Collection<?>)vo;

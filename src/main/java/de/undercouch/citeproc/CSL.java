@@ -292,7 +292,7 @@ public class CSL {
 	 */
 	public void registerCitationItems(String... ids) {
 		try {
-			runner.callMethod("__engine__", "updateItems", ids);
+			runner.callMethod("__engine__", "updateItems", Void.class, ids);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not update items", e);
 		}
@@ -311,7 +311,8 @@ public class CSL {
 	 */
 	public void registerCitationItems(String[] ids, boolean unsorted) {
 		try {
-			runner.callMethod("__engine__", "updateItems", ids, unsorted);
+			runner.callMethod("__engine__", "updateItems", Void.class,
+					ids, unsorted);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not update items", e);
 		}
@@ -370,17 +371,12 @@ public class CSL {
 		List<?> r;
 		try {
 			if (citationsPre == null && citationsPost == null) {
-				r = (List<?>)runner.callMethod("__engine__",
-						"appendCitationCluster", citation);
+				r = runner.callMethod("__engine__", "appendCitationCluster",
+						List.class, citation);
 			} else {
-				r = (List<?>)runner.callMethod("__engine__",
-						"processCitationCluster", citation, citationsPre, citationsPost);
-				for (Object o : r) {
-					if (o instanceof List) {
-						r = (List<?>) o;
-						break;
-					}
-				}
+				r = runner.callMethod("__engine__", "processCitationCluster",
+						List.class, citation, citationsPre, citationsPost);
+				r = runner.convert(r.get(1), List.class);
 			}
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not make citation", e);
@@ -388,6 +384,9 @@ public class CSL {
 		
 		List<Citation> result = new ArrayList<Citation>();
 		for (Object o : r) {
+			if (o instanceof Map) {
+				o = runner.convert(o, List.class);
+			}
 			if (o instanceof List) {
 				@SuppressWarnings("unchecked")
 				List<Object> i = (List<Object>)o;
@@ -441,7 +440,7 @@ public class CSL {
 		List<?> r;
 		try {
 			if ((selection == null || mode == null) && quash == null) {
-				r = (List<?>)runner.eval("__engine__.makeBibliography();");
+				r = runner.eval("__engine__.makeBibliography();", List.class);
 			} else {
 				Map<String, Object> args = new HashMap<String, Object>();
 				if (selection != null && mode != null) {
@@ -450,7 +449,8 @@ public class CSL {
 				if (quash != null) {
 					args.put("quash", selectionToList(quash));
 				}
-				r = (List<?>)runner.callMethod("__engine__", "makeBibliography", args);
+				r = runner.callMethod("__engine__", "makeBibliography",
+						List.class, args);
 			}
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not make bibliography", e);
@@ -459,7 +459,7 @@ public class CSL {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> fpm = (Map<String, Object>)r.get(0);
 		@SuppressWarnings("unchecked")
-		List<CharSequence> entriesList = (List<CharSequence>)r.get(1);
+		List<CharSequence> entriesList = runner.convert(r.get(1), List.class);
 		
 		String[] entries = new String[entriesList.size()];
 		for (int i = 0; i < entries.length; ++i) {
@@ -471,9 +471,12 @@ public class CSL {
 		int lineSpacing = getFromMap(fpm, "linespacing", 0);
 		int hangingIndent = getFromMap(fpm, "hangingindent", 0);
 		boolean done = getFromMap(fpm, "done", false);
-		Collection<?> srcEntryIds = (Collection<?>)fpm.get("entry_ids");
+		List<?> srcEntryIds = runner.convert(fpm.get("entry_ids"), List.class);
 		List<String> dstEntryIds = new ArrayList<String>();
 		for (Object o : srcEntryIds) {
+			if (o instanceof Map) {
+				o = runner.convert(o, List.class);
+			}
 			if (o instanceof Collection) {
 				Collection<?> oc = (Collection<?>)o;
 				for (Object oco : oc) {

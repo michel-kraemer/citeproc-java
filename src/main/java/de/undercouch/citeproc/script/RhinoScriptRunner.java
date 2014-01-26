@@ -133,12 +133,12 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 		//evaluate script without compiling
 		super.loadScript(url);
 	}
-
+	
 	@Override
-	public Object eval(String code) throws ScriptRunnerException {
+	public void eval(String code) throws ScriptRunnerException {
 		Context context = Context.enter();
 		try {
-			return unwrap(context.evaluateString(scope, code, "<code>", 1, null));
+			context.evaluateString(scope, code, "<code>", 1, null);
 		} catch (RhinoException e) {
 			throw new ScriptRunnerException("Could not execute code", e);
 		} finally {
@@ -147,10 +147,23 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	}
 
 	@Override
-	public Object eval(Reader reader) throws ScriptRunnerException, IOException {
+	@SuppressWarnings("unchecked")
+	public <T> T eval(String code, Class<T> resultType) throws ScriptRunnerException {
 		Context context = Context.enter();
 		try {
-			return unwrap(context.evaluateReader(scope, reader, "<code>", 1, null));
+			return (T)unwrap(context.evaluateString(scope, code, "<code>", 1, null));
+		} catch (RhinoException e) {
+			throw new ScriptRunnerException("Could not execute code", e);
+		} finally {
+			Context.exit();
+		}
+	}
+
+	@Override
+	public void eval(Reader reader) throws ScriptRunnerException, IOException {
+		Context context = Context.enter();
+		try {
+			context.evaluateReader(scope, reader, "<code>", 1, null);
 		} catch (RhinoException e) {
 			throw new ScriptRunnerException("Could not execute script", e);
 		} finally {
@@ -176,25 +189,34 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
-	public Object callMethod(String obj, String name, Object... args) throws ScriptRunnerException {
+	@SuppressWarnings("unchecked")
+	public <T> T callMethod(String obj, String name, Class<T> resultType,
+			Object... args) throws ScriptRunnerException {
 		try {
 			Object p[] = convertArguments(args);
 			ScriptableObject so = (ScriptableObject)scope.get(obj, scope);
-			return ScriptableObject.callMethod(so, name, p);
+			return (T)ScriptableObject.callMethod(so, name, p);
 		} catch (RhinoException e) {
 			throw new ScriptRunnerException("Could not call method", e);
 		}
 	}
 
 	@Override
-	public Object callMethod(String obj, String name, String[] argument)
-			throws ScriptRunnerException {
+	@SuppressWarnings("unchecked")
+	public <T> T callMethod(String obj, String name, Class<T> resultType,
+			String[] argument) throws ScriptRunnerException {
 		try {
 			Object p = createJsonBuilder().toJson(argument);
 			ScriptableObject so = (ScriptableObject)scope.get(obj, scope);
-			return ScriptableObject.callMethod(so, name, new Object[] { p });
+			return (T)ScriptableObject.callMethod(so, name, new Object[] { p });
 		} catch (RhinoException e) {
 			throw new ScriptRunnerException("Could not call method", e);
 		}
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T convert(Object o, Class<T> type) {
+		return (T)o;
 	}
 }
