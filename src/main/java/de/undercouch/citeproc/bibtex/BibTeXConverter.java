@@ -167,8 +167,6 @@ public class BibTeXConverter {
 			try {
 				List<LaTeXObject> objs = latexParser.parse(new StringReader(us));
 				us = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
-			} catch (IOException ex) {
-				//ignore
 			} catch (ParseException ex) {
 				//ignore
 			} catch (TokenMgrError err) {
