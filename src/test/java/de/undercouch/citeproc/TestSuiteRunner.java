@@ -27,6 +27,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.StringUtils;
 import org.fusesource.jansi.Ansi;
@@ -85,26 +89,28 @@ public class TestSuiteRunner {
 			int count = testFiles.length;
 			int success = 0;
 			
-			//run each test file
+			ExecutorService executor = Executors.newFixedThreadPool(
+					Runtime.getRuntime().availableProcessors());
+			
+			//submit a job for each test file
+			List<Future<Boolean>> fus = new ArrayList<Future<Boolean>>();
 			for (File fi : testFiles) {
-				//output name
-				String name = fi.getName().substring(0, fi.getName().length() - 5);
-				System.out.print(name);
-				for (int i = 0; i < (79 - name.length() - 9); ++i) {
-					System.out.print(" ");
-				}
-				
-				try {
-					runTest(fi);
-					System.out.println("[" + Ansi.ansi().fg(Ansi.Color.GREEN)
-							.a("SUCCESS").reset() + "]");
-					++success;
-				} catch (IllegalStateException e) {
-					System.out.println("[" + Ansi.ansi().fg(Ansi.Color.RED)
-							.a("FAILURE").reset() + "]");
-					System.err.println(e.getMessage());
-				}
+				fus.add(executor.submit(new TestCallable(fi)));
 			}
+			
+			//receive results
+			try {
+				for (Future<Boolean> fu : fus) {
+					if (fu.get()) {
+						++success;
+					}
+				}
+			} catch (Exception e) {
+				//should never happen
+				throw new RuntimeException(e);
+			}
+			
+			executor.shutdown();
 			
 			//output total time
 			long end = System.currentTimeMillis();
@@ -117,12 +123,57 @@ public class TestSuiteRunner {
 	}
 	
 	/**
+	 * A callable that runs a single test file
+	 */
+	private class TestCallable implements Callable<Boolean> {
+		private File file;
+		
+		public TestCallable(File file) {
+			this.file = file;
+		}
+		
+		@Override
+		public Boolean call() throws Exception {
+			Exception ex;
+			try {
+				runTest(file);
+				ex = null;
+			} catch (IllegalStateException e) {
+				ex = e;
+			} catch (IOException e) {
+				ex = e;
+			}
+			
+			synchronized (TestSuiteRunner.this) {
+				//output name
+				String name = file.getName().substring(0, file.getName().length() - 5);
+				System.out.print(name);
+				for (int i = 0; i < (79 - name.length() - 9); ++i) {
+					System.out.print(" ");
+				}
+				
+				//output result
+				if (ex == null) {
+					System.out.println("[" + Ansi.ansi().fg(Ansi.Color.GREEN)
+							.a("SUCCESS").reset() + "]");
+					return Boolean.TRUE;
+				} else {
+					System.out.println("[" + Ansi.ansi().fg(Ansi.Color.RED)
+							.a("FAILURE").reset() + "]");
+					System.err.println(ex.getMessage());
+					return Boolean.FALSE;
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Runs a single test file
 	 * @param f the test file to run
 	 * @throws IOException if the file could not be loaded
 	 */
 	@SuppressWarnings("unchecked")
-	private void runTest(File f) throws IOException {
+	private static void runTest(File f) throws IOException {
 		//load file
 		Map<String, Object> conf = readFile(f);
 		
@@ -310,7 +361,7 @@ public class TestSuiteRunner {
 	 * @return the configuration read from the file
 	 * @throws IOException if the file could not be read
 	 */
-	private Map<String, Object> readFile(File f) throws IOException {
+	private static Map<String, Object> readFile(File f) throws IOException {
 		FileInputStream fis = new FileInputStream(f);
 		try {
 			JsonLexer jsonLexer = new JsonLexer(new InputStreamReader(fis, "UTF-8"));
@@ -337,7 +388,7 @@ public class TestSuiteRunner {
 	 * @param bs the configuration
 	 * @return the item data objects
 	 */
-	private CSLItemData[] convertBibSection(Collection<Map<String, Object>> bs) {
+	private static CSLItemData[] convertBibSection(Collection<Map<String, Object>> bs) {
 		CSLItemData[] r = new CSLItemData[bs.size()];
 		int i = 0;
 		for (Map<String, Object> s : bs) {
