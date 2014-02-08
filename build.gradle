@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'de.undercouch:gradle-download-task:0.4'
+        classpath 'de.undercouch:gradle-download-task:0.5'
     }
 }
 
@@ -170,7 +170,7 @@ javadoc {
 
 // initialize gradle wrapper
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.8'
+    gradleVersion = '1.10'
 }
 
 // package javadoc into a jar file
