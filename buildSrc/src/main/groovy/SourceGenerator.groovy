@@ -145,7 +145,7 @@ class SourceGenerator {
         def tool = new Tool()
         tool.outputDirectory = dst
         tool.haveOutputDir = true
-        def grast = tool.loadGrammar(filename)
+        def grast = tool.parseGrammar(filename)
         grast.fileName = filename
         def g = tool.createGrammar(grast)
         g.fileName = filename
