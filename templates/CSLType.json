@@ -1,6 +1,6 @@
 {
     "name": "CSLType",
-    "package": "de.undercouch.citeproc.csl",
+    "pkg": "de.undercouch.citeproc.csl",
     "description": "Valid citation item types.",
     
     "types": [

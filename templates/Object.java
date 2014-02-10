@@ -12,108 +12,215 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package $package$;
+package $pkg;
 
 import java.util.Map;
 
-$if(!noJsonObject)$
+<% if (!noJsonObject) { %>
 import java.util.Collection;
 
 import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.JsonObject;
-$endif$
+<% } %>
 
 /**
- * $description$
+ * $description
  * @author Michel Kraemer
  */
-public class $name$ $if(!noJsonObject)$implements JsonObject$endif$ {
-	$requiredProperties:{p | private final $p.type$ $p.normalizedName$;
-    }$
-	$properties:{p | private final $p.type$ $p.normalizedName$;
-	}$
+public class $name <% if (!noJsonObject) { %>implements JsonObject<% } %> {
+	<% for (p in requiredProps) { %>private final ${p.type} ${p.normalizedName};
+	<% } %>
+	<% for (p in props) { %>private final ${p.type} ${p.normalizedName};
+	<% } %>
 	
-	public $name$($trunc(requiredProperties):{p | $p.type$ $p.normalizedName$,}$
-			$if(!requiredProperties.empty)$
-			$last(requiredProperties).type; format="toEllipse"$ $last(requiredProperties).normalizedName$
-			$endif$) {
-		$requiredProperties:{p | this.$p.normalizedName$ = $p.normalizedName$;
-        }$
-		$properties:{p | this.$p.normalizedName$ = $if(p.default)$$p.default$$else$null$endif$;
-		}$
+	public $name(<% if (requiredProps.size > 1) { for (p in requiredProps[0..-2]) { %>${p.type} ${p.normalizedName},<% } } %><% if (!requiredProps.empty) { %>
+			${toEllipse.call(requiredProps[-1].type)} ${requiredProps[-1].normalizedName}
+			<% } %>) {
+		<% for (p in requiredProps) { %>this.${p.normalizedName} = ${p.normalizedName};
+		<% } %>
+		<% for (p in props) { %>this.${p.normalizedName} = <% if (p.defval) { %>${p.defval}<% } else { %>null<% } %>;
+		<% } %>
 	}
 	
-	$if(!properties.empty)$
-	public $name$($requiredProperties:{p | $p.type$ $p.normalizedName$,}$
-			$properties:{p | $p.type$ $p.normalizedName$};separator=","$) {
-		$requiredProperties:{p | this.$p.normalizedName$ = $p.normalizedName$;
-        }$
-		$properties:{p | this.$p.normalizedName$ = $p.normalizedName$;
-	    }$
+	<% if (!props.empty) { %>
+	public $name(<% for (p in requiredProps) { %>${p.type} ${p.normalizedName},<% } %>
+			${props.collect({ p -> p.type + ' ' + p.normalizedName }).join(',')}) {
+		<% for (p in requiredProps) { %>this.${p.normalizedName} = ${p.normalizedName};
+		<% } %>
+		<% for (p in props) { %>this.${p.normalizedName} = ${p.normalizedName};
+		<% } %>
 	}
-	$endif$
+	<% } %>
 	
-	$requiredProperties:{p | /**
-	 * @return the $if(shortname)$$shortname$'s $endif$$p.name$
+	<% for (p in requiredProps) { %>/**
+	 * @return the <% if (shortname) { %>${shortname}'s <% } %>${p.name}
 	 */
-	public $p.type$ $p.normalizedName; format="toGetter"$() {
-		return $p.normalizedName$;
-	\}
-	}$
+	public ${p.type} ${toGetter.call(p.normalizedName)}() {
+		return ${p.normalizedName};
+	}
+	<% } %>
 	
-	$properties:{p | /**
-	 * @return the $if(!shortname.empty)$$shortname$'s $endif$$p.name$
+	<% for (p in props) { %>/**
+	 * @return the <% if (shortname) { %>${shortname}'s <% } %>${p.name}
 	 */
-	public $p.type$ $p.normalizedName; format="toGetter"$() {
-		return $p.normalizedName$;
-	\}
-	}$
-
-	$if(!noJsonObject)$
+	public ${p.type} ${toGetter.call(p.normalizedName)}() {
+		return ${p.normalizedName};
+	}
+	<% } %>
+	
+	<% if (!noJsonObject) { %>
 	@Override
 	public Object toJson(JsonBuilder builder) {
-		$requiredProperties:{p | builder.add("$p.name$", $p.normalizedName$);
-		}$
-		$properties:{p | if ($p.normalizedName$ != null) {
-			builder.add("$p.name$", $p.normalizedName$);
-		\}
-		}$
+		<% for (p in requiredProps) { %>builder.add("${p.name}", ${p.normalizedName});<% } %>
+		<% for (p in props) { %>if (${p.normalizedName} != null) {
+			builder.add("${p.name}", ${p.normalizedName});
+		}
+		<% } %>
 		return builder.build();
 	}
 	
 	/**
-	 * Converts a JSON object to a $name$ object. $if(!requiredProperties.empty)$The JSON object must at least contain the following required properties: $requiredProperties:{p | <code>$p.name$</code>}; separator=", "$$endif$
+	 * Converts a JSON object to a $name object. <% if (!requiredProps.empty) { %>The JSON object must at least contain the following required properties: ${requiredProps.collect({ p -> '<code>' + p.name + '</code>' }).join(',')}<% } %>
 	 * @param obj the JSON object to convert
-	 * @return the converted $name$ object
+	 * @return the converted $name object
 	 */
 	@SuppressWarnings("unchecked")
-	public static $name$ fromJson(Map<String, Object> obj) {
-		$requiredProperties:{p | $p.type$ $p.normalizedName$;
-		}$
+	public static $name fromJson(Map<String, Object> obj) {
+		<% for (p in requiredProps) { %>${p.type} ${p.normalizedName};<% } %>
 		
-		$requiredProperties:{p | {
-			Object v = obj.get("$p.name$");
+		<%
+		def castTemplate = { type, v ->
+			def castBefore
+			if (type.equals('String')) {
+				castBefore = ''
+			} else if (type.equals('int') || type.equals('Integer')) {
+				castBefore = 'toInt('
+			} else if (type.equals('boolean') || type.equals('Boolean')) {
+				castBefore = 'toBool('
+			} else {
+				castBefore = '(' + type + ')'
+			}
+			
+			def castAfter
+			if (type.equals('String')) {
+				castAfter = '.toString()'
+			} else if (type.equals('int') || type.equals('Integer') ||
+					type.equals('boolean') || type.equals('Boolean')) {
+				castAfter = ')'
+			} else {
+				castAfter = ''
+			}
+			
+			return castBefore + v + castAfter
+		}
+		
+		def fromJsonTemplate = { type, v ->
+			return "${type}.fromJson((Map<String, Object>)$v)"
+		}
+		
+		def constructArrayTemplate = { p ->
+			def r = ''
+			r += """\
+			if (v instanceof Map) {
+				v = ((Map<?, ?>)v).values();
+			} else if (!(v instanceof Collection)) {
+				throw new IllegalArgumentException("`${p.name}' must be an array");
+			}
+			Collection<?> cv = (Collection<?>)v;
+			${p.normalizedName} = """
+			if (p.arrayArrayType) {
+				r += "new ${p.typeNoArrayNoArray}[cv.size()][];"
+			} else {
+				r += "new ${p.typeNoArray}[cv.size()];"
+			}
+			r += """\
+			int i = 0;
+			for (Object vo : cv) {"""
+				if (p.arrayArrayType) {
+					r += """\
+					if (vo instanceof Map) {
+						vo = ((Map<?, ?>)vo).values();
+					} else if (!(vo instanceof Collection)) {
+						throw new IllegalArgumentException("`${p.name}' must be an array of arrays");
+					}
+					Collection<?> icv = (Collection<?>)vo;
+					${p.normalizedName}[i] = new ${p.typeNoArrayNoArray}[icv.size()];
+					int j = 0;
+					for (Object ivo : icv) {"""
+						if (p.cslType) {
+							r += "${p.normalizedName}[i][j] = " + fromJsonTemplate(p.typeNoArrayNoArray, "ivo") + ";"
+						} else {
+							r += "${p.normalizedName}[i][j] = " + castTemplate(p.typeNoArrayNoArray, "ivo") + ";"
+						}
+						r += "++j;"
+					r += "}"
+				} else {
+					if (p.cslType) {
+						r += """\
+						if (!(vo instanceof Map)) {
+							throw new IllegalArgumentException("`${p.name}' must be an array of objects");
+						}
+						${p.normalizedName}[i] = """ + fromJsonTemplate(p.typeNoArray, "vo") + ";"
+					} else {
+						r += "${p.normalizedName}[i] = " + castTemplate(p.typeNoArray, "vo") + ";"
+					}
+				}
+				r += "++i;"
+			r += "}"
+			return r
+		}
+		
+		def propertyTemplate = { p, v ->
+			def r = ''
+			if (!p.required) {
+				r += "${p.type} ${p.normalizedName};"
+			}
+			if (p.enumType) {
+				r += "${p.normalizedName} = ${p.type}.fromString(${v}.toString());"
+			} else if (p.cslType) {
+				if (p.arrayType) {
+					r += constructArrayTemplate(p)
+				} else {
+					r += "if (!($v instanceof Map)) {"
+					r += "\tthrow new IllegalArgumentException(\"`${p.name}' must be an object\");"
+					r += '}'
+					r += "${p.normalizedName} = " + fromJsonTemplate(p.type, v) + ';'
+				}
+			} else {
+				if (p.arrayType) {
+					r += constructArrayTemplate(p)
+				} else {
+					r += "${p.normalizedName} = " + castTemplate(p.type, v) + ';'
+				}
+			}
+			if (!p.required) {
+				r += "builder.${p.normalizedName}(${p.normalizedName});"
+			}
+			return r
+		}
+		%>
+		
+		<% for (p in requiredProps) { %>{
+			Object v = obj.get("${p.name}");
 			if (v == null) {
-				throw new IllegalArgumentException("Missing property `$p.name$'");
-			\}
-			$propertyTemplate(p, "v")$
-		\}}$
+				throw new IllegalArgumentException("Missing property `${p.name}'");
+			}
+			<% out << propertyTemplate(p, 'v') %>
+		}<% } %>
 		
-		$name$Builder builder = new $name$Builder($requiredProperties:{p | $p.normalizedName$ }; separator=","$);
+		${name}Builder builder = new ${name}Builder(${requiredProps.collect({ p -> p.normalizedName }).join(',')});
 		
-		$properties:{p | {
-			Object v = obj.get("$p.name$");
+		<% for (p in props) { %>{
+			Object v = obj.get("${p.name}");
 			if (v != null) {
-				$propertyTemplate(p, "v")$
-			\}
-			$if(p.default)$
-			else {
-				builder.$p.normalizedName$($p.default$);
-			\}
-			$endif$
-		\}}$
+				<% out << propertyTemplate(p, 'v') %>
+			}<% if (p.defval) { %> else {
+				builder.${p.normalizedName}(${p.defval});
+			}
+			<% } %>
+		}<% } %>
 		
-		$additionalFromJsonCode; separator="\n"$
+		${additionalFromJsonCode.join('\n')}
 		
 		return builder.build();
 	}
@@ -133,7 +240,7 @@ public class $name$ $if(!noJsonObject)$implements JsonObject$endif$ {
 		}
 		return (Boolean)o;
 	}
-	$endif$
+	<% } %>
 	
-	$additionalMethods; separator="\n"$
+	${additionalMethods.join('\n')}
 }

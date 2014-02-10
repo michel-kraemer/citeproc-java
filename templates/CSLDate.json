@@ -1,10 +1,10 @@
 {
     "name": "CSLDate",
     "shortname": "date",
-    "package": "de.undercouch.citeproc.csl",
+    "pkg": "de.undercouch.citeproc.csl",
     "description": "A citation date.",
     
-    "properties": [
+    "props": [
         {
             "type": "int[][]",
             "name": "date-parts"

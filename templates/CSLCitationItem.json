@@ -1,10 +1,10 @@
 {
     "name": "CSLCitationItem",
     "shortname": "citation item",
-    "package": "de.undercouch.citeproc.csl",
+    "pkg": "de.undercouch.citeproc.csl",
     "description": "A citation item is used to register a citation in the CSL processor. It usually only consists of the citation's ID but can also contain other formatting parameters.",
     
-    "properties": [
+    "props": [
         {
             "type": "String",
             "name": "id",

@@ -13,15 +13,13 @@
 // limitations under the License.
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import groovy.text.GStringTemplateEngine
 import org.antlr.v4.Tool
 import org.apache.commons.io.FileUtils
 import org.eclipse.jface.text.Document
 import org.eclipse.jdt.core.JavaCore
 import org.eclipse.jdt.core.ToolFactory
 import org.eclipse.jdt.core.formatter.CodeFormatter
-import org.stringtemplate.v4.AttributeRenderer
-import org.stringtemplate.v4.ST
-import org.stringtemplate.v4.STGroupFile
 
 class SourceGenerator {
     private def project
@@ -47,14 +45,10 @@ class SourceGenerator {
         return s
     }
     
-    private def renderTemplate(template, attrs, dst, outName, stg) {
-        def t = FileUtils.readFileToString(new File('templates', template), 'UTF-8')
-        def st = new ST(stg, t)
-        for (def e in attrs) {
-            st.add(e.key, e.value)
-        }
-        
-        def r = st.render()
+    private def renderTemplate(template, attrs, dst, outName) {
+        def e = new GStringTemplateEngine()
+        def t = e.createTemplate(new File('templates', template)).make(attrs)
+        def r = t.toString()
         
         def options = [
             (JavaCore.COMPILER_SOURCE): "1.6",
@@ -71,13 +65,13 @@ class SourceGenerator {
         FileUtils.writeStringToFile(new File(dst, outName), doc.get(), 'UTF-8')
     }
     
-    private def renderTemplatesInternal(name, dst, stg, type = false) {
+    private def renderTemplatesInternal(name, dst, type = false) {
         def om = new ObjectMapper()
         def attrs = om.readValue(new File('templates', "${name}.json"), Map)
         
-        if (attrs.properties != null) {
-            attrs.requiredProperties = []
-            for (p in attrs.properties) {
+        if (attrs.props != null) {
+            attrs.requiredProps = []
+            for (p in attrs.props) {
                 if (p.normalizedName == null) {
                     p.normalizedName = normalize(p.name)
                 }
@@ -85,7 +79,7 @@ class SourceGenerator {
                     p.required = false
                 }
                 if (p.required) {
-                    attrs.requiredProperties += p
+                    attrs.requiredProps += p
                 }
                 p.enumType = (p.type.equals("CSLType") || p.type.equals("CSLLabel"))
                 p.cslType = (p.type.startsWith("CSL"))
@@ -104,7 +98,7 @@ class SourceGenerator {
                     p.typeNoArrayNoArray = p.type
                 }
             }
-            attrs.properties.removeAll(attrs.requiredProperties)
+            attrs.props.removeAll(attrs.requiredProps)
         }
         
         if (attrs.additionalMethods == null) {
@@ -127,15 +121,30 @@ class SourceGenerator {
             attrs.shortname = ""
         }
         
-        dst = new File(dst, attrs.package.replaceAll('\\.', '/'))
+        attrs.toEnum = { s ->
+            s.toUpperCase().replace('-', '_').replace(' ', '_').replace('/', '_')
+        }
+        
+        attrs.toGetter = { s ->
+            'get' + Character.toUpperCase(s.charAt(0)).toString() + s.substring(1)
+        }
+        
+        attrs.toEllipse = { s ->
+            if (s.endsWith('[]')) {
+                s = s.substring(0, s.length() - 2) + '...'
+            }
+            return s
+        }
+        
+        dst = new File(dst, attrs.pkg.replaceAll('\\.', '/'))
         dst.mkdirs()
         
         if (type) {
-            renderTemplate("Type.java", attrs, dst, "${name}.java", stg)
+            renderTemplate("Type.java", attrs, dst, "${name}.java")
         } else {
-            renderTemplate("Object.java", attrs, dst, "${name}.java", stg)
+            renderTemplate("Object.java", attrs, dst, "${name}.java")
             if (attrs.noBuilder == null || !attrs.noBuilder) {
-                renderTemplate("Builder.java", attrs, dst, "${name}Builder.java", stg)
+                renderTemplate("Builder.java", attrs, dst, "${name}Builder.java")
             }
         }
     }
@@ -153,72 +162,26 @@ class SourceGenerator {
     }
     
     def renderTemplates() {
-        def ar = new AttributeRenderer() {
-            String toString(Object o, String formatString, Locale locale) {
-                def s = o.toString()
-                if (formatString.equals('toEnum')) {
-                    return s.toUpperCase().replace('-', '_').replace(' ', '_').replace('/', '_')
-                } else if (formatString.equals('toGetter')) {
-                    s = Character.toUpperCase(s.charAt(0)).toString() + s.substring(1)
-                    return "get${s}"
-                } else if (formatString.equals('toEllipse')) {
-                    if (s.endsWith('[]')) {
-                        s = s.substring(0, s.length() - 2) + '...'
-                    }
-                    return s
-                } else if (formatString.equals('toStrEqualsT')) {
-                    def r = 'str.equals("' + s + '")'
-                    if (s.indexOf('-') >= 0) {
-                        return r + ' || str.equals("' + s.replace('-', ' ') + '")'
-                    }
-                    return r
-                } else if (formatString.equals('castBefore')) {
-                    if (s.equals("String")) {
-                        return ""
-                    } else if (s.equals("int") || s.equals("Integer")) {
-                        return "toInt("
-                    } else if (s.equals("boolean") || s.equals("Boolean")) {
-                        return "toBool("
-                    } else {
-                        return "(" + s + ")";
-                    }
-                } else if (formatString.equals('castAfter')) {
-                    if (s.equals("String")) {
-                        return ".toString()"
-                    } else if (s.equals("int") || s.equals("Integer") ||
-                            s.equals("boolean") || s.equals("Boolean")) {
-                        return ")"
-                    } else {
-                        return ""
-                    }
-                }
-                return s
-            }
-        }
-        
-        def stg = new STGroupFile('templates/functions.stg', '$' as char, '$' as char)
-        stg.registerRenderer(String, ar)
-        
         def dst = new File('src-gen/main/java')
         dst.mkdirs()
         
-        renderTemplatesInternal('CSLType', dst, stg, true)
-        renderTemplatesInternal('CSLLabel', dst, stg, true)
-        renderTemplatesInternal('SecondFieldAlign', dst, stg, true)
-        renderTemplatesInternal('SelectionMode', dst, stg, true)
-        renderTemplatesInternal('EndNoteType', dst, stg, true)
+        renderTemplatesInternal('CSLType', dst, true)
+        renderTemplatesInternal('CSLLabel', dst, true)
+        renderTemplatesInternal('SecondFieldAlign', dst, true)
+        renderTemplatesInternal('SelectionMode', dst, true)
+        renderTemplatesInternal('EndNoteType', dst, true)
         
-        renderTemplatesInternal('CSLAbbreviationList', dst, stg)
-        renderTemplatesInternal('CSLCitation', dst, stg)
-        renderTemplatesInternal('CSLCitationItem', dst, stg)
-        renderTemplatesInternal('CSLDate', dst, stg)
-        renderTemplatesInternal('CSLItemData', dst, stg)
-        renderTemplatesInternal('CSLName', dst, stg)
-        renderTemplatesInternal('CSLProperties', dst, stg)
-        renderTemplatesInternal('EndNoteReference', dst, stg)
+        renderTemplatesInternal('CSLAbbreviationList', dst)
+        renderTemplatesInternal('CSLCitation', dst)
+        renderTemplatesInternal('CSLCitationItem', dst)
+        renderTemplatesInternal('CSLDate', dst)
+        renderTemplatesInternal('CSLItemData', dst)
+        renderTemplatesInternal('CSLName', dst)
+        renderTemplatesInternal('CSLProperties', dst)
+        renderTemplatesInternal('EndNoteReference', dst)
         
-        renderTemplatesInternal('Bibliography', dst, stg)
-        renderTemplatesInternal('Citation', dst, stg)
+        renderTemplatesInternal('Bibliography', dst)
+        renderTemplatesInternal('Citation', dst)
     }
     
     def renderGrammars() {

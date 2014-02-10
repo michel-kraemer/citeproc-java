@@ -1,14 +1,14 @@
 {
     "name": "CSLItemData",
     "shortname": "citation item",
-    "package": "de.undercouch.citeproc.csl",
+    "pkg": "de.undercouch.citeproc.csl",
     "description": "A citation item contains all attributes that make up a citation.",
     
-    "properties": [
+    "props": [
         {
             "type": "String",
             "name": "id",
-            "default": "\"-GEN-\" + Long.toString((long)Math.floor(Math.random() * 100000000000000L), 32)"
+            "defval": "\"-GEN-\" + Long.toString((long)Math.floor(Math.random() * 100000000000000L), 32)"
         },
         {
             "type": "CSLType",

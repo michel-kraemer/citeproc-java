@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package $package$;
+package $pkg;
 
 /**
- * $description$
+ * $description
  * @author Michel Kraemer
  */
-public enum $name$ {
-	$types:{t | $t; format="toEnum"$("$t$")};separator=",\n"$;
+public enum $name {
+	<% out << types.collect({ t->
+		toEnum.call(t) + '("' + t+ '")'
+	}).join(',') %>;
 	
 	private String name;
 	
-	private $name$(String name) {
+	private $name(String name) {
 		this.name = name;
 	}
 	
@@ -33,14 +35,20 @@ public enum $name$ {
 	}
 	
 	/**
-	 * Converts the given string to a $name$
+	 * Converts the given string to a $name
 	 * @param str the string
-	 * @return the converted $name$
+	 * @return the converted $name
 	 */
-	public static $name$ fromString(String str) {
-		$types:{t | if ($t; format="toStrEqualsT"$) {
-			return $t; format="toEnum"$;
-		\}}$
-		throw new IllegalArgumentException("Unknown $name$: " + str);
+	public static $name fromString(String str) {
+		<% for (t in types) { %> if (<%
+			def r = 'str.equals("' + t + '")'
+			if (t.indexOf('-') >= 0) {
+				r = r + ' || str.equals("' + t.replace('-', ' ') + '")'
+			}
+			out << r
+		%>) {
+			return ${toEnum.call(t)};
+		}<% } %>
+		throw new IllegalArgumentException("Unknown $name: " + str);
 	}
 }

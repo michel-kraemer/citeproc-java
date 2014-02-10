@@ -1,11 +1,11 @@
 {
     "name": "EndNoteReference",
     "shortname": "reference",
-    "package": "de.undercouch.citeproc.endnote",
+    "pkg": "de.undercouch.citeproc.endnote",
     "description": "An EndNote reference",
     "noJsonObject": true,
     
-    "properties": [
+    "props": [
         {
             "type": "String[]",
             "name": "authors"

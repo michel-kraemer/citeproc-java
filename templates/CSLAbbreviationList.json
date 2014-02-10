@@ -1,10 +1,10 @@
 {
     "name": "CSLAbbreviationList",
     "shortname": "abbreviation list",
-    "package": "de.undercouch.citeproc.csl",
+    "pkg": "de.undercouch.citeproc.csl",
     "description": "A list of abbreviations for titles, authorities, institution names, etc.",
     
-    "properties": [
+    "props": [
         {
             "type": "Map<String, String>",
             "name": "title"

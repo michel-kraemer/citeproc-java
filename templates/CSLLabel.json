@@ -1,6 +1,6 @@
 {
     "name": "CSLLabel",
-    "package": "de.undercouch.citeproc.csl",
+    "pkg": "de.undercouch.citeproc.csl",
     "description": "Valid citation labels",
     
     "types": [

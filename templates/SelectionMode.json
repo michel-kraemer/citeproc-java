@@ -1,6 +1,6 @@
 {
     "name": "SelectionMode",
-    "package": "de.undercouch.citeproc",
+    "pkg": "de.undercouch.citeproc",
     "description": "Selection modes for {@link CSL#makeBibliography(SelectionMode, de.undercouch.citeproc.csl.CSLItemData[])}.",
     
     "types": [

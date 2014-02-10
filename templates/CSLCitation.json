@@ -1,10 +1,10 @@
 {
     "name": "CSLCitation",
     "shortname": "citation",
-    "package": "de.undercouch.citeproc.csl",
+    "pkg": "de.undercouch.citeproc.csl",
     "description": "A set of citation items. This class is used to register citations in the CSL processor.",
     
-    "properties": [
+    "props": [
         {
             "type": "CSLCitationItem[]",
             "name": "citationItems",
@@ -13,12 +13,12 @@
         {
             "type": "String",
             "name": "citationID",
-            "default": "Long.toString((long)Math.floor(Math.random() * 100000000000000L), 32)"
+            "defval": "Long.toString((long)Math.floor(Math.random() * 100000000000000L), 32)"
         },
         {
             "type": "CSLProperties",
             "name": "properties",
-            "default": "new CSLProperties()"
+            "defval": "new CSLProperties()"
         }
     ],
     

@@ -1,6 +1,6 @@
 {
     "name": "EndNoteType",
-    "package": "de.undercouch.citeproc.endnote",
+    "pkg": "de.undercouch.citeproc.endnote",
     "description": "Valid EndNote reference types.",
     
     "types": [

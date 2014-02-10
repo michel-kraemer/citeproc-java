@@ -1,9 +1,9 @@
 {
     "name": "CSLName",
-    "package": "de.undercouch.citeproc.csl",
+    "pkg": "de.undercouch.citeproc.csl",
     "description": "A human being's name",
     
-    "properties": [
+    "props": [
         {
             "type": "String",
             "name": "family"

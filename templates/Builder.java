@@ -12,52 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package $package$;
+package $pkg;
 
 import java.util.Map;
 
 /**
- * Builder for {@link $name$}
+ * Builder for {@link $name}
  * @author Michel Kraemer
  */
-public class $name$Builder {
-	$requiredProperties:{p | private $p.type$ $p.normalizedName$;
-	}$
-	$properties:{p | private $p.type$ $p.normalizedName$;
-	}$
+public class ${name}Builder {
+	<% for (p in requiredProps) { %>private ${p.type} ${p.normalizedName};
+	<% } %>
+	<% for (p in props) { %>private ${p.type} ${p.normalizedName};
+	<% } %>
 	
-	public $name$Builder($trunc(requiredProperties):{p | $p.type$ $p.normalizedName$,}$
-			$if(!requiredProperties.empty)$
-			$last(requiredProperties).type; format="toEllipse"$ $last(requiredProperties).normalizedName$
-			$endif$) {
-		$requiredProperties:{p | this.$p.normalizedName$ = $p.normalizedName$;
-		}$
-		$properties:{p | this.$p.normalizedName$ = $if(p.default)$$p.default$$else$null$endif$;
-		}$
+	public ${name}Builder(<% if (requiredProps.size > 1) { for (p in requiredProps[0..-2]) { %>${p.type} ${p.normalizedName},<% } } %><% if (!requiredProps.empty) { %>
+			${toEllipse.call(requiredProps[-1].type)} ${requiredProps[-1].normalizedName}
+			<% } %>) {
+		<% for (p in requiredProps) { %>this.${p.normalizedName} = ${p.normalizedName};
+		<% } %>
+		<% for (p in props) { %>this.${p.normalizedName} = <% if (p.defval) { %>${p.defval}<% } else { %>null<% } %>;
+		<% } %>
 	}
 	
-	$properties:{p | public $name$Builder $p.normalizedName$($p.type; format="toEllipse"$ $p.normalizedName$) {
-		this.$p.normalizedName$ = $p.normalizedName$;
+	<% for (p in props) { %>
+	public ${name}Builder ${p.normalizedName}(${toEllipse.call(p.type)} ${p.normalizedName}) {
+		this.${p.normalizedName} = ${p.normalizedName};
 		return this;
-	\}
-	}$
+	}
+	<% } %>
 	
 	/**
 	 * Creates a builder that copies properties from the given original object
 	 * @param original the original object
 	 */
-	public $name$Builder($name$ original) {
-		$requiredProperties:{p | this.$p.normalizedName$ = original.$p.normalizedName; format="toGetter"$();
-		}$
-		$properties:{p | this.$p.normalizedName$ = original.$p.normalizedName; format="toGetter"$();
-		}$
+	public ${name}Builder($name original) {
+		${requiredProps.collect({ p -> "this." + p.normalizedName + " = original." + toGetter.call(p.normalizedName) + "();" }).join('\n')}
+		${props.collect({ p-> "this." + p.normalizedName + " = original." + toGetter.call(p.normalizedName) + "();" }).join('\n')}
 	}
 	
-	public $name$ build() {
-		return new $name$($requiredProperties:{p | $p.normalizedName$}; separator=","$
-				$if(!requiredProperties.empty && !properties.empty)$,$endif$
-				$properties:{p | $p.normalizedName$}; separator=","$);
+	public $name build() {
+		return new $name(${requiredProps.collect({ p-> p.normalizedName }).join(',')}<% if (!requiredProps.empty && !props.empty) { %>,<% } %>${props.collect({ p -> p.normalizedName }).join(',')});
 	}
 	
-	$additionalBuilderMethods; separator="\n"$
+	${additionalBuilderMethods.join('\n')}
 }
