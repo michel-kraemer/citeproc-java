@@ -149,6 +149,16 @@ class SourceGenerator {
         }
     }
     
+    private def renderParserTemplate(name, dst) {
+        def om = new ObjectMapper()
+        def attrs = om.readValue(new File('templates', "${name}.json"), Map)
+        
+        dst = new File(dst, attrs.pkg.replaceAll('\\.', '/'))
+        dst.mkdirs()
+        
+        renderTemplate("Parser.java", attrs, dst, "${name}.java")
+    }
+    
     private def renderGrammar(name, dst) {
         def filename = "grammars/${name}.g4"
         def tool = new Tool()
@@ -182,6 +192,8 @@ class SourceGenerator {
         
         renderTemplatesInternal('Bibliography', dst)
         renderTemplatesInternal('Citation', dst)
+        
+        renderParserTemplate('EndNoteParser', dst)
     }
     
     def renderGrammars() {

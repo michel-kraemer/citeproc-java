@@ -103,7 +103,7 @@
             "name": "tertiaryAuthors"
         },
         {
-            "type": "String",
+            "type": "String[]",
             "name": "notes"
         },
         {

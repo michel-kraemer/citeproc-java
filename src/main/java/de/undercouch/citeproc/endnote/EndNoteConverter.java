@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jbibtex.ParseException;
 
 import de.undercouch.citeproc.bibtex.DateParser;
@@ -131,7 +132,7 @@ public class EndNoteConverter {
 		if (ref.getResearchNotes() != null) {
 			builder.note(ref.getResearchNotes());
 		} else {
-			builder.note(ref.getNotes());
+			builder.note(StringUtils.join(ref.getNotes(), "\n"));
 		}
 		
 		//map issue
