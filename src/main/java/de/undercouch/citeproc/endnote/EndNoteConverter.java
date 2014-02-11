@@ -149,7 +149,7 @@ public class EndNoteConverter {
 		builder.edition(ref.getEdition());
 		builder.ISBN(ref.getIsbnOrIssn());
 		builder.ISSN(ref.getIsbnOrIssn());
-		builder.keyword(ref.getKeywords());
+		builder.keyword(StringUtils.join(ref.getKeywords(), ','));
 		builder.language(ref.getLanguage());
 		builder.numberOfVolumes(ref.getNumberOfVolumes());
 		builder.originalTitle(ref.getOriginalPublication());

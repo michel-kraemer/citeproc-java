@@ -1,102 +1,22 @@
 {
-    "name": "EndNoteReference",
+    "name": "RISReference",
     "shortname": "reference",
-    "pkg": "de.undercouch.citeproc.endnote",
-    "description": "An EndNote reference",
+    "pkg": "de.undercouch.citeproc.ris",
+    "description": "A RIS reference",
     "noJsonObject": true,
     
     "props": [
         {
-            "type": "String[]",
-            "name": "authors"
+            "type": "String",
+            "name": "id"
         },
         {
-            "type": "String",
-            "name": "bookOrConference"
-        },
-        {
-            "type": "String",
-            "name": "place"
-        },
-        {
-            "type": "String",
-            "name": "year"
+            "type": "RISType",
+            "name": "type"
         },
         {
             "type": "String[]",
             "name": "editors"
-        },
-        {
-            "type": "String",
-            "name": "label"
-        },
-        {
-            "type": "String",
-            "name": "language"
-        },
-        {
-            "type": "String[]",
-            "name": "translatedAuthors"
-        },
-        {
-            "type": "String",
-            "name": "publisher"
-        },
-        {
-            "type": "String",
-            "name": "journal"
-        },
-        {
-            "type": "String[]",
-            "name": "keywords"
-        },
-        {
-            "type": "String",
-            "name": "callNumber"
-        },
-        {
-            "type": "String",
-            "name": "accessionNumber"
-        },
-        {
-            "type": "String",
-            "name": "numberOrIssue"
-        },
-        {
-            "type": "String",
-            "name": "pages"
-        },
-        {
-            "type": "String",
-            "name": "translatedTitle"
-        },
-        {
-            "type": "String",
-            "name": "electronicResourceNumber"
-        },
-        {
-            "type": "String",
-            "name": "tertiaryTitle"
-        },
-        {
-            "type": "String",
-            "name": "title"
-        },
-        {
-            "type": "String",
-            "name": "URL"
-        },
-        {
-            "type": "String",
-            "name": "volume"
-        },
-        {
-            "type": "String",
-            "name": "databaseProvider"
-        },
-        {
-            "type": "String",
-            "name": "abstract"
         },
         {
             "type": "String[]",
@@ -104,11 +24,23 @@
         },
         {
             "type": "String[]",
-            "name": "notes"
+            "name": "subsidiaryAuthors"
         },
         {
-            "type": "EndNoteType",
-            "name": "type"
+            "type": "String",
+            "name": "abstract"
+        },
+        {
+            "type": "String",
+            "name": "authorAddress"
+        },
+        {
+            "type": "String",
+            "name": "accessionNumber"
+        },
+        {
+            "type": "String[]",
+            "name": "authors"
         },
         {
             "type": "String",
@@ -128,34 +60,6 @@
         },
         {
             "type": "String",
-            "name": "numberOfVolumes"
-        },
-        {
-            "type": "String",
-            "name": "edition"
-        },
-        {
-            "type": "String",
-            "name": "date"
-        },
-        {
-            "type": "String",
-            "name": "typeOfWork"
-        },
-        {
-            "type": "String[]",
-            "name": "subsidiaryAuthors"
-        },
-        {
-            "type": "String",
-            "name": "isbnOrIssn"
-        },
-        {
-            "type": "String",
-            "name": "shortTitle"
-        },
-        {
-            "type": "String",
             "name": "custom5"
         },
         {
@@ -168,23 +72,7 @@
         },
         {
             "type": "String",
-            "name": "section"
-        },
-        {
-            "type": "String",
-            "name": "originalPublication"
-        },
-        {
-            "type": "String",
-            "name": "reprintEdition"
-        },
-        {
-            "type": "String",
-            "name": "reviewedItem"
-        },
-        {
-            "type": "String",
-            "name": "authorAddress"
+            "name": "custom8"
         },
         {
             "type": "String",
@@ -192,7 +80,95 @@
         },
         {
             "type": "String",
-            "name": "linkToPDF"
+            "name": "callNumber"
+        },
+        {
+            "type": "String",
+            "name": "place"
+        },
+        {
+            "type": "String",
+            "name": "date"
+        },
+        {
+            "type": "String",
+            "name": "nameOfDatabase"
+        },
+        {
+            "type": "String",
+            "name": "DOI"
+        },
+        {
+            "type": "String",
+            "name": "databaseProvider"
+        },
+        {
+            "type": "String",
+            "name": "endPage"
+        },
+        {
+            "type": "String",
+            "name": "edition"
+        },
+        {
+            "type": "String",
+            "name": "issue"
+        },
+        {
+            "type": "String",
+            "name": "journal"
+        },
+        {
+            "type": "String[]",
+            "name": "keywords"
+        },
+        {
+            "type": "String[]",
+            "name": "fileAttachments"
+        },
+        {
+            "type": "String",
+            "name": "figure"
+        },
+        {
+            "type": "String",
+            "name": "language"
+        },
+        {
+            "type": "String",
+            "name": "label"
+        },
+        {
+            "type": "String",
+            "name": "number"
+        },
+        {
+            "type": "String",
+            "name": "typeOfWork"
+        },
+        {
+            "type": "String[]",
+            "name": "notes"
+        },
+        {
+            "type": "String",
+            "name": "numberOfVolumes"
+        },
+        {
+            "type": "String",
+            "name": "originalPublication"
+        },
+        {
+            "type": "String",
+            "name": "publisher"
+        },
+        {
+            "type": "String",
+            "name": "year"
+        },
+        {
+            "type": "String",
+            "name": "reviewedItem"
         },
         {
             "type": "String",
@@ -200,15 +176,59 @@
         },
         {
             "type": "String",
+            "name": "reprintEdition"
+        },
+        {
+            "type": "String",
+            "name": "section"
+        },
+        {
+            "type": "String",
+            "name": "isbnOrIssn"
+        },
+        {
+            "type": "String",
+            "name": "startPage"
+        },
+        {
+            "type": "String",
+            "name": "shortTitle"
+        },
+        {
+            "type": "String",
+            "name": "primaryTitle"
+        },
+        {
+            "type": "String",
+            "name": "secondaryTitle"
+        },
+        {
+            "type": "String",
+            "name": "tertiaryTitle"
+        },
+        {
+            "type": "String[]",
+            "name": "translatedAuthors"
+        },
+        {
+            "type": "String",
+            "name": "title"
+        },
+        {
+            "type": "String",
+            "name": "translatedTitle"
+        },
+        {
+            "type": "String",
+            "name": "URL"
+        },
+        {
+            "type": "String",
+            "name": "volume"
+        },
+        {
+            "type": "String",
             "name": "accessDate"
-        },
-        {
-            "type": "String",
-            "name": "lastModifiedDate"
-        },
-        {
-            "type": "String",
-            "name": "nameOfDatabase"
         }
     ]
 }

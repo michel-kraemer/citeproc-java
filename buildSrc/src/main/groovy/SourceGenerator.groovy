@@ -157,6 +157,7 @@ class SourceGenerator {
         dst.mkdirs()
         
         renderTemplate("Parser.java", attrs, dst, "${name}.java")
+        renderTemplate("Library.java", attrs, dst, "${attrs.libname}.java")
     }
     
     private def renderGrammar(name, dst) {
@@ -180,6 +181,7 @@ class SourceGenerator {
         renderTemplatesInternal('SecondFieldAlign', dst, true)
         renderTemplatesInternal('SelectionMode', dst, true)
         renderTemplatesInternal('EndNoteType', dst, true)
+        renderTemplatesInternal('RISType', dst, true)
         
         renderTemplatesInternal('CSLAbbreviationList', dst)
         renderTemplatesInternal('CSLCitation', dst)
@@ -189,11 +191,13 @@ class SourceGenerator {
         renderTemplatesInternal('CSLName', dst)
         renderTemplatesInternal('CSLProperties', dst)
         renderTemplatesInternal('EndNoteReference', dst)
+        renderTemplatesInternal('RISReference', dst)
         
         renderTemplatesInternal('Bibliography', dst)
         renderTemplatesInternal('Citation', dst)
         
         renderParserTemplate('EndNoteParser', dst)
+        renderParserTemplate('RISParser', dst)
     }
     
     def renderGrammars() {

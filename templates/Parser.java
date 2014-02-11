@@ -23,18 +23,24 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Parses $desc files
+ * Parses $desc library files
  * @author Michel Kraemer
  */
 public class $name {
 	<%
 	def knownLists = props.collect{it.value}.findAll{
 		it instanceof List}.collect{it[0]} as Set
+	def useSwitch = props.every{it.key.length() == 1}
+	def keyLen = props.collect{it.key.length()}.min()
+	def keyPos = 0
+	if (!firstCharInLine.empty) {
+		++keyPos
+	}
 	%>
 	/**
-	 * Parses $desc files
+	 * Parses $desc library files
 	 * @param r the reader that provides the input to parse
-	 * @return the parsed $desc
+	 * @return the parsed $desc library
 	 * @throws IOException if the input could not be read
 	 */
 	@SuppressWarnings("resource")
@@ -59,7 +65,11 @@ public class $name {
 		while ((line = br.readLine()) != null) {
 			++lc;
 			line = line.trim();
+			<% if (entrySeparator.empty) { %>
 			if (line.isEmpty()) {
+			<% } else { %>
+			if (line.equals("$entrySeparator")) {
+			<% } %>
 				//end of reference
 				handleReference(builder, ${knownLists.join(',')}, result);
 				<%
@@ -71,39 +81,61 @@ public class $name {
 				continue;
 			}
 			
-			if (line.length() < 3) {
+			if (line.length() < ${valuePos + 1}) {
 				throw new IOException("Line " + lc + " is too short");
 			}
-			if (line.charAt(0) != '%') {
+			<% if (!firstCharInLine.empty) { %>
+			if (line.charAt(0) != '${firstCharInLine}') {
 				throw new IOException("Illegal first character in line " + lc);
 			}
-			if (!Character.isWhitespace(line.charAt(2))) {
+			<% } %>
+			<% if (Character.isWhitespace(separator.charAt(0))) { %>
+			if (!Character.isWhitespace(line.charAt(${separatorPos}))) {
 				throw new IOException("Tag and value must be separated by "
-						+ "whitespace in line " + lc);
+						+ "whitespace character in line " + lc);
 			}
+			<% } else { %>
+			if (line.charAt(${separatorPos}) != '${separator}') {
+				throw new IOException("Tag and value must be separated by "
+						+ "'${separator}' character in line " + lc);
+			}
+			<% } %>
 			
-			String value = line.substring(3).trim();
+			String key = line.substring($keyPos, ${keyPos + keyLen}).trim();
+			String value = line.substring($valuePos).trim();
 			
 			if (builder == null) {
 				builder = new ${refname}Builder();
 			}
 			
-			switch (line.charAt(1)) {
-			<% for (p in props) { %>
-			case '${p.key}':
-				<% if (p.value == 'type') { %>
-				builder.type(parseType(value, lc));
-				<% } else if (p.value instanceof List) { %>
-				${p.value[0]}.add(value);
-				<% } else { %>
-				builder.${p.value}(value);
-				<% } %>
-				break;
-			
+			<% if (useSwitch) { %>
+				switch (line.charAt($keyPos)) {
 			<% } %>
-			
-			default:
-				throw new IOException("Illegal tag " + line.charAt(1) +
+			<% for (p in props) { %>
+				<% if (useSwitch) { %>
+					case '${p.key}':
+				<% } else { %>
+					if (key.equalsIgnoreCase("${p.key}")) {
+				<% } %>
+				<% if (p.value == 'type') { %>
+					builder.type(parseType(value, lc));
+				<% } else if (p.value instanceof List) { %>
+					${p.value[0]}.add(value);
+				<% } else { %>
+					builder.${p.value}(value);
+				<% } %>
+				<% if (useSwitch) { %>
+					break;
+				<% } else { %>
+					} else
+				<% } %>
+			<% } %>
+			<% if (useSwitch) { %>
+				default:
+			<% } else { %>
+				{
+			<% } %>
+				throw new IOException("Illegal tag " + key +
 						" in line " + lc);
 			}
 		}

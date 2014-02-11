@@ -1,10 +1,15 @@
 {
     "name": "EndNoteParser",
-    "desc": "EndNote library",
+    "desc": "EndNote",
     "pkg": "de.undercouch.citeproc.endnote",
     "libname": "EndNoteLibrary",
     "refname": "EndNoteReference",
     "typename": "EndNoteType",
+    "firstCharInLine": "%",
+    "valuePos": 3,
+    "separatorPos": 2,
+    "separator": " ",
+    "entrySeparator": "",
     
     "props": {
         "0": "type",
@@ -26,7 +31,7 @@
         "H": [ "translatedAuthors" ],
         "I": "publisher",
         "J": "journal",
-        "K": "keywords",
+        "K": [ "keywords" ],
         "L": "callNumber",
         "M": "accessionNumber",
         "N": "numberOrIssue",

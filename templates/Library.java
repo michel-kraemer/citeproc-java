@@ -12,31 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.endnote;
+package $pkg;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * An EndNote library
+ * A container for $desc references
  * @author Michel Kraemer
  */
-public class EndNoteLibrary {
-	private final List<EndNoteReference> references = new ArrayList<EndNoteReference>();
+public class $libname {
+	private final List<${refname}> references = new ArrayList<${refname}>();
 	
 	/**
 	 * Adds a reference to this library
 	 * @param reference the reference to add
 	 */
-	public void addReference(EndNoteReference reference) {
+	public void addReference($refname reference) {
 		references.add(reference);
 	}
 	
 	/**
 	 * @return an unmodifiable list of references in this library
 	 */
-	public List<EndNoteReference> getReferences() {
+	public List<${refname}> getReferences() {
 		return Collections.unmodifiableList(references);
 	}
 }
