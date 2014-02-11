@@ -159,6 +159,9 @@ public class ${desc}Converter {
 		//map other attributes
 		builder.abstrct(ref.getAbstrct());
 		builder.callNumber(ref.getCallNumber());
+		<% if (props.values().contains("DOI")) { %>
+		builder.DOI(ref.getDOI());
+		<% } %>
 		builder.edition(ref.getEdition());
 		builder.ISBN(ref.getIsbnOrIssn());
 		builder.ISSN(ref.getIsbnOrIssn());
