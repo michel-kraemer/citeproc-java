@@ -22,21 +22,21 @@ import java.util.List;
  * A container for $desc references
  * @author Michel Kraemer
  */
-public class $libname {
-	private final List<${refname}> references = new ArrayList<${refname}>();
+public class ${desc}Library {
+	private final List<${desc}Reference> references = new ArrayList<${desc}Reference>();
 	
 	/**
 	 * Adds a reference to this library
 	 * @param reference the reference to add
 	 */
-	public void addReference($refname reference) {
+	public void addReference(${desc}Reference reference) {
 		references.add(reference);
 	}
 	
 	/**
 	 * @return an unmodifiable list of references in this library
 	 */
-	public List<${refname}> getReferences() {
+	public List<${desc}Reference> getReferences() {
 		return Collections.unmodifiableList(references);
 	}
 }

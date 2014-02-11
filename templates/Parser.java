@@ -44,7 +44,7 @@ public class $name {
 	 * @throws IOException if the input could not be read
 	 */
 	@SuppressWarnings("resource")
-	public $libname parse(Reader r) throws IOException {
+	public ${desc}Library parse(Reader r) throws IOException {
 		BufferedReader br;
 		if (r instanceof BufferedReader) {
 			br = (BufferedReader)r;
@@ -52,8 +52,8 @@ public class $name {
 			br = new BufferedReader(r);
 		}
 		
-		$libname result = new $libname();
-		${refname}Builder builder = null;
+		${desc}Library result = new ${desc}Library();
+		${desc}ReferenceBuilder builder = null;
 		<%
 		for (kl in knownLists) {
 			out << "List<String> ${kl} = new ArrayList<String>();"
@@ -105,7 +105,7 @@ public class $name {
 			String value = line.substring($valuePos).trim();
 			
 			if (builder == null) {
-				builder = new ${refname}Builder();
+				builder = new ${desc}ReferenceBuilder();
 			}
 			
 			<% if (useSwitch) { %>
@@ -145,9 +145,9 @@ public class $name {
 		return result;
 	}
 	
-	private void handleReference(${refname}Builder builder,
+	private void handleReference(${desc}ReferenceBuilder builder,
 			${knownLists.collect{'List<String> ' + it}.join(',')},
-			$libname result) {
+			${desc}Library result) {
 		if (builder != null) {
 			<% for (kl in knownLists) { %>
 			if (!${kl}.isEmpty()) {
@@ -159,9 +159,9 @@ public class $name {
 		}
 	}
 	
-	private $typename parseType(String value, int lc) throws IOException {
+	private ${desc}Type parseType(String value, int lc) throws IOException {
 		try {
-			return ${typename}.fromString(value);
+			return ${desc}Type.fromString(value);
 		} catch (IllegalArgumentException e) {
 			throw new IOException("Unknown type in line " + lc);
 		}

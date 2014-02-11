@@ -163,9 +163,9 @@ class SourceGenerator {
         dst.mkdirs()
         
         renderTemplate("Parser.java", attrs, dst, "${name}.java")
-        renderTemplate("Converter.java", attrs, dst, "${attrs.convname}.java")
-        renderTemplate("Library.java", attrs, dst, "${attrs.libname}.java")
-        renderTemplate("ItemDataProvider.java", attrs, dst, "${attrs.providername}.java")
+        renderTemplate("Converter.java", attrs, dst, "${attrs.desc}Converter.java")
+        renderTemplate("Library.java", attrs, dst, "${attrs.desc}Library.java")
+        renderTemplate("ItemDataProvider.java", attrs, dst, "${attrs.desc}ItemDataProvider.java")
     }
     
     private def renderGrammar(name, dst) {

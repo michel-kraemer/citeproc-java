@@ -38,7 +38,7 @@ import de.undercouch.citeproc.csl.CSLType;
  * Converts $desc references to CSL citation items
  * @author Michel Kraemer
  */
-public class $convname {
+public class ${desc}Converter {
 	/**
 	 * <p>Loads a $desc library from a stream.</p>
 	 * <p>This method does not close the given stream. The caller is
@@ -48,7 +48,7 @@ public class $convname {
 	 * @throws IOException if the library could not be read
 	 * @throws ParseException if the library is invalid
 	 */
-	public $libname loadLibrary(InputStream is) throws IOException, ParseException {
+	public ${desc}Library loadLibrary(InputStream is) throws IOException, ParseException {
 		Reader reader = new InputStreamReader(is, "UTF-8");
 		$name parser = new $name();
 		return parser.parse(reader);
@@ -59,9 +59,9 @@ public class $convname {
 	 * @param lib the library
 	 * @return a map consisting of citation keys and citation items
 	 */
-	public Map<String, CSLItemData> toItemData($libname lib) {
+	public Map<String, CSLItemData> toItemData(${desc}Library lib) {
 		Map<String, CSLItemData> result = new HashMap<String, CSLItemData>();
-		for ($refname ref : lib.getReferences()) {
+		for (${desc}Reference ref : lib.getReferences()) {
 			CSLItemData item = toItemData(ref);
 			result.put(item.getId(), toItemData(ref));
 		}
@@ -73,7 +73,7 @@ public class $convname {
 	 * @param ref the reference to convert
 	 * @return the citation item
 	 */
-	public CSLItemData toItemData($refname ref) {
+	public CSLItemData toItemData(${desc}Reference ref) {
 		//map type
 		CSLType type = toType(ref.getType());
 		
@@ -187,7 +187,7 @@ public class $convname {
 	 * @param type the type to convert
 	 * @return the converted type (never null, falls back to {@link CSLType#ARTICLE})
 	 */
-	public CSLType toType($typename type) {
+	public CSLType toType(${desc}Type type) {
 		switch (type) {
 		<% for (t in types) { %>
 		case ${toEnum.call(t.key)}:
