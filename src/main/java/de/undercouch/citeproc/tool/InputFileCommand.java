@@ -42,6 +42,9 @@ import de.undercouch.citeproc.helper.tool.Command;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
+import de.undercouch.citeproc.ris.RISConverter;
+import de.undercouch.citeproc.ris.RISItemDataProvider;
+import de.undercouch.citeproc.ris.RISLibrary;
 
 /**
  * A command that reads input bibliography files and delegates them
@@ -57,6 +60,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 		JSON_OBJECT,
 		JSON_ARRAY,
 		ENDNOTE,
+		RIS,
 		UNKNOWN
 	}
 	
@@ -80,7 +84,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 	 * @param input the file
 	 */
 	@OptionDesc(longName = "input", shortName = "i",
-			description = "input bibliography FILE (*.bib, *.enl, *.json)",
+			description = "input bibliography FILE (*.bib, *.enl, *.ris, *.json)",
 			argumentName = "FILE", argumentType = ArgumentType.STRING,
 			priority = 1)
 	public void setInput(String input) {
@@ -194,6 +198,11 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 				EndNoteItemDataProvider endnoteprovider = new EndNoteItemDataProvider();
 				endnoteprovider.addLibrary(lib);
 				provider = endnoteprovider;
+			} else if (ff == FileFormat.RIS) {
+				RISLibrary lib = new RISConverter().loadLibrary(bis);
+				RISItemDataProvider risprovider = new RISItemDataProvider();
+				risprovider.addLibrary(lib);
+				provider = risprovider;
 			} else {
 				error("unknown bibliography file format");
 				return null;
@@ -229,7 +238,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 		//check if it's an EndNote library
 		bis.mark(len);
 		try {
-			byte[] firstCharacters = new byte[3];
+			byte[] firstCharacters = new byte[5];
 			bis.read(firstCharacters);
 			
 			//check if the file starts with an EndNote tag, but
@@ -239,6 +248,14 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 					Character.isWhitespace(firstCharacters[2]) &&
 					!ext.equalsIgnoreCase("bib")) {
 				return FileFormat.ENDNOTE;
+			}
+			
+			//check if the file starts with a RIS type tag
+			if (firstCharacters[0] == 'T' && firstCharacters[1] == 'Y' &&
+					Character.isWhitespace(firstCharacters[2]) &&
+					Character.isWhitespace(firstCharacters[3]) &&
+					firstCharacters[4] == '-') {
+				return FileFormat.RIS;
 			}
 		} finally {
 			bis.reset();
