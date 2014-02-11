@@ -110,11 +110,9 @@ public class ${desc}Converter {
 			builder.collectionTitle(ref.getJournal());
 		} else if (ref.getNameOfDatabase() != null) {
 			builder.containerTitle(ref.getNameOfDatabase());
-		<% if (props.values().contains("bookOrConference")) { %>
 		} else {
 			builder.containerTitle(ref.getBookOrConference());
 			builder.collectionTitle(ref.getBookOrConference());
-		<% } %>
 		}
 		
 		//map date
@@ -172,7 +170,13 @@ public class ${desc}Converter {
 		<% if (props.values().contains("pages")) { %>
 		builder.page(ref.getPages());
 		<% } else { %>
-		builder.page(ref.getStartPage() + "-" + ref.getEndPage());
+		if (ref.getStartPage() != null && ref.getEndPage() != null) {
+			builder.page(ref.getStartPage() + "-" + ref.getEndPage());
+		} else if (ref.getStartPage() != null) {
+			builder.page(ref.getStartPage());
+		} else if (ref.getEndPage() != null) {
+			builder.page(ref.getEndPage());
+		}
 		<% } %>
 		builder.publisher(ref.getPublisher());
 		builder.reviewedTitle(ref.getReviewedItem());

@@ -44,6 +44,10 @@
         },
         {
             "type": "String",
+            "name": "bookOrConference"
+        },
+        {
+            "type": "String",
             "name": "custom1"
         },
         {
