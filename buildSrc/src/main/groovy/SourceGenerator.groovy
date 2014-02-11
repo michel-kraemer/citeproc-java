@@ -65,6 +65,23 @@ class SourceGenerator {
         FileUtils.writeStringToFile(new File(dst, outName), doc.get(), 'UTF-8')
     }
     
+    private def addFunctionsToAttrs(attrs) {
+        attrs.toEnum = { s ->
+            s.toUpperCase().replace('-', '_').replace(' ', '_').replace('/', '_')
+        }
+        
+        attrs.toGetter = { s ->
+            'get' + Character.toUpperCase(s.charAt(0)).toString() + s.substring(1)
+        }
+        
+        attrs.toEllipse = { s ->
+            if (s.endsWith('[]')) {
+                s = s.substring(0, s.length() - 2) + '...'
+            }
+            return s
+        }
+    }
+    
     private def renderTemplatesInternal(name, dst, type = false) {
         def om = new ObjectMapper()
         def attrs = om.readValue(new File('templates', "${name}.json"), Map)
@@ -121,20 +138,7 @@ class SourceGenerator {
             attrs.shortname = ""
         }
         
-        attrs.toEnum = { s ->
-            s.toUpperCase().replace('-', '_').replace(' ', '_').replace('/', '_')
-        }
-        
-        attrs.toGetter = { s ->
-            'get' + Character.toUpperCase(s.charAt(0)).toString() + s.substring(1)
-        }
-        
-        attrs.toEllipse = { s ->
-            if (s.endsWith('[]')) {
-                s = s.substring(0, s.length() - 2) + '...'
-            }
-            return s
-        }
+        addFunctionsToAttrs(attrs)
         
         dst = new File(dst, attrs.pkg.replaceAll('\\.', '/'))
         dst.mkdirs()
@@ -153,11 +157,15 @@ class SourceGenerator {
         def om = new ObjectMapper()
         def attrs = om.readValue(new File('templates', "${name}.json"), Map)
         
+        addFunctionsToAttrs(attrs)
+        
         dst = new File(dst, attrs.pkg.replaceAll('\\.', '/'))
         dst.mkdirs()
         
         renderTemplate("Parser.java", attrs, dst, "${name}.java")
+        renderTemplate("Converter.java", attrs, dst, "${attrs.convname}.java")
         renderTemplate("Library.java", attrs, dst, "${attrs.libname}.java")
+        renderTemplate("ItemDataProvider.java", attrs, dst, "${attrs.providername}.java")
     }
     
     private def renderGrammar(name, dst) {

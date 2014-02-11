@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.endnote;
+package $pkg;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ListItemDataProvider;
 
 /**
- * Loads citation items from an EndNote library
+ * Loads citation items from a $desc library
  * @author Michel Kraemer
  */
-public class EndNoteItemDataProvider extends ListItemDataProvider {
+public class $providername extends ListItemDataProvider {
 	/**
 	 * Adds the given library
 	 * @param lib the library to add
 	 */
-	public void addLibrary(EndNoteLibrary lib) {
-		items.putAll(new EndNoteConverter().toItemData(lib));
+	public void addLibrary($libname lib) {
+		items.putAll(new $convname().toItemData(lib));
 	}
 	
 	/**
-	 * Introduces all citation items from the EndNote libraries added
-	 * via {@link #addLibrary(EndNoteLibrary)} to the given CSL processor
+	 * Introduces all citation items from the $desc libraries added
+	 * via {@link #addLibrary($libname)} to the given CSL processor
 	 * @see CSL#registerCitationItems(String[])
 	 * @param citeproc the CSL processor
 	 */

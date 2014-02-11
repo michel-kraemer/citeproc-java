@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.endnote;
+package $pkg;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,22 +35,22 @@ import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.CSLType;
 
 /**
- * Converts EndNote references to CSL citation items
+ * Converts $desc references to CSL citation items
  * @author Michel Kraemer
  */
-public class EndNoteConverter {
+public class $convname {
 	/**
-	 * <p>Loads an EndNote library from a stream.</p>
+	 * <p>Loads a $desc library from a stream.</p>
 	 * <p>This method does not close the given stream. The caller is
 	 * responsible for closing it.</p>
 	 * @param is the input stream to read from
-	 * @return the EndNote library
+	 * @return the $desc library
 	 * @throws IOException if the library could not be read
 	 * @throws ParseException if the library is invalid
 	 */
-	public EndNoteLibrary loadLibrary(InputStream is) throws IOException, ParseException {
+	public $libname loadLibrary(InputStream is) throws IOException, ParseException {
 		Reader reader = new InputStreamReader(is, "UTF-8");
-		EndNoteParser parser = new EndNoteParser();
+		$name parser = new $name();
 		return parser.parse(reader);
 	}
 	
@@ -59,9 +59,9 @@ public class EndNoteConverter {
 	 * @param lib the library
 	 * @return a map consisting of citation keys and citation items
 	 */
-	public Map<String, CSLItemData> toItemData(EndNoteLibrary lib) {
+	public Map<String, CSLItemData> toItemData($libname lib) {
 		Map<String, CSLItemData> result = new HashMap<String, CSLItemData>();
-		for (EndNoteReference ref : lib.getReferences()) {
+		for ($refname ref : lib.getReferences()) {
 			CSLItemData item = toItemData(ref);
 			result.put(item.getId(), toItemData(ref));
 		}
@@ -69,17 +69,22 @@ public class EndNoteConverter {
 	}
 	
 	/**
-	 * Converts an EndNote reference to a citation item
+	 * Converts an $desc reference to a citation item
 	 * @param ref the reference to convert
 	 * @return the citation item
 	 */
-	public CSLItemData toItemData(EndNoteReference ref) {
+	public CSLItemData toItemData($refname ref) {
 		//map type
 		CSLType type = toType(ref.getType());
 		
 		CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type);
 		
 		//map label
+		<% if (props.values().contains("id")) { %>
+		if (ref.getId() != null) {
+			builder.id(ref.getId());
+		} else
+		<% } %>
 		if (ref.getLabel() != null) {
 			builder.id(ref.getLabel());
 		}
@@ -105,9 +110,11 @@ public class EndNoteConverter {
 			builder.collectionTitle(ref.getJournal());
 		} else if (ref.getNameOfDatabase() != null) {
 			builder.containerTitle(ref.getNameOfDatabase());
+		<% if (props.values().contains("bookOrConference")) { %>
 		} else {
 			builder.containerTitle(ref.getBookOrConference());
 			builder.collectionTitle(ref.getBookOrConference());
+		<% } %>
 		}
 		
 		//map date
@@ -122,9 +129,10 @@ public class EndNoteConverter {
 		}
 		
 		//map URL
+		<% if (props.values().contains("linkToPDF")) { %>
 		if (ref.getLinkToPDF() != null) {
 			builder.URL(ref.getLinkToPDF());
-		} else {
+		} else <% } %>{
 			builder.URL(ref.getURL());
 		}
 		
@@ -132,12 +140,17 @@ public class EndNoteConverter {
 		if (ref.getResearchNotes() != null) {
 			builder.note(ref.getResearchNotes());
 		} else {
-			builder.note(StringUtils.join(ref.getNotes(), "\n"));
+			builder.note(StringUtils.join(ref.getNotes(), '\\n'));
 		}
 		
 		//map issue
+		<% if (props.values().contains("issue")) { %>
+		builder.issue(ref.getIssue());
+		builder.number(ref.getNumber());
+		<% } else { %>
 		builder.issue(ref.getNumberOrIssue());
 		builder.number(ref.getNumberOrIssue());
+		<% } %>
 		
 		//map location
 		builder.eventplace(ref.getPlace());
@@ -153,7 +166,11 @@ public class EndNoteConverter {
 		builder.language(ref.getLanguage());
 		builder.numberOfVolumes(ref.getNumberOfVolumes());
 		builder.originalTitle(ref.getOriginalPublication());
+		<% if (props.values().contains("pages")) { %>
 		builder.page(ref.getPages());
+		<% } else { %>
+		builder.page(ref.getStartPage() + "-" + ref.getEndPage());
+		<% } %>
 		builder.publisher(ref.getPublisher());
 		builder.reviewedTitle(ref.getReviewedItem());
 		builder.section(ref.getSection());
@@ -166,88 +183,16 @@ public class EndNoteConverter {
 	}
 	
 	/**
-	 * Converts a EndNote reference type to a CSL type
+	 * Converts a $desc reference type to a CSL type
 	 * @param type the type to convert
 	 * @return the converted type (never null, falls back to {@link CSLType#ARTICLE})
 	 */
-	public CSLType toType(EndNoteType type) {
+	public CSLType toType($typename type) {
 		switch (type) {
-		case ARTWORK:
-			return CSLType.ARTICLE;
-		case AUDIOVISUAL_MATERIAL:
-			return CSLType.ARTICLE;
-		case BILL:
-			return CSLType.BILL;
-		case BOOK:
-			return CSLType.BOOK;
-		case BOOK_SECTION:
-			return CSLType.CHAPTER;
-		case CASE:
-			return CSLType.LEGAL_CASE;
-		case CHART_OR_TABLE:
-			return CSLType.ARTICLE;
-		case CLASSICAL_WORK:
-			return CSLType.MANUSCRIPT;
-		case COMPUTER_PROGRAM:
-			return CSLType.ARTICLE;
-		case CONFERENCE_PAPER:
-			return CSLType.PAPER_CONFERENCE;
-		case CONFERENCE_PROCEEDINGS:
-			return CSLType.BOOK;
-		case EDITED_BOOK:
-			return CSLType.BOOK;
-		case ELECTRONIC_ARTICLE:
-			return CSLType.ARTICLE;
-		case ELECTRONIC_BOOK:
-			return CSLType.BOOK;
-		case ELECTRONIC_SOURCE:
-			return CSLType.WEBPAGE;
-		case EQUATION:
-			return CSLType.ARTICLE;
-		case FIGURE:
-			return CSLType.FIGURE;
-		case FILM_OR_BROADCAST:
-			return CSLType.BROADCAST;
-		case GENERIC:
-			return CSLType.ARTICLE;
-		case GOVERNMENT_DOCUMENT:
-			return CSLType.LEGISLATION;
-		case HEARING:
-			return CSLType.ARTICLE;
-		case JOURNAL_ARTICLE:
-			return CSLType.ARTICLE_JOURNAL;
-		case LEGAL_RULE_REGULATION:
-			return CSLType.LEGISLATION;
-		case MAGAZINE_ARTICLE:
-			return CSLType.ARTICLE_MAGAZINE;
-		case MANUSCRIPT:
-			return CSLType.MANUSCRIPT;
-		case MAP:
-			return CSLType.MAP;
-		case NEWSPAPER_ARTICLE:
-			return CSLType.ARTICLE_NEWSPAPER;
-		case ONLINE_DATABASE:
-			return CSLType.WEBPAGE;
-		case ONLINE_MULTIMEDIA:
-			return CSLType.WEBPAGE;
-		case PATENT:
-			return CSLType.PATENT;
-		case PERSONAL_COMMUNICATION:
-			return CSLType.PERSONAL_COMMUNICATION;
-		case REPORT:
-			return CSLType.REPORT;
-		case STATUTE:
-			return CSLType.LEGISLATION;
-		case THESIS:
-			return CSLType.THESIS;
-		case UNPUBLISHED_WORK:
-			return CSLType.ARTICLE;
-		case UNUSED_1:
-			return CSLType.ARTICLE;
-		case UNUSED_2:
-			return CSLType.ARTICLE;
-		case UNUSED_3:
-			return CSLType.ARTICLE;
+		<% for (t in types) { %>
+		case ${toEnum.call(t.key)}:
+			return CSLType.${t.value};
+		<% } %>
 		default:
 			return CSLType.ARTICLE;
 		}
