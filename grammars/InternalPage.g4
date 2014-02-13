@@ -90,6 +90,8 @@ range
       } else {
         $literal = pf + "-" + pt;
       }
+    } else if ($pageFrom != null) {
+      $numberOfPages = 1;
     }
   }
   : PAGE { $pageFrom = $pageTo = $PAGE.text; }
