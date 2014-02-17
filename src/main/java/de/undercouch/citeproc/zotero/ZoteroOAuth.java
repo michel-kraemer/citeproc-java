@@ -16,18 +16,18 @@ package de.undercouch.citeproc.zotero;
 
 import java.util.Map;
 
-import de.undercouch.citeproc.helper.oauth.OAuth;
+import de.undercouch.citeproc.helper.oauth.OAuth1;
 import de.undercouch.citeproc.helper.oauth.Token;
 
 /**
- * Extends {@link OAuth} and creates special token credentials for Zotero
+ * Extends {@link OAuth1} and creates special token credentials for Zotero
  * @author Michel Kraemer
  */
-public class ZoteroOAuth extends OAuth {
+public class ZoteroOAuth extends OAuth1 {
 	private static final String OAUTH_USERID = "userID";
 	
 	/**
-	 * @see OAuth#OAuth(String, String)
+	 * @see OAuth1#OAuth1(String, String)
 	 */
 	public ZoteroOAuth(String consumerKey, String consumerSecret) {
 		super(consumerKey, consumerSecret);

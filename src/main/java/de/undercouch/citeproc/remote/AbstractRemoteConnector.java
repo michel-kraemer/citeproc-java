@@ -27,6 +27,7 @@ import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.helper.oauth.OAuth;
 import de.undercouch.citeproc.helper.oauth.OAuth.Method;
+import de.undercouch.citeproc.helper.oauth.OAuth1;
 import de.undercouch.citeproc.helper.oauth.Response;
 import de.undercouch.citeproc.helper.oauth.Token;
 import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
@@ -82,15 +83,14 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	 * @return the created object
 	 */
 	protected OAuth createOAuth(String consumerKey, String consumerSecret) {
-		return new OAuth(consumerKey, consumerSecret);
+		return new OAuth1(consumerKey, consumerSecret);
 	}
 	
 	@Override
 	public String getAuthorizationURL() throws IOException {
 		try {
 			requestToken = auth.requestTemporaryCredentials(
-					new URL(getOAuthRequestTokenURL()), Method.GET,
-					OAuth.CALLBACK_OOB);
+					new URL(getOAuthRequestTokenURL()), Method.GET);
 		} catch (MalformedURLException e) {
 			//should never happen
 			throw new RuntimeException(e);
