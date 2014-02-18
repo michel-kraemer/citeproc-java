@@ -143,6 +143,10 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 				int s = 0;
 				int printed = 0;
 				int bulk = mc.getMaxBulkItems();
+				if (bulk == 1) {
+					mc.beginTransaction();
+				}
+				
 				while (s < items.size()) {
 					int n = 0;
 					List<String> itemsToRetrieve = new ArrayList<String>(bulk);
@@ -160,6 +164,15 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 					}
 					Map<String, CSLItemData> itemData = mc.getItems(itemsToRetrieve);
 					itemDataList.addAll(itemData.values());
+					
+					if (bulk == 1 && s % 10 == 0) {
+						mc.commitTransaction();
+					}
+				}
+				
+				if (bulk == 1) {
+					mc.commitTransaction();
+					mc.endTransaction();
 				}
 				
 				if (printed > 0) {

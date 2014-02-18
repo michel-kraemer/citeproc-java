@@ -46,6 +46,8 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 	private final Set<String> _itemIds;
 	private final Map<String, String> _items;
 	
+	private boolean _transaction = false;
+	
 	/**
 	 * Creates a connector that caches items read from the server
 	 * @param delegate the underlying connector
@@ -213,12 +215,50 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 	}
 	
 	/**
-	 * Commit database transaction. This method is a NOOP if there is no database.
+	 * Starts a transaction on the cache. Cached entries will not
+	 * be written to disk until {@link #commitTransaction()} is called.
+	 */
+	public void beginTransaction() {
+		_transaction = true;
+	}
+	
+	/**
+	 * Ends a transaction. Does not flush to disk.
+	 */
+	public void endTransaction() {
+		_transaction = false;
+	}
+	
+	/**
+	 * Flushes cached entries to disk, but does not end transaction
+	 */
+	public void commitTransaction() {
+		commit(true);
+	}
+	
+	/**
+	 * Commit database transaction
+	 * @see #commit(boolean)
 	 */
 	private void commit() {
+		commit(false);
+	}
+	
+	/**
+	 * Commit database transaction. This method is a NOOP if there is no
+	 * database or if {@link #_transaction} is currently true.
+	 * @param force true if the database transaction should be committed
+	 * regardless of the {@link #_transaction} flag.
+	 */
+	private void commit(boolean force) {
 		if (_db == null) {
 			return;
 		}
+		
+		if (_transaction && !force) {
+			return;
+		}
+		
 		try {
 			Method m = _db.getClass().getMethod("commit");
 			m.invoke(_db);
