@@ -51,10 +51,10 @@ dependencies {
     compile 'org.antlr:antlr4-runtime:4.2'
     
     provided 'org.mozilla:rhino:1.7R4'
-    provided 'org.mapdb:mapdb:0.9.8'
+    provided 'org.mapdb:mapdb:0.9.9'
     
     runtime 'org.mozilla:rhino:1.7R4'
-    runtime 'org.mapdb:mapdb:0.9.8'
+    runtime 'org.mapdb:mapdb:0.9.9'
     runtime 'org.citationstyles:styles:1.0.1-SNAPSHOT'
     runtime 'org.citationstyles:locales:1.0.1-SNAPSHOT'
     

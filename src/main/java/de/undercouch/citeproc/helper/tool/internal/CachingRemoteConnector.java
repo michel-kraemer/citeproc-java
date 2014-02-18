@@ -84,6 +84,17 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 				if (e instanceof InvocationTargetException && retry == 1 &&
 						cacheFile.exists()) {
 					//unable to open disk cache. remove it and try again.
+					try {
+						//close db first
+						if (db != null) {
+							Class<?> dbClass = db.getClass();
+							Method close = dbClass.getMethod("close");
+							close.invoke(db);
+							db = null;
+						}
+					} catch (Throwable t) {
+						//ignore
+					}
 					cacheFile.delete();
 					continue;
 				}
