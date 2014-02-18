@@ -36,7 +36,7 @@ import de.undercouch.citeproc.helper.CSLUtils;
 
 /**
  * Performs OAuth authentication. Very minimal implementation, only used
- * for Zotero and Mendeley authentication currently.
+ * for Zotero authentication currently.
  * @author Michel Kraemer
  */
 public class OAuth1 implements OAuth {

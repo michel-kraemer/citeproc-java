@@ -102,11 +102,11 @@ public class MendeleyCommand extends AbstractRemoteCommand {
 		arr = DatatypeConverter.parseBase64Binary(new String(arr));
 		
 		String[] result = new String[] { "", "" };
-		for (int i = 0; i < 32; ++i) {
-			result[1] += (char)arr[i + 31];
+		for (int i = 0; i < 2; ++i) {
+			result[0] += (char)arr[i + 31];
 		}
-		for (int i = 0; i < 41; ++i) {
-			result[0] += (char)arr[i + 1857];
+		for (int i = 0; i < 16; ++i) {
+			result[1] += (char)arr[i + 1857];
 		}
 		
 		return result;

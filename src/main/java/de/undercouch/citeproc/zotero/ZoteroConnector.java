@@ -45,6 +45,7 @@ import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.helper.oauth.OAuth;
 import de.undercouch.citeproc.helper.oauth.Response;
 import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
+import de.undercouch.citeproc.helper.oauth.OAuth.Method;
 import de.undercouch.citeproc.remote.AbstractRemoteConnector;
 
 /**
@@ -92,6 +93,11 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 	@Override
 	protected String getOAuthAccessTokenURL() {
 		return OAUTH_ACCESS_TOKEN_URL;
+	}
+	
+	@Override
+	protected Method getOAuthAccessTokenMethod() {
+		return Method.GET;
 	}
 	
 	@Override

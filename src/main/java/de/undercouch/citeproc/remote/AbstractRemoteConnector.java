@@ -62,7 +62,8 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	}
 	
 	/**
-	 * @return the remote service's end-point for temporary credentials
+	 * @return the remote service's end-point for temporary credentials or
+	 * null if not supported
 	 */
 	protected abstract String getOAuthRequestTokenURL();
 	
@@ -77,6 +78,11 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	protected abstract String getOAuthAccessTokenURL();
 	
 	/**
+	 * @return the HTTP method to use while requesting access tokens
+	 */
+	protected abstract Method getOAuthAccessTokenMethod();
+	
+	/**
 	 * Creates an OAuth object
 	 * @param consumerKey the app's consumer key
 	 * @param consumerSecret the app's consumer secret
@@ -88,9 +94,14 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	
 	@Override
 	public String getAuthorizationURL() throws IOException {
+		String rtu = getOAuthRequestTokenURL();
+		if (rtu == null) {
+			return getOAuthAuthorizationURL();
+		}
+		
 		try {
 			requestToken = auth.requestTemporaryCredentials(
-					new URL(getOAuthRequestTokenURL()), Method.GET);
+					new URL(rtu), Method.GET);
 		} catch (MalformedURLException e) {
 			//should never happen
 			throw new RuntimeException(e);
@@ -102,7 +113,7 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	public void authorize(String verificationCode) throws IOException {
 		try {
 			accessToken = auth.requestTokenCredentials(
-					new URL(getOAuthAccessTokenURL()), Method.GET,
+					new URL(getOAuthAccessTokenURL()), getOAuthAccessTokenMethod(),
 					requestToken, verificationCode);
 		} catch (MalformedURLException e) {
 			//should never happen

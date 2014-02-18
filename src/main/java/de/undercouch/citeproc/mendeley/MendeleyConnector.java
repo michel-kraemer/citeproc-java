@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.helper.oauth.OAuth;
+import de.undercouch.citeproc.helper.oauth.OAuth.Method;
+import de.undercouch.citeproc.helper.oauth.OAuth2;
 import de.undercouch.citeproc.remote.AbstractRemoteConnector;
 
 /**
@@ -31,45 +34,65 @@ import de.undercouch.citeproc.remote.AbstractRemoteConnector;
  * @author Michel Kraemer
  */
 public class MendeleyConnector extends AbstractRemoteConnector {
+	private static final String REDIRECT_URI =
+			"http://www.undercouch.de/citeproc-java/authorize/";
 	private static final String OAUTH_ACCESS_TOKEN_URL =
-			"http://api.mendeley.com/oauth/access_token/";
-	private static final String OAUTH_REQUEST_TOKEN_URL =
-			"http://api.mendeley.com/oauth/request_token/";
+			"https://api-oauth2.mendeley.com/oauth/token";
 	private static final String OAUTH_AUTHORIZATION_URL =
-			"http://api.mendeley.com/oauth/authorize/?oauth_token=";
+			"https://api-oauth2.mendeley.com/oauth/authorize?redirect_uri="
+			+ "http%3A%2F%2Fwww.undercouch.de%2Fciteproc-java%2Fauthorize%2F"
+					//URLEncoder.encode(REDIRECT_URI, "UTF-8")
+			+ "&response_type=code&scope=all&client_id=";
 	
 	/**
 	 * The REST end-point used to request a Mendeley user's library
 	 */
 	private static final String MENDELEY_LIBRARY_ENDPOINT =
-			"http://api.mendeley.com/oapi/library/";
+			"https://api-oauth2.mendeley.com/oapi/library/";
 	
 	/**
 	 * The REST end-point used to request a document
 	 */
 	private static final String MENDELEY_DOCUMENTS_ENDPOINT =
-			"http://api.mendeley.com/oapi/library/documents/";
+			"https://api-oauth2.mendeley.com/oapi/library/documents/";
+	
+	/**
+	 * OAuth client's consumer key
+	 */
+	private final String consumerKey;
 	
 	/**
 	 * @see AbstractRemoteConnector#AbstractRemoteConnector(String, String)
 	 */
 	public MendeleyConnector(String consumerKey, String consumerSecret) {
 		super(consumerKey, consumerSecret);
+		this.consumerKey = consumerKey;
 	}
 	
 	@Override
 	protected String getOAuthRequestTokenURL() {
-		return OAUTH_REQUEST_TOKEN_URL;
+		//we don't need this for OAuth v2
+		return null;
 	}
 	
 	@Override
 	protected String getOAuthAuthorizationURL() {
-		return OAUTH_AUTHORIZATION_URL;
+		return OAUTH_AUTHORIZATION_URL + consumerKey;
 	}
 	
 	@Override
 	protected String getOAuthAccessTokenURL() {
 		return OAUTH_ACCESS_TOKEN_URL;
+	}
+	
+	@Override
+	protected Method getOAuthAccessTokenMethod() {
+		return Method.POST;
+	}
+	
+	@Override
+	protected OAuth createOAuth(String consumerKey, String consumerSecret) {
+		return new OAuth2(consumerKey, consumerSecret, REDIRECT_URI);
 	}
 	
 	@Override
