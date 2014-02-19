@@ -74,10 +74,12 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 	}
 	
 	/**
-	 * @see AbstractRemoteConnector#AbstractRemoteConnector(String, String)
+	 * Constructs a new connector
+	 * @param consumerKey the app's consumer key
+	 * @param consumerSecret the app's consumer secret
 	 */
 	public ZoteroConnector(String consumerKey, String consumerSecret) {
-		super(consumerKey, consumerSecret);
+		super(consumerKey, consumerSecret, null);
 	}
 	
 	@Override
@@ -101,7 +103,8 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 	}
 	
 	@Override
-	protected OAuth createOAuth(String consumerKey, String consumerSecret) {
+	protected OAuth createOAuth(String consumerKey, String consumerSecret,
+			String redirectUri) {
 		return new ZoteroOAuth(consumerKey, consumerSecret);
 	}
 	

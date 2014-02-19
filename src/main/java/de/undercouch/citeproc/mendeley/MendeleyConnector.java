@@ -15,6 +15,8 @@
 package de.undercouch.citeproc.mendeley;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,15 +36,11 @@ import de.undercouch.citeproc.remote.AbstractRemoteConnector;
  * @author Michel Kraemer
  */
 public class MendeleyConnector extends AbstractRemoteConnector {
-	private static final String REDIRECT_URI =
-			"http://www.undercouch.de/citeproc-java/authorize/";
 	private static final String OAUTH_ACCESS_TOKEN_URL =
 			"https://api-oauth2.mendeley.com/oauth/token";
-	private static final String OAUTH_AUTHORIZATION_URL =
-			"https://api-oauth2.mendeley.com/oauth/authorize?redirect_uri="
-			+ "http%3A%2F%2Fwww.undercouch.de%2Fciteproc-java%2Fauthorize%2F"
-					//URLEncoder.encode(REDIRECT_URI, "UTF-8")
-			+ "&response_type=code&scope=all&client_id=";
+	private static final String OAUTH_AUTHORIZATION_URL_TEMPLATE =
+			"https://api-oauth2.mendeley.com/oauth/authorize?redirect_uri=%s"
+			+ "&response_type=code&scope=all&client_id=%s";
 	
 	/**
 	 * The REST end-point used to request a Mendeley user's library
@@ -57,18 +55,29 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 			"https://api-oauth2.mendeley.com/oapi/library/documents/";
 	
 	/**
-	 * The Mendeley app's client ID
+	 * The remote service's authorization end-point
 	 */
-	private final String clientId;
+	private final String oauthAuthorizationUrl;
 	
 	/**
 	 * Constructs a new connector
 	 * @param clientId the Mendeley app's client ID
 	 * @param clientSecret the app's client secret
+	 * @param redirectUri the location users are redirected to after
+	 * they granted the Mendeley app access to their library
 	 */
-	public MendeleyConnector(String clientId, String clientSecret) {
-		super(clientId, clientSecret);
-		this.clientId = clientId;
+	public MendeleyConnector(String clientId, String clientSecret,
+			String redirectUri) {
+		super(clientId, clientSecret, redirectUri);
+		
+		try {
+			oauthAuthorizationUrl = String.format(
+					OAUTH_AUTHORIZATION_URL_TEMPLATE,
+					URLEncoder.encode(redirectUri, "UTF-8"), clientId);
+		} catch (UnsupportedEncodingException e) {
+			//should never happen
+			throw new RuntimeException(e);
+		}
 	}
 	
 	@Override
@@ -79,7 +88,7 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	
 	@Override
 	protected String getOAuthAuthorizationURL() {
-		return OAUTH_AUTHORIZATION_URL + clientId;
+		return oauthAuthorizationUrl;
 	}
 	
 	@Override
@@ -93,8 +102,9 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	}
 	
 	@Override
-	protected OAuth createOAuth(String consumerKey, String consumerSecret) {
-		return new OAuth2(consumerKey, consumerSecret, REDIRECT_URI);
+	protected OAuth createOAuth(String consumerKey, String consumerSecret,
+			String redirectUri) {
+		return new OAuth2(consumerKey, consumerSecret, redirectUri);
 	}
 	
 	@Override

@@ -56,9 +56,12 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	 * Constructs a new connector
 	 * @param consumerKey the app's consumer key
 	 * @param consumerSecret the app's consumer secret
+	 * @param redirectUri the location users are redirected to after
+	 * they granted the app access
 	 */
-	public AbstractRemoteConnector(String consumerKey, String consumerSecret) {
-		auth = createOAuth(consumerKey, consumerSecret);
+	public AbstractRemoteConnector(String consumerKey, String consumerSecret,
+			String redirectUri) {
+		auth = createOAuth(consumerKey, consumerSecret, redirectUri);
 	}
 	
 	/**
@@ -86,9 +89,12 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	 * Creates an OAuth object
 	 * @param consumerKey the app's consumer key
 	 * @param consumerSecret the app's consumer secret
+	 * @param redirectUri the location users are redirected to after
+	 * they granted the app access
 	 * @return the created object
 	 */
-	protected OAuth createOAuth(String consumerKey, String consumerSecret) {
+	protected OAuth createOAuth(String consumerKey, String consumerSecret,
+			String redirectUri) {
 		return new OAuth1(consumerKey, consumerSecret);
 	}
 	

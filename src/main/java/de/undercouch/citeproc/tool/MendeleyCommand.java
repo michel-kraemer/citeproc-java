@@ -30,6 +30,13 @@ import de.undercouch.citeproc.mendeley.MendeleyConnector;
  * @author Michel Kraemer
  */
 public class MendeleyCommand extends AbstractRemoteCommand {
+	/**
+	 * The location users are redirected to after they granted
+	 * citeproc-java access to their Mendeley library
+	 */
+	private static final String REDIRECT_URI =
+			"http://www.undercouch.de/citeproc-java/authorize/";
+	
 	@OptionDesc(longName = "sync", shortName = "s",
 			description = "force synchronization with Mendeley Web")
 	@Override
@@ -70,7 +77,7 @@ public class MendeleyCommand extends AbstractRemoteCommand {
 	@Override
 	protected MendeleyConnector createRemoteConnector(String consumerKey,
 			String consumerSecret) {
-		return new MendeleyConnector(consumerKey, consumerSecret);
+		return new MendeleyConnector(consumerKey, consumerSecret, REDIRECT_URI);
 	}
 	
 	@Override
