@@ -21,7 +21,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.bind.DatatypeConverter;
 
 import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
@@ -34,9 +37,8 @@ import de.undercouch.citeproc.helper.json.JsonParser;
 public class OAuth2 implements OAuth {
 	private static final String ACCESS_TOKEN = "access_token";
 	private static final String AUTHORIZATION_CODE = "authorization_code";
+	private static final String BASIC = "Basic";
 	private static final String BEARER = "Bearer";
-	private static final String CLIENT_ID = "client_id";
-	private static final String CLIENT_SECRET = "client_secret";
 	private static final String CODE = "code";
 	private static final String GRANT_TYPE = "grant_type";
 	private static final String REDIRECT_URI = "redirect_uri";
@@ -77,11 +79,15 @@ public class OAuth2 implements OAuth {
 		body += GRANT_TYPE + "=" + URLEncoder.encode(AUTHORIZATION_CODE, UTF8);
 		body += "&" + CODE + "=" + URLEncoder.encode(verifier, UTF8);
 		body += "&" + REDIRECT_URI + "=" + URLEncoder.encode(redirectUri, UTF8);
-		body += "&" + CLIENT_ID + "=" + URLEncoder.encode(consumerKey, UTF8);
-		body += "&" + CLIENT_SECRET + "=" + URLEncoder.encode(consumerSecret, UTF8);
+		
+		//prepare Authorization header
+		Map<String, String> headers = new HashMap<String, String>();
+		String encodedUserPass = DatatypeConverter.printBase64Binary(
+				(consumerKey + ":" + consumerSecret).getBytes(UTF8));
+		headers.put(HEADER_AUTHORIZATION, BASIC + " " + encodedUserPass);
 		
 		//perform request
-		Response r = request(url, method, null, null, body);
+		Response r = request(url, method, null, headers, body);
 		
 		//read response
 		InputStream is = r.getInputStream();
