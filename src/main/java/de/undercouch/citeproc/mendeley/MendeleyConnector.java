@@ -57,16 +57,18 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 			"https://api-oauth2.mendeley.com/oapi/library/documents/";
 	
 	/**
-	 * OAuth client's consumer key
+	 * The Mendeley app's client ID
 	 */
-	private final String consumerKey;
+	private final String clientId;
 	
 	/**
-	 * @see AbstractRemoteConnector#AbstractRemoteConnector(String, String)
+	 * Constructs a new connector
+	 * @param clientId the Mendeley app's client ID
+	 * @param clientSecret the app's client secret
 	 */
-	public MendeleyConnector(String consumerKey, String consumerSecret) {
-		super(consumerKey, consumerSecret);
-		this.consumerKey = consumerKey;
+	public MendeleyConnector(String clientId, String clientSecret) {
+		super(clientId, clientSecret);
+		this.clientId = clientId;
 	}
 	
 	@Override
@@ -77,7 +79,7 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	
 	@Override
 	protected String getOAuthAuthorizationURL() {
-		return OAUTH_AUTHORIZATION_URL + consumerKey;
+		return OAUTH_AUTHORIZATION_URL + clientId;
 	}
 	
 	@Override
