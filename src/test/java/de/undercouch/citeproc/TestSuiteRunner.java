@@ -45,7 +45,10 @@ import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
+import de.undercouch.citeproc.script.ScriptRunner;
 import de.undercouch.citeproc.script.ScriptRunnerException;
+import de.undercouch.citeproc.script.ScriptRunnerFactory;
+import de.undercouch.citeproc.script.ScriptRunnerFactory.RunnerType;
 
 /**
  * Runs the CSL test suite (<a href="https://bitbucket.org/bdarcus/citeproc-test">https://bitbucket.org/bdarcus/citeproc-test</a>)
@@ -60,16 +63,25 @@ public class TestSuiteRunner {
 	 */
 	public static void main(String[] args) throws IOException {
 		TestSuiteRunner runner = new TestSuiteRunner();
-		runner.runTests(new File(args[0]));
+		runner.runTests(new File(args[0]), RunnerType.AUTO);
 	}
 	
 	/**
 	 * Runs tests
 	 * @param f either a compiled test file (.json) to run or a directory
 	 * containing compiled test files
+	 * @param runnerType the type of the script runner that will be used
+	 * to execute all JavaScript code
 	 * @throws IOException if a file could not be loaded
 	 */
-	public void runTests(File f) throws IOException {
+	public void runTests(File f, RunnerType runnerType) throws IOException {
+		ScriptRunnerFactory.setRunnerType(runnerType);
+		{
+			ScriptRunner sr = ScriptRunnerFactory.createRunner();
+			System.out.println("Using script runner: " + sr.getName() +
+					" " + sr.getVersion());
+		}
+		
 		//find test files
 		File[] testFiles;
 		if (f.isDirectory()) {

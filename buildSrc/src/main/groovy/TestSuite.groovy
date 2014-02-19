@@ -87,8 +87,15 @@ class TestSuite {
     
     def run() {
         def dir = new File(processorPyFile.getParentFile(), 'processor-tests/machines')
+        
+        def runnerTypeClass = cl.loadClass('de.undercouch.citeproc.script.ScriptRunnerFactory$RunnerType')
         def testSuiteRunnerClass = cl.loadClass('de.undercouch.citeproc.TestSuiteRunner')
         def testSuiteRunner = testSuiteRunnerClass.newInstance()
-        testSuiteRunner.runTests(dir)
+        if (project.ext.properties.containsKey('scriptRunnerType')) {
+            testSuiteRunner.runTests(dir, runnerTypeClass[
+                    project.ext.scriptRunnerType.toUpperCase()])
+        } else {
+            testSuiteRunner.runTests(dir, runnerTypeClass.AUTO)
+        }
     }
 }
