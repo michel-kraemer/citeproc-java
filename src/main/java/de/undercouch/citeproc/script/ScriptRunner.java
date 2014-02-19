@@ -26,6 +26,16 @@ import de.undercouch.citeproc.helper.json.JsonBuilderFactory;
  */
 public interface ScriptRunner extends JsonBuilderFactory {
 	/**
+	 * @return the runner's name
+	 */
+	String getName();
+	
+	/**
+	 * @return the runner's version
+	 */
+	String getVersion();
+	
+	/**
 	 * @return true if this script runner supports the
 	 * ECMAScript for XML extension (E4X)
 	 */

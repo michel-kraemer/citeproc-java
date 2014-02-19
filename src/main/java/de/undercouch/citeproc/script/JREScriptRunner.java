@@ -41,6 +41,16 @@ public class JREScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
+	public String getName() {
+		return engine.getFactory().getEngineName();
+	}
+	
+	@Override
+	public String getVersion() {
+		return engine.getFactory().getEngineVersion();
+	}
+	
+	@Override
 	public boolean supportsE4X() {
 		//whether we support E4X or not depends on the engine used
 		if (engine.getFactory().getEngineName().contains("Rhino")) {

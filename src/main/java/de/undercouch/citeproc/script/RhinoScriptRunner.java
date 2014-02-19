@@ -55,6 +55,25 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
+	public String getName() {
+		return "Mozilla Rhino";
+	}
+	
+	@Override
+	public String getVersion() {
+		Context context = Context.enter();
+		try {
+			String r = context.getImplementationVersion();
+			if (r.startsWith("Rhino")) {
+				r = r.substring(5);
+			}
+			return r.trim();
+		} finally {
+			Context.exit();
+		}
+	}
+	
+	@Override
 	public boolean supportsE4X() {
 		//Rhino always supports E4X
 		return true;
