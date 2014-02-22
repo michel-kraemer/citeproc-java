@@ -43,6 +43,13 @@ import de.undercouch.citeproc.script.ScriptRunnerFactory;
  */
 public class CSL {
 	/**
+	 * A thread-local holding a JavaScript runner that can
+	 * be shared amongst multiple instances of this class
+	 */
+	private static ThreadLocal<ScriptRunner> sharedRunner =
+			new ThreadLocal<ScriptRunner>();
+	
+	/**
 	 * A JavaScript runner used to execute citeproc-js
 	 */
 	private final ScriptRunner runner;
@@ -157,24 +164,7 @@ public class CSL {
 	public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
 			AbbreviationProvider abbreviationProvider, String style,
 			String lang, boolean forceLang) throws IOException {
-		//create JavaScript runner
-		runner = ScriptRunnerFactory.createRunner();
-		
-		//load bundles scripts
-		try {
-			if (runner.supportsE4X()) {
-				runner.loadScript(getClass().getResource("xmle4x.js"));
-			} else {
-				runner.loadScript(getClass().getResource("xml2javabridge.js"));
-				runner.loadScript(getClass().getResource("xmldom.js"));
-			}
-			runner.loadScript(getClass().getResource("citeproc.js"));
-			runner.loadScript(getClass().getResource("formats.js"));
-			runner.loadScript(getClass().getResource("loadsys.js"));
-		} catch (ScriptRunnerException e) {
-			//should never happen because bundled JavaScript files should be OK indeed
-			throw new RuntimeException("Invalid bundled javascript file", e);
-		}
+		runner = getRunner();
 		
 		//load style if needed
 		if (!isStyle(style)) {
@@ -189,6 +179,38 @@ public class CSL {
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not parse arguments", e);
 		}
+	}
+	
+	/**
+	 * Gets or initializes the shared script runner {@link #sharedRunner}
+	 * @return the runner
+	 * @throws IOException if bundles scripts could not be loaded
+	 */
+	private static ScriptRunner getRunner() throws IOException {
+		if (sharedRunner.get() == null) {
+			//create JavaScript runner
+			ScriptRunner runner = ScriptRunnerFactory.createRunner();
+			
+			//load bundled scripts
+			try {
+				if (runner.supportsE4X()) {
+					runner.loadScript(CSL.class.getResource("xmle4x.js"));
+				} else {
+					runner.loadScript(CSL.class.getResource("xml2javabridge.js"));
+					runner.loadScript(CSL.class.getResource("xmldom.js"));
+				}
+				runner.loadScript(CSL.class.getResource("citeproc.js"));
+				runner.loadScript(CSL.class.getResource("formats.js"));
+				runner.loadScript(CSL.class.getResource("loadsys.js"));
+			} catch (ScriptRunnerException e) {
+				//should never happen because bundled JavaScript files
+				//should be OK indeed
+				throw new RuntimeException("Invalid bundled javascript file", e);
+			}
+			
+			sharedRunner.set(runner);
+		}
+		return sharedRunner.get();
 	}
 	
 	/**
