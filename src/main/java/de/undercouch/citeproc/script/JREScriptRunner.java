@@ -15,6 +15,7 @@
 package de.undercouch.citeproc.script;
 
 import java.io.Reader;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import de.undercouch.citeproc.helper.json.JsonBuilder;
+import de.undercouch.citeproc.helper.json.JsonObject;
 import de.undercouch.citeproc.helper.json.StringJsonBuilder;
 
 /**
@@ -62,29 +64,6 @@ public class JREScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
-	public void put(String key, Object value) {
-		engine.put(key, value);
-	}
-	
-	@Override
-	public void eval(String code) throws ScriptRunnerException {
-		try {
-			engine.eval(code);
-		} catch (ScriptException e) {
-			throw new ScriptRunnerException("Could not evaluate code", e);
-		}
-	}
-	
-	@Override
-	public <T> T eval(String code, Class<T> resultType) throws ScriptRunnerException {
-		try {
-			return convert(engine.eval(code), resultType);
-		} catch (ScriptException e) {
-			throw new ScriptRunnerException("Could not evaluate code", e);
-		}
-	}
-	
-	@Override
 	public void eval(Reader reader) throws ScriptRunnerException {
 		try {
 			engine.eval(reader);
@@ -103,7 +82,8 @@ public class JREScriptRunner extends AbstractScriptRunner {
 			Object... args) throws ScriptRunnerException {
 		Invocable i = (Invocable)engine;
 		try {
-			return convert(i.invokeFunction(name, args), resultType);
+			return convert(i.invokeFunction(name, convertArguments(args)),
+					resultType);
 		} catch (NoSuchMethodException e) {
 			throw new ScriptRunnerException("Could not call method", e);
 		} catch (ScriptException e) {
@@ -112,29 +92,43 @@ public class JREScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
-	public <T> T callMethod(String obj, String name, Class<T> resultType,
-			Object... args) throws ScriptRunnerException {
-		String p = "";
-		if (args != null && args.length > 0) {
-			Object[] ca = convertArguments(args);
-			StringBuilder b = new StringBuilder();
-			for (Object o : ca) {
-				if (b.length() > 0) {
-					b.append(",");
-				}
-				b.append(o.toString());
-			}
-			p = b.toString();
+	public void callMethod(String name, Object... args)
+			throws ScriptRunnerException {
+		Invocable i = (Invocable)engine;
+		try {
+			i.invokeFunction(name, convertArguments(args));
+		} catch (NoSuchMethodException e) {
+			throw new ScriptRunnerException("Could not call method", e);
+		} catch (ScriptException e) {
+			throw new ScriptRunnerException("Could not call method", e);
 		}
-		
-		return eval(obj + "." + name + "(" + p + ");", resultType);
 	}
-
+	
 	@Override
-	public <T> T callMethod(String obj, String name, Class<T> resultType,
-			String[] argument) throws ScriptRunnerException {
-		Object p = createJsonBuilder().toJson(argument);
-		return eval(obj + "." + name + "(" + p + ");", resultType);
+	public <T> T callMethod(Object obj, String name, Class<T> resultType,
+			Object... args) throws ScriptRunnerException {
+		Invocable i = (Invocable)engine;
+		try {
+			return convert(i.invokeMethod(obj, name, convertArguments(args)),
+					resultType);
+		} catch (NoSuchMethodException e) {
+			throw new ScriptRunnerException("Could not call method", e);
+		} catch (ScriptException e) {
+			throw new ScriptRunnerException("Could not call method", e);
+		}
+	}
+	
+	@Override
+	public void callMethod(Object obj, String name, Object... args)
+			throws ScriptRunnerException {
+		Invocable i = (Invocable)engine;
+		try {
+			i.invokeMethod(obj, name, convertArguments(args));
+		} catch (NoSuchMethodException e) {
+			throw new ScriptRunnerException("Could not call method", e);
+		} catch (ScriptException e) {
+			throw new ScriptRunnerException("Could not call method", e);
+		}
 	}
 	
 	@Override
@@ -145,5 +139,21 @@ public class JREScriptRunner extends AbstractScriptRunner {
 			r = ((Map<?, ?>)r).values();
 		}
 		return (T)r;
+	}
+	
+	private Object[] convertArguments(Object[] args) throws ScriptException {
+		Object[] result = new Object[args.length];
+		for (int i = 0; i < args.length; ++i) {
+			Object o = args[i];
+			//convert JSON objects, collections, arrays, and maps, but do
+			//not convert script objects (such as Bindings)
+			if (o instanceof JsonObject || o instanceof Collection || o.getClass().isArray() ||
+					(o instanceof Map && o.getClass().getPackage().getName().startsWith("java."))) {
+				result[i] = engine.eval("(" + createJsonBuilder().toJson(o).toString() + ")");
+			} else {
+				result[i] = o;
+			}
+		}
+		return result;
 	}
 }

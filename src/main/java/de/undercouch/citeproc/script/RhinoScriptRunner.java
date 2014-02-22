@@ -28,7 +28,6 @@ import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.SecurityController;
-import org.mozilla.javascript.Wrapper;
 
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
@@ -80,11 +79,6 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 		return true;
 	}
 
-	@Override
-	public void put(String key, Object value) {
-		scope.put(key, scope, value);
-	}
-	
 	/**
 	 * @return true if Rhino's version is exactly 1.7R4, false if it's not
 	 * or if it cannot be determined
@@ -156,31 +150,6 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
-	public void eval(String code) throws ScriptRunnerException {
-		Context context = Context.enter();
-		try {
-			context.evaluateString(scope, code, "<code>", 1, null);
-		} catch (RhinoException e) {
-			throw new ScriptRunnerException("Could not execute code", e);
-		} finally {
-			Context.exit();
-		}
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T eval(String code, Class<T> resultType) throws ScriptRunnerException {
-		Context context = Context.enter();
-		try {
-			return (T)unwrap(context.evaluateString(scope, code, "<code>", 1, null));
-		} catch (RhinoException e) {
-			throw new ScriptRunnerException("Could not execute code", e);
-		} finally {
-			Context.exit();
-		}
-	}
-
-	@Override
 	public void eval(Reader reader) throws ScriptRunnerException, IOException {
 		Context context = Context.enter();
 		try {
@@ -192,18 +161,6 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 		}
 	}
 	
-	/**
-	 * Unwraps an object
-	 * @param o the object
-	 * @return the unwrapped object
-	 */
-	private static Object unwrap(Object o) {
-		if (o instanceof Wrapper) {
-			return ((Wrapper)o).unwrap();
-		}
-		return o;
-	}
-
 	@Override
 	public JsonBuilder createJsonBuilder() {
 		return new RhinoJsonBuilder(scope, this);
@@ -225,28 +182,47 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T callMethod(String obj, String name, Class<T> resultType,
-			Object... args) throws ScriptRunnerException {
+	public void callMethod(String name, Object... args)
+			throws ScriptRunnerException {
+		Context context = Context.enter();
 		try {
-			Object p[] = convertArguments(args);
-			ScriptableObject so = (ScriptableObject)scope.get(obj, scope);
-			return (T)ScriptableObject.callMethod(so, name, p);
+			Function f = (Function)ScriptableObject.getProperty(scope, name);
+			f.call(context, scope, null, convertArguments(args));
 		} catch (RhinoException e) {
 			throw new ScriptRunnerException("Could not call method", e);
+		} finally {
+			Context.exit();
 		}
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T callMethod(String obj, String name, Class<T> resultType,
-			String[] argument) throws ScriptRunnerException {
+	public <T> T callMethod(Object obj, String name, Class<T> resultType,
+			Object... args) throws ScriptRunnerException {
+		Context context = Context.enter();
 		try {
-			Object p = createJsonBuilder().toJson(argument);
-			ScriptableObject so = (ScriptableObject)scope.get(obj, scope);
-			return (T)ScriptableObject.callMethod(so, name, new Object[] { p });
+			Scriptable s = (Scriptable)obj;
+			Function f = (Function)ScriptableObject.getProperty(s, name);
+			return (T)f.call(context, scope, s, convertArguments(args));
 		} catch (RhinoException e) {
 			throw new ScriptRunnerException("Could not call method", e);
+		} finally {
+			Context.exit();
+		}
+	}
+	
+	@Override
+	public void callMethod(Object obj, String name, Object... args)
+			throws ScriptRunnerException {
+		Context context = Context.enter();
+		try {
+			Scriptable s = (Scriptable)obj;
+			Function f = (Function)ScriptableObject.getProperty(s, name);
+			f.call(context, scope, s, convertArguments(args));
+		} catch (RhinoException e) {
+			throw new ScriptRunnerException("Could not call method", e);
+		} finally {
+			Context.exit();
 		}
 	}
 	
@@ -254,5 +230,24 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	@SuppressWarnings("unchecked")
 	public <T> T convert(Object o, Class<T> type) {
 		return (T)o;
+	}
+	
+	/**
+	 * Recursively converts the given list of arguments using
+	 * {@link #createJsonBuilder()} and {@link JsonBuilder#toJson(Object)}
+	 * @param args the arguments to convert
+	 * @return the converted arguments
+	 */
+	private Object[] convertArguments(Object[] args) {
+		Object[] result = new Object[args.length];
+		for (int i = 0; i < args.length; ++i) {
+			Object o = args[i];
+			if (!(o instanceof ScriptableObject)) {
+				result[i] = createJsonBuilder().toJson(args[i]);
+			} else {
+				result[i] = o;
+			}
+		}
+		return result;
 	}
 }

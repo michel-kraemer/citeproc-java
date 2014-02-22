@@ -64,3 +64,7 @@ function makeCsl(style, lang, forceLang, scriptRunner, itemDataProvider,
 	sys.abbreviationProvider = abbreviationProvider;
 	return new CSL.Engine(sys, style, lang, forceLang);
 }
+
+function setConvertLinks(engine, convert) {
+	engine.opt.development_extensions.wrap_url_and_doi = convert;
+}

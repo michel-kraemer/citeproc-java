@@ -14,8 +14,6 @@
 
 package de.undercouch.citeproc;
 
-import static de.undercouch.citeproc.helper.StringHelper.escapeJava;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
@@ -48,6 +46,11 @@ public class CSL {
 	 * A JavaScript runner used to execute citeproc-js
 	 */
 	private final ScriptRunner runner;
+	
+	/**
+	 * The underlying citeproc-js engine
+	 */
+	private final Object engine;
 	
 	/**
 	 * The output format
@@ -180,10 +183,9 @@ public class CSL {
 		
 		//initialize engine
 		try {
-			Object engine = runner.callMethod("makeCsl", Object.class,
+			engine = runner.callMethod("makeCsl", Object.class,
 					style, lang, forceLang, runner, itemDataProvider,
 					localeProvider, abbreviationProvider);
-			runner.put("__engine__", engine);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not parse arguments", e);
 		}
@@ -194,6 +196,13 @@ public class CSL {
 	 */
 	protected ScriptRunner getScriptRunner() {
 		return runner;
+	}
+	
+	/**
+	 * @return the underlying citeproc-js engine
+	 */
+	protected Object getEngine() {
+		return engine;
 	}
 	
 	/**
@@ -241,7 +250,7 @@ public class CSL {
 	 */
 	public void setOutputFormat(String format) {
 		try {
-			runner.eval("__engine__.setOutputFormat(\"" + escapeJava(format) + "\");");
+			runner.callMethod(engine, "setOutputFormat", format);
 			outputFormat = format;
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not set output format", e);
@@ -256,7 +265,7 @@ public class CSL {
 	 */
 	public void setConvertLinks(boolean convert) {
 		try {
-			runner.eval("__engine__.opt.development_extensions.wrap_url_and_doi = " + convert + ";");
+			runner.callMethod("setConvertLinks", engine, convert);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not set option", e);
 		}
@@ -270,7 +279,7 @@ public class CSL {
 	 */
 	public void setAbbreviations(String name) {
 		try {
-			runner.eval("__engine__.setAbbreviations(\"" + escapeJava(name) + "\");");
+			runner.callMethod(engine, "setAbbreviations", name);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not set abbreviations", e);
 		}
@@ -288,7 +297,7 @@ public class CSL {
 	 */
 	public void registerCitationItems(String... ids) {
 		try {
-			runner.callMethod("__engine__", "updateItems", Void.class, ids);
+			runner.callMethod(engine, "updateItems", new Object[] { ids });
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not update items", e);
 		}
@@ -307,8 +316,7 @@ public class CSL {
 	 */
 	public void registerCitationItems(String[] ids, boolean unsorted) {
 		try {
-			runner.callMethod("__engine__", "updateItems", Void.class,
-					ids, unsorted);
+			runner.callMethod(engine, "updateItems", ids, unsorted);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not update items", e);
 		}
@@ -367,10 +375,10 @@ public class CSL {
 		List<?> r;
 		try {
 			if (citationsPre == null && citationsPost == null) {
-				r = runner.callMethod("__engine__", "appendCitationCluster",
+				r = runner.callMethod(engine, "appendCitationCluster",
 						List.class, citation);
 			} else {
-				r = runner.callMethod("__engine__", "processCitationCluster",
+				r = runner.callMethod(engine, "processCitationCluster",
 						List.class, citation, citationsPre, citationsPost);
 				r = runner.convert(r.get(1), List.class);
 			}
@@ -436,7 +444,7 @@ public class CSL {
 		List<?> r;
 		try {
 			if ((selection == null || mode == null) && quash == null) {
-				r = runner.eval("__engine__.makeBibliography();", List.class);
+				r = runner.callMethod(engine, "makeBibliography", List.class);
 			} else {
 				Map<String, Object> args = new HashMap<String, Object>();
 				if (selection != null && mode != null) {
@@ -445,7 +453,7 @@ public class CSL {
 				if (quash != null) {
 					args.put("quash", selectionToList(quash));
 				}
-				r = runner.callMethod("__engine__", "makeBibliography",
+				r = runner.callMethod(engine, "makeBibliography",
 						List.class, args);
 			}
 		} catch (ScriptRunnerException e) {
@@ -591,7 +599,7 @@ public class CSL {
 	 */
 	public void reset() {
 		try {
-			runner.eval("__engine__.restoreProcessorState();");
+			runner.callMethod(engine, "restoreProcessorState");
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not reset processor state", e);
 		}

@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import de.undercouch.citeproc.helper.json.JsonBuilder;
-
 /**
  * Abstract base class for {@link ScriptRunner} implementations
  * @author Michel Kraemer
@@ -33,19 +31,5 @@ public abstract class AbstractScriptRunner implements ScriptRunner {
 		} finally {
 			reader.close();
 		}
-	}
-	
-	/**
-	 * Recursively converts the given list of arguments using
-	 * {@link #createJsonBuilder()} and {@link JsonBuilder#toJson(Object)}
-	 * @param args the arguments to convert
-	 * @return the converted arguments
-	 */
-	protected Object[] convertArguments(Object[] args) {
-		Object[] result = new Object[args.length];
-		for (int i = 0; i < args.length; ++i) {
-			result[i] = createJsonBuilder().toJson(args[i]);
-		}
-		return result;
 	}
 }

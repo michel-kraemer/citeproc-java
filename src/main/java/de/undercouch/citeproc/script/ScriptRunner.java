@@ -42,36 +42,12 @@ public interface ScriptRunner extends JsonBuilderFactory {
 	boolean supportsE4X();
 	
 	/**
-	 * Sets a key/value pair in the runner's global scope
-	 * @param key the key
-	 * @param value the value
-	 */
-	void put(String key, Object value);
-	
-	/**
 	 * Loads a script from a URL and evaluates it
 	 * @param url the script's URL
 	 * @throws IOException if the script could not be loaded
 	 * @throws ScriptRunnerException if the script is invalid
 	 */
 	void loadScript(URL url) throws IOException, ScriptRunnerException;
-	
-	/**
-	 * Executes the given code
-	 * @param code the code
-	 * @throws ScriptRunnerException if the given code could not be executed
-	 */
-	void eval(String code) throws ScriptRunnerException;
-	
-	/**
-	 * Executes the given code
-	 * @param <T> the type of the return value
-	 * @param code the code
-	 * @param resultType the expected type of the return value
-	 * @return the return value from the executed script
-	 * @throws ScriptRunnerException if the given code could not be executed
-	 */
-	<T> T eval(String code, Class<T> resultType) throws ScriptRunnerException;
 	
 	/**
 	 * Executes a script provided by a given reader
@@ -94,29 +70,35 @@ public interface ScriptRunner extends JsonBuilderFactory {
 			throws ScriptRunnerException;
 	
 	/**
+	 * Calls a top-level method
+	 * @param name the method's name
+	 * @param args the arguments
+	 * @throws ScriptRunnerException if the method could not be called
+	 */
+	void callMethod(String name, Object... args)
+			throws ScriptRunnerException;
+	
+	/**
 	 * Calls an object's method
 	 * @param <T> the type of the return value
-	 * @param obj the object's name
+	 * @param obj the object
 	 * @param name the method's name
 	 * @param resultType the expected type of the return value
 	 * @param args the arguments
 	 * @return the return value
 	 * @throws ScriptRunnerException if the method could not be called
 	 */
-	<T> T callMethod(String obj, String name, Class<T> resultType, Object... args)
+	<T> T callMethod(Object obj, String name, Class<T> resultType, Object... args)
 			throws ScriptRunnerException;
 	
 	/**
 	 * Calls an object's method
-	 * @param <T> the type of the return value
-	 * @param obj the object's name
+	 * @param obj the object
 	 * @param name the method's name
-	 * @param resultType the expected type of the return value
-	 * @param argument a string array that will be passed as the method's first argument
-	 * @return the return value
+	 * @param args the arguments
 	 * @throws ScriptRunnerException if the method could not be called
 	 */
-	<T> T callMethod(String obj, String name, Class<T> resultType, String[] argument)
+	void callMethod(Object obj, String name, Object... args)
 			throws ScriptRunnerException;
 	
 	/**

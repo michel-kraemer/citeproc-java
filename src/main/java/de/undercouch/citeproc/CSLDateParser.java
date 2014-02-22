@@ -15,6 +15,7 @@
 package de.undercouch.citeproc;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -36,6 +37,11 @@ public class CSLDateParser {
 	private final ScriptRunner runner;
 	
 	/**
+	 * The underlying date parser
+	 */
+	private final Object parser;
+	
+	/**
 	 * Creates a new date parser
 	 * @throws IOException if the underlying JavaScript files could not be loaded
 	 */
@@ -45,9 +51,15 @@ public class CSLDateParser {
 		
 		//load bundles scripts
 		try {
-			runner.eval("var CSL = new function() {};");
-			runner.eval("CSL.DATE_PARTS_ALL = [\"year\", \"month\", \"day\", \"season\"];");
-			runner.eval("CSL.debug = function(msg) {};");
+			runner.eval(new StringReader(
+					"var CSL = new function() {};" +
+					"CSL.DATE_PARTS_ALL = [\"year\", \"month\", \"day\", \"season\"];" +
+					"CSL.debug = function(msg) {};" +
+					"function makeParser() {" +
+						"var p = new CSL.DateParser();" +
+						"p.returnAsArray();" +
+						"return p; }"
+			));
 			runner.loadScript(getClass().getResource("dateparser.js"));
 		} catch (ScriptRunnerException e) {
 			//should never happen because bundled JavaScript files should be OK indeed
@@ -56,8 +68,7 @@ public class CSLDateParser {
 		
 		//initialize parser
 		try {
-			runner.eval("var __parser__ = new CSL.DateParser();");
-			runner.eval("__parser__.returnAsArray();");
+			parser = runner.callMethod("makeParser", Object.class);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not initialize date parser", e);
 		}
@@ -73,7 +84,7 @@ public class CSLDateParser {
 		try {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> m = runner.callMethod(
-					"__parser__", "parse", Map.class, str);
+					parser, "parse", Map.class, str);
 			res = m;
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not update items", e);

@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -426,13 +427,30 @@ public class TestSuiteRunner {
 				AbbreviationProvider abbreviationProvider, String style)
 				throws IOException {
 			super(itemDataProvider, abbreviationProvider, style);
+			
+			ScriptRunner sr = getScriptRunner();
+			try {
+				sr.eval(new StringReader(
+						"function __getCitationByIndex(engine) { "
+						+ "return engine.registry.citationreg.citationByIndex; }"
+						
+						+ "function __callProcessCitationCluster(engine, cpos) { "
+						+ "return engine.process_CitationCluster("
+						+ "engine.registry.citationreg.citationByIndex[cpos].sortedItems); }"
+						
+						+ "function __getRefList(engine) {"
+						+ "return engine.registry.reflist; }"
+				));
+			} catch (ScriptRunnerException e) {
+				throw new IOException("Could not evaluate inline scripts", e);
+			}
 		}
 
 		public List<CSLCitation> getCitationsByIndex() {
 			List<?> r;
 			try {
-				r = getScriptRunner().eval("__engine__.registry.citationreg.citationByIndex",
-						List.class);
+				r = getScriptRunner().callMethod("__getCitationByIndex",
+						List.class, getEngine());
 			} catch (ScriptRunnerException e) {
 				throw new IllegalArgumentException("Could not get registered citations", e);
 			}
@@ -448,9 +466,8 @@ public class TestSuiteRunner {
 		
 		public String callProcessCitationCluster(int cpos) {
 			try {
-				return getScriptRunner().eval("__engine__.process_CitationCluster("
-						+ "__engine__.registry.citationreg.citationByIndex[" +
-						cpos + "].sortedItems)", String.class);
+				return getScriptRunner().callMethod("__callProcessCitationCluster",
+						String.class, getEngine(), cpos);
 			} catch (ScriptRunnerException e) {
 				throw new IllegalArgumentException("Could not get registered citations", e);
 			}
@@ -459,7 +476,7 @@ public class TestSuiteRunner {
 		public List<CSLCitationItem> getRegistryReflist() {
 			List<?> r;
 			try {
-				r = getScriptRunner().eval("__engine__.registry.reflist", List.class);
+				r = getScriptRunner().callMethod("__getRefList", List.class, getEngine());
 			} catch (ScriptRunnerException e) {
 				throw new IllegalArgumentException("Could not get registered citation items", e);
 			}
@@ -475,7 +492,7 @@ public class TestSuiteRunner {
 		
 		public String makeCitationCluster(CSLCitationItem... citation) {
 			try {
-				return getScriptRunner().callMethod("__engine__",
+				return getScriptRunner().callMethod(getEngine(),
 						"makeCitationCluster", String.class, (Object)citation);
 			} catch (ScriptRunnerException e) {
 				throw new IllegalArgumentException("Could not make citation custer", e);
