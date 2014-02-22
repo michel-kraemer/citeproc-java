@@ -14,7 +14,7 @@
 
 package de.undercouch.citeproc.helper.json;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
+import static de.undercouch.citeproc.helper.StringHelper.escapeJava;
 
 import java.lang.reflect.Array;
 import java.util.Collection;

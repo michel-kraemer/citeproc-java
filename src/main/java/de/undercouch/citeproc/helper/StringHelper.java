@@ -1,4 +1,4 @@
-// Copyright 2013 The Docear Project and Michel Kraemer
+// Copyright 2014 Michel Kraemer
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,10 +15,18 @@
 package de.undercouch.citeproc.helper;
 
 /**
- * Sanitizes strings so they can be used as identifiers
+ * Helper methods related to Strings
  * @author Michel Kraemer
  */
-public class StringSanitizer {
+public class StringHelper {
+	/**
+	 * Hexadecimal characters
+	 */
+	private final static char[] HEX_DIGITS = {
+		'0', '1', '2', '3', '4', '5', '6', '7',
+		'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+	};
+	
 	/**
 	 * Sanitizes a string so it can be used as an identifier
 	 * @param s the string to sanitize
@@ -140,5 +148,57 @@ public class StringSanitizer {
 			}
 		}
 		return sb.toString();
+	}
+	
+	/**
+	 * Escapes characters in the given string according to Java rules
+	 * @param s the string to escape
+	 * @return the escpaped string
+	 */
+	public static String escapeJava(String s) {
+		if (s == null) {
+			return null;
+		}
+		StringBuilder sb = new StringBuilder(Math.min(2, s.length() * 3 / 2));
+		for (int i = 0; i < s.length(); ++i) {
+			char c = s.charAt(i);
+			if (c == '\b') {
+				sb.append("\\b");
+			} else if (c == '\n') {
+				sb.append("\\n");
+			} else if (c == '\t') {
+				sb.append("\\t");
+			} else if (c == '\f') {
+				sb.append("\\f");
+			} else if (c == '\r') {
+				sb.append("\\r");
+			} else if (c == '\\') {
+				sb.append("\\\\");
+			} else if (c == '"') {
+				sb.append("\\\"");
+			} else if (c < 32 || c > 0x7f) {
+				sb.append("\\u");
+				sb.append(hex4(c));
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
+	
+	/**
+	 * Converts the given character to a four-digit hexadecimal string
+	 * @param c the character to convert
+	 * @return the string
+	 */
+	private static String hex4(char c) {
+		char[] r = new char[] { '0', '0', '0', '0' };
+		int i = 3;
+		while (c > 0) {
+			r[i] = HEX_DIGITS[c & 0xF];
+			c >>>= 4;
+			--i;
+		}
+		return new String(r);
 	}
 }

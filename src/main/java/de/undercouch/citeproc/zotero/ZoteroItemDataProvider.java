@@ -25,7 +25,7 @@ import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLName;
-import de.undercouch.citeproc.helper.StringSanitizer;
+import de.undercouch.citeproc.helper.StringHelper;
 
 /**
  * A item data provider that translates Zotero IDs to human-readable
@@ -105,7 +105,7 @@ public class ZoteroItemDataProvider extends ListItemDataProvider {
 				}
 			}
 		}
-		a = StringSanitizer.sanitize(a);
+		a = StringHelper.sanitize(a);
 		
 		//try to get year
 		int year = getYear(item.getIssued(), dateParser);
