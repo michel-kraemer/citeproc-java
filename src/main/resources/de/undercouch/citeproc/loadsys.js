@@ -16,11 +16,11 @@ var Sys = function() {
 	this.abbrevsname = "default";
 };
 
-function __handleReturnValue__(val) {
+Sys.prototype.handleReturnValue = function(val) {
 	if (val == null) {
 		return null;
 	}
-	var ji = val.toJson(__scriptRunner__.createJsonBuilder());
+	var ji = val.toJson(this.scriptRunner.createJsonBuilder());
 	if (ji.hasOwnProperty('length')) {
 		return JSON.parse(ji);
 	}
@@ -28,7 +28,7 @@ function __handleReturnValue__(val) {
 }
 
 Sys.prototype.retrieveLocale = function(lang) {
-	var l = __localeProvider__.retrieveLocale(lang);
+	var l = this.localeProvider.retrieveLocale(lang);
 	if (l == null) {
 		return null;
 	}
@@ -36,11 +36,11 @@ Sys.prototype.retrieveLocale = function(lang) {
 };
 
 Sys.prototype.retrieveItem = function(id) {
-	return __handleReturnValue__(__itemDataProvider__.retrieveItem(id));
+	return this.handleReturnValue(this.itemDataProvider.retrieveItem(id));
 };
 
 Sys.prototype.getAbbreviation = function(styleID, abbrevs, name, category, orig, itemType) {
-	var r = __handleReturnValue__(__abbreviationProvider__.getAbbreviations(this.abbrevsname));
+	var r = this.handleReturnValue(this.abbreviationProvider.getAbbreviations(this.abbrevsname));
 	if (r == null) {
 		return;
 	}
@@ -55,4 +55,12 @@ Sys.prototype.setAbbreviations = function(name) {
 	this.abbrevsname = name;
 };
 
-Sys = new Sys();
+function makeCsl(style, lang, forceLang, scriptRunner, itemDataProvider,
+		localeProvider, abbreviationProvider) {
+	var sys = new Sys();
+	sys.scriptRunner = scriptRunner;
+	sys.itemDataProvider = itemDataProvider;
+	sys.localeProvider = localeProvider;
+	sys.abbreviationProvider = abbreviationProvider;
+	return new CSL.Engine(sys, style, lang, forceLang);
+}

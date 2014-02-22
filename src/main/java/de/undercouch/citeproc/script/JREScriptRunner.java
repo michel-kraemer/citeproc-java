@@ -18,6 +18,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
+import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -95,6 +96,19 @@ public class JREScriptRunner extends AbstractScriptRunner {
 	@Override
 	public JsonBuilder createJsonBuilder() {
 		return new StringJsonBuilder(this);
+	}
+	
+	@Override
+	public <T> T callMethod(String name, Class<T> resultType,
+			Object... args) throws ScriptRunnerException {
+		Invocable i = (Invocable)engine;
+		try {
+			return convert(i.invokeFunction(name, args), resultType);
+		} catch (NoSuchMethodException e) {
+			throw new ScriptRunnerException("Could not call method", e);
+		} catch (ScriptException e) {
+			throw new ScriptRunnerException("Could not call method", e);
+		}
 	}
 	
 	@Override

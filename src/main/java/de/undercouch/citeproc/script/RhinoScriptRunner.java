@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
 import org.mozilla.javascript.GeneratedClassLoader;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Script;
@@ -206,6 +207,21 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	@Override
 	public JsonBuilder createJsonBuilder() {
 		return new RhinoJsonBuilder(scope, this);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T callMethod(String name, Class<T> resultType, Object... args)
+			throws ScriptRunnerException {
+		Context context = Context.enter();
+		try {
+			Function f = (Function)ScriptableObject.getProperty(scope, name);
+			return (T)f.call(context, scope, null, convertArguments(args));
+		} catch (RhinoException e) {
+			throw new ScriptRunnerException("Could not call method", e);
+		} finally {
+			Context.exit();
+		}
 	}
 	
 	@Override

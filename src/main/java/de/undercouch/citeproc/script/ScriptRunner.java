@@ -82,6 +82,18 @@ public interface ScriptRunner extends JsonBuilderFactory {
 	void eval(Reader reader) throws ScriptRunnerException, IOException;
 	
 	/**
+	 * Calls a top-level method
+	 * @param <T> the type of the return value
+	 * @param name the method's name
+	 * @param resultType the expected type of the return value
+	 * @param args the arguments
+	 * @return the return value
+	 * @throws ScriptRunnerException if the method could not be called
+	 */
+	<T> T callMethod(String name, Class<T> resultType, Object... args)
+			throws ScriptRunnerException;
+	
+	/**
 	 * Calls an object's method
 	 * @param <T> the type of the return value
 	 * @param obj the object's name

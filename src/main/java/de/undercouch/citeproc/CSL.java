@@ -157,12 +157,6 @@ public class CSL {
 		//create JavaScript runner
 		runner = ScriptRunnerFactory.createRunner();
 		
-		//initialize global variables
-		runner.put("__scriptRunner__", runner);
-		runner.put("__itemDataProvider__", itemDataProvider);
-		runner.put("__localeProvider__", localeProvider);
-		runner.put("__abbreviationProvider__", abbreviationProvider);
-		
 		//load bundles scripts
 		try {
 			if (runner.supportsE4X()) {
@@ -186,8 +180,10 @@ public class CSL {
 		
 		//initialize engine
 		try {
-			runner.eval("var __engine__ = new CSL.Engine(Sys, \"" + escapeJava(style) + "\", \"" +
-					escapeJava(lang) + "\", " + forceLang + ");");
+			Object engine = runner.callMethod("makeCsl", Object.class,
+					style, lang, forceLang, runner, itemDataProvider,
+					localeProvider, abbreviationProvider);
+			runner.put("__engine__", engine);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not parse arguments", e);
 		}
