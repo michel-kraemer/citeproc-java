@@ -37,8 +37,8 @@ import de.undercouch.citeproc.helper.json.JsonBuilder;
  * @author Michel Kraemer
  */
 public class RhinoScriptRunner extends AbstractScriptRunner {
-	private static Map<URL, Script> compiledScripts =
-			new ConcurrentHashMap<URL, Script>();
+	private static Map<String, Script> compiledScripts =
+			new ConcurrentHashMap<String, Script>();
 	
 	private final Scriptable scope;
 	
@@ -103,7 +103,8 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	@Override
 	public void loadScript(URL url) throws IOException, ScriptRunnerException {
 		//try to load a previously compiled script
-		Script s = compiledScripts.get(url);
+		String ustr = url.toString();
+		Script s = compiledScripts.get(ustr);
 		if (s != null) {
 			Context context = Context.enter();
 			try {
@@ -135,7 +136,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 					s = (Script)clazz.newInstance();
 					
 					//cache compile script
-					compiledScripts.put(url, s);
+					compiledScripts.put(ustr, s);
 					
 					s.exec(context, scope);
 					return;
