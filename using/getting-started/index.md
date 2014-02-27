@@ -6,11 +6,11 @@ nexttitle: Building
 ---
 
 Generally, citeproc-java runs on JRE 6 or higher. However, JRE 7 or higher is
-preferred due to the following reasons.
+preferred for the following reasons.
 
 The library wraps around [citeproc-js](https://bitbucket.org/fbennett/citeproc-js/wiki/Home).
 It executes this JavaScript library through the Java Scripting API.
-Out of the box citeproc-java runs on all systems with a JRE 7 or higher installed.
+Out of the box, citeproc-java runs on all systems with a JRE 7 or higher installed.
 
 Although the JRE 6 is bundled with the [Rhino JavaScript engine](https://developer.mozilla.org/de/docs/Rhino) it lacks
 support for E4X (ECMAScript for XML) which is needed by citeproc-java. However,
@@ -36,12 +36,18 @@ import de.undercouch.citeproc.csl.CSLType;
 public class DummyProvider implements ItemDataProvider {
     @Override
     public CSLItemData retrieveItem(String id) {
-        return new CSLItemDataBuilder(id, CSLType.ARTICLE_JOURNAL)
+        return new CSLItemDataBuilder()
+            .id(id)
+            .type(CSLType.ARTICLE_JOURNAL)
             .title("A dummy journal article")
             .author("John", "Smith")
             .issued(2013, 9, 6)
             .containerTitle("Dummy journal")
             .build();
+    }
+    public String[] getIds() {
+        String ids[] = {"ID-0", "ID-1", "ID-2"};
+        return ids;
     }
 }
 {% endhighlight %}
@@ -74,7 +80,7 @@ items, call the `registerCitationItems(String...)` method to
 introduce the item IDs to the processor.
 
 {% highlight java %}
-citeproc.registerCitationItems("ID-1", "ID-2", "ID-3", ...);
+citeproc.registerCitationItems("ID-1", "ID-2", "ID-3");
 {% endhighlight %}
 
 The processor will request the corresponding citation item data
@@ -84,12 +90,15 @@ Alternatively, you can call `makeCitation(String)` to generate
 citation strings that you can insert into your document.
 
 {% highlight java %}
-String s1 = citeproc.makeCitation("ID-1");
-System.out.println(s1)
-//=> [1] for the "ieee" style
+import de.undercouch.citeproc.output.Citation;
+import java.util.List;
 
-String s2 = citeproc.makeCitation("ID-1");
-System.out.println(s2)
+List<Citation> s1 = citeproc.makeCitation("ID-1");
+System.out.println(s1.get(0).getText());
+//=> [1] (for the "ieee" style)
+
+List<Citation> s2 = citeproc.makeCitation("ID-2");
+System.out.println(s2.get(0).getText());
 //=> [2]
 {% endhighlight %}
 
