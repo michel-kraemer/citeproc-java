@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 import org.junit.Test;
@@ -37,7 +38,8 @@ public class OptionParserTest {
 				.build();
 		
 		@Override
-		public int run(String[] args, PrintStream out) throws OptionParserException {
+		public int run(String[] args, InputReader in, PrintWriter out)
+				throws OptionParserException {
 			//should not throw
 			OptionParser.Result<Integer> r = OptionParser.parse(args, options, null);
 			assertEquals(0, r.getRemainingArgs().length);
@@ -83,7 +85,7 @@ public class OptionParserTest {
 		assertEquals(1, values.size());
 		assertEquals(0, values.get(0).getId().intValue());
 		assertArrayEquals(new String[] { "--arg1", "--arg2" }, result.getRemainingArgs());
-		new SimpleCommand().run(result.getRemainingArgs(), null);
+		new SimpleCommand().run(result.getRemainingArgs(), null, null);
 	}
 	
 	/**

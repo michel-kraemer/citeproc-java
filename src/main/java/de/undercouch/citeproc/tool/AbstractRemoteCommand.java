@@ -15,11 +15,9 @@
 package de.undercouch.citeproc.tool;
 
 import java.awt.Desktop;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +30,7 @@ import de.undercouch.citeproc.helper.oauth.AuthenticationStore;
 import de.undercouch.citeproc.helper.oauth.FileAuthenticationStore;
 import de.undercouch.citeproc.helper.oauth.RequestException;
 import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
+import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.helper.tool.internal.CachingRemoteConnector;
 import de.undercouch.citeproc.remote.AuthenticatedRemoteConnector;
@@ -72,23 +71,24 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 	}
 	
 	@Override
-	public int doRun(String[] remainingArgs, PrintStream out)
+	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
 			throws OptionParserException, IOException {
-		ItemDataProvider provider = connect(sync);
+		ItemDataProvider provider = connect(sync, in);
 		if (provider == null) {
 			return 1;
 		}
 		subcommand.setProvider(provider);
-		return subcommand.run(remainingArgs, out);
+		return subcommand.run(remainingArgs, in, out);
 	}
 	
 	/**
 	 * Reads items from the remote server
 	 * @param sync true if synchronization should be forced
+	 * @param in a stream from which user input can be read
 	 * @return an item data provider providing all items from the
 	 * remote server
 	 */
-	private ItemDataProvider connect(boolean sync) {
+	private ItemDataProvider connect(boolean sync, InputReader in) {
 		//read app's consumer key and secret
 		String[] consumer;
 		try {
@@ -187,7 +187,7 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 				
 				//app is not authenticated yet
 				System.out.print("\r"); //overwrite 'Retrieving items' message
-				if (!authorize(mc)) {
+				if (!authorize(mc, in)) {
 					return null;
 				}
 				
@@ -239,9 +239,10 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 	/**
 	 * Request authorization for the tool from remote server
 	 * @param mc the remote connector
+	 * @param in a stream from which user input can be read
 	 * @return true if authorization was successful
 	 */
-	private boolean authorize(RemoteConnector mc) {
+	private boolean authorize(RemoteConnector mc, InputReader in) {
 		//get authorization URL
 		String authUrl;
 		try {
@@ -270,11 +271,9 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 		}
 		
 		//read verification code from console
-		System.out.print("Enter verification code: ");
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String verificationCode;
 		try {
-			verificationCode = br.readLine();
+			verificationCode = in.readLine("Enter verification code: ");
 		} catch (IOException e) {
 			throw new RuntimeException("Could not read from console.");
 		}

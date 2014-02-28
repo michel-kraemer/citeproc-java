@@ -15,9 +15,10 @@
 package de.undercouch.citeproc.tool;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import de.undercouch.citeproc.helper.tool.Command;
+import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 
 /**
@@ -46,12 +47,13 @@ public interface CSLToolCommand extends Command {
 	 * Runs the command
 	 * @param remainingArgs arguments that have not been parsed yet, can
 	 * be forwarded to subcommands
+	 * @param in a stream from which user input can be read
 	 * @param out a stream to write the output to
 	 * @return the exit code
 	 * @throws OptionParserException if the remaining arguments could not be parsed
 	 * @throws IOException if input files could not be read or the output
 	 * stream could not be written
 	 */
-	int doRun(String[] remainingArgs, PrintStream out)
+	int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
 			throws OptionParserException, IOException;
 }

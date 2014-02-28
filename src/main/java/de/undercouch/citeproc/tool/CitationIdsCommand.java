@@ -15,7 +15,7 @@
 package de.undercouch.citeproc.tool;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,6 +23,7 @@ import java.util.List;
 
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.helper.Levenshtein;
+import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.UnknownAttributes;
 
 /**
@@ -50,7 +51,8 @@ public abstract class CitationIdsCommand extends AbstractCSLToolCommand implemen
 	}
 	
 	@Override
-	public int doRun(String[] remainingArgs, PrintStream out) throws IOException {
+	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
+			throws IOException {
 		//check provided citation ids
 		if (!checkCitationIds(citationIds, getProvider())) {
 			return 1;

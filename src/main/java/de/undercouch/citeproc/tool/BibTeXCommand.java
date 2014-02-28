@@ -16,11 +16,12 @@ package de.undercouch.citeproc.tool;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 import de.undercouch.citeproc.bibtex.AuxFile;
 import de.undercouch.citeproc.bibtex.AuxFileParser;
+import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.helper.tool.UnknownAttributes;
@@ -78,7 +79,7 @@ public class BibTeXCommand extends AbstractCSLToolCommand {
 	}
 
 	@Override
-	public int doRun(String[] remainingArgs, PrintStream out)
+	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
 			throws OptionParserException, IOException {
 		//currently only simple mode is implemented
 		simpleMode = true;
@@ -113,7 +114,7 @@ public class BibTeXCommand extends AbstractCSLToolCommand {
 			InputFileCommand ifc = new InputFileCommand(bc);
 			ifc.setInput(input);
 			
-			return ifc.run(remainingArgs, out);
+			return ifc.run(remainingArgs, in, out);
 		}
 		
 		return 1;

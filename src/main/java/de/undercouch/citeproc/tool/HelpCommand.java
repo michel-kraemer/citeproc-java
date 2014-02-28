@@ -15,12 +15,13 @@
 package de.undercouch.citeproc.tool;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
+import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.helper.tool.UnknownAttributes;
 
@@ -51,13 +52,13 @@ public class HelpCommand extends AbstractCSLToolCommand {
 	}
 
 	@Override
-	public int doRun(String[] remainingArgs, PrintStream out)
+	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
 			throws OptionParserException, IOException {
 		//simply forward commands to CSLTool and append '-h'
 		Command cmd = new CSLTool();
 		String[] args = commands.toArray(new String[commands.size() + 1]);
 		args[args.length - 1] = "-h";
-		cmd.run(args, out);
+		cmd.run(args, in, out);
 		return 1;
 	}
 }

@@ -20,7 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +39,7 @@ import de.undercouch.citeproc.endnote.EndNoteLibrary;
 import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.helper.tool.Command;
+import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
@@ -136,7 +137,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 	}
 
 	@Override
-	public int doRun(String[] remainingArgs, PrintStream out)
+	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
 			throws OptionParserException, IOException {
 		//load input bibliography
 		ItemDataProvider provider = readBibliographyFile(input);
@@ -145,7 +146,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 		}
 		
 		delegate.setProvider(provider);
-		return delegate.doRun(remainingArgs, out);
+		return delegate.doRun(remainingArgs, in, out);
 	}
 	
 	/**

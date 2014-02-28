@@ -1,4 +1,4 @@
-// Copyright 2013 Michel Kraemer
+// Copyright 2014 Michel Kraemer
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,23 +15,17 @@
 package de.undercouch.citeproc.helper.tool;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
- * A command line interface command
+ * Reads input from the user
  * @author Michel Kraemer
  */
-public interface Command {
+public interface InputReader {
 	/**
-	 * Executes the command
-	 * @param args the command's arguments
-	 * @param in a stream from which user input can be read
-	 * @param out a stream to write the output to
-	 * @return the command's exit code
-	 * @throws OptionParserException if the arguments could not be parsed
-	 * @throws IOException if input files could not be read or the output
-	 * stream could not be written
+	 * Reads a line that the user enters
+	 * @param prompt the prompt to display to the user (may be null)
+	 * @return the line without line delimiters
+	 * @throws IOException if an I/O error occurs
 	 */
-	int run(String[] args, InputReader in, PrintWriter out)
-			throws OptionParserException, IOException;
+	String readLine(String prompt) throws IOException;
 }

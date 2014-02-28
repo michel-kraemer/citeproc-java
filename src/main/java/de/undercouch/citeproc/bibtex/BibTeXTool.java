@@ -15,8 +15,10 @@
 package de.undercouch.citeproc.bibtex;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import de.undercouch.citeproc.CSLTool;
+import de.undercouch.citeproc.helper.tool.StandardInputReader;
 import de.undercouch.citeproc.helper.tool.OptionBuilder;
 import de.undercouch.citeproc.helper.tool.OptionGroup;
 import de.undercouch.citeproc.helper.tool.OptionParser;
@@ -110,7 +112,8 @@ public class BibTeXTool {
 				return 0;
 			
 			case VERSION:
-				cslTool.run(new String[] { "-V" }, System.out);
+				cslTool.run(new String[] { "-V" }, new StandardInputReader(),
+						new PrintWriter(System.out));
 				return 0;
 			
 			case AUXFILE:
@@ -126,7 +129,8 @@ public class BibTeXTool {
 		bblfile = bblfile + ".bbl";
 		
 		return cslTool.run(new String[] { "-o", bblfile, "bibtex",
-				"--simple", auxfile }, System.out);
+				"--simple", auxfile }, new StandardInputReader(),
+				new PrintWriter(System.out));
 	}
 	
 	/**

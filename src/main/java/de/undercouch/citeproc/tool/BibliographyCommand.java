@@ -17,7 +17,7 @@ package de.undercouch.citeproc.tool;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -32,6 +32,7 @@ import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.helper.Levenshtein;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
+import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.output.Bibliography;
 
@@ -180,8 +181,9 @@ public class BibliographyCommand extends CitationIdsCommand {
 	}
 	
 	@Override
-	public int doRun(String[] remainingArgs, PrintStream out) throws IOException {
-		int ret = super.doRun(remainingArgs, out);
+	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
+			throws IOException {
+		int ret = super.doRun(remainingArgs, in, out);
 		if (ret != 0) {
 			return ret;
 		}
@@ -204,7 +206,7 @@ public class BibliographyCommand extends CitationIdsCommand {
 	 */
 	private int generateCSL(String style, String locale, String format,
 			List<String> citationIds, ItemDataProvider provider,
-			PrintStream out) throws IOException {
+			PrintWriter out) throws IOException {
 		if (!checkStyle(style)) {
 			return 1;
 		}
@@ -243,7 +245,7 @@ public class BibliographyCommand extends CitationIdsCommand {
 	 * should be generated (the CSL processor should already be prepared)
 	 * @param out the stream to write the result to
 	 */
-	protected void doGenerateCSL(CSL citeproc, String[] citationIds, PrintStream out) {
+	protected void doGenerateCSL(CSL citeproc, String[] citationIds, PrintWriter out) {
 		Bibliography bibl = citeproc.makeBibliography();
 		out.println(bibl.makeString());
 	}

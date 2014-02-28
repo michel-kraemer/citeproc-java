@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 import org.junit.Test;
@@ -52,7 +52,7 @@ public class OptionIntrospectorTest {
 		}
 
 		@Override
-		public int run(String[] args, PrintStream out)
+		public int run(String[] args, InputReader in, PrintWriter out)
 				throws OptionParserException, IOException {
 			return 0;
 		}

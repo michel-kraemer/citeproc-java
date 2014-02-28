@@ -15,13 +15,14 @@
 package de.undercouch.citeproc.tool;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import de.undercouch.citeproc.ItemDataProvider;
+import de.undercouch.citeproc.helper.tool.InputReader;
 
 /**
  * CLI command that lists items from an input bibliography
@@ -44,7 +45,8 @@ public class ListCommand extends AbstractCSLToolCommand implements ProviderComma
 	}
 	
 	@Override
-	public int doRun(String[] remainingArgs, PrintStream out) throws IOException {
+	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
+			throws IOException {
 		//list available citation ids and exit
 		List<String> ids = new ArrayList<String>(Arrays.asList(getProvider().getIds()));
 		Collections.sort(ids);

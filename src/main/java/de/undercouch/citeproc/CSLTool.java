@@ -16,12 +16,14 @@ package de.undercouch.citeproc;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.URL;
 
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.tool.CommandDesc;
 import de.undercouch.citeproc.helper.tool.CommandDescList;
+import de.undercouch.citeproc.helper.tool.StandardInputReader;
+import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
@@ -36,6 +38,7 @@ import de.undercouch.citeproc.tool.JsonCommand;
 import de.undercouch.citeproc.tool.ListCommand;
 import de.undercouch.citeproc.tool.MendeleyCommand;
 import de.undercouch.citeproc.tool.ProviderCommand;
+import de.undercouch.citeproc.tool.ShellCommand;
 import de.undercouch.citeproc.tool.ZoteroCommand;
 
 /**
@@ -102,6 +105,9 @@ public class CSLTool extends AbstractCSLToolCommand {
 		@CommandDesc(longName = "bibtex",
 				description = "generate a LaTeX bibliography",
 				command = BibTeXCommand.class),
+		@CommandDesc(longName = "shell",
+				description = "run citeproc-java in interactive mode",
+				command = ShellCommand.class),
 		@CommandDesc(longName = "help",
 				description = "display help for a given command",
 				command = HelpCommand.class)
@@ -127,7 +133,8 @@ public class CSLTool extends AbstractCSLToolCommand {
 			CSLTool tool = new CSLTool();
 			int exitCode;
 			try {
-				exitCode = tool.run(args, System.out);
+				exitCode = tool.run(args, new StandardInputReader(),
+						new PrintWriter(System.out));
 			} catch (OptionParserException e) {
 				tool.error(e.getMessage());
 				exitCode = 1;
@@ -141,7 +148,7 @@ public class CSLTool extends AbstractCSLToolCommand {
 	}
 
 	@Override
-	public int doRun(String[] remainingArgs, PrintStream out)
+	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
 			throws OptionParserException, IOException {
 		if (displayVersion) {
 			version();
@@ -160,11 +167,11 @@ public class CSLTool extends AbstractCSLToolCommand {
 		
 		//prepare output
 		if (outputFile != null) {
-			out = new PrintStream(outputFile, "UTF-8");
+			out = new PrintWriter(outputFile, "UTF-8");
 		}
 		
 		try {
-			int ret = command.run(remainingArgs, out);
+			int ret = command.run(remainingArgs, in, out);
 			out.flush();
 			return ret;
 		} finally {

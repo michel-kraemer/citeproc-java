@@ -15,7 +15,7 @@
 package de.undercouch.citeproc.tool;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +23,7 @@ import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.StringJsonBuilderFactory;
+import de.undercouch.citeproc.helper.tool.InputReader;
 
 /**
  * CLI command that converts input bibliographies to JSON files
@@ -40,8 +41,9 @@ public class JsonCommand extends CitationIdsCommand {
 	}
 
 	@Override
-	public int doRun(String[] remainingArgs, PrintStream out) throws IOException {
-		int ret = super.doRun(remainingArgs, out);
+	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
+			throws IOException {
+		int ret = super.doRun(remainingArgs, in, out);
 		if (ret != 0) {
 			return ret;
 		}
@@ -59,7 +61,7 @@ public class JsonCommand extends CitationIdsCommand {
 	 * @param out the print stream to write the output to
 	 */
 	private void generateJSON(List<String> citationIds, ItemDataProvider provider,
-			PrintStream out) {
+			PrintWriter out) {
 		StringJsonBuilderFactory factory = new StringJsonBuilderFactory();
 		//create an array of citation item data objects (either for
 		//the whole bibliography or for the given citation ids only)

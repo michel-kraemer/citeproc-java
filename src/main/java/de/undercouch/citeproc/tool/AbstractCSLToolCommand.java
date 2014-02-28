@@ -16,10 +16,11 @@ package de.undercouch.citeproc.tool;
 
 import java.beans.IntrospectionException;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 
 import de.undercouch.citeproc.helper.tool.Command;
+import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.helper.tool.OptionGroup;
 import de.undercouch.citeproc.helper.tool.OptionIntrospector;
@@ -75,7 +76,8 @@ public abstract class AbstractCSLToolCommand implements Command, CSLToolCommand 
 	}
 	
 	@Override
-	public int run(String[] args, PrintStream out) throws OptionParserException, IOException {
+	public int run(String[] args, InputReader in, PrintWriter out)
+			throws OptionParserException, IOException {
 		if (options == null) {
 			try {
 				options = OptionIntrospector.introspect(getClassesToIntrospect());
@@ -108,7 +110,7 @@ public abstract class AbstractCSLToolCommand implements Command, CSLToolCommand 
 			return 1;
 		}
 		
-		return doRun(parsedOptions.getRemainingArgs(), out);
+		return doRun(parsedOptions.getRemainingArgs(), in, out);
 	}
 	
 	/**
@@ -138,6 +140,6 @@ public abstract class AbstractCSLToolCommand implements Command, CSLToolCommand 
 	}
 	
 	@Override
-	public abstract int doRun(String[] remainingArgs, PrintStream out)
-			throws OptionParserException, IOException;
+	public abstract int doRun(String[] remainingArgs, InputReader in,
+			PrintWriter out) throws OptionParserException, IOException;
 }
