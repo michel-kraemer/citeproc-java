@@ -43,9 +43,8 @@ public class CSLDateParser {
 	
 	/**
 	 * Creates a new date parser
-	 * @throws IOException if the underlying JavaScript files could not be loaded
 	 */
-	public CSLDateParser() throws IOException {
+	public CSLDateParser() {
 		//create JavaScript runner
 		runner = ScriptRunnerFactory.createRunner();
 		
@@ -61,6 +60,8 @@ public class CSLDateParser {
 						"return p; }"
 			));
 			runner.loadScript(getClass().getResource("dateparser.js"));
+		} catch (IOException e) {
+			//should never happen because bundled JavaScript files should be readable indeed
 		} catch (ScriptRunnerException e) {
 			//should never happen because bundled JavaScript files should be OK indeed
 			throw new RuntimeException("Invalid bundled javascript file", e);

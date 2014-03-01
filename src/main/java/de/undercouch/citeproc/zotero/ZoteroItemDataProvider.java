@@ -14,7 +14,6 @@
 
 package de.undercouch.citeproc.zotero;
 
-import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -51,12 +50,7 @@ public class ZoteroItemDataProvider extends ListItemDataProvider {
 		Set<String> knownIds = new LinkedHashSet<String>();
 		
 		//create a date parser which will be used to get the item's year
-		CSLDateParser dateParser;
-		try {
-			dateParser = new CSLDateParser();
-		} catch (IOException e) {
-			throw new IllegalStateException("Could not initialize date parser");
-		}
+		CSLDateParser dateParser = new CSLDateParser();
 		
 		//iterate through all items
 		String[] ids = provider.getIds();
