@@ -14,6 +14,7 @@
 
 package $pkg;
 
+import java.util.Arrays;
 import java.util.Map;
 
 <% if (!noJsonObject) { %>
@@ -243,4 +244,45 @@ public class $name <% if (!noJsonObject) { %>implements JsonObject<% } %> {
 	<% } %>
 	
 	${additionalMethods.join('\n')}
+	
+	@Override
+	public int hashCode() {
+		int result = 1;
+		
+		<% for (p in props) { %>result = 31 * result + <% if (p.arrayArrayType) { %>Arrays.deepHashCode(${p.normalizedName});<% } else
+			if (p.arrayType) { %>Arrays.hashCode(${p.normalizedName});<% } else {
+			%>((${p.normalizedName} == null) ? 0 : ${p.normalizedName}.hashCode());<% } %>
+		<% } %>
+		
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof $name))
+			return false;
+		$name other = ($name) obj;
+		
+		<% for (p in props) { %>
+			<% if (p.arrayArrayType) { %>
+				if (!Arrays.deepEquals(${p.normalizedName}, other.${p.normalizedName}))
+					return false;
+			<% } else if (p.arrayType) { %>
+				if (!Arrays.equals(${p.normalizedName}, other.${p.normalizedName}))
+					return false;
+			<% } else { %>
+				if (${p.normalizedName} == null) {
+					if (other.${p.normalizedName} != null)
+						return false;
+				} else if (!${p.normalizedName}.equals(other.${p.normalizedName}))
+					return false;
+			<% } %>
+		<% } %>
+		
+		return true;
+	}
 }
