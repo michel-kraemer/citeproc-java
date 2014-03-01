@@ -162,6 +162,9 @@ javadoc {
     //exclude internal packages
     exclude '**/internal/**'
     
+    //exclude tool from public API
+    exclude '**/de/undercouch/citeproc/tool/**'
+    
     //link to JRE6 documentation
     options.author true
     options.links 'http://download.oracle.com/javase/6/docs/api/'
