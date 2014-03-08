@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.helper.tool.internal;
+package de.undercouch.citeproc.helper.tool;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.json.JsonLexer;
@@ -35,14 +36,12 @@ import de.undercouch.citeproc.remote.RemoteConnector;
 import de.undercouch.citeproc.remote.RemoteConnectorAdapter;
 
 /**
- * <p>A {@link de.undercouch.citeproc.remote.RemoteConnector} that caches
- * items read from the server.</p>
- * <p>Note: if MapDB is in the classpath this class uses a disk cache.
- * Otherwise it just caches items in memory.</p>
+ * A {@link de.undercouch.citeproc.remote.RemoteConnector} that caches
+ * items read from the server.
  * @author Michel Kraemer
  */
 public class CachingRemoteConnector extends RemoteConnectorAdapter {
-	private final Object _db;
+	private final DB _db;
 	private final Set<String> _itemIds;
 	private final Map<String, String> _items;
 	
@@ -53,45 +52,31 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 	 * @param delegate the underlying connector
 	 * @param cacheFile a file used to cache items
 	 */
-	@SuppressWarnings("unchecked")
 	public CachingRemoteConnector(RemoteConnector delegate, File cacheFile) {
 		super(delegate);
 		
-		Object db = null;
+		DB db = null;
 		Set<String> itemIds = null;
 		Map<String, String> items = null;
 		int retry = 2;
 		while (retry >= 1) {
 			try {
-				//use reflection to get a disk-based cache
-				Class<?> dbMakerClass = CachingRemoteConnector.class
-						.getClassLoader().loadClass("org.mapdb.DBMaker");
+				DBMaker<?> dbMaker = DBMaker.newFileDB(cacheFile);
+				dbMaker.closeOnJvmShutdown();
+				db = dbMaker.make();
 				
-				Method newFileDB = dbMakerClass.getMethod("newFileDB", File.class);
-				Object dbMaker = newFileDB.invoke(null, cacheFile);
-				Method closeOnJvmShutdown = dbMakerClass.getMethod("closeOnJvmShutdown");
-				closeOnJvmShutdown.invoke(dbMaker);
-				Method make = dbMakerClass.getMethod("make");
-				db = make.invoke(dbMaker);
-				
-				Class<?> dbClass = db.getClass();
-				Method getTreeSet = dbClass.getMethod("getTreeSet", String.class);
-				itemIds = (Set<String>)getTreeSet.invoke(db, "itemIds");
-				Method getHashMap = dbClass.getMethod("getHashMap", String.class);
-				items = (Map<String, String>)getHashMap.invoke(db, "items");
+				itemIds = db.getTreeSet("itemIds");
+				items = db.getHashMap("items");
 				
 				break;
 			} catch (Exception e) {
 				--retry;
-				if (e instanceof InvocationTargetException && retry == 1 &&
-						cacheFile.exists()) {
+				if (retry == 1 && cacheFile.exists()) {
 					//unable to open disk cache. remove it and try again.
 					try {
 						//close db first
 						if (db != null) {
-							Class<?> dbClass = db.getClass();
-							Method close = dbClass.getMethod("close");
-							close.invoke(db);
+							db.close();
 							db = null;
 						}
 					} catch (Throwable t) {
@@ -260,8 +245,7 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 		}
 		
 		try {
-			Method m = _db.getClass().getMethod("commit");
-			m.invoke(_db);
+			_db.commit();
 		} catch (Exception e) {
 			throw new IllegalStateException("Could not commit transaction", e);
 		}
@@ -275,8 +259,7 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 			return;
 		}
 		try {
-			Method m = _db.getClass().getMethod("rollback");
-			m.invoke(_db);
+			_db.rollback();
 		} catch (Exception e) {
 			throw new IllegalStateException("Could not roll back transaction", e);
 		}
