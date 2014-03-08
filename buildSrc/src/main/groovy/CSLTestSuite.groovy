@@ -19,13 +19,13 @@ import org.python.core.PyString
 import org.python.core.PySystemState
 import org.python.util.PythonInterpreter
 
-class TestSuite {
+class CSLTestSuite {
     private def project
     private def cl
     private def processorPyFile
     private def testFiles
     
-    TestSuite(project, zip, citeprocZip) {
+    CSLTestSuite(project, zip, citeprocZip) {
         this.project = project
         
         def zipFiles = project.zipTree(zip)

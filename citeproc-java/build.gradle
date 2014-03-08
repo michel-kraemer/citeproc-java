@@ -92,7 +92,7 @@ task downloadTestSuite(type: Download) {
 }
 
 task runTestSuite(dependsOn: [ downloadCiteprocJsZip, downloadTestSuite, testClasses ]) << {
-    def tr = new TestSuite(project, new File(buildDir, 'test-suite/' + citeprocTestSuiteZip),
+    def tr = new CSLTestSuite(project, new File(buildDir, 'test-suite/' + citeprocTestSuiteZip),
         new File(buildDir, 'test-suite/' + citeprocJsZip))
     tr.compile()
     tr.fix()
