@@ -47,7 +47,7 @@ class SourceGenerator {
     
     private def renderTemplate(template, attrs, dst, outName) {
         def e = new GStringTemplateEngine()
-        def t = e.createTemplate(new File('templates', template)).make(attrs)
+        def t = e.createTemplate(new File(project.projectDir, "templates/$template")).make(attrs)
         def r = t.toString()
         
         def options = [
@@ -84,7 +84,7 @@ class SourceGenerator {
     
     private def renderTemplatesInternal(name, dst, type = false) {
         def om = new ObjectMapper()
-        def attrs = om.readValue(new File('templates', "${name}.json"), Map)
+        def attrs = om.readValue(new File(project.projectDir, "templates/${name}.json"), Map)
         
         if (attrs.props != null) {
             attrs.requiredProps = []
@@ -155,7 +155,7 @@ class SourceGenerator {
     
     private def renderParserTemplate(name, dst) {
         def om = new ObjectMapper()
-        def attrs = om.readValue(new File('templates', "${name}.json"), Map)
+        def attrs = om.readValue(new File(project.projectDir, "templates/${name}.json"), Map)
         
         addFunctionsToAttrs(attrs)
         
@@ -169,7 +169,7 @@ class SourceGenerator {
     }
     
     private def renderGrammar(name, dst) {
-        def filename = "grammars/${name}.g4"
+        def filename = new File(project.projectDir, "grammars/${name}.g4").absolutePath
         def tool = new Tool()
         tool.outputDirectory = dst
         tool.haveOutputDir = true
@@ -181,7 +181,7 @@ class SourceGenerator {
     }
     
     def renderTemplates() {
-        def dst = new File('src-gen/main/java')
+        def dst = new File(project.projectDir, 'src-gen/main/java')
         dst.mkdirs()
         
         renderTemplatesInternal('CSLType', dst, true)
@@ -209,7 +209,7 @@ class SourceGenerator {
     }
     
     def renderGrammars() {
-        def dst = new File('src-gen/main/java')
+        def dst = new File(project.projectDir, 'src-gen/main/java')
         dst.mkdirs()
         
         renderGrammar('InternalName', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
@@ -217,8 +217,8 @@ class SourceGenerator {
     }
     
     def filterScripts() {
-        def src = new File('src-gen/main/resources/de/undercouch/citeproc/citeproc.js')
-        def dst = new File('src-gen/main/resources/de/undercouch/citeproc/dateparser.js')
+        def src = new File(project.projectDir, 'src-gen/main/resources/de/undercouch/citeproc/citeproc.js')
+        def dst = new File(project.projectDir, 'src-gen/main/resources/de/undercouch/citeproc/dateparser.js')
         filterScript(src, dst, 'CSL.DateParser = function () {', '};')
     }
     
@@ -244,12 +244,12 @@ class SourceGenerator {
     }
     
     def compileScripts() {
-        compileScriptsFrom('src/main/resources/de/undercouch/citeproc')
-        compileScriptsFrom('src-gen/main/resources/de/undercouch/citeproc')
+        compileScriptsFrom(new File(project.projectDir, 'src/main/resources/de/undercouch/citeproc'))
+        compileScriptsFrom(new File(project.projectDir, 'src-gen/main/resources/de/undercouch/citeproc'))
     }
     
     def compileScriptsFrom(src) {
-        def dstRes = new File('src-gen/main/resources')
+        def dstRes = new File(project.projectDir, 'src-gen/main/resources')
         for (s in project.fileTree(dir: src, include: '*.js')) {
             org.mozilla.javascript.tools.jsc.Main.main([ '-opt', '9',
                 '-package', 'de.undercouch.citeproc', '-nosource', '-encoding', 'UTF-8',
@@ -262,7 +262,7 @@ class SourceGenerator {
     }
     
     def generateVersionFile() {
-        def dstRes = new File('src-gen/main/resources')
+        def dstRes = new File(project.projectDir, 'src-gen/main/resources')
         def versionFile = new File(dstRes, 'de/undercouch/citeproc/version.dat')
         versionFile.withWriter { w ->
             w << project.version

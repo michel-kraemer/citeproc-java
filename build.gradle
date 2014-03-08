@@ -1,271 +1,48 @@
-buildscript {
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'osgi'
+    apply plugin: 'eclipse'
+    
+    version = '0.6'
+    group = 'de.undercouch'
+    sourceCompatibility = '1.6'
+    targetCompatibility = '1.6'
+    
     repositories {
         mavenCentral()
+        maven {
+            url 'https://oss.sonatype.org/content/groups/public'
+        }
     }
+    
     dependencies {
-        classpath 'de.undercouch:gradle-download-task:0.5'
-    }
-}
-
-apply plugin: 'maven'
-apply plugin: 'osgi'
-apply plugin: 'signing'
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'application'
-
-import de.undercouch.gradle.tasks.download.Download
-
-version = '0.6'
-group = 'de.undercouch'
-sourceCompatibility = '1.6'
-targetCompatibility = '1.6'
-
-mainClassName = 'de.undercouch.citeproc.CSLTool'
-
-ext.citeprocProjectBase = 'https://bitbucket.org/fbennett/citeproc-js/'
-ext.citeprocJsUrlBase = ext.citeprocProjectBase + 'raw/d17472a8106afa5169ce0ac13723dfc827d5d663/'
-ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
-ext.xmldomJsUrl = ext.citeprocJsUrlBase + 'xmldom.js'
-ext.xmle4xJsUrl = ext.citeprocJsUrlBase + 'xmle4x.js'
-ext.citeprocJsZip = '1.0.508.zip'
-ext.citeprocJsZipUrl = ext.citeprocProjectBase + 'get/' + ext.citeprocJsZip
-ext.citeprocTestSuiteZip = '9942299.zip'
-ext.citeprocTestSuiteUrl = 'https://bitbucket.org/bdarcus/citeproc-test/get/' + ext.citeprocTestSuiteZip
-
-repositories {
-    mavenCentral()
-    maven {
-        url 'https://oss.sonatype.org/content/groups/public'
-    }
-}
-
-configurations {
-    // define a configuration for compile-time-only dependencies
-    provided
-}
-
-dependencies {
-    compile 'org.apache.commons:commons-lang3:3.1'
-    compile 'org.jbibtex:jbibtex:1.0.11'
-    compile 'org.antlr:antlr4-runtime:4.2'
-    
-    provided 'org.mozilla:rhino:1.7R4'
-    provided 'org.mapdb:mapdb:0.9.9'
-    provided 'jline:jline:2.11'
-    
-    runtime 'org.mozilla:rhino:1.7R4'
-    runtime 'org.mapdb:mapdb:0.9.9'
-    runtime 'jline:jline:2.11'
-    runtime 'org.citationstyles:styles:1.0.1-SNAPSHOT'
-    runtime 'org.citationstyles:locales:1.0.1-SNAPSHOT'
-    
-    testCompile 'org.fusesource.jansi:jansi:1.11'
-    testCompile 'org.mozilla:rhino:1.7R4'
-    testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
-    testCompile 'org.citationstyles:locales:1.0.1-SNAPSHOT'
-    testCompile 'junit:junit:4.11'
-    testCompile 'com.carrotsearch:junit-benchmarks:0.7.0'
-}
-
-tasks.withType(Compile) { 
-    options.compilerArgs << "-Xlint" 
-}
-
-task downloadCiteprocJs(type: Download) {
-    src citeprocJsUrl
-    dest new File(projectDir, "src-gen/main/resources/de/undercouch/citeproc/citeproc.js")
-    overwrite false
-}
-
-task downloadXmldomJs(type: Download) {
-    src xmldomJsUrl
-    dest new File(projectDir, "src-gen/main/resources/de/undercouch/citeproc/xmldom.js")
-    overwrite false
-}
-
-task downloadXmle4xJs(type: Download) {
-    src xmle4xJsUrl
-    dest new File(projectDir, "src-gen/main/resources/de/undercouch/citeproc/xmle4x.js")
-    overwrite false
-}
-
-task generateSources(dependsOn: [ downloadXmldomJs, downloadXmle4xJs, downloadCiteprocJs ]) {
-    inputs.files fileTree(dir: projectDir, includes: [ 'templates/*', 'grammars/*',
-        'src/main/resources/de/undercouch/citeproc/*.js',
-        'src-gen/main/resources/de/undercouch/citeproc/*.js' ])
-    outputs.files fileTree(dir: 'src-gen', includes: [ '**/*.java', '**/*.dat' ])
-} << {
-    SourceGenerator sg = new SourceGenerator(project)
-    sg.renderTemplates()
-    sg.renderGrammars()
-    sg.filterScripts()
-    sg.compileScripts()
-    sg.generateVersionFile()
-}
-
-task cleanGeneratedSources(type: Delete) {
-    delete 'src-gen'
-}
-
-task downloadCiteprocJsZip(type: Download) {
-    src citeprocJsZipUrl
-    dest new File(buildDir, "test-suite/${citeprocJsZip}")
-    compress false
-    overwrite false
-}
-
-task downloadTestSuite(type: Download) {
-    src citeprocTestSuiteUrl
-    dest new File(buildDir, "test-suite/${citeprocTestSuiteZip}")
-    compress false
-    overwrite false
-}
-
-task runTestSuite(dependsOn: [ downloadCiteprocJsZip, downloadTestSuite, testClasses ]) << {
-    def tr = new TestSuite(project, new File(buildDir, 'test-suite/' + citeprocTestSuiteZip),
-        new File(buildDir, 'test-suite/' + citeprocJsZip))
-    tr.compile()
-    tr.fix()
-    tr.run()
-}
-
-// include generated sources
-sourceSets.main.java.srcDirs 'src-gen/main/java'
-sourceSets.main.resources.srcDirs 'src-gen/main/resources'
-
-// include compile-time-only dependencies
-sourceSets.main.compileClasspath += configurations.provided
-eclipse.classpath.plusConfigurations += configurations.provided
-
-tasks['compileJava'].dependsOn(generateSources)
-tasks['eclipseClasspath'].dependsOn(generateSources)
-tasks['clean'].dependsOn(cleanGeneratedSources)
-
-jar {
-    // define OSGi bundle manifest
-    manifest {
-        name = 'citeproc-java'
-        symbolicName = "de.undercouch.citeproc"
-        vendor = 'Michel Kraemer'
-        instruction 'Import-Package', '*,org.mozilla.javascript;resolution:=optional'
-        instruction 'Export-Package', "de.undercouch.*;version=${version}"
-        instruction 'Main-Class', project.mainClassName
+        testCompile 'junit:junit:4.11'
     }
     
-    // include license into jar
-    from 'LICENSE.txt'
-}
-
-//configure javadoc
-javadoc {
-    //exclude internal packages
-    exclude '**/internal/**'
+    //configure javadoc
+    javadoc {
+        //exclude internal packages
+        exclude '**/internal/**'
+        
+        //link to JRE6 documentation
+        options.author true
+        options.links 'http://download.oracle.com/javase/6/docs/api/'
+    }
     
-    //exclude tool from public API
-    exclude '**/de/undercouch/citeproc/tool/**'
+    // package javadoc into a jar file
+    task packageJavadoc(type: Jar, dependsOn: 'javadoc') {
+        from javadoc.destinationDir
+        classifier = 'javadoc'
+    }
     
-    //link to JRE6 documentation
-    options.author true
-    options.links 'http://download.oracle.com/javase/6/docs/api/'
-    
-    //add compile-time-only dependencies
-    classpath += configurations.provided
+    // package source into a jar file
+    task packageSources(type: Jar) {
+        from sourceSets.main.allSource
+        classifier = 'sources'
+    }
 }
 
 // initialize gradle wrapper
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
-}
-
-// package javadoc into a jar file
-task packageJavadoc(type: Jar, dependsOn: 'javadoc') {
-    from javadoc.destinationDir
-    classifier = 'javadoc'
-}
-
-// package source into a jar file
-task packageSources(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
-// configure start scripts for the bibtex tool
-task bibtexStartScripts(type: CreateStartScripts) {
-    applicationName = 'citeproc-java-bibtex'
-    classpath = startScripts.classpath
-    mainClassName = 'de.undercouch.citeproc.bibtex.BibTeXTool'
-    outputDir = startScripts.outputDir
-}
-
-startScripts.dependsOn(bibtexStartScripts)
-
-// include bibtex start scripts into distribution
-applicationDistribution.from(bibtexStartScripts.outputDir) {
-    include bibtexStartScripts.applicationName + '*'
-    into 'bin'
-}
-
-// define artifacts for upload
-artifacts {
-    archives jar
-    archives packageJavadoc
-    archives packageSources
-}
-
-// sign all artifacts
-signing {
-    required { gradle.taskGraph.hasTask(uploadArchives) }
-    sign configurations.archives
-}
-
-// remove test dependencies and runtime dependencies
-// from configuration-to-scope mapping
-// this also removes them from the maven pom file
-conf2ScopeMappings.mappings.remove(configurations.testCompile)
-conf2ScopeMappings.mappings.remove(configurations.runtime)
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            // sign artifacts before upload
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            
-            // upload to sonatype OSS
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
-                authentication(userName: this.hasProperty('sonatypeUsername') ? sonatypeUsername : '',
-                    password: this.hasProperty('sonatypePassword') ? sonatypePassword : '')
-            }
-            
-            // pom file details
-            pom.project {
-               name 'citeproc-java'
-               packaging 'jar'
-               description 'A Citation Style Language (CSL) Processor for Java.'
-               url 'http://www.michel-kraemer.com'
- 
-               scm {
-                   url 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
-                   connection 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
-                   developerConnection 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
-               }
- 
-               licenses {
-                   license {
-                       name 'The Apache Software License, Version 2.0'
-                       url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                       distribution 'repo'
-                   }
-               }
- 
-               developers {
-                   developer {
-                       id 'michel-kraemer'
-                       name 'Michel Kraemer'
-                       email 'michel@undercouch.de'
-                   }
-               }
-           }
-        }
-    }
 }

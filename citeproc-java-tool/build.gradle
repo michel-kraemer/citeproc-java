@@ -1,0 +1,54 @@
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':citeproc-java')
+    
+    compile 'jline:jline:2.11'
+    compile 'org.mapdb:mapdb:0.9.9'
+    
+    runtime 'org.mozilla:rhino:1.7R4'
+    runtime 'org.citationstyles:styles:1.0.1-SNAPSHOT'
+    runtime 'org.citationstyles:locales:1.0.1-SNAPSHOT'
+}
+
+mainClassName = 'de.undercouch.citeproc.CSLTool'
+
+jar {
+    // define OSGi bundle manifest
+    manifest {
+        name = 'citeproc-java-tool'
+        symbolicName = "de.undercouch.citeproc.tool"
+        vendor = 'Michel Kraemer'
+        instruction 'Import-Package', '*,org.mozilla.javascript;resolution:=optional'
+        instruction 'Export-Package', "de.undercouch.*;version=${version}"
+        instruction 'Main-Class', project.mainClassName
+    }
+    
+    // include license into jar
+    from new File(project.rootDir, 'LICENSE.txt')
+}
+
+// configure start scripts for the bibtex tool
+task bibtexStartScripts(type: CreateStartScripts) {
+    applicationName = 'citeproc-java-bibtex'
+    classpath = startScripts.classpath
+    mainClassName = 'de.undercouch.citeproc.bibtex.BibTeXTool'
+    outputDir = startScripts.outputDir
+}
+
+startScripts.dependsOn(bibtexStartScripts)
+
+// include bibtex start scripts into distribution
+applicationDistribution.from(bibtexStartScripts.outputDir) {
+    include bibtexStartScripts.applicationName + '*'
+    into 'bin'
+}
+
+// rename start script
+startScripts {
+    applicationName = 'citeproc-java'
+}

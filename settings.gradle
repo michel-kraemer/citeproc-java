@@ -1,0 +1,3 @@
+include 'citeproc-java', 'citeproc-java-tool'
+
+rootProject.name = 'citeproc-java-root'
