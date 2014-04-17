@@ -22,13 +22,12 @@ import java.net.URL;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.tool.CommandDesc;
 import de.undercouch.citeproc.helper.tool.CommandDescList;
-import de.undercouch.citeproc.helper.tool.StandardInputReader;
 import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
+import de.undercouch.citeproc.helper.tool.StandardInputReader;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
-import de.undercouch.citeproc.tool.BibTeXCommand;
 import de.undercouch.citeproc.tool.BibliographyCommand;
 import de.undercouch.citeproc.tool.CSLToolContext;
 import de.undercouch.citeproc.tool.CitationCommand;
@@ -102,9 +101,6 @@ public class CSLTool extends AbstractCSLToolCommand {
 		@CommandDesc(longName = "zotero",
 				description = "connect to Zotero",
 				command = ZoteroCommand.class),
-		@CommandDesc(longName = "bibtex",
-				description = "generate a LaTeX bibliography",
-				command = BibTeXCommand.class),
 		@CommandDesc(longName = "shell",
 				description = "run citeproc-java in interactive mode",
 				command = ShellCommand.class),

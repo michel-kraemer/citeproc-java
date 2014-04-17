@@ -96,7 +96,7 @@ public class BibliographyCommand extends CitationIdsCommand {
 		//check output format
 		if (!format.equals("text") && !format.equals("html") &&
 				!format.equals("asciidoc") && !format.equals("fo") &&
-				!format.equals("rtf") && !format.equals("latexbbl")) {
+				!format.equals("rtf")) {
 			error("invalid output format: " + format);
 			return false;
 		}

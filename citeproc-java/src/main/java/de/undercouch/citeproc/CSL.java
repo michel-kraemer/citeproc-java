@@ -528,12 +528,6 @@ public class CSL {
 			for (int i = 0; i < entries.length; ++i) {
 				entries[i] = entries[i].replace("$$$__COLUMN_WIDTH_1__$$$", em);
 			}
-		} else if (outputFormat.equals("latexbbl")) {
-			String ms = "";
-			for (int i = 0; i < maxOffset; ++i) {
-				ms += "m";
-			}
-			bibStart = bibStart.replace("$$$__MAX_OFFSET__$$$", ms);
 		}
 		
 		return new Bibliography(entries, bibStart, bibEnd, entryIds,
