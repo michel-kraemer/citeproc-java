@@ -18,7 +18,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -157,7 +156,7 @@ public class OptionParserTest {
 			.addCommand(5, "bla", "command 2")
 			.build();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(baos, true, "UTF-8");
+		PrintWriter ps = new PrintWriter(baos, true);
 		OptionParser.usage("test", "desc", options, ps);
 		ps.flush();
 		String str = baos.toString("UTF-8");

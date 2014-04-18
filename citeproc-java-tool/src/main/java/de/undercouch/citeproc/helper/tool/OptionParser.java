@@ -14,7 +14,7 @@
 
 package de.undercouch.citeproc.helper.tool;
 
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +76,7 @@ public class OptionParser {
 	 * @param out destination stream
 	 */
 	public static <T> void usage(String command, String description,
-			OptionGroup<T> options, PrintStream out) {
+			OptionGroup<T> options, PrintWriter out) {
 		usage(command, description, options, null, out);
 	}
 	
@@ -159,8 +159,8 @@ public class OptionParser {
 			out.println(footnotes);
 		}
 	}
-
-	private static <T> void printOptions(OptionGroup<T> options, PrintStream out,
+	
+	private static <T> void printOptions(OptionGroup<T> options, PrintWriter out,
 			int firstColumnWidth, int secondColumnWidth) {
 		//print group name (if any)
 		if (options.getName() != null && !options.getName().isEmpty()) {
@@ -212,7 +212,7 @@ public class OptionParser {
 		}
 	}
 
-	private static void printDescription(String desc, PrintStream out,
+	private static void printDescription(String desc, PrintWriter out,
 			int firstColumnWidth, int secondColumnWidth) {
 		int w = firstColumnWidth + secondColumnWidth + 4;
 		if (firstColumnWidth > 0) {

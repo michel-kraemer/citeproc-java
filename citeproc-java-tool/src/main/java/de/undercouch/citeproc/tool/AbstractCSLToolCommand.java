@@ -124,7 +124,7 @@ public abstract class AbstractCSLToolCommand implements Command, CSLToolCommand 
 		}
 		OptionParser.usage(CSLToolContext.current().getToolName() + " " +
 				getUsageArguments(), getUsageDescription(),
-				getOptions(), footnotes, System.out);
+				getOptions(), footnotes, new PrintWriter(System.out, true));
 	}
 	
 	@Override
