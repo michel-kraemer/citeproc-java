@@ -191,6 +191,14 @@ public class CSLTool extends AbstractCSLToolCommand {
 	 * Prints out version information
 	 */
 	private void version() {
+		System.out.println(CSLToolContext.current().getToolName() + " " +
+				getVersion());
+	}
+	
+	/**
+	 * @return the tool's version string
+	 */
+	public static String getVersion() {
 		URL u = CSLTool.class.getResource("version.dat");
 		String version;
 		try {
@@ -198,6 +206,6 @@ public class CSLTool extends AbstractCSLToolCommand {
 		} catch (IOException e) {
 			throw new RuntimeException("Could not read version information", e);
 		}
-		System.out.println(CSLToolContext.current().getToolName() + " " + version);
+		return version;
 	}
 }
