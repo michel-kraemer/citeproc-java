@@ -15,6 +15,7 @@
 package de.undercouch.citeproc.tool.shell;
 
 import java.beans.IntrospectionException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -44,11 +45,11 @@ public final class ShellCommandParser {
 	 */
 	public static class Result {
 		private final String[] remainingArgs;
-		private final Class<? extends Command> command;
+		private final List<Class<? extends Command>> commands;
 		
-		private Result(String[] remainingArgs, Class<? extends Command> command) {
+		private Result(String[] remainingArgs, List<Class<? extends Command>> commands) {
 			this.remainingArgs = remainingArgs;
-			this.command = command;
+			this.commands = commands;
 		}
 		
 		/**
@@ -59,11 +60,40 @@ public final class ShellCommandParser {
 		}
 		
 		/**
-		 * @return the class of the last parsed command
+		 * @return a list of all parsed commands
 		 */
-		public Class<? extends Command> getCommand() {
-			return command;
+		public List<Class<? extends Command>> getCommands() {
+			return commands;
 		}
+		
+		/**
+		 * @return the class of the first command parsed
+		 */
+		public Class<? extends Command> getFirstCommand() {
+			if (commands.isEmpty()) {
+				return null;
+			}
+			return commands.get(0);
+		} 
+		
+		/**
+		 * @return the class of the last command parsed
+		 */
+		public Class<? extends Command> getLastCommand() {
+			if (commands.isEmpty()) {
+				return null;
+			}
+			return commands.get(commands.size() - 1);
+		}
+	}
+	
+	/**
+	 * Splits the given command line
+	 * @param line the command line
+	 * @return an array of strings calculated by splitting the command line
+	 */
+	public static String[] split(String line) {
+		return line.trim().split("\\s+");
 	}
 	
 	/**
@@ -92,7 +122,7 @@ public final class ShellCommandParser {
 	 */
 	public static Result parse(String line, List<Class<? extends Command>> excluded)
 			throws IntrospectionException, InvalidOptionException {
-		String[] args = line.trim().split("\\s+");
+		String[] args = split(line);
 		return parse(args, excluded);
 	}
 	
@@ -108,15 +138,17 @@ public final class ShellCommandParser {
 	 */
 	public static Result parse(String[] args, List<Class<? extends Command>> excluded)
 			throws IntrospectionException, InvalidOptionException {
-		return getCommandClass(args, 0, CSLTool.class,
+		List<Class<? extends Command>> classes = new ArrayList<Class<? extends Command>>();
+		return getCommandClass(args, 0, classes,
 				new HashSet<Class<? extends Command>>(excluded));
 	}
 	
 	private static Result getCommandClass(String[] args, int i,
-			Class<? extends Command> cls, Set<Class<? extends Command>> excluded)
+			List<Class<? extends Command>> classes,
+			Set<Class<? extends Command>> excluded)
 					throws IntrospectionException, InvalidOptionException {
 		if (i >= args.length) {
-			return new Result(new String[0], cls);
+			return new Result(new String[0], classes);
 		}
 		
 		if (args[i].startsWith("-")) {
@@ -125,11 +157,11 @@ public final class ShellCommandParser {
 		}
 		
 		OptionGroup<ID> options;
-		if (cls == CSLTool.class) {
-			options = OptionIntrospector.introspect(cls,
+		if (classes.isEmpty()) {
+			options = OptionIntrospector.introspect(CSLTool.class,
 					AdditionalShellCommands.class);
 		} else {
-			options = OptionIntrospector.introspect(cls);
+			options = OptionIntrospector.introspect(classes.get(classes.size() - 1));
 		}
 		
 		List<Option<ID>> commands = options.getCommands();
@@ -139,12 +171,13 @@ public final class ShellCommandParser {
 					Class<? extends Command> cmdClass =
 							OptionIntrospector.getCommand(cmd.getId());
 					if (!excluded.contains(cmdClass)) {
-						return getCommandClass(args, i + 1, cmdClass, excluded);
+						classes.add(cmdClass);
+						return getCommandClass(args, i + 1, classes, excluded);
 					}
 				}
 			}
 		}
 		
-		return new Result(ArrayUtils.subarray(args, i, args.length), cls);
+		return new Result(ArrayUtils.subarray(args, i, args.length), classes);
 	}
 }

@@ -15,13 +15,13 @@
 package de.undercouch.citeproc.tool.shell;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
 import de.undercouch.citeproc.tool.BibliographyCommand;
 import de.undercouch.citeproc.tool.ListCommand;
@@ -43,11 +43,12 @@ public class ShellCommandParserTest {
 	public void commands() throws Exception {
 		Result pr = ShellCommandParser.parse("bibliography");
 		assertEquals(0, pr.getRemainingArgs().length);
-		assertEquals(BibliographyCommand.class, pr.getCommand());
+		assertEquals(BibliographyCommand.class, pr.getFirstCommand());
+		assertEquals(BibliographyCommand.class, pr.getLastCommand());
 		
 		pr = ShellCommandParser.parse("  list  ");
 		assertEquals(0, pr.getRemainingArgs().length);
-		assertEquals(ListCommand.class, pr.getCommand());
+		assertEquals(ListCommand.class, pr.getFirstCommand());
 	}
 	
 	/**
@@ -58,11 +59,13 @@ public class ShellCommandParserTest {
 	public void subcommands() throws Exception {
 		Result pr = ShellCommandParser.parse("mendeley list");
 		assertEquals(0, pr.getRemainingArgs().length);
-		assertEquals(MendeleyListCommand.class, pr.getCommand());
+		assertEquals(MendeleyCommand.class, pr.getFirstCommand());
+		assertEquals(MendeleyListCommand.class, pr.getLastCommand());
 		
 		pr = ShellCommandParser.parse("  mendeley    list  ");
 		assertEquals(0, pr.getRemainingArgs().length);
-		assertEquals(MendeleyListCommand.class, pr.getCommand());
+		assertEquals(MendeleyCommand.class, pr.getFirstCommand());
+		assertEquals(MendeleyListCommand.class, pr.getLastCommand());
 	}
 	
 	/**
@@ -74,17 +77,20 @@ public class ShellCommandParserTest {
 		Result pr = ShellCommandParser.parse("");
 		assertEquals(1, pr.getRemainingArgs().length);
 		assertEquals("", pr.getRemainingArgs()[0]);
-		assertEquals(CSLTool.class, pr.getCommand());
+		assertNull(pr.getFirstCommand());
+		assertNull(pr.getLastCommand());
 		
 		pr = ShellCommandParser.parse("bibl");
 		assertEquals(1, pr.getRemainingArgs().length);
 		assertEquals("bibl", pr.getRemainingArgs()[0]);
-		assertEquals(CSLTool.class, pr.getCommand());
+		assertNull(pr.getFirstCommand());
+		assertNull(pr.getLastCommand());
 		
 		pr = ShellCommandParser.parse("mendeley l");
 		assertEquals(1, pr.getRemainingArgs().length);
 		assertEquals("l", pr.getRemainingArgs()[0]);
-		assertEquals(MendeleyCommand.class, pr.getCommand());
+		assertEquals(MendeleyCommand.class, pr.getFirstCommand());
+		assertEquals(MendeleyCommand.class, pr.getLastCommand());
 	}
 	
 	/**
@@ -95,7 +101,7 @@ public class ShellCommandParserTest {
 	public void excluded() throws Exception {
 		Result pr = ShellCommandParser.parse("shell");
 		assertEquals(0, pr.getRemainingArgs().length);
-		assertEquals(ShellCommand.class, pr.getCommand());
+		assertEquals(ShellCommand.class, pr.getFirstCommand());
 		
 		List<Class<? extends Command>> excluded =
 				new ArrayList<Class<? extends Command>>();
@@ -103,11 +109,12 @@ public class ShellCommandParserTest {
 		
 		pr = ShellCommandParser.parse("bibliography", excluded);
 		assertEquals(0, pr.getRemainingArgs().length);
-		assertEquals(BibliographyCommand.class, pr.getCommand());
+		assertEquals(BibliographyCommand.class, pr.getFirstCommand());
 		
 		pr = ShellCommandParser.parse("shell", excluded);
 		assertEquals(1, pr.getRemainingArgs().length);
 		assertEquals("shell", pr.getRemainingArgs()[0]);
-		assertEquals(CSLTool.class, pr.getCommand());
+		assertNull(pr.getFirstCommand());
+		assertNull(pr.getLastCommand());
 	}
 }

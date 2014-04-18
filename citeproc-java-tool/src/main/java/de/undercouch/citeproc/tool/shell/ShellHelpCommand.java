@@ -79,9 +79,9 @@ public class ShellHelpCommand extends AbstractCSLToolCommand {
 				return 1;
 			}
 			
-			cmdClass = pr.getCommand();
-			if (cmdClass == CSLTool.class) {
-				options = OptionIntrospector.introspect(cmdClass,
+			cmdClass = pr.getLastCommand();
+			if (cmdClass == null) {
+				options = OptionIntrospector.introspect(CSLTool.class,
 						AdditionalShellCommands.class);
 			} else {
 				options = OptionIntrospector.introspect(cmdClass);
@@ -100,16 +100,18 @@ public class ShellHelpCommand extends AbstractCSLToolCommand {
 			}
 		}
 		
-		CSLToolCommand cmd;
-		try {
-			cmd = (CSLToolCommand)cmdClass.newInstance();
-		} catch (Exception e) {
-			//should never happen
-			throw new RuntimeException(e);
+		CSLToolCommand cmd = null;
+		if (cmdClass != null) {
+			try {
+				cmd = (CSLToolCommand)cmdClass.newInstance();
+			} catch (Exception e) {
+				//should never happen
+				throw new RuntimeException(e);
+			}
 		}
 		
 		//TODO output is not correct yet (in particular for 'help help')
-		if (cmdClass.equals(CSLTool.class)) {
+		if (cmdClass == null) {
 			OptionParser.usage(null, null, filtered, null, out);
 		} else if (filtered.getCommands().isEmpty()) {
 			OptionParser.usage(StringUtils.join(args, " "),

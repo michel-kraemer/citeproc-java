@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import jline.console.ConsoleReader;
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
@@ -101,9 +103,11 @@ public class ShellCommand extends AbstractCSLToolCommand {
 				continue;
 			}
 			
+			String[] args = ShellCommandParser.split(line);
+			
 			Result pr;
 			try {
-				pr = ShellCommandParser.parse(line, EXCLUDED_COMMANDS);
+				pr = ShellCommandParser.parse(args, EXCLUDED_COMMANDS);
 			} catch (OptionParserException e) {
 				//there is an option, only commands are allowed in the
 				//interactive shell
@@ -114,11 +118,14 @@ public class ShellCommand extends AbstractCSLToolCommand {
 				throw new RuntimeException(e);
 			}
 			
-			Class<? extends Command> cmdClass = pr.getCommand();
+			Class<? extends Command> cmdClass = pr.getFirstCommand();
 			
 			if (cmdClass == ShellExitCommand.class ||
 					cmdClass == ShellQuitCommand.class) {
 				break;
+			} else if (cmdClass == null) {
+				error("unknown command `" + args[0] + "'");
+				continue;
 			}
 			
 			Command cmd;
@@ -129,8 +136,12 @@ public class ShellCommand extends AbstractCSLToolCommand {
 				throw new RuntimeException(e);
 			}
 			
+			if (cmd instanceof ProviderCommand) {
+				cmd = new InputFileCommand((ProviderCommand)cmd);
+			}
+			
 			try {
-				cmd.run(pr.getRemainingArgs(), lr, cout);
+				cmd.run(ArrayUtils.subarray(args, 1, args.length), lr, cout);
 			} catch (OptionParserException e) {
 				error(e.getMessage());
 			}

@@ -71,11 +71,11 @@ public class ShellCommandCompleter implements Completer {
 				allparsed = false;
 			} else {
 				OptionGroup<ID> options;
-				if (pr.getCommand() == CSLTool.class) {
-					options = OptionIntrospector.introspect(pr.getCommand(),
+				if (pr.getLastCommand() == null) {
+					options = OptionIntrospector.introspect(CSLTool.class,
 							AdditionalShellCommands.class);
 				} else {
-					options = OptionIntrospector.introspect(pr.getCommand());
+					options = OptionIntrospector.introspect(pr.getLastCommand());
 				}
 				
 				String[] ra = pr.getRemainingArgs();
