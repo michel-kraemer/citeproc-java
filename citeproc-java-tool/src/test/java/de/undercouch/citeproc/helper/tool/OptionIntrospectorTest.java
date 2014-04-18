@@ -68,7 +68,7 @@ public class OptionIntrospectorTest {
 		 * Sets the unknown argument values
 		 * @param values the values
 		 */
-		@UnknownAttributes
+		@UnknownAttributes("ATTRIBUTE")
 		public void setUnknownAttributes(List<String> values) {
 			unknownValues = values;
 		}

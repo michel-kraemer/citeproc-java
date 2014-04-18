@@ -20,13 +20,13 @@ package de.undercouch.citeproc.tool;
  */
 public class ZoteroListCommand extends ListCommand {
 	@Override
-	public String getUsageDescription() {
-		return "Display sorted list of available citation IDs "
-				+ "in the Zotero library";
+	public String getUsageName() {
+		return "zotero list";
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "zotero list [OPTION]...";
+	public String getUsageDescription() {
+		return "Display sorted list of available citation IDs "
+				+ "in the Zotero library";
 	}
 }

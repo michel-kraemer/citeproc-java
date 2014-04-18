@@ -31,15 +31,15 @@ import de.undercouch.citeproc.helper.tool.InputReader;
  */
 public class JsonCommand extends CitationIdsCommand {
 	@Override
+	public String getUsageName() {
+		return "json";
+	}
+	
+	@Override
 	public String getUsageDescription() {
 		return "Convert input bibliography to JSON";
 	}
 	
-	@Override
-	public String getUsageArguments() {
-		return "json [OPTION]... [CITATION ID]...";
-	}
-
 	@Override
 	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
 			throws IOException {

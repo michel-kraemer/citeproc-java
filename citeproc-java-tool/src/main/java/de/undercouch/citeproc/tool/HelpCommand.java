@@ -36,19 +36,19 @@ public class HelpCommand extends AbstractCSLToolCommand {
 	 * Sets the commands to display the help for
 	 * @param commands the commands
 	 */
-	@UnknownAttributes
+	@UnknownAttributes("COMMAND")
 	public void setCommands(List<String> commands) {
 		this.commands = commands;
 	}
 	
 	@Override
+	public String getUsageName() {
+		return "help";
+	}
+	
+	@Override
 	public String getUsageDescription() {
 		return "Display a command's help";
-	}
-
-	@Override
-	public String getUsageArguments() {
-		return "help [COMMAND] [SUBCOMMAND]...";
 	}
 
 	@Override

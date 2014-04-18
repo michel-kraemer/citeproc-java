@@ -20,12 +20,12 @@ package de.undercouch.citeproc.tool;
  */
 public class ZoteroBibliographyCommand extends BibliographyCommand {
 	@Override
-	public String getUsageDescription() {
-		return "Generate bibliography from Zotero";
+	public String getUsageName() {
+		return "zotero bibliography";
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "zotero bibliography [OPTION]... [CITATION ID]...";
+	public String getUsageDescription() {
+		return "Generate bibliography from Zotero";
 	}
 }

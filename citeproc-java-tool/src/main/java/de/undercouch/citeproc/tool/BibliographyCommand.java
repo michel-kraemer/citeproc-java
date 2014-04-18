@@ -82,13 +82,13 @@ public class BibliographyCommand extends CitationIdsCommand {
 	}
 	
 	@Override
-	public String getUsageDescription() {
-		return "Generate a bibliography from an input file";
+	public String getUsageName() {
+		return "bibliography";
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "bibliography [OPTION]... [CITATION ID]...";
+	public String getUsageDescription() {
+		return "Generate a bibliography from an input file";
 	}
 	
 	@Override

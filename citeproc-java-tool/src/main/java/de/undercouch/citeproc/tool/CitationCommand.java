@@ -27,13 +27,13 @@ import de.undercouch.citeproc.output.Citation;
  */
 public class CitationCommand extends BibliographyCommand {
 	@Override
-	public String getUsageDescription() {
-		return "Generate citations from an input file";
+	public String getUsageName() {
+		return "citation";
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "citation [OPTION]... [CITATION ID]...";
+	public String getUsageDescription() {
+		return "Generate citations from an input file";
 	}
 	
 	@Override

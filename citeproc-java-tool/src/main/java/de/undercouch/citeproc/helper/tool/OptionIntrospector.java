@@ -295,6 +295,26 @@ public class OptionIntrospector {
 	}
 	
 	/**
+	 * Returns the name of the unknown arguments of the first class
+	 * that accepts unknown arguments
+	 * @param classes the classes to inspect
+	 * @return the name of the unknown arguments or null if none of the
+	 * given classes do accept unknown arguments
+	 */
+	public static String getUnknownArgumentName(Class<?>... classes) {
+		for (Class<?> cls : classes) {
+			Method setter = getUnknownArgumentSetter(cls);
+			if (setter != null) {
+				UnknownAttributes od = setter.getAnnotation(UnknownAttributes.class);
+				if (od != null) {
+					return od.value();
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Returns the class of the command with the given identifier
 	 * @param id the identifier
 	 * @return the command's class or null if there is no such command

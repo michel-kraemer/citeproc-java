@@ -27,15 +27,14 @@ import de.undercouch.citeproc.helper.tool.OptionParserException;
  */
 public interface CSLToolCommand extends Command {
 	/**
+	 * @return the command's name displayed in the help
+	 */
+	String getUsageName();
+	
+	/**
 	 * @return the command description that should be displayed in the help
 	 */
 	String getUsageDescription();
-
-	/**
-	 * @return the arguments that should be displayed in the help
-	 * including the command's name itself
-	 */
-	String getUsageArguments();
 
 	/**
 	 * Checks the provided arguments

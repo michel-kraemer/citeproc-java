@@ -26,5 +26,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface UnknownAttributes {
-	//nothing to do here
+	/**
+	 * @return the name of the unknown arguments
+	 */
+	String value();
 }

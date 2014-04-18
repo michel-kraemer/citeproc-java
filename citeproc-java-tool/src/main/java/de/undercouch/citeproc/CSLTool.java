@@ -178,13 +178,13 @@ public class CSLTool extends AbstractCSLToolCommand {
 	}
 	
 	@Override
-	public String getUsageDescription() {
-		return "Generate styled citations and bibliographies";
+	public String getUsageName() {
+		return ""; //the tool's name will be prepended
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "[OPTION]... [COMMAND] [COMMAND OPTION]...";
+	public String getUsageDescription() {
+		return "Generate styled citations and bibliographies";
 	}
 	
 	/**

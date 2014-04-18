@@ -20,8 +20,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
 import de.undercouch.citeproc.helper.tool.InputReader;
@@ -47,19 +45,19 @@ public class ShellHelpCommand extends AbstractCSLToolCommand {
 	 * Sets the commands to display the help for
 	 * @param commands the commands
 	 */
-	@UnknownAttributes
+	@UnknownAttributes("COMMAND")
 	public void setCommands(List<String> commands) {
 		this.commands = commands;
 	}
 	
 	@Override
+	public String getUsageName() {
+		return "help";
+	}
+	
+	@Override
 	public String getUsageDescription() {
 		return "Display help for a given command";
-	}
-
-	@Override
-	public String getUsageArguments() {
-		return "help [COMMAND]";
 	}
 	
 	@Override
@@ -110,15 +108,13 @@ public class ShellHelpCommand extends AbstractCSLToolCommand {
 			}
 		}
 		
-		//TODO output is not correct yet (in particular for 'help help')
 		if (cmdClass == null) {
 			OptionParser.usage(null, null, filtered, null, out);
-		} else if (filtered.getCommands().isEmpty()) {
-			OptionParser.usage(StringUtils.join(args, " "),
-					cmd.getUsageDescription(), filtered, null, out);
 		} else {
-			OptionParser.usage(StringUtils.join(args, " ") + " [COMMAND]",
-					cmd.getUsageDescription(), filtered, null, out);
+			String unknownArguments = OptionIntrospector.getUnknownArgumentName(
+					cmdClass);
+			OptionParser.usage(cmd.getUsageName(), cmd.getUsageDescription(),
+					filtered, unknownArguments, null, out);
 		}
 
 		return 0;

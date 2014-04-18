@@ -56,14 +56,14 @@ public class ShellCommand extends AbstractCSLToolCommand {
 	}};
 	
 	@Override
+	public String getUsageName() {
+		return "shell";
+	}
+	
+	@Override
 	public String getUsageDescription() {
 		return "Run " + CSLToolContext.current().getToolName() +
 				" in interactive mode";
-	}
-
-	@Override
-	public String getUsageArguments() {
-		return "shell";
 	}
 
 	@Override

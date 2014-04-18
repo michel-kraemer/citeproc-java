@@ -20,12 +20,12 @@ package de.undercouch.citeproc.tool;
  */
 public class MendeleyCitationCommand extends CitationCommand {
 	@Override
+	public String getUsageName() {
+		return "mendeley citation";
+	}
+
+	@Override
 	public String getUsageDescription() {
 		return "Generate citations from Mendeley Web";
-	}
-	
-	@Override
-	public String getUsageArguments() {
-		return "mendeley citation [OPTION]... [CITATION ID]...";
 	}
 }

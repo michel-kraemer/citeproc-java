@@ -61,13 +61,13 @@ public class ZoteroCommand extends AbstractRemoteCommand {
 	}
 	
 	@Override
-	public String getUsageDescription() {
-		return "Connect to Zotero and generate styled citations and bibliographies";
+	public String getUsageName() {
+		return "zotero";
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "zotero [OPTION]... [COMMAND] [COMMAND OPTION]...";
+	public String getUsageDescription() {
+		return "Connect to Zotero and generate styled citations and bibliographies";
 	}
 	
 	@Override

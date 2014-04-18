@@ -73,11 +73,13 @@ public class OptionParser {
 	 * to use the application
 	 * @param description the application's description
 	 * @param options the options to print out
+	 * @param unknownArguments the name of unknown arguments (null if the
+	 * command does not accept unknown arguments)
 	 * @param out destination stream
 	 */
 	public static <T> void usage(String command, String description,
-			OptionGroup<T> options, PrintWriter out) {
-		usage(command, description, options, null, out);
+			OptionGroup<T> options, String unknownArguments, PrintWriter out) {
+		usage(command, description, options, unknownArguments, null, out);
 	}
 	
 	/**
@@ -87,14 +89,18 @@ public class OptionParser {
 	 * to use the application
 	 * @param description the application's description
 	 * @param options the options to print out
+	 * @param unknownArguments the name of unknown arguments (null if the
+	 * command does not accept unknown arguments)
 	 * @param footnotes footnotes to be displayed at the end of the
 	 * usage information (may be null)
 	 * @param out destination stream
 	 */
 	public static <T> void usage(String command, String description,
-			OptionGroup<T> options, String footnotes, PrintWriter out) {
+			OptionGroup<T> options, String unknownArguments, String footnotes,
+			PrintWriter out) {
 		if (command != null) {
-			out.println("Usage: " + command);
+			out.println("Usage: " + getUsageString(command, options,
+					unknownArguments));
 		}
 		if (description != null) {
 			out.println(description);
@@ -252,6 +258,38 @@ public class OptionParser {
 			desc = desc.substring(sp + 1);
 		}
 		out.println(desc);
+	}
+	
+	/**
+	 * Generate a string that describes how to use a given command with
+	 * the given options
+	 * @param <T> option identifier type
+	 * @param name the command's name
+	 * @param options the options
+	 * @param unknownArguments the name of unknown arguments (null if the
+	 * command does not accept unknown arguments)
+	 * @return the usage string
+	 */
+	public static <T> String getUsageString(String name,
+			OptionGroup<T> options, String unknownArguments) {
+		String r = name;
+		if (options == null) {
+			return r;
+		}
+		
+		if (options.getOptions() != null && !options.getOptions().isEmpty()) {
+			r += " [OPTION]...";
+		}
+		
+		if (options.getCommands() != null && !options.getCommands().isEmpty()) {
+			r += " [COMMAND]";
+		}
+		
+		if (unknownArguments != null && !unknownArguments.isEmpty()) {
+			r += " [" + unknownArguments + "]...";
+		}
+		
+		return r;
 	}
 	
 	/**

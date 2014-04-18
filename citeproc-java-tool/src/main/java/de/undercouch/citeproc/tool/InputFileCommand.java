@@ -117,13 +117,13 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 	}
 	
 	@Override
+	public String getUsageName() {
+		return delegate.getUsageName();
+	}
+	
+	@Override
 	public String getUsageDescription() {
 		return delegate.getUsageDescription();
-	}
-
-	@Override
-	public String getUsageArguments() {
-		return delegate.getUsageArguments();
 	}
 
 	@Override

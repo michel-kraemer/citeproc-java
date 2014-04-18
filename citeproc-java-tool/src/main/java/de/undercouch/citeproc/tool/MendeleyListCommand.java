@@ -20,13 +20,13 @@ package de.undercouch.citeproc.tool;
  */
 public class MendeleyListCommand extends ListCommand {
 	@Override
-	public String getUsageDescription() {
-		return "Display sorted list of available citation IDs "
-				+ "in the Mendeley Web catalog";
+	public String getUsageName() {
+		return "mendeley list";
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "mendeley list [OPTION]...";
+	public String getUsageDescription() {
+		return "Display sorted list of available citation IDs "
+				+ "in the Mendeley Web catalog";
 	}
 }

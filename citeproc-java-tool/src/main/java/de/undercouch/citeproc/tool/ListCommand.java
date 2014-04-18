@@ -35,13 +35,13 @@ public class ListCommand extends AbstractCSLToolCommand implements ProviderComma
 	private ItemDataProvider provider;
 	
 	@Override
-	public String getUsageDescription() {
-		return "Display sorted list of available citation IDs";
+	public String getUsageName() {
+		return "list";
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "list [OPTION]...";
+	public String getUsageDescription() {
+		return "Display sorted list of available citation IDs";
 	}
 	
 	@Override

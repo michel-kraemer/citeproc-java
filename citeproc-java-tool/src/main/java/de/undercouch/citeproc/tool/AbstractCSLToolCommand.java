@@ -122,16 +122,25 @@ public abstract class AbstractCSLToolCommand implements Command, CSLToolCommand 
 			footnotes = "Use `" + CSLToolContext.current().getToolName() +
 					" help <command>' to read about a specific command.";
 		}
-		OptionParser.usage(CSLToolContext.current().getToolName() + " " +
-				getUsageArguments(), getUsageDescription(),
-				getOptions(), footnotes, new PrintWriter(System.out, true));
+		
+		String name = CSLToolContext.current().getToolName();
+		String usageName = getUsageName();
+		if (usageName != null && !usageName.isEmpty()) {
+			name += " " + usageName;
+		}
+		
+		String unknownArguments = OptionIntrospector.getUnknownArgumentName(
+				getClassesToIntrospect());
+		
+		OptionParser.usage(name, getUsageDescription(), getOptions(),
+				unknownArguments, footnotes, new PrintWriter(System.out, true));
 	}
 	
 	@Override
-	public abstract String getUsageDescription();
+	public abstract String getUsageName();
 	
 	@Override
-	public abstract String getUsageArguments();
+	public abstract String getUsageDescription();
 	
 	@Override
 	public boolean checkArguments() {

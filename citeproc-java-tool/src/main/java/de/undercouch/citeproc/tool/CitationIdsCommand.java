@@ -45,7 +45,7 @@ public abstract class CitationIdsCommand extends AbstractCSLToolCommand implemen
 	 * Sets the citation IDs
 	 * @param ids the IDs
 	 */
-	@UnknownAttributes
+	@UnknownAttributes("CITATION ID")
 	public void setCitationIds(List<String> ids) {
 		citationIds = ids;
 	}

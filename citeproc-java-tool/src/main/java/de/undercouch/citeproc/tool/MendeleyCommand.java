@@ -65,13 +65,13 @@ public class MendeleyCommand extends AbstractRemoteCommand {
 	}
 	
 	@Override
-	public String getUsageDescription() {
-		return "Connect to Mendeley Web and generate styled citations and bibliographies";
+	public String getUsageName() {
+		return "mendeley";
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "mendeley [OPTION]... [COMMAND] [COMMAND OPTION]...";
+	public String getUsageDescription() {
+		return "Connect to Mendeley Web and generate styled citations and bibliographies";
 	}
 	
 	@Override

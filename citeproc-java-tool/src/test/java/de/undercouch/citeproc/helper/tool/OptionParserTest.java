@@ -157,11 +157,11 @@ public class OptionParserTest {
 			.build();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintWriter ps = new PrintWriter(baos, true);
-		OptionParser.usage("test", "desc", options, ps);
+		OptionParser.usage("test", "desc", options, "ID", ps);
 		ps.flush();
 		String str = baos.toString("UTF-8");
 		String n = System.getProperty("line.separator");
-		assertEquals("Usage: test" + n
+		assertEquals("Usage: test [OPTION]... [COMMAND] [ID]..." + n
 				+ "desc" + n
 				+ n
 				+ "  -o,--opt         option 1" + n

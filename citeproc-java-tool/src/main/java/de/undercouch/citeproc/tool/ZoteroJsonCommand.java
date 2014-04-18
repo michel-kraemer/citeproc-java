@@ -20,12 +20,12 @@ package de.undercouch.citeproc.tool;
  */
 public class ZoteroJsonCommand extends JsonCommand {
 	@Override
-	public String getUsageDescription() {
-		return "Convert Zotero library to JSON";
+	public String getUsageName() {
+		return "zotero json";
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "zotero json [OPTION]... [CITATION ID]...";
+	public String getUsageDescription() {
+		return "Convert Zotero library to JSON";
 	}
 }

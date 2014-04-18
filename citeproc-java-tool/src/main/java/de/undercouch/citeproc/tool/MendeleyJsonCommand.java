@@ -20,12 +20,12 @@ package de.undercouch.citeproc.tool;
  */
 public class MendeleyJsonCommand extends JsonCommand {
 	@Override
-	public String getUsageDescription() {
-		return "Convert Mendeley Web catalog to JSON";
+	public String getUsageName() {
+		return "mendeley json";
 	}
 	
 	@Override
-	public String getUsageArguments() {
-		return "mendeley json [OPTION]... [CITATION ID]...";
+	public String getUsageDescription() {
+		return "Convert Mendeley Web catalog to JSON";
 	}
 }
