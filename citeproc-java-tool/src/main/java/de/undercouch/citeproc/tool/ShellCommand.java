@@ -14,29 +14,45 @@
 
 package de.undercouch.citeproc.tool;
 
-import java.io.FilterOutputStream;
+import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import jline.console.ConsoleReader;
-import jline.console.completer.Completer;
-import jline.console.history.History;
-import jline.console.history.MemoryHistory;
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
 import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
+import de.undercouch.citeproc.tool.shell.ConsoleInputReader;
+import de.undercouch.citeproc.tool.shell.ErrorOutputStream;
+import de.undercouch.citeproc.tool.shell.ShellCommandCompleter;
+import de.undercouch.citeproc.tool.shell.ShellCommandParser;
+import de.undercouch.citeproc.tool.shell.ShellCommandParser.Result;
+import de.undercouch.citeproc.tool.shell.ShellExitCommand;
+import de.undercouch.citeproc.tool.shell.ShellQuitCommand;
 
 /**
  * Runs the tool in interactive mode
  * @author Michel Kraemer
  */
 public class ShellCommand extends AbstractCSLToolCommand {
+	/**
+	 * Commands that should not be available in the interactive shell
+	 */
+	public static final List<Class<? extends Command>> EXCLUDED_COMMANDS;
+	static {{
+		List<Class<? extends Command>> ec = new ArrayList<Class<? extends Command>>();
+		ec.add(HelpCommand.class);
+		ec.add(ShellCommand.class);
+		EXCLUDED_COMMANDS = Collections.unmodifiableList(ec);
+	}};
+	
 	@Override
 	public String getUsageDescription() {
 		return "Run " + CSLToolContext.current().getToolName() +
@@ -53,8 +69,8 @@ public class ShellCommand extends AbstractCSLToolCommand {
 			throws OptionParserException, IOException {
 		//prepare console
 		final ConsoleReader reader = new ConsoleReader();
-		reader.setPrompt(CSLToolContext.current().getToolName() + "> ");
-		reader.addCompleter(new ShellCommandCompleter());
+		reader.setPrompt("> ");
+		reader.addCompleter(new ShellCommandCompleter(EXCLUDED_COMMANDS));
 		
 		//enable colored error stream for ANSI terminals
 		if (reader.getTerminal().isAnsiSupported()) {
@@ -66,126 +82,62 @@ public class ShellCommand extends AbstractCSLToolCommand {
 		
 		//prepare input and output for commands to run
 		InputReader lr = new ConsoleInputReader(reader);
-		PrintWriter cout = new PrintWriter(reader.getOutput());
+		PrintWriter cout = new PrintWriter(reader.getOutput(), true);
+		
+		//print welcome message
+		cout.println("Welcome to " + CSLToolContext.current().getToolName() +
+				" " + CSLTool.getVersion());
+		cout.println();
+		cout.println("Type `help' for a list of commands and `help "
+				+ "<command>' for information");
+		cout.println("on a specific command. Type `quit' to exit " +
+				CSLToolContext.current().getToolName() + ".");
+		cout.println();
 		
 		//read and interpret lines
 		String line;
 		while ((line = reader.readLine()) != null) {
-			if (line.equalsIgnoreCase("quit") || line.equalsIgnoreCase("exit")) {
-				break;
-			}
 			if (line.isEmpty()) {
 				continue;
 			}
 			
-			//run command
-			Command cmd = new CSLTool();
-			String[] args = line.split("\\s+");
+			Result pr;
 			try {
-				cmd.run(args, lr, cout);
+				pr = ShellCommandParser.parse(line, EXCLUDED_COMMANDS);
+			} catch (IntrospectionException e) {
+				//should never happen
+				throw new RuntimeException(e);
+			}
+			
+			Class<? extends Command> cmdClass = pr.getCommand();
+			
+			if (cmdClass == ShellExitCommand.class ||
+					cmdClass == ShellQuitCommand.class) {
+				break;
+			}
+			
+			Command cmd;
+			try {
+				cmd = cmdClass.newInstance();
+			} catch (Exception e) {
+				//should never happen
+				throw new RuntimeException(e);
+			}
+			
+			try {
+				cmd.run(pr.getRemainingArgs(), lr, cout);
 			} catch (OptionParserException e) {
 				error(e.getMessage());
 			}
 		}
 		
+		//print Goodbye message
+		if (line == null) {
+			//user pressed Ctrl+D
+			cout.println();
+		}
+		cout.println("Bye!");
+		
 		return 0;
-	}
-	
-	/**
-	 * A filter output stream that colors everything in red on ANSI terminals
-	 */
-	private static class ErrorOutputStream extends FilterOutputStream {
-		/**
-		 * True if we're currently writing to the underlying output stream
-		 */
-		private boolean writing = false;
-		
-		/**
-		 * Constructs a new filter output stream
-		 * @param out the underlying output stream
-		 */
-		public ErrorOutputStream(OutputStream out) {
-			super(out);
-		}
-		
-		@Override
-		public void write(int b) throws IOException {
-			boolean oldwriting = enableRed();
-			super.write(b);
-			if (!oldwriting) {
-				disableRed();
-			}
-		}
-		
-		@Override
-		public void write(byte b[], int off, int len) throws IOException {
-			boolean oldwriting = enableRed();
-			super.write(b, off, len);
-			if (!oldwriting) {
-				disableRed();
-			}
-		}
-		
-		/**
-		 * Enables colored output
-		 * @return true if the colored output was already enabled before
-		 * @throws IOException if writing to the underlying output stream failed
-		 */
-		private boolean enableRed() throws IOException {
-			boolean oldwriting = writing;
-			if (!writing) {
-				writing = true;
-				byte[] en = "\u001B[31m".getBytes();
-				super.write(en, 0, en.length);
-			}
-			return oldwriting;
-		}
-		
-		/**
-		 * Disabled colored output
-		 * @throws IOException if writing to the underlying output stream failed
-		 */
-		private void disableRed() throws IOException {
-			byte[] dis = "\u001B[0m".getBytes();
-			super.write(dis, 0, dis.length);
-			writing = false;
-		}
-	}
-	
-	/**
-	 * Reads input from the user, but first disables prompt, completions,
-	 * and history.
-	 */
-	private static class ConsoleInputReader implements InputReader {
-		private final ConsoleReader reader;
-		
-		public ConsoleInputReader(ConsoleReader reader) {
-			this.reader = reader;
-		}
-		
-		@Override
-		public String readLine(String prompt) throws IOException {
-			boolean oldHistoryEnabled = reader.isHistoryEnabled();
-			History oldHistory = reader.getHistory();
-			Collection<Completer> oldCompleters =
-					new ArrayList<Completer>(reader.getCompleters());
-			String oldPrompt = reader.getPrompt();
-			try {
-				reader.setHistoryEnabled(false);
-				reader.setHistory(new MemoryHistory());
-				for (Completer c : oldCompleters) {
-					reader.removeCompleter(c);
-				}
-				String result = reader.readLine(prompt);
-				return result;
-			} finally {
-				for (Completer c : oldCompleters) {
-					reader.addCompleter(c);
-				}
-				reader.setPrompt(oldPrompt);
-				reader.setHistory(oldHistory);
-				reader.setHistoryEnabled(oldHistoryEnabled);
-			}
-		}
 	}
 }

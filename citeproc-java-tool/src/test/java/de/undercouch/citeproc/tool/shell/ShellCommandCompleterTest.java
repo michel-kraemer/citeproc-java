@@ -12,20 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package de.undercouch.citeproc.tool;
+package de.undercouch.citeproc.tool.shell;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 
 import de.undercouch.citeproc.CSLTool;
+import de.undercouch.citeproc.helper.tool.Command;
 import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.OptionGroup;
 import de.undercouch.citeproc.helper.tool.OptionIntrospector;
 import de.undercouch.citeproc.helper.tool.OptionIntrospector.ID;
+import de.undercouch.citeproc.tool.MendeleyCommand;
 
 /**
  * Tests {@link ShellCommandCompleter}
@@ -33,7 +37,12 @@ import de.undercouch.citeproc.helper.tool.OptionIntrospector.ID;
  */
 public class ShellCommandCompleterTest {
 	private int complete(String buffer, ArrayList<CharSequence> r) {
-		ShellCommandCompleter cc = new ShellCommandCompleter();
+		return complete(buffer, r, Collections.<Class<? extends Command>>emptyList());
+	}
+	
+	private int complete(String buffer, ArrayList<CharSequence> r,
+			List<Class<? extends Command>> excludedCommands) {
+		ShellCommandCompleter cc = new ShellCommandCompleter(excludedCommands);
 		return cc.complete(buffer, buffer.length(), r);
 	}
 	
@@ -47,20 +56,29 @@ public class ShellCommandCompleterTest {
 		int pos = complete("", r);
 		
 		OptionGroup<ID> options = OptionIntrospector.introspect(CSLTool.class);
-		assertEquals(options.getCommands().size(), r.size());
+		OptionGroup<ID> optionsAdditional = OptionIntrospector.introspect(
+				AdditionalShellCommands.class);
+		//get number of commands, subtract 1 because there's a HelpCommand
+		//and a ShellHelpCommand
+		int numCommands = options.getCommands().size() +
+				optionsAdditional.getCommands().size() - 1;
+		assertEquals(numCommands, r.size());
 		for (Option<ID> o : options.getCommands()) {
+			assertTrue(r.contains(o.getLongName()));
+		}
+		for (Option<ID> o : optionsAdditional.getCommands()) {
 			assertTrue(r.contains(o.getLongName()));
 		}
 		assertEquals(0, pos);
 		
 		r = new ArrayList<CharSequence>();
 		pos = complete(" ", r);
-		assertEquals(options.getCommands().size(), r.size());
+		assertEquals(numCommands, r.size());
 		assertEquals(1, pos);
 		
 		r = new ArrayList<CharSequence>();
 		pos = complete("     ", r);
-		assertEquals(options.getCommands().size(), r.size());
+		assertEquals(numCommands, r.size());
 		assertEquals(5, pos);
 		
 		r = new ArrayList<CharSequence>();
@@ -121,45 +139,6 @@ public class ShellCommandCompleterTest {
 	}
 	
 	/**
-	 * Tests if commands with flags can be completed
-	 * @throws Exception if something goes wrong
-	 */
-	@Test
-	public void flags() throws Exception {
-		ArrayList<CharSequence> r = new ArrayList<CharSequence>();
-		int pos = complete("mendeley -s", r);
-		assertEquals(12, pos);
-		
-		OptionGroup<ID> options = OptionIntrospector.introspect(
-				MendeleyCommand.class);
-		assertEquals(options.getCommands().size(), r.size());
-		for (Option<ID> o : options.getCommands()) {
-			assertTrue(r.contains(o.getLongName()));
-		}
-		
-		r = new ArrayList<CharSequence>();
-		pos = complete("mendeley -s ", r);
-		assertEquals(options.getCommands().size(), r.size());
-		assertEquals(12, pos);
-		
-		r = new ArrayList<CharSequence>();
-		pos = complete("mendeley -s li", r);
-		assertEquals(1, r.size());
-		assertEquals("list", r.get(0));
-		assertEquals(12, pos);
-		
-		r = new ArrayList<CharSequence>();
-		pos = complete("mendeley -s list", r);
-		assertEquals(0, r.size());
-		assertEquals(-1, pos);
-		
-		r = new ArrayList<CharSequence>();
-		pos = complete("mendeley -s bla", r);
-		assertEquals(0, r.size());
-		assertEquals(-1, pos);
-	}
-	
-	/**
 	 * Tests if unknown attributes are ignored
 	 * @throws Exception if something goes wrong
 	 */
@@ -174,5 +153,29 @@ public class ShellCommandCompleterTest {
 		pos = complete("mendeley bibliography test test2", r);
 		assertEquals(0, r.size());
 		assertEquals(-1, pos);
+	}
+	
+	/**
+	 * Tests if commands can be excluded
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void excludedCommands() throws Exception {
+		List<Class<? extends Command>> cmds = new ArrayList<Class<? extends Command>>();
+		cmds.add(MendeleyCommand.class);
+		
+		OptionGroup<ID> options = OptionIntrospector.introspect(CSLTool.class);
+		OptionGroup<ID> optionsAdditional = OptionIntrospector.introspect(
+				AdditionalShellCommands.class);
+		//get number of commands, subtract 1 because there's a HelpCommand
+		//and a ShellHelpCommand
+		int numCommands = options.getCommands().size() +
+				optionsAdditional.getCommands().size() - 1;
+		//subtract 1 again because we excluded one command
+		--numCommands;
+		
+		ArrayList<CharSequence> r = new ArrayList<CharSequence>();
+		complete("", r, cmds);
+		assertEquals(numCommands, r.size());
 	}
 }
