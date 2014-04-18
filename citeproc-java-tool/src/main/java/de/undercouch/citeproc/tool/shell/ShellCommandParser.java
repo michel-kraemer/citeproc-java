@@ -24,6 +24,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
+import de.undercouch.citeproc.helper.tool.InvalidOptionException;
 import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.OptionGroup;
 import de.undercouch.citeproc.helper.tool.OptionIntrospector;
@@ -71,8 +72,11 @@ public final class ShellCommandParser {
 	 * @return the parser result
 	 * @throws IntrospectionException if a {@link de.undercouch.citeproc.tool.CSLToolCommand}
 	 * could not be introspected
+	 * @throws InvalidOptionException if the command line contains an
+	 * option (only commands are allowed in the interactive shell)
 	 */
-	public static Result parse(String line) throws IntrospectionException {
+	public static Result parse(String line) throws IntrospectionException,
+			InvalidOptionException {
 		return parse(line, Collections.<Class<? extends Command>>emptyList());
 	}
 	
@@ -83,9 +87,11 @@ public final class ShellCommandParser {
 	 * @return the parser result
 	 * @throws IntrospectionException if a {@link de.undercouch.citeproc.tool.CSLToolCommand}
 	 * could not be introspected
+	 * @throws InvalidOptionException if the command line contains an
+	 * option (only commands are allowed in the interactive shell)
 	 */
 	public static Result parse(String line, List<Class<? extends Command>> excluded)
-			throws IntrospectionException {
+			throws IntrospectionException, InvalidOptionException {
 		String[] args = line.trim().split("\\s+");
 		return parse(args, excluded);
 	}
@@ -97,18 +103,25 @@ public final class ShellCommandParser {
 	 * @return the parser result
 	 * @throws IntrospectionException if a {@link de.undercouch.citeproc.tool.CSLToolCommand}
 	 * could not be introspected
+	 * @throws InvalidOptionException if the command line contains an
+	 * option (only commands are allowed in the interactive shell)
 	 */
 	public static Result parse(String[] args, List<Class<? extends Command>> excluded)
-			throws IntrospectionException {
+			throws IntrospectionException, InvalidOptionException {
 		return getCommandClass(args, 0, CSLTool.class,
 				new HashSet<Class<? extends Command>>(excluded));
 	}
 	
 	private static Result getCommandClass(String[] args, int i,
 			Class<? extends Command> cls, Set<Class<? extends Command>> excluded)
-					throws IntrospectionException {
+					throws IntrospectionException, InvalidOptionException {
 		if (i >= args.length) {
 			return new Result(new String[0], cls);
+		}
+		
+		if (args[i].startsWith("-")) {
+			//block options
+			throw new InvalidOptionException("unknown command: " + args[i]);
 		}
 		
 		OptionGroup<ID> options;

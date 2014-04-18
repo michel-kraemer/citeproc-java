@@ -24,6 +24,7 @@ import java.util.Set;
 import jline.console.completer.Completer;
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
+import de.undercouch.citeproc.helper.tool.InvalidOptionException;
 import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.OptionGroup;
 import de.undercouch.citeproc.helper.tool.OptionIntrospector;
@@ -93,6 +94,10 @@ public class ShellCommandCompleter implements Completer {
 					}
 				}
 			}
+		} catch (InvalidOptionException e) {
+			//there's an option, we cannot calculate completions anymore
+			//because options are not allowed in the interactive shell
+			allparsed = false;
 		} catch (IntrospectionException e) {
 			throw new RuntimeException("Could not inspect command", e);
 		}

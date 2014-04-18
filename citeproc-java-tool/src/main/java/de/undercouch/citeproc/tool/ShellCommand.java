@@ -104,6 +104,11 @@ public class ShellCommand extends AbstractCSLToolCommand {
 			Result pr;
 			try {
 				pr = ShellCommandParser.parse(line, EXCLUDED_COMMANDS);
+			} catch (OptionParserException e) {
+				//there is an option, only commands are allowed in the
+				//interactive shell
+				error(e.getMessage());
+				continue;
 			} catch (IntrospectionException e) {
 				//should never happen
 				throw new RuntimeException(e);
