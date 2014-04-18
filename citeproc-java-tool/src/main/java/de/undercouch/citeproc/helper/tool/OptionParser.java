@@ -92,11 +92,32 @@ public class OptionParser {
 	 * @param out destination stream
 	 */
 	public static <T> void usage(String command, String description,
-			OptionGroup<T> options, String footnotes, PrintStream out) {
-		out.println("Usage: " + command);
-		out.println(description);
-		out.println();
+			OptionGroup<T> options, String footnotes, PrintWriter out) {
+		if (command != null) {
+			out.println("Usage: " + command);
+		}
+		if (description != null) {
+			out.println(description);
+		}
 		
+		boolean noOptions = (options == null || options.getOptions() == null ||
+				options.getOptions().isEmpty());
+		boolean noCommands = (options == null || options.getCommands() == null ||
+				options.getCommands().isEmpty());
+		if ((command != null || description != null) && (!noOptions || !noCommands)) {
+			out.println();
+		}
+		
+		printOptions(options, out);
+		
+		//display footnotes
+		if (footnotes != null) {
+			out.println();
+			out.println(footnotes);
+		}
+	}
+
+	private static <T> void printOptions(OptionGroup<T> options, PrintWriter out) {
 		if (options == null) {
 			return;
 		}
@@ -123,6 +144,10 @@ public class OptionParser {
 			}
 		}
 		
+		if (firstColumnWidth == 0) {
+			++firstColumnWidth;
+		}
+		
 		//extend columns if there are commands
 		if (options.getCommands() != null && !options.getCommands().isEmpty()) {
 			for (Option<T> cmd : options.getCommands()) {
@@ -138,8 +163,11 @@ public class OptionParser {
 		
 		//output commands
 		if (options.getCommands() != null && !options.getCommands().isEmpty()) {
-			out.println();
+			if (options.getOptions() != null && !options.getOptions().isEmpty()) {
+				out.println();
+			}
 			out.println("Commands:");
+			
 			for (Option<T> cmd : options.getCommands()) {
 				out.print("  " + cmd.getLongName());
 				int lnl = cmd.getLongName().length();
@@ -151,12 +179,6 @@ public class OptionParser {
 				printDescription(cmd.getDescription(), out,
 						firstColumnWidth, secondColumnWidth);
 			}
-		}
-		
-		//display footnotes
-		if (footnotes != null) {
-			out.println();
-			out.println(footnotes);
 		}
 	}
 	
