@@ -15,6 +15,7 @@
 package de.undercouch.citeproc.tool;
 
 import java.beans.IntrospectionException;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -27,6 +28,7 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 
 import jline.console.ConsoleReader;
+import jline.console.history.FileHistory;
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
 import de.undercouch.citeproc.helper.tool.InputReader;
@@ -78,6 +80,9 @@ public class ShellCommand extends AbstractCSLToolCommand {
 		final ConsoleReader reader = new ConsoleReader();
 		reader.setPrompt("> ");
 		reader.addCompleter(new ShellCommandCompleter(EXCLUDED_COMMANDS));
+		FileHistory history = new FileHistory(new File(
+				CSLToolContext.current().getConfigDir(), "shell_history.txt"));
+		reader.setHistory(history);
 		
 		//enable colored error stream for ANSI terminals
 		if (reader.getTerminal().isAnsiSupported()) {
@@ -105,6 +110,9 @@ public class ShellCommand extends AbstractCSLToolCommand {
 			line = mainLoop(reader, cout);
 		} finally {
 			ShellContext.exit();
+			
+			//make sure we save the history before we exit
+			history.flush();
 		}
 		
 		//print Goodbye message
