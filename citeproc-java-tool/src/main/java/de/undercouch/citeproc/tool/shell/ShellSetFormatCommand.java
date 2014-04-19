@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
+import de.undercouch.citeproc.helper.tool.ToolUtils;
 import de.undercouch.citeproc.helper.tool.UnknownAttributes;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 
@@ -55,13 +57,30 @@ public class ShellSetFormatCommand extends AbstractCSLToolCommand {
 	@Override
 	public boolean checkArguments() {
 		if (formats == null || formats.isEmpty()) {
-			error("No format specified");
+			error("no format specified");
 			return false;
 		}
 		if (formats.size() > 1) {
-			error("You can only specify one format");
+			error("you can only specify one format");
 			return false;
 		}
+		
+		String f = formats.get(0);
+		try {
+			List<String> supportedFormats = CSL.getSupportedOutputFormats();
+			if (!supportedFormats.contains(f)) {
+				String message = "unsupported format `" + f + "'";
+				String dyms = ToolUtils.getDidYouMeanString(supportedFormats, f);
+				if (dyms != null && !dyms.isEmpty()) {
+					message += "\n\n" + dyms;
+				}
+				error(message);
+				return false;
+			}
+		} catch (IOException e) {
+			//could not check supported output formats. ignore
+		}
+		
 		return true;
 	}
 	

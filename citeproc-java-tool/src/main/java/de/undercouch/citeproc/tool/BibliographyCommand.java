@@ -22,7 +22,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -30,10 +29,10 @@ import java.util.zip.ZipFile;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
-import de.undercouch.citeproc.helper.Levenshtein;
-import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.InputReader;
+import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
 import de.undercouch.citeproc.helper.tool.OptionDesc;
+import de.undercouch.citeproc.helper.tool.ToolUtils;
 import de.undercouch.citeproc.output.Bibliography;
 
 /**
@@ -163,16 +162,9 @@ public class BibliographyCommand extends CitationIdsCommand {
 		
 		//output alternative
 		if (!availableStyles.isEmpty()) {
-			Collection<String> mins = Levenshtein.findSimilar(availableStyles, style);
-			if (mins.size() > 0) {
-				if (mins.size() == 1) {
-					message += "\n\nDid you mean this?";
-				} else {
-					message += "\n\nDid you mean one of these?";
-				}
-				for (String m : mins) {
-					message += "\n\t" + m;
-				}
+			String dyms = ToolUtils.getDidYouMeanString(availableStyles, style);
+			if (dyms != null && !dyms.isEmpty()) {
+				message += "\n\n" + dyms;
 			}
 		}
 		
