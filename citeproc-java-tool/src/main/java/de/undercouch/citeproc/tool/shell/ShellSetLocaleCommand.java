@@ -17,9 +17,12 @@ package de.undercouch.citeproc.tool.shell;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Set;
 
+import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
+import de.undercouch.citeproc.helper.tool.ToolUtils;
 import de.undercouch.citeproc.helper.tool.UnknownAttributes;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 
@@ -55,13 +58,30 @@ public class ShellSetLocaleCommand extends AbstractCSLToolCommand {
 	@Override
 	public boolean checkArguments() {
 		if (locales == null || locales.isEmpty()) {
-			error("No locale specified");
+			error("no locale specified");
 			return false;
 		}
 		if (locales.size() > 1) {
-			error("You can only specify one locale");
+			error("you can only specify one locale");
 			return false;
 		}
+		
+		String l = locales.get(0);
+		try {
+			Set<String> supportedLocales = CSL.getSupportedLocales();
+			if (!supportedLocales.contains(l)) {
+				String message = "unsupported locale `" + l + "'";
+				String dyms = ToolUtils.getDidYouMeanString(supportedLocales, l);
+				if (dyms != null && !dyms.isEmpty()) {
+					message += "\n\n" + dyms;
+				}
+				error(message);
+				return false;
+			}
+		} catch (IOException e) {
+			//could not check supported locales. ignore
+		}
+		
 		return true;
 	}
 	

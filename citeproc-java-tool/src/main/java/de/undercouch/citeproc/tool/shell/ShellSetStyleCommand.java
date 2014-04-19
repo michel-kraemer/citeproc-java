@@ -17,6 +17,7 @@ package de.undercouch.citeproc.tool.shell;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Set;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.helper.tool.InputReader;
@@ -67,7 +68,7 @@ public class ShellSetStyleCommand extends AbstractCSLToolCommand {
 		
 		String s = styles.get(0);
 		try {
-			List<String> supportedStyles = CSL.getSupportedStyles();
+			Set<String> supportedStyles = CSL.getSupportedStyles();
 			if (!supportedStyles.contains(s)) {
 				String message = "unsupported citation style `" + s + "'";
 				String dyms = ToolUtils.getDidYouMeanString(supportedStyles, s);

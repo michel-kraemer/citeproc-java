@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -461,7 +462,7 @@ public class CSLTest {
 	 */
 	@Test
 	public void getSupportedStyles() throws Exception {
-		List<String> ss = CSL.getSupportedStyles();
+		Set<String> ss = CSL.getSupportedStyles();
 		assertTrue(ss.size() > 5000);
 		assertTrue(ss.contains("ieee"));
 		assertTrue(ss.contains("apa"));
@@ -476,5 +477,20 @@ public class CSLTest {
 		assertTrue(CSL.supportsStyle("ieee"));
 		assertTrue(CSL.supportsStyle("apa"));
 		assertFalse(CSL.supportsStyle("jkseghg"));
+	}
+	
+	/**
+	 * Checks if the supported locales are calculated correctly
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void getSupportedLocales() throws Exception {
+		Set<String> ss = CSL.getSupportedLocales();
+		assertTrue(ss.size() > 40);
+		assertTrue(ss.contains("de-DE"));
+		assertTrue(ss.contains("en-US"));
+		assertTrue(ss.contains("en-GB"));
+		assertTrue(ss.contains("de"));
+		assertTrue(ss.contains("en"));
 	}
 }

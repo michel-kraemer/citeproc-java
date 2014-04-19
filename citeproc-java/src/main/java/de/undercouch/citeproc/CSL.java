@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -203,36 +205,34 @@ public class CSL {
 		}
 	}
 	
-	/**
-	 * Calculates a list of available citation styles
-	 * @return the list
-	 * @throws IOException if the citation styles could not be loaded
-	 */
-	public static List<String> getSupportedStyles() throws IOException {
-		List<String> availableStyles = new ArrayList<String>();
+	private static Set<String> getAvailableFiles(String prefix,
+			String knownName, String extension) throws IOException {
+		Set<String> result = new LinkedHashSet<String>();
 		
-		//first load a style that is known to exist
-		URL ieee = CSL.class.getResource("/ieee.csl");
-		if (ieee != null) {
-			String path = ieee.getPath();
-			//get the jar file containing the style
-			if (path.toLowerCase().endsWith(".jar!/ieee.csl")) {
-				String jarPath = path.substring(0, path.length() - 10);
+		//first load a file that is known to exist
+		String name = prefix + knownName + "." + extension;
+		URL knownUrl = CSL.class.getResource("/" + name);
+		if (knownUrl != null) {
+			String path = knownUrl.getPath();
+			//get the jar file containing the file
+			if (path.endsWith(".jar!/" + name)) {
+				String jarPath = path.substring(0, path.length() - name.length() - 2);
 				URI jarUri;
 				try {
 					jarUri = new URI(jarPath);
 				} catch (URISyntaxException e) {
 					//ignore
-					return availableStyles;
+					return result;
 				}
 				ZipFile zip = new ZipFile(new File(jarUri));
 				try {
 					Enumeration<? extends ZipEntry> entries = zip.entries();
 					while (entries.hasMoreElements()) {
 						ZipEntry e = entries.nextElement();
-						if (e.getName().endsWith(".csl")) {
-							availableStyles.add(e.getName().substring(
-									0, e.getName().length() - 4));
+						if (e.getName().endsWith("." + extension) &&
+								(prefix.isEmpty() || e.getName().startsWith(prefix))) {
+							result.add(e.getName().substring(
+									prefix.length(), e.getName().length() - 4));
 						}
 					}
 				} finally {
@@ -241,7 +241,16 @@ public class CSL {
 			}
 		}
 		
-		return availableStyles;
+		return result;
+	}
+	
+	/**
+	 * Calculates a list of available citation styles
+	 * @return the list
+	 * @throws IOException if the citation styles could not be loaded
+	 */
+	public static Set<String> getSupportedStyles() throws IOException {
+		return getAvailableFiles("", "ieee", "csl");
 	}
 	
 	/**
@@ -259,6 +268,24 @@ public class CSL {
 		}
 		URL url = CSL.class.getResource(styleFileName);
 		return (url != null);
+	}
+	
+	/**
+	 * Calculates a list of available citation locales
+	 * @return the list
+	 * @throws IOException if the citation locales could not be loaded
+	 */
+	public static Set<String> getSupportedLocales() throws IOException {
+		Set<String> locales = getAvailableFiles("locales-", "en-US", "xml");
+		try {
+			@SuppressWarnings("unchecked")
+			List<String> baseLocales = getRunner().callMethod(
+					"getBaseLocales", List.class);
+			locales.addAll(baseLocales);
+		} catch (ScriptRunnerException e) {
+			//ignore. don't add base locales
+		}
+		return locales;
 	}
 	
 	/**

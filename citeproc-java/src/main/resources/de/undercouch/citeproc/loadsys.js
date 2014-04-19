@@ -76,3 +76,11 @@ function getSupportedFormats() {
 	}
 	return result;
 }
+
+function getBaseLocales() {
+	var result = [];
+	for (var f in CSL.LANG_BASES) {
+		result.push(f);
+	}
+	return result;
+}

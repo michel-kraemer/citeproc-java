@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Set;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
@@ -110,7 +111,7 @@ public class BibliographyCommand extends CitationIdsCommand {
 
 		//style is not supported. look for alternatives.
 		String message = "Could not find style in classpath: " + style;
-		List<String> availableStyles = CSL.getSupportedStyles();
+		Set<String> availableStyles = CSL.getSupportedStyles();
 		
 		//output alternative
 		if (!availableStyles.isEmpty()) {
