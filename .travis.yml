@@ -4,6 +4,7 @@ script:
   - chmod 755 gradlew
   - TERM=dumb ./gradlew test
 jdk:
+  - oraclejdk8
   - oraclejdk7
-  - openjdk6
   - openjdk7
+  - openjdk6
