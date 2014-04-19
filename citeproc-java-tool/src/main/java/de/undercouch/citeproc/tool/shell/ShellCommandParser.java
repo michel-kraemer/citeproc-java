@@ -16,6 +16,7 @@ package de.undercouch.citeproc.tool.shell;
 
 import java.beans.IntrospectionException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -113,14 +114,15 @@ public final class ShellCommandParser {
 	/**
 	 * Parses a shell command line
 	 * @param line the command line
-	 * @param excluded a list of commands that should not be parsed
+	 * @param excluded a collection of commands that should not be parsed
 	 * @return the parser result
 	 * @throws IntrospectionException if a {@link de.undercouch.citeproc.tool.CSLToolCommand}
 	 * could not be introspected
 	 * @throws InvalidOptionException if the command line contains an
 	 * option (only commands are allowed in the interactive shell)
 	 */
-	public static Result parse(String line, List<Class<? extends Command>> excluded)
+	public static Result parse(String line,
+			Collection<Class<? extends Command>> excluded)
 			throws IntrospectionException, InvalidOptionException {
 		String[] args = split(line);
 		return parse(args, excluded);
@@ -129,14 +131,15 @@ public final class ShellCommandParser {
 	/**
 	 * Parses arguments of a shell command line
 	 * @param args the arguments to parse
-	 * @param excluded a list of commands that should not be parsed
+	 * @param excluded a collection of commands that should not be parsed
 	 * @return the parser result
 	 * @throws IntrospectionException if a {@link de.undercouch.citeproc.tool.CSLToolCommand}
 	 * could not be introspected
 	 * @throws InvalidOptionException if the command line contains an
 	 * option (only commands are allowed in the interactive shell)
 	 */
-	public static Result parse(String[] args, List<Class<? extends Command>> excluded)
+	public static Result parse(String[] args,
+			Collection<Class<? extends Command>> excluded)
 			throws IntrospectionException, InvalidOptionException {
 		List<Class<? extends Command>> classes = new ArrayList<Class<? extends Command>>();
 		return getCommandClass(args, 0, classes,
