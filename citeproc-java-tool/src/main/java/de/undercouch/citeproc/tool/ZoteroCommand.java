@@ -53,7 +53,10 @@ public class ZoteroCommand extends AbstractRemoteCommand {
 				command = ZoteroListCommand.class),
 		@CommandDesc(longName = "json",
 				description = "convert Zotero library to JSON",
-				command = ZoteroJsonCommand.class)
+				command = ZoteroJsonCommand.class),
+		@CommandDesc(longName = "sync",
+				description = "synchronize with Zotero",
+				command = ZoteroSyncCommand.class)
 	})
 	@Override
 	public void setSubcommand(ProviderCommand subcommand) {

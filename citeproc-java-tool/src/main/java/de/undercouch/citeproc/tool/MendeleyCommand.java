@@ -57,7 +57,10 @@ public class MendeleyCommand extends AbstractRemoteCommand {
 				command = MendeleyListCommand.class),
 		@CommandDesc(longName = "json",
 				description = "convert Mendeley Web catalog to JSON",
-				command = MendeleyJsonCommand.class)
+				command = MendeleyJsonCommand.class),
+		@CommandDesc(longName = "sync",
+				description = "synchronize with Mendeley Web",
+				command = MendeleySyncCommand.class)
 	})
 	@Override
 	public void setSubcommand(ProviderCommand subcommand) {

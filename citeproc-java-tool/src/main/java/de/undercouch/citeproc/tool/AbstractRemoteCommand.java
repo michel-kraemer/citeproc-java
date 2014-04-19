@@ -59,6 +59,9 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 	 */
 	public void setSubcommand(ProviderCommand subcommand) {
 		this.subcommand = subcommand;
+		if (subcommand instanceof NeedsSynchronization) {
+			setSync(true);
+		}
 	}
 	
 	@Override
