@@ -14,18 +14,10 @@
 
 package de.undercouch.citeproc.tool;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
@@ -111,54 +103,14 @@ public class BibliographyCommand extends CitationIdsCommand {
 	 * @throws IOException if the style could not be loaded
 	 */
 	private boolean checkStyle(String style) throws IOException {
-		//check if style exists
-		String styleFileName = style;
-		if (!styleFileName.endsWith(".csl")) {
-			styleFileName = styleFileName + ".csl";
-		}
-		if (!styleFileName.startsWith("/")) {
-			styleFileName = "/" + styleFileName;
-		}
-		URL url = getClass().getResource(styleFileName);
-		if (url != null) {
-			//style exists
+		if (CSL.supportsStyle(style)) {
+			//style is supported
 			return true;
 		}
-		
+
+		//style is not supported. look for alternatives.
 		String message = "Could not find style in classpath: " + style;
-		
-		List<String> availableStyles = new ArrayList<String>();
-		
-		//try to find an alternative
-		//first load a style that is known to exist
-		URL ieee = getClass().getResource("/ieee.csl");
-		if (ieee != null) {
-			String path = ieee.getPath();
-			//get the jar file containing the style
-			if (path.toLowerCase().endsWith(".jar!/ieee.csl")) {
-				String jarPath = path.substring(0, path.length() - 10);
-				URI jarUri;
-				try {
-					jarUri = new URI(jarPath);
-				} catch (URISyntaxException e) {
-					//ignore
-					return false;
-				}
-				ZipFile zip = new ZipFile(new File(jarUri));
-				try {
-					Enumeration<? extends ZipEntry> entries = zip.entries();
-					while (entries.hasMoreElements()) {
-						ZipEntry e = entries.nextElement();
-						if (e.getName().endsWith(".csl")) {
-							availableStyles.add(e.getName().substring(
-									0, e.getName().length() - 4));
-						}
-					}
-				} finally {
-					zip.close();
-				}
-			}
-		}
+		List<String> availableStyles = CSL.getSupportedStyles();
 		
 		//output alternative
 		if (!availableStyles.isEmpty()) {

@@ -14,14 +14,20 @@
 
 package de.undercouch.citeproc;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
@@ -195,6 +201,64 @@ public class CSL {
 		} catch (ScriptRunnerException e) {
 			throw new IllegalStateException("Could not get supported formats", e);
 		}
+	}
+	
+	/**
+	 * Calculates a list of available citation styles
+	 * @return the list
+	 * @throws IOException if the citation styles could not be loaded
+	 */
+	public static List<String> getSupportedStyles() throws IOException {
+		List<String> availableStyles = new ArrayList<String>();
+		
+		//first load a style that is known to exist
+		URL ieee = CSL.class.getResource("/ieee.csl");
+		if (ieee != null) {
+			String path = ieee.getPath();
+			//get the jar file containing the style
+			if (path.toLowerCase().endsWith(".jar!/ieee.csl")) {
+				String jarPath = path.substring(0, path.length() - 10);
+				URI jarUri;
+				try {
+					jarUri = new URI(jarPath);
+				} catch (URISyntaxException e) {
+					//ignore
+					return availableStyles;
+				}
+				ZipFile zip = new ZipFile(new File(jarUri));
+				try {
+					Enumeration<? extends ZipEntry> entries = zip.entries();
+					while (entries.hasMoreElements()) {
+						ZipEntry e = entries.nextElement();
+						if (e.getName().endsWith(".csl")) {
+							availableStyles.add(e.getName().substring(
+									0, e.getName().length() - 4));
+						}
+					}
+				} finally {
+					zip.close();
+				}
+			}
+		}
+		
+		return availableStyles;
+	}
+	
+	/**
+	 * Checks if a given citation style is supported
+	 * @param style the citation style's name
+	 * @return true if the style is supported, false otherwise
+	 */
+	public static boolean supportsStyle(String style) {
+		String styleFileName = style;
+		if (!styleFileName.endsWith(".csl")) {
+			styleFileName = styleFileName + ".csl";
+		}
+		if (!styleFileName.startsWith("/")) {
+			styleFileName = "/" + styleFileName;
+		}
+		URL url = CSL.class.getResource(styleFileName);
+		return (url != null);
 	}
 	
 	/**

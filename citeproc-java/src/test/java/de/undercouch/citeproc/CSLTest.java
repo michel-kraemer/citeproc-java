@@ -15,6 +15,7 @@
 package de.undercouch.citeproc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -452,5 +453,28 @@ public class CSLTest {
 		assertTrue(sf.contains("asciidoc"));
 		assertTrue(sf.contains("rtf"));
 		assertTrue(sf.contains("fo"));
+	}
+	
+	/**
+	 * Checks if the supported styles are calculated correctly
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void getSupportedStyles() throws Exception {
+		List<String> ss = CSL.getSupportedStyles();
+		assertTrue(ss.size() > 5000);
+		assertTrue(ss.contains("ieee"));
+		assertTrue(ss.contains("apa"));
+		assertTrue(ss.contains("vancouver"));
+	}
+	
+	/**
+	 * Makes sure some styles are supported
+	 */
+	@Test
+	public void supportsStyle() {
+		assertTrue(CSL.supportsStyle("ieee"));
+		assertTrue(CSL.supportsStyle("apa"));
+		assertFalse(CSL.supportsStyle("jkseghg"));
 	}
 }

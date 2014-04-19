@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
+import de.undercouch.citeproc.helper.tool.ToolUtils;
 import de.undercouch.citeproc.helper.tool.UnknownAttributes;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 
@@ -55,13 +57,30 @@ public class ShellSetStyleCommand extends AbstractCSLToolCommand {
 	@Override
 	public boolean checkArguments() {
 		if (styles == null || styles.isEmpty()) {
-			error("No style specified");
+			error("no style specified");
 			return false;
 		}
 		if (styles.size() > 1) {
-			error("You can only specify one style");
+			error("you can only specify one style");
 			return false;
 		}
+		
+		String s = styles.get(0);
+		try {
+			List<String> supportedStyles = CSL.getSupportedStyles();
+			if (!supportedStyles.contains(s)) {
+				String message = "unsupported citation style `" + s + "'";
+				String dyms = ToolUtils.getDidYouMeanString(supportedStyles, s);
+				if (dyms != null && !dyms.isEmpty()) {
+					message += "\n\n" + dyms;
+				}
+				error(message);
+				return false;
+			}
+		} catch (IOException e) {
+			//could not check supported styles. ignore
+		}
+		
 		return true;
 	}
 	
