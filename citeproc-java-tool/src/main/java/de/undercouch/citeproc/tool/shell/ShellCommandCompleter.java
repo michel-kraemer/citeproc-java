@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import jline.console.completer.Completer;
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
@@ -100,6 +102,23 @@ public class ShellCommandCompleter implements Completer {
 					if (allparsed || o.getLongName().startsWith(ra[0])) {
 						result.add(o.getLongName());
 					}
+				}
+			}
+			
+			if (pr.getLastCommand() != null &&
+					Completer.class.isAssignableFrom(pr.getLastCommand())) {
+				Completer cc;
+				try {
+					cc = (Completer)pr.getLastCommand().newInstance();
+				} catch (Exception e) {
+					//should never happen
+					throw new RuntimeException(e);
+				}
+				List<CharSequence> ccl = new ArrayList<CharSequence>();
+				String jra = StringUtils.join(pr.getRemainingArgs(), " ");
+				cc.complete(jra, jra.length(), ccl);
+				for (CharSequence cs : ccl) {
+					result.add(cs.toString());
 				}
 			}
 		} catch (InvalidOptionException e) {

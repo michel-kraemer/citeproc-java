@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import jline.console.completer.Completer;
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
@@ -29,7 +30,7 @@ import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
  * Set the current output format
  * @author Michel Kraemer
  */
-public class ShellSetFormatCommand extends AbstractCSLToolCommand {
+public class ShellSetFormatCommand extends AbstractCSLToolCommand implements Completer {
 	/**
 	 * The current formats
 	 */
@@ -88,6 +89,30 @@ public class ShellSetFormatCommand extends AbstractCSLToolCommand {
 	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
 			throws OptionParserException, IOException {
 		ShellContext.current().setFormat(formats.get(0));
+		return 0;
+	}
+
+	@Override
+	public int complete(String buffer, int cursor, List<CharSequence> candidates) {
+		List<String> sf;
+		try {
+			sf = CSL.getSupportedOutputFormats();
+		} catch (IOException e) {
+			//could not get list of supported output formats. ignore.
+			return 0;
+		}
+		
+		if (buffer.trim().isEmpty()) {
+			candidates.addAll(sf);
+		} else {
+			String[] args = buffer.split("\\s+");
+			String last = args[args.length - 1];
+			for (String f : sf) {
+				if (f.startsWith(last)) {
+					candidates.add(f);
+				}
+			}
+		}
 		return 0;
 	}
 }

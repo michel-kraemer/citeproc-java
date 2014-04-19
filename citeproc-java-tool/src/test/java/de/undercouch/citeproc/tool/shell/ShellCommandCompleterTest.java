@@ -225,4 +225,21 @@ public class ShellCommandCompleterTest {
 		assertEquals(numCommands, r.size());
 		assertEquals(5, pos);
 	}
+	
+	/**
+	 * Checks if completions for output formats are calculated correctly
+	 */
+	@Test
+	public void completeFormats() {
+		ArrayList<CharSequence> r = new ArrayList<CharSequence>();
+		int pos = complete("set format h", r);
+		assertEquals(1, r.size());
+		assertEquals("html", r.get(0));
+		assertEquals(11, pos);
+		
+		r = new ArrayList<CharSequence>();
+		pos = complete("set format", r);
+		assertEquals(5, r.size());
+		assertEquals(11, pos);
+	}
 }
