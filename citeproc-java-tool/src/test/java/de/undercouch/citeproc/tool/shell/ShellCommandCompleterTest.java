@@ -178,4 +178,51 @@ public class ShellCommandCompleterTest {
 		complete("", r, cmds);
 		assertEquals(numCommands, r.size());
 	}
+	
+	/**
+	 * Tests if completions for the help command are computed correctly
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void help() throws Exception {
+		ArrayList<CharSequence> r = new ArrayList<CharSequence>();
+		int pos = complete("hel", r);
+		assertEquals(1, r.size());
+		assertEquals("help", r.get(0));
+		assertEquals(0, pos);
+		
+		r = new ArrayList<CharSequence>();
+		pos = complete("help me", r);
+		assertEquals(1, r.size());
+		assertEquals("mendeley", r.get(0));
+		assertEquals(5, pos);
+		
+		r = new ArrayList<CharSequence>();
+		pos = complete("help mendeley li", r);
+		assertEquals(1, r.size());
+		assertEquals("list", r.get(0));
+		assertEquals(14, pos);
+		
+		r = new ArrayList<CharSequence>();
+		pos = complete("help mendeley", r);
+		OptionGroup<ID> options = OptionIntrospector.introspect(MendeleyCommand.class);
+		assertEquals(options.getCommands().size(), r.size());
+		for (Option<ID> cmd : options.getCommands()) {
+			assertTrue(r.contains(cmd.getLongName()));
+		}
+		assertEquals(14, pos);
+		
+		r = new ArrayList<CharSequence>();
+		pos = complete("help", r);
+		options = OptionIntrospector.introspect(CSLTool.class);
+		options = OptionIntrospector.introspect(CSLTool.class);
+		OptionGroup<ID> optionsAdditional = OptionIntrospector.introspect(
+				AdditionalShellCommands.class);
+		//get number of commands, subtract 1 because there's a HelpCommand
+		//and a ShellHelpCommand
+		int numCommands = options.getCommands().size() +
+				optionsAdditional.getCommands().size() - 1;
+		assertEquals(numCommands, r.size());
+		assertEquals(5, pos);
+	}
 }

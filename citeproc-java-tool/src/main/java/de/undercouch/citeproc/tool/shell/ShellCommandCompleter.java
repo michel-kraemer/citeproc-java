@@ -29,6 +29,7 @@ import de.undercouch.citeproc.helper.tool.Option;
 import de.undercouch.citeproc.helper.tool.OptionGroup;
 import de.undercouch.citeproc.helper.tool.OptionIntrospector;
 import de.undercouch.citeproc.helper.tool.OptionIntrospector.ID;
+import de.undercouch.citeproc.tool.HelpCommand;
 import de.undercouch.citeproc.tool.shell.ShellCommandParser.Result;
 
 /**
@@ -64,7 +65,14 @@ public class ShellCommandCompleter implements Completer {
 		Set<String> result = new HashSet<String>();
 		
 		try {
-			Result pr = ShellCommandParser.parse(buffer);
+			Result pr = ShellCommandParser.parse(buffer, excludedCommands);
+			if (pr.getFirstCommand() == HelpCommand.class ||
+					pr.getFirstCommand() == ShellHelpCommand.class) {
+				//parse again, but skip 'help'
+				pr = ShellCommandParser.parse(pr.getRemainingArgs(),
+						excludedCommands);
+			}
+			
 			if (pr.getRemainingArgs().length > 1) {
 				//command line could not be parsed completely. we cannot
 				//provide suggestions for more than one unrecognized argument.
