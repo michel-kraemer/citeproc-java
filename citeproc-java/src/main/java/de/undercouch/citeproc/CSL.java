@@ -182,6 +182,22 @@ public class CSL {
 	}
 	
 	/**
+	 * Calculates a list of supported output formats
+	 * @return the formats
+	 * @throws IOException if the underlying JavaScript files could not be loaded
+	 */
+	public static List<String> getSupportedOutputFormats() throws IOException {
+		ScriptRunner runner = getRunner();
+		try {
+			@SuppressWarnings("unchecked")
+			List<String> r = runner.callMethod("getSupportedFormats", List.class);
+			return r;
+		} catch (ScriptRunnerException e) {
+			throw new IllegalStateException("Could not get supported formats", e);
+		}
+	}
+	
+	/**
 	 * Gets or initializes the shared script runner {@link #sharedRunner}
 	 * @return the runner
 	 * @throws IOException if bundles scripts could not be loaded

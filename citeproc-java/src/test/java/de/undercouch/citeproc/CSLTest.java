@@ -438,4 +438,19 @@ public class CSLTest {
 		assertTrue(b.getEntries()[1].startsWith("Ritchie"));
 		assertTrue(b.getEntries()[2].startsWith("Lycklama"));
 	}
+	
+	/**
+	 * Checks if the supported output formats are calculated correctly
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void getSupportedFormats() throws Exception {
+		List<String> sf = CSL.getSupportedOutputFormats();
+		assertEquals(5, sf.size());
+		assertTrue(sf.contains("html"));
+		assertTrue(sf.contains("text"));
+		assertTrue(sf.contains("asciidoc"));
+		assertTrue(sf.contains("rtf"));
+		assertTrue(sf.contains("fo"));
+	}
 }

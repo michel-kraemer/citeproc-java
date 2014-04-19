@@ -68,3 +68,11 @@ function makeCsl(style, lang, forceLang, scriptRunner, itemDataProvider,
 function setConvertLinks(engine, convert) {
 	engine.opt.development_extensions.wrap_url_and_doi = convert;
 }
+
+function getSupportedFormats() {
+	var result = [];
+	for (var f in CSL.Output.Formats) {
+		result.push(f);
+	}
+	return result;
+}
