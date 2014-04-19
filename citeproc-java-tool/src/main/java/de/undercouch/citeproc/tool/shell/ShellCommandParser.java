@@ -156,7 +156,7 @@ public final class ShellCommandParser {
 		
 		if (args[i].startsWith("-")) {
 			//block options
-			throw new InvalidOptionException("unknown command: " + args[i]);
+			throw new InvalidOptionException(args[i]);
 		}
 		
 		OptionGroup<ID> options;
