@@ -30,12 +30,17 @@ import jline.console.ConsoleReader;
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.tool.Command;
 import de.undercouch.citeproc.helper.tool.InputReader;
+import de.undercouch.citeproc.helper.tool.Option;
+import de.undercouch.citeproc.helper.tool.OptionGroup;
+import de.undercouch.citeproc.helper.tool.OptionIntrospector;
+import de.undercouch.citeproc.helper.tool.OptionIntrospector.ID;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.tool.shell.ConsoleInputReader;
 import de.undercouch.citeproc.tool.shell.ErrorOutputStream;
 import de.undercouch.citeproc.tool.shell.ShellCommandCompleter;
 import de.undercouch.citeproc.tool.shell.ShellCommandParser;
 import de.undercouch.citeproc.tool.shell.ShellCommandParser.Result;
+import de.undercouch.citeproc.tool.shell.ShellContext;
 import de.undercouch.citeproc.tool.shell.ShellExitCommand;
 import de.undercouch.citeproc.tool.shell.ShellQuitCommand;
 
@@ -82,8 +87,6 @@ public class ShellCommand extends AbstractCSLToolCommand {
 					((OutputStreamWriter)reader.getOutput()).getEncoding()));
 		}
 		
-		//prepare input and output for commands to run
-		InputReader lr = new ConsoleInputReader(reader);
 		PrintWriter cout = new PrintWriter(reader.getOutput(), true);
 		
 		//print welcome message
@@ -96,7 +99,36 @@ public class ShellCommand extends AbstractCSLToolCommand {
 				CSLToolContext.current().getToolName() + ".");
 		cout.println();
 		
-		//read and interpret lines
+		String line;
+		ShellContext.enter();
+		try {
+			line = mainLoop(reader, cout);
+		} finally {
+			ShellContext.exit();
+		}
+		
+		//print Goodbye message
+		if (line == null) {
+			//user pressed Ctrl+D
+			cout.println();
+		}
+		cout.println("Bye!");
+		
+		return 0;
+	}
+	
+	/**
+	 * Runs the shell's main loop
+	 * @param reader the console reader used to read user input from
+	 * the command line
+	 * @param cout the output stream
+	 * @return the last line read or null if the user pressed Ctrl+D and
+	 * the input stream has ended
+	 * @throws IOException if an I/O error occurs
+	 */
+	private String mainLoop(ConsoleReader reader, PrintWriter cout) throws IOException {
+		InputReader lr = new ConsoleInputReader(reader);
+		
 		String line;
 		while ((line = reader.readLine()) != null) {
 			if (line.isEmpty()) {
@@ -140,20 +172,47 @@ public class ShellCommand extends AbstractCSLToolCommand {
 				cmd = new InputFileCommand((ProviderCommand)cmd);
 			}
 			
+			args = ArrayUtils.subarray(args, 1, args.length);
+			args = augmentCommand(args, pr.getLastCommand());
+			
 			try {
-				cmd.run(ArrayUtils.subarray(args, 1, args.length), lr, cout);
+				cmd.run(args, lr, cout);
 			} catch (OptionParserException e) {
 				error(e.getMessage());
 			}
 		}
 		
-		//print Goodbye message
-		if (line == null) {
-			//user pressed Ctrl+D
-			cout.println();
+		return line;
+	}
+	
+	/**
+	 * Augments the given command line with context variables
+	 * @param args the current command line
+	 * @param cmd the last parsed command in the command line
+	 * @return the new command line
+	 */
+	private String[] augmentCommand(String[] args, Class<? extends Command> cmd) {
+		OptionGroup<ID> options;
+		try {
+			options = OptionIntrospector.introspect(cmd);
+		} catch (IntrospectionException e) {
+			//should never happen
+			throw new RuntimeException(e);
 		}
-		cout.println("Bye!");
 		
-		return 0;
+		for (Option<ID> o : options.getOptions()) {
+			if (o.getLongName().equals("style")) {
+				args = ArrayUtils.add(args, "--style");
+				args = ArrayUtils.add(args, ShellContext.current().getStyle());
+			} else if (o.getLongName().equals("locale")) {
+				args = ArrayUtils.add(args, "--locale");
+				args = ArrayUtils.add(args, ShellContext.current().getLocale());
+			} else if (o.getLongName().equals("format")) {
+				args = ArrayUtils.add(args, "--format");
+				args = ArrayUtils.add(args, ShellContext.current().getFormat());
+			}
+		}
+		
+		return args;
 	}
 }

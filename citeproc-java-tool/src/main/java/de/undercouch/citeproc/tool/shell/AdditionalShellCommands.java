@@ -28,6 +28,12 @@ public final class AdditionalShellCommands {
 	 * @param command the configured command
 	 */
 	@CommandDescList({
+		@CommandDesc(longName = "get",
+				description = "get values of shell variables",
+				command = ShellGetCommand.class),
+		@CommandDesc(longName = "set",
+				description = "assign values to shell variables",
+				command = ShellSetCommand.class),
 		@CommandDesc(longName = "help",
 				description = "display help for a given command",
 				command = ShellHelpCommand.class),
