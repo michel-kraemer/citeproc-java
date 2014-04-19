@@ -28,6 +28,9 @@ public final class AdditionalShellCommands {
 	 * @param command the configured command
 	 */
 	@CommandDescList({
+		@CommandDesc(longName = "load",
+				description = "load an input bibliography from a file",
+				command = ShellLoadCommand.class),
 		@CommandDesc(longName = "get",
 				description = "get values of shell variables",
 				command = ShellGetCommand.class),

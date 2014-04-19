@@ -24,6 +24,7 @@ public class ShellContext {
 	private String style = "ieee";
 	private String locale = "en-US";
 	private String format = "text";
+	private String file;
 	
 	private ShellContext() {
 		//hidden constructor
@@ -96,5 +97,20 @@ public class ShellContext {
 	 */
 	public String getFormat() {
 		return format;
+	}
+	
+	/**
+	 * Sets the current input file
+	 * @param file the file
+	 */
+	public void setInputFile(String file) {
+		this.file = file;
+	}
+	
+	/**
+	 * @return the current input file
+	 */
+	public String getInputFile() {
+		return file;
 	}
 }

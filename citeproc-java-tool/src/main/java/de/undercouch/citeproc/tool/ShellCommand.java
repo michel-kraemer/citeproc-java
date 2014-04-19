@@ -168,12 +168,14 @@ public class ShellCommand extends AbstractCSLToolCommand {
 				throw new RuntimeException(e);
 			}
 			
+			boolean acceptsInputFile = false;
 			if (cmd instanceof ProviderCommand) {
 				cmd = new InputFileCommand((ProviderCommand)cmd);
+				acceptsInputFile = true;
 			}
 			
 			args = ArrayUtils.subarray(args, 1, args.length);
-			args = augmentCommand(args, pr.getLastCommand());
+			args = augmentCommand(args, pr.getLastCommand(), acceptsInputFile);
 			
 			try {
 				cmd.run(args, lr, cout);
@@ -189,27 +191,38 @@ public class ShellCommand extends AbstractCSLToolCommand {
 	 * Augments the given command line with context variables
 	 * @param args the current command line
 	 * @param cmd the last parsed command in the command line
+	 * @param acceptsInputFile true if the given command accepts an input file
 	 * @return the new command line
 	 */
-	private String[] augmentCommand(String[] args, Class<? extends Command> cmd) {
+	private String[] augmentCommand(String[] args, Class<? extends Command> cmd,
+			boolean acceptsInputFile) {
 		OptionGroup<ID> options;
 		try {
-			options = OptionIntrospector.introspect(cmd);
+			if (acceptsInputFile) {
+				options = OptionIntrospector.introspect(cmd, InputFileCommand.class);
+			} else {
+				options = OptionIntrospector.introspect(cmd);
+			}
 		} catch (IntrospectionException e) {
 			//should never happen
 			throw new RuntimeException(e);
 		}
 		
+		ShellContext sc = ShellContext.current();
 		for (Option<ID> o : options.getOptions()) {
 			if (o.getLongName().equals("style")) {
 				args = ArrayUtils.add(args, "--style");
-				args = ArrayUtils.add(args, ShellContext.current().getStyle());
+				args = ArrayUtils.add(args, sc.getStyle());
 			} else if (o.getLongName().equals("locale")) {
 				args = ArrayUtils.add(args, "--locale");
-				args = ArrayUtils.add(args, ShellContext.current().getLocale());
+				args = ArrayUtils.add(args, sc.getLocale());
 			} else if (o.getLongName().equals("format")) {
 				args = ArrayUtils.add(args, "--format");
-				args = ArrayUtils.add(args, ShellContext.current().getFormat());
+				args = ArrayUtils.add(args, sc.getFormat());
+			} else if (o.getLongName().equals("input") &&
+					sc.getInputFile() != null && !sc.getInputFile().isEmpty()) {
+				args = ArrayUtils.add(args, "--input");
+				args = ArrayUtils.add(args, sc.getInputFile());
 			}
 		}
 		
