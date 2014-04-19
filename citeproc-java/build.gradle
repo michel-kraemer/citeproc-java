@@ -13,11 +13,11 @@ apply plugin: 'signing'
 import de.undercouch.gradle.tasks.download.Download
 
 ext.citeprocProjectBase = 'https://bitbucket.org/fbennett/citeproc-js/'
-ext.citeprocJsUrlBase = ext.citeprocProjectBase + 'raw/d17472a8106afa5169ce0ac13723dfc827d5d663/'
+ext.citeprocJsUrlBase = ext.citeprocProjectBase + 'raw/01297da0b8365851689d2c3d0a56e57147de1b67/'
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
 ext.xmldomJsUrl = ext.citeprocJsUrlBase + 'xmldom.js'
 ext.xmle4xJsUrl = ext.citeprocJsUrlBase + 'xmle4x.js'
-ext.citeprocJsZip = '1.0.508.zip'
+ext.citeprocJsZip = '1.0.521.zip'
 ext.citeprocJsZipUrl = ext.citeprocProjectBase + 'get/' + ext.citeprocJsZip
 ext.citeprocTestSuiteZip = '9942299.zip'
 ext.citeprocTestSuiteUrl = 'https://bitbucket.org/bdarcus/citeproc-test/get/' + ext.citeprocTestSuiteZip
