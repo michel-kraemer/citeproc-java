@@ -16,6 +16,9 @@ package de.undercouch.citeproc.tool;
 
 import java.io.File;
 
+import de.undercouch.citeproc.BibliographyFileReader;
+import de.undercouch.citeproc.helper.tool.CachingBibliographyFileReader;
+
 /**
  * A context containing information used during execution of
  * the {@link de.undercouch.citeproc.CSLTool}
@@ -25,6 +28,7 @@ public class CSLToolContext {
 	private static ThreadLocal<CSLToolContext> current = new ThreadLocal<CSLToolContext>();
 	private String toolName;
 	private File configDir;
+	private BibliographyFileReader bibReader = new CachingBibliographyFileReader();
 	
 	private CSLToolContext() {
 		//hidden constructor
@@ -82,5 +86,15 @@ public class CSLToolContext {
 	 */
 	protected File getConfigDir() {
 		return configDir;
+	}
+	
+	/**
+	 * Returns a common reader for bibliography files. Use this method
+	 * instead of creating a new {@link BibliographyFileReader} instance
+	 * to enable caching.
+	 * @return the reader
+	 */
+	public BibliographyFileReader getBibliographyFileReader() {
+		return bibReader;
 	}
 }

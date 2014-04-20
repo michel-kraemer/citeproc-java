@@ -109,7 +109,8 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 		//load input bibliography
 		ItemDataProvider provider;
 		try {
-			BibliographyFileReader reader = new BibliographyFileReader();
+			BibliographyFileReader reader =
+					CSLToolContext.current().getBibliographyFileReader();
 			provider = reader.readBibliographyFile(new File(input));
 		} catch (IOException e) {
 			error(e.getMessage());

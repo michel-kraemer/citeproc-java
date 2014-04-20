@@ -26,6 +26,7 @@ import de.undercouch.citeproc.helper.tool.InputReader;
 import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.helper.tool.UnknownAttributes;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
+import de.undercouch.citeproc.tool.CSLToolContext;
 
 /**
  * Load an input bibliography
@@ -70,7 +71,8 @@ public class ShellLoadCommand extends AbstractCSLToolCommand {
 		File f = new File(files.get(0));
 		
 		//check file format
-		BibliographyFileReader reader = new BibliographyFileReader();
+		BibliographyFileReader reader =
+				CSLToolContext.current().getBibliographyFileReader();
 		FileFormat ff;
 		try {
 			ff = reader.determineFileFormat(f);
@@ -87,21 +89,27 @@ public class ShellLoadCommand extends AbstractCSLToolCommand {
 			return false;
 		}
 		
-		//check if file is readable
-		try {
-			reader.readBibliographyFile(f);
-		} catch (IOException e) {
-			error("could not read input file");
-			return false;
-		}
-		
 		return true;
 	}
 	
 	@Override
 	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
 			throws OptionParserException, IOException {
-		ShellContext.current().setInputFile(files.get(0));
+		//load the bibliography file now. use the common instance of
+		//BibliographyFileReader in order to enable caching
+		String fn = files.get(0);
+		File f = new File(fn);
+		BibliographyFileReader reader =
+				CSLToolContext.current().getBibliographyFileReader();
+		try {
+			reader.readBibliographyFile(f);
+		} catch (IOException e) {
+			error("could not read input file");
+			return 1;
+		}
+		
+		ShellContext.current().setInputFile(fn);
+		
 		return 0;
 	}
 }
