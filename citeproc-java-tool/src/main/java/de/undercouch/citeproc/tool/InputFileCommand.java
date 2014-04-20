@@ -14,6 +14,7 @@
 
 package de.undercouch.citeproc.tool;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -109,7 +110,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 		ItemDataProvider provider;
 		try {
 			BibliographyFileReader reader = new BibliographyFileReader();
-			provider = reader.readBibliographyFile(input);
+			provider = reader.readBibliographyFile(new File(input));
 		} catch (IOException e) {
 			error(e.getMessage());
 			return 1;

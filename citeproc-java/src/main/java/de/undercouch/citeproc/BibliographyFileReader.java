@@ -86,19 +86,6 @@ public class BibliographyFileReader {
 	/**
 	 * Reads all items from an input bibliography file and returns a provider
 	 * serving these items
-	 * @param bibfile the name of the input file
-	 * @return the provider
-	 * @throws FileNotFoundException if the input file was not found
-	 * @throws IOException if the input file could not be read
-	 */
-	public ItemDataProvider readBibliographyFile(String bibfile)
-			throws FileNotFoundException, IOException {
-		return readBibliographyFile(new File(bibfile));
-	}
-	
-	/**
-	 * Reads all items from an input bibliography file and returns a provider
-	 * serving these items
 	 * @param bibfile the input file
 	 * @return the provider
 	 * @throws FileNotFoundException if the input file was not found
