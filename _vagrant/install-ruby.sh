@@ -3,5 +3,5 @@
 source ~/.profile
 source ~/.rvm/scripts/rvm
 
-cd /vagrant
-bundle install
+rvm install 2.0
+gem install bundler
