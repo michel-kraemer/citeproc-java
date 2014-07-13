@@ -46,7 +46,75 @@ import de.undercouch.citeproc.script.ScriptRunnerException;
 import de.undercouch.citeproc.script.ScriptRunnerFactory;
 
 /**
- * The citation processor
+ * <p>The citation processor.</p>
+ * 
+ * <p>In order to use the processor in your application you first have to
+ * create an {@link ItemDataProvider} that provides citation item data. For
+ * example, the following dummy provider returns always the same data:</p>
+ * 
+ * <blockquote><pre>
+ * public class MyItemProvider implements ItemDataProvider {
+ *     &#64;Override
+ *     public CSLItemData retrieveItem(String id) {
+ *         return new CSLItemDataBuilder()
+ *             .id(id)
+ *             .type(CSLType.ARTICLE_JOURNAL)
+ *             .title("A dummy journal article")
+ *             .author("John", "Smith")
+ *             .issued(2013, 9, 6)
+ *             .containerTitle("Dummy journal")
+ *             .build();
+ *     }
+ *     
+ *     &#64;Override
+ *     public String[] getIds() {
+ *         String ids[] = {"ID-0", "ID-1", "ID-2"};
+ *         return ids;
+ *     }
+ * }</pre></blockquote>
+ * 
+ * Now you can instantiate the CSL processor.
+ * 
+ * <blockquote><pre>
+ * CSL citeproc = new CSL(new MyItemProvider(), "ieee");
+ * citeproc.setOutputFormat("html");</pre></blockquote>
+ * 
+ * <h4>Ad-hoc usage</h4>
+ * 
+ * You may also use {@link #makeAdhocBibliography(String, CSLItemData...)} or
+ * {@link #makeAdhocBibliography(String, String, CSLItemData...)} to create
+ * ad-hoc bibliographies from CSL items.
+ * 
+ * <blockquote><pre>
+ * CSLItemData item = new CSLItemDataBuilder()
+ *     .type(CSLType.WEBPAGE)
+ *     .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
+ *     .author("Michel", "Krämer")
+ *     .issued(2014, 7, 13)
+ *     .URL("http://michel-kraemer.github.io/citeproc-java/")
+ *     .accessed(2014, 7, 13)
+ *     .build();
+ *     
+ * String bibl = CSL.makeAdhocBibliography("ieee", item).makeString();</pre></blockquote>
+ * 
+ * <h4>Thread-safety</h4>
+ * 
+ * <p>Please note that this class is not thread-safe. However, shared resources
+ * are held in memory, so constructing new instances is generally rather cheap.
+ * If your settings do not change you may cache instances of this class in a
+ * <code>ThreadLocal</code>.</p>
+ * 
+ * <blockquote><pre>
+ * ThreadLocal&lt;CSL> csl = new ThreadLocal&lt;CSL>() {
+ *     &#64;Override
+ *     protected CSL initialValue() {
+ *         return new CSL(itemDataProvider, style, lang);
+ *     }
+ * };</pre></blockquote>
+ * 
+ * Please remember to reset the <code>ThreadLocal</code> if you don't need
+ * the <code>CSL</code> instance anymore to avoid memory leaks.
+ * 
  * @author Michel Kraemer
  */
 public class CSL {
