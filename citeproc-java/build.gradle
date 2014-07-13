@@ -105,7 +105,7 @@ sourceSets.main.resources.srcDirs 'src-gen/main/resources'
 
 // include compile-time-only dependencies
 sourceSets.main.compileClasspath += configurations.provided
-eclipse.classpath.plusConfigurations += configurations.provided
+eclipse.classpath.plusConfigurations << configurations.provided
 
 tasks['compileJava'].dependsOn(generateSources)
 tasks['eclipseClasspath'].dependsOn(generateSources)
