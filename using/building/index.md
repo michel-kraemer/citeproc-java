@@ -3,8 +3,8 @@ layout: default
 title: Building citeproc-java
 prev: using/getting-started/
 prevtitle: Getting started
-next: using/bibtex-converter/
-nexttitle: Bib<span class="tex">T<sub>e</sub>X</span> converter
+next: using/importers/
+nexttitle: Importers
 ---
 
 If you want to hack on citeproc-java (which would be much appreciated
@@ -25,7 +25,7 @@ can create a `.jar` library:
 $ ./gradlew jar
 {% endhighlight %}
 
-The library will be located under the ``build/libs`` directory.
+The library will be located under the ``citeproc-java/build/libs`` directory.
 
 To install the library in your local Maven repository execute the
 following command:
@@ -34,7 +34,16 @@ following command:
 $ ./gradlew install
 {% endhighlight %}
 
-citeproc-java is CSL 1.0.1 compliant and *all 757 tests* from the
+If you want to build the [command line tool]({{ site.baseurl }}using/command-line-tool)
+run the following command:
+
+{% highlight bash %}
+$ ./gradlew installApp
+{% endhighlight %}
+
+The command line tool will be installed to ``citeproc-java-tool/build/install/citeproc-java-tool``.
+
+citeproc-java is CSL 1.0.1 compliant and *all tests* from the
 [CSL test suite](https://bitbucket.org/bdarcus/citeproc-test) run
 successfully. To run the test suite on your computer just execute the
 following command:

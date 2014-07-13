@@ -34,7 +34,7 @@ The tool accepts the following command line options:
 
 `-s, --style <STYLE>`
 : The citation style name. Can either be a simple name specifying one
-  of the 6500+ CSL styles distributed with the command line tool (such
+  of the 7000+ CSL styles distributed with the command line tool (such
   as `ieee`, `apa`, or `chicago-author-date`), or a string containing
   an XML-serialized representation of a CSL style. The default value
   for this argument is `ieee`.
@@ -92,7 +92,7 @@ IDs are interpreted depends on the generation mode:
   In this case you have to specify at least one citation ID. The
   tool will only create citations for items with the specified IDs.
 
-In addition to the more than 6500 CSL styles bundled with the command
+In addition to the more than 7000 CSL styles bundled with the command
 line tool you can also specify `json` as style. This will make the tool
 output citations or bibliographies in JSON format which can be saved
 to a file and used as input later:

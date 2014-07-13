@@ -6,8 +6,8 @@ nexttitle: Building
 ---
 
 **Note**: The following guide assumes that you either already
-[downloaded]({{ site.url }}/download) and installed citeproc-java
-or that you [built]({{ site.url }}/using/building) it from source.
+[downloaded]({{ site.baseurl }}download) and installed citeproc-java
+or that you [built]({{ site.baseurl }}using/building) it from source.
 
 In order to use citeproc-java in your application you first have to
 create a `ItemDataProvider` that provides
@@ -20,7 +20,7 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 
-public class DummyProvider implements ItemDataProvider {
+public class MyItemProvider implements ItemDataProvider {
     @Override
     public CSLItemData retrieveItem(String id) {
         return new CSLItemDataBuilder()
@@ -43,20 +43,20 @@ Note how the item data is created through a neat builder DSL.
 In citeproc-java you can use builders for all model objects.
 
 Of course, in a real implementation you would normally load the
-citation item data from a file or a database (see the predefined
-<a href="#using-the-bibtex-converter">BibTeXItemDataProvider</a> below).
+citation item data from a file or a database---e.g. see the predefined
+<a href="{{ site.baseurl }}using/importers">BibTeXItemDataProvider</a>.
 
 Now you can instantiate the CSL processor.
 
 {% highlight java %}
 import de.undercouch.citeproc.CSL;
 
-CSL citeproc = new CSL(new DummyProvider(), "ieee");
+CSL citeproc = new CSL(new MyItemProvider(), "ieee");
 citeproc.setOutputFormat("html");
 {% endhighlight %}
 
 You have to provide the item data provider and a CSL style (select
-one from the 6500+ styles provided by
+one from the 7000+ styles provided by
 [CitationStyles.org](http://citationstyles.org/styles/)). The
 processor tries to load the style from the classpath, but you may
 also pass your own style as a serialized CSL string to the

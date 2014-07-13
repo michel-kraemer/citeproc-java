@@ -1,5 +1,6 @@
 {% highlight java %}
-CSLItemData item = new CSLItemDataBuilder("citeproc-java", CSLType.WEBPAGE)
+CSLItemData item = new CSLItemDataBuilder()
+    .type(CSLType.WEBPAGE)
     .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
     .author("Michel", "Krämer")
     .issued({{ site.time | date: "%Y" }}, {{ site.time | date: "%-m" }}, {{ site.time | date: "%-d" }})

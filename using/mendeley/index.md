@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Mendeley connector
-prev: using/bibtex-converter/
-prevtitle: BibTeX converter
+prev: using/importers/
+prevtitle: Importers
 next: using/output-formats/
 nexttitle: Output formats
 ---

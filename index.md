@@ -11,17 +11,20 @@ citeproc-java is a [Citation Style Language (CSL)](http://citationstyles.org/)
 processor for Java. It interprets CSL styles and generates citations and
 bibliographies. Some of the highlights in citeproc-java are:
 
-* With the [Bib<span class="tex">T<sub>e</sub>X</span> importer]({{ site.baseurl }}using/bibtex-converter)
-  it is possible to create citations and bibliographies from BibTeX files.
-* The [command line tool]({{ site.baseurl }}using/command-line-tool) can
-  be used to execute the library without setting up a development environment.
-  This is great for testing, in particular if you are a CSL style author
-  and want to test your style files in an easy and quick manner.
+* [Importers]({{ site.baseurl }}using/importers) for Bib<span class="tex">T<sub>e</sub>X</span>,
+  EndNote, and RIS allow you to create citations and bibliographies from
+  your existing citation databases.
 * The library supports a wide range of [output formats]({{ site.baseurl }}using/output-formats)
   such as `html`, `text`, `asciidoc`, `rtf`, and `fo`.
-* citeproc-java contains a [Mendeley connector]({{ site.baseurl }}using/mendeley)
-  that allows you to read documents from Mendeley Web and to use them
-  as input for citations or bibliographies.
+* Use the [command line tool]({{ site.baseurl }}using/command-line-tool)
+  to execute the library without setting up a development environment.
+  This is great for testing, in particular if you are a CSL style author
+  and want to test your style files in an easy and quick manner. The
+  command line tool even contains an interactive shell with command
+  completion and automatic suggestions.
+* citeproc-java contains connectors for [Mendeley]({{ site.baseurl }}using/mendeley)
+  as well as [Zotero]({{ site.baseurl }}using/zotero) that allow you to
+  use your online resources as input for citations or bibliographies.
 * citeproc-java is CSL 1.0.1 compliant and all tests from the
   [CSL test suite](https://bitbucket.org/bdarcus/citeproc-test) run
   successfully.
