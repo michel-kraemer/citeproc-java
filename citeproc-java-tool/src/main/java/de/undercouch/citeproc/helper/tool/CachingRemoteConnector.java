@@ -69,7 +69,7 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 				items = db.getHashMap("items");
 				
 				break;
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				--retry;
 				if (retry == 1 && cacheFile.exists()) {
 					//unable to open disk cache. remove it and try again.
