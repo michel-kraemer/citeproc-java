@@ -14,7 +14,9 @@
 
 package de.undercouch.citeproc;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.undercouch.citeproc.csl.CSLItemData;
@@ -30,10 +32,18 @@ public class ListItemDataProvider implements ItemDataProvider {
 	protected Map<String, CSLItemData> items = new LinkedHashMap<String, CSLItemData>();
 	
 	/**
-	 * Creates a data provider that serves items from the given list
+	 * Creates a data provider that serves items from the given array
 	 * @param items the items to serve
 	 */
 	public ListItemDataProvider(CSLItemData... items) {
+		this(Arrays.asList(items));
+	}
+	
+	/**
+	 * Creates a data provider that serves items from the given list
+	 * @param items the items to serve
+	 */
+	public ListItemDataProvider(List<CSLItemData> items) {
 		for (CSLItemData i : items) {
 			this.items.put(i.getId(), i);
 		}
