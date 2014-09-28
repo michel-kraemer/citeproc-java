@@ -69,13 +69,17 @@ public class ScriptRunnerFactory {
 	 */
 	private static ScriptRunner createJreRunner() {
 		//Rhino is not available. Check if we have the right JRE version
-		if (!SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_1_7)) {
-			throw new RuntimeException("You're using a JRE 6 or lower and "
-					+ "Mozilla Rhino was not found in the classpath. The "
-					+ "bundled Rhino in JRE 6 does not support E4X "
-					+ "(ECMAScript for XML) which is needed for "
-					+ "citeproc-java. Either include Rhino in your "
-					+ "classpath or upgrade to a newer JRE.");
+		try {
+			if (!SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_1_7)) {
+				throw new RuntimeException("You're using a JRE 6 or lower and "
+						+ "Mozilla Rhino was not found in the classpath. The "
+						+ "bundled Rhino in JRE 6 does not support E4X "
+						+ "(ECMAScript for XML) which is needed for "
+						+ "citeproc-java. Either include Rhino in your "
+						+ "classpath or upgrade to a newer JRE.");
+			}
+		} catch (NullPointerException e) {
+			//java version could not be determined. It must be a very new one
 		}
 		return new JREScriptRunner();
 	}
