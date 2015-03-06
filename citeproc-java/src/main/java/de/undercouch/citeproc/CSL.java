@@ -89,7 +89,7 @@ import de.undercouch.citeproc.script.ScriptRunnerFactory;
  * CSLItemData item = new CSLItemDataBuilder()
  *     .type(CSLType.WEBPAGE)
  *     .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
- *     .author("Michel", "Krämer")
+ *     .author("Michel", "Kraemer")
  *     .issued(2014, 7, 13)
  *     .URL("http://michel-kraemer.github.io/citeproc-java/")
  *     .accessed(2014, 7, 13)
