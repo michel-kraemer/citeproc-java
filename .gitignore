@@ -1,5 +1,6 @@
 .gradle/
 build/
+out/
 target/
 reports/
 src-gen/
@@ -10,3 +11,6 @@ bin/
 .settings/
 .classpath
 .project
+*.ipr
+*.iws
+*.iml
