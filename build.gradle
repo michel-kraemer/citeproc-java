@@ -45,6 +45,15 @@ subprojects {
     }
 }
 
+ideaModule.enabled = false
+
+idea {
+    project {
+        def modulesToInclude = subprojects.findAll {it.ideaModule.enabled}
+        modules = modulesToInclude.idea.module
+    }
+}
+
 // initialize gradle wrapper
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
