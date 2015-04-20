@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.mozilla.javascript.ClassCache;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.GeneratedClassLoader;
@@ -39,16 +40,18 @@ import de.undercouch.citeproc.helper.json.JsonBuilder;
 public class RhinoScriptRunner extends AbstractScriptRunner {
 	private static Map<String, Script> compiledScripts =
 			new ConcurrentHashMap<String, Script>();
-	
+
+	private final RhinoScriptRunnerPreferences preferences;
 	private final Scriptable scope;
-	
-	/**
-	 * Default constructor
-	 */
-	public RhinoScriptRunner() {
-		Context context = Context.enter();
+
+	public RhinoScriptRunner(RhinoScriptRunnerPreferences preferences) {
+		this.preferences = preferences;
+
+		Context context = enterContext();
 		try {
 			scope = context.initStandardObjects();
+			ClassCache classCache = ClassCache.get(scope);
+			classCache.setCachingEnabled(this.preferences.isEnableClassCache());
 		} finally {
 			Context.exit();
 		}
@@ -61,7 +64,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	
 	@Override
 	public String getVersion() {
-		Context context = Context.enter();
+		Context context = enterContext();
 		try {
 			String r = context.getImplementationVersion();
 			if (r.startsWith("Rhino")) {
@@ -101,7 +104,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 		String ustr = url.toString();
 		Script s = compiledScripts.get(ustr);
 		if (s != null) {
-			Context context = Context.enter();
+			Context context = enterContext();
 			try {
 				s.exec(context, scope);
 				return;
@@ -119,7 +122,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 			name = name + ".dat";
 			URL fileUrl = new URL(url, name);
 			if (fileUrl != null) {
-				Context context = Context.enter();
+				Context context = enterContext();
 				try {
 					byte[] data = CSLUtils.readURL(fileUrl);
 				
@@ -151,7 +154,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	
 	@Override
 	public void eval(Reader reader) throws ScriptRunnerException, IOException {
-		Context context = Context.enter();
+		Context context = enterContext();
 		try {
 			context.evaluateReader(scope, reader, "<code>", 1, null);
 		} catch (RhinoException e) {
@@ -170,7 +173,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	@SuppressWarnings("unchecked")
 	public <T> T callMethod(String name, Class<T> resultType, Object... args)
 			throws ScriptRunnerException {
-		Context context = Context.enter();
+		Context context = enterContext();
 		try {
 			Function f = (Function)ScriptableObject.getProperty(scope, name);
 			return (T)f.call(context, scope, null, convertArguments(args));
@@ -184,7 +187,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	@Override
 	public void callMethod(String name, Object... args)
 			throws ScriptRunnerException {
-		Context context = Context.enter();
+		Context context = enterContext();
 		try {
 			Function f = (Function)ScriptableObject.getProperty(scope, name);
 			f.call(context, scope, null, convertArguments(args));
@@ -199,7 +202,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	@SuppressWarnings("unchecked")
 	public <T> T callMethod(Object obj, String name, Class<T> resultType,
 			Object... args) throws ScriptRunnerException {
-		Context context = Context.enter();
+		Context context = enterContext();
 		try {
 			Scriptable s = (Scriptable)obj;
 			Function f = (Function)ScriptableObject.getProperty(s, name);
@@ -214,7 +217,7 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 	@Override
 	public void callMethod(Object obj, String name, Object... args)
 			throws ScriptRunnerException {
-		Context context = Context.enter();
+		Context context = enterContext();
 		try {
 			Scriptable s = (Scriptable)obj;
 			Function f = (Function)ScriptableObject.getProperty(s, name);
@@ -249,5 +252,11 @@ public class RhinoScriptRunner extends AbstractScriptRunner {
 			}
 		}
 		return result;
+	}
+
+	private Context enterContext() {
+		Context context = Context.enter();
+		context.setOptimizationLevel(this.preferences.getCompilerOptimizationLevel());
+		return context;
 	}
 }
