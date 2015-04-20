@@ -1,7 +1,10 @@
+apply plugin: 'idea'
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'osgi'
     apply plugin: 'eclipse'
+    apply plugin: 'idea'
     
     version = '0.6'
     group = 'de.undercouch'
@@ -42,7 +45,16 @@ subprojects {
     }
 }
 
+ideaModule.enabled = false
+
+idea {
+    project {
+        def modulesToInclude = subprojects.findAll {it.ideaModule.enabled}
+        modules = modulesToInclude.idea.module
+    }
+}
+
 // initialize gradle wrapper
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
+    gradleVersion = '2.3'
 }

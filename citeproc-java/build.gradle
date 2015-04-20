@@ -103,12 +103,19 @@ task runTestSuite(dependsOn: [ downloadCiteprocJsZip, downloadTestSuite, testCla
 sourceSets.main.java.srcDirs 'src-gen/main/java'
 sourceSets.main.resources.srcDirs 'src-gen/main/resources'
 
+idea.module {
+    generatedSourceDirs += file('src-gen/main/java')
+    generatedSourceDirs += file('src-gen/main/resources')
+}
+
 // include compile-time-only dependencies
 sourceSets.main.compileClasspath += configurations.provided
 eclipse.classpath.plusConfigurations << configurations.provided
+idea.module.scopes.PROVIDED.plus += [configurations.provided]
 
 tasks['compileJava'].dependsOn(generateSources)
 tasks['eclipseClasspath'].dependsOn(generateSources)
+tasks['ideaModule'].dependsOn(generateSources)
 tasks['clean'].dependsOn(cleanGeneratedSources)
 
 jar {

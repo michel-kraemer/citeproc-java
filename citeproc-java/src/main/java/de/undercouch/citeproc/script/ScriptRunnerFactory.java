@@ -85,8 +85,9 @@ public class ScriptRunnerFactory {
 	 */
 	private static ScriptRunner createRhinoRunner() {
 		try {
-			return (ScriptRunner)Class.forName("de.undercouch.citeproc.script."
-					+ "RhinoScriptRunner").newInstance();
+			return (ScriptRunner)Class.forName("de.undercouch.citeproc.script.RhinoScriptRunner")
+				.getConstructor(RhinoScriptRunnerPreferences.class)
+				.newInstance(RhinoScriptRunnerPreferences.getInstance());
 		} catch (Exception e) {
 			throw new RuntimeException("No JavaScript engine found", e);
 		}
