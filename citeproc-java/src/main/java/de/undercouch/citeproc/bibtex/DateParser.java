@@ -55,7 +55,7 @@ public class DateParser {
 	 * whose last four characters are digits.
 	 * @param month the month to parse. May be a number (<code>1-12</code>),
 	 * a short month name (<code>Jan</code> to <code>Dec</code>), or a
-	 * long month name (<code>January</code> to </code>December</code>). This
+	 * long month name (<code>January</code> to <code>December</code>). This
 	 * method is also able to recognize month names in several locales.
 	 * @return the {@link CSLDate} object or null if both, the year and the
 	 * month, could not be parsed
@@ -107,7 +107,7 @@ public class DateParser {
 	 * whose last four characters are digits.
 	 * @param month the month to parse. May be a number (<code>1-12</code>),
 	 * a short month name (<code>Jan</code> to <code>Dec</code>), or a
-	 * long month name (<code>January</code> to </code>December</code>). This
+	 * long month name (<code>January</code> to <code>December</code>). This
 	 * method is also able to recognize month names in several locales.
 	 * @return the {@link CSLDate} object or null if both, the year and the
 	 * month, could not be parsed
@@ -145,7 +145,7 @@ public class DateParser {
 	 * whose last four characters are digits.
 	 * @param month the month to parse. May be a number (<code>1-12</code>),
 	 * a short month name (<code>Jan</code> to <code>Dec</code>), or a
-	 * long month name (<code>January</code> to </code>December</code>). This
+	 * long month name (<code>January</code> to <code>December</code>). This
 	 * method is also able to recognize month names in several locales.
 	 * @return the {@link CSLDate} object or null if both, the year and the
 	 * month, could not be parsed
@@ -250,7 +250,7 @@ public class DateParser {
 	 * Parses the given month string
 	 * @param month the month to parse. May be a number (<code>1-12</code>),
 	 * a short month name (<code>Jan</code> to <code>Dec</code>), or a
-	 * long month name (<code>January</code> to </code>December</code>). This
+	 * long month name (<code>January</code> to <code>December</code>). This
 	 * method is also able to recognize month names in several locales.
 	 * @return the month's number (<code>1-12</code>) or <code>-1</code> if
 	 * the string could not be parsed
