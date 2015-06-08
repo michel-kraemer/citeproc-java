@@ -79,7 +79,7 @@ import de.undercouch.citeproc.script.ScriptRunnerFactory;
  * CSL citeproc = new CSL(new MyItemProvider(), "ieee");
  * citeproc.setOutputFormat("html");</pre></blockquote>
  * 
- * <h4>Ad-hoc usage</h4>
+ * <h3>Ad-hoc usage</h3>
  * 
  * You may also use {@link #makeAdhocBibliography(String, CSLItemData...)} or
  * {@link #makeAdhocBibliography(String, String, CSLItemData...)} to create
@@ -105,7 +105,7 @@ import de.undercouch.citeproc.script.ScriptRunnerFactory;
  * <code>ThreadLocal</code>.</p>
  * 
  * <blockquote><pre>
- * ThreadLocal&lt;CSL> csl = new ThreadLocal&lt;CSL>() {
+ * ThreadLocal&lt;CSL&gt; csl = new ThreadLocal&lt;CSL&gt;() {
  *     &#64;Override
  *     protected CSL initialValue() {
  *         return new CSL(itemDataProvider, style, lang);
