@@ -96,6 +96,10 @@
         },
         {
             "type": "CSLDate",
+            "name": "epub-date"
+        },
+        {
+            "type": "CSLDate",
             "name": "issued"
         },
         {
