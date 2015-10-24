@@ -119,7 +119,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 		String userId = accessToken.getToken();
 		String key = accessToken.getSecret();
 		
-		Map<String, Object> res = performRequest(ENDPOINT_USERS +
+		Map<String, Object> res = performRequestObject(ENDPOINT_USERS +
 				userId + "/items?key=" + key + "&newer=0&format=versions"
 						+ "&itemType=-attachment", REQUEST_HEADERS);
 		return new ArrayList<String>(res.keySet());
@@ -132,7 +132,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 	}
 	
 	@Override
-	protected Map<String, Object> parseResponse(Response response) throws IOException {
+	protected Map<String, Object> parseResponseObject(Response response) throws IOException {
 		String contentType = response.getHeader("Content-Type");
 		InputStream is = response.getInputStream();
 		Reader r = new BufferedReader(new InputStreamReader(is));
@@ -190,7 +190,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 			
 			return result;
 		} else {
-			return super.parseResponse(response);
+			return super.parseResponseObject(response);
 		}
 	}
 	
@@ -212,7 +212,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 			List<String> itemsToRequest = itemIds.subList(s, s + n);
 			String istr = StringUtils.join(itemsToRequest, ',');
 			
-			Map<String, Object> res = performRequest(ENDPOINT_USERS +
+			Map<String, Object> res = performRequestObject(ENDPOINT_USERS +
 					userId + "/items?key=" + key +
 					"&content=" + CSLJSON  +
 					"&itemKey=" + istr, REQUEST_HEADERS);

@@ -15,9 +15,11 @@
 package de.undercouch.citeproc.mendeley;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,7 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.oauth.OAuth;
 import de.undercouch.citeproc.helper.oauth.OAuth.Method;
 import de.undercouch.citeproc.helper.oauth.OAuth2;
+import de.undercouch.citeproc.helper.oauth.Response;
 import de.undercouch.citeproc.remote.AbstractRemoteConnector;
 
 /**
@@ -37,27 +40,41 @@ import de.undercouch.citeproc.remote.AbstractRemoteConnector;
  */
 public class MendeleyConnector extends AbstractRemoteConnector {
 	private static final String OAUTH_ACCESS_TOKEN_URL =
-			"https://api-oauth2.mendeley.com/oauth/token";
+			"https://api.mendeley.com/oauth/token";
 	private static final String OAUTH_AUTHORIZATION_URL_TEMPLATE =
-			"https://api-oauth2.mendeley.com/oauth/authorize?redirect_uri=%s"
+			"https://api.mendeley.com/oauth/authorize?redirect_uri=%s"
 			+ "&response_type=code&scope=all&client_id=%s";
 	
 	/**
-	 * The REST end-point used to request a Mendeley user's library
-	 */
-	private static final String MENDELEY_LIBRARY_ENDPOINT =
-			"https://api-oauth2.mendeley.com/oapi/library/";
-	
-	/**
-	 * The REST end-point used to request a document
+	 * The REST end-point used to request a Mendeley user's documents
 	 */
 	private static final String MENDELEY_DOCUMENTS_ENDPOINT =
-			"https://api-oauth2.mendeley.com/oapi/library/documents/";
+			"https://api.mendeley.com/documents/";
+	
+	/**
+	 * The default headers to send with every request
+	 */
+	private static final Map<String, String> DEFAULT_HEADERS;
+	static {
+		DEFAULT_HEADERS = new HashMap<String, String>();
+		// Mendeley API version 1
+		DEFAULT_HEADERS.put("Accept", "application/vnd.mendeley-document.1+json");
+	}
+	
+	/**
+	 * The response header field containing links to next and previous pages
+	 */
+	private static final String LINK = "Link";
 	
 	/**
 	 * The remote service's authorization end-point
 	 */
 	private final String oauthAuthorizationUrl;
+	
+	/**
+	 * A cache for retrieved documents
+	 */
+	private Map<String, CSLItemData> cachedDocuments;
 	
 	/**
 	 * Constructs a new connector
@@ -107,26 +124,73 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 		return new OAuth2(consumerKey, consumerSecret, redirectUri);
 	}
 	
+	private void addToCache(String id, CSLItemData doc) {
+		if (cachedDocuments == null) {
+			cachedDocuments = new HashMap<String, CSLItemData>();
+		}
+		cachedDocuments.put(id, doc);
+	}
+	
+	private CSLItemData getFromCache(String id) {
+		if (cachedDocuments == null) {
+			return null;
+		}
+		return cachedDocuments.get(id);
+	}
+	
+	private void clearCache() {
+		if (cachedDocuments != null) {
+			cachedDocuments = null;
+		}
+	}
+	
 	@Override
 	public List<String> getItemIDs() throws IOException {
-		int totalPages = 1;
-		int page = 0;
+		String nextLink = MENDELEY_DOCUMENTS_ENDPOINT;
 		List<String> result = new ArrayList<String>();
+		clearCache();
 		
-		while (page < totalPages) {
-			Map<String, Object> response = performRequest(
-					MENDELEY_LIBRARY_ENDPOINT + "?page=" + page, null);
+		while (nextLink != null) {
+			Response response = performRequest(nextLink, DEFAULT_HEADERS);
 			
-			Object otp = response.get("total_pages");
-			if (otp instanceof Number) {
-				totalPages = ((Number)otp).intValue();
+			// get link to next page from response
+			nextLink = null;
+			List<String> linkHeaders = response.getHeaders(LINK);
+			for (String linkHeader : linkHeaders) {
+				String[] linksHeaderParts = linkHeader.split("\\s*,\\s*");
+				for (String linksHeaderPart : linksHeaderParts) {
+					String[] parts = linksHeaderPart.split("\\s*;\\s*");
+					if (parts.length > 1 && parts[1].equals("rel=\"next\"")) {
+						nextLink = parts[0];
+						break;
+					}
+				}
+				if (nextLink != null) {
+					if (nextLink.charAt(0) == '<' &&
+							nextLink.charAt(nextLink.length() - 1) == '>') {
+						nextLink = nextLink.substring(1, nextLink.length() - 1);
+					}
+					break;
+				}
 			}
 			
-			@SuppressWarnings("unchecked")
-			List<String> documentIds = (List<String>)response.get("document_ids");
-			result.addAll(documentIds);
-			
-			++page;
+			// get documents from response
+			InputStream is = response.getInputStream();
+			try {
+				List<Object> docsArr = parseResponseArray(response);
+				for (Object docObj : docsArr) {
+					if (docObj instanceof Map) {
+						@SuppressWarnings("unchecked")
+						Map<String, Object> docMap = (Map<String, Object>)docObj;
+						String id = docMap.get("id").toString();
+						CSLItemData doc = MendeleyConverter.convert(id, docMap);
+						result.add(id);
+						addToCache(id, doc);
+					}
+				}
+			} finally {
+				is.close();
+			}
 		}
 		
 		return result;
@@ -134,9 +198,14 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	
 	@Override
 	public CSLItemData getItem(String documentId) throws IOException {
-		Map<String, Object> response = performRequest(
-				MENDELEY_DOCUMENTS_ENDPOINT + documentId, null);
-		return MendeleyConverter.convert(documentId, response);
+		CSLItemData item = getFromCache(documentId);
+		if (item == null) {
+			Map<String, Object> response = performRequestObject(
+					MENDELEY_DOCUMENTS_ENDPOINT + documentId, null);
+			item = MendeleyConverter.convert(documentId, response);
+			addToCache(documentId, item);
+		}
+		return item;
 	}
 	
 	@Override

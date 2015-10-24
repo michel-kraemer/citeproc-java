@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import de.undercouch.citeproc.helper.json.JsonLexer;
@@ -155,19 +156,49 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	 * @return the parsed response
 	 * @throws IOException if the request was not successful
 	 */
-	protected Map<String, Object> performRequest(String url,
+	protected Map<String, Object> performRequestObject(String url,
+			Map<String, String> additionalHeaders) throws IOException {
+		Response response = performRequest(url, additionalHeaders);
+		InputStream is = response.getInputStream();
+		try {
+			return parseResponseObject(response);
+		} finally {
+			is.close();
+		}
+	}
+	
+	/**
+	 * Performs a request
+	 * @param url the URL to query
+	 * @param additionalHeaders additional HTTP request headers (may be null)
+	 * @return the parsed response
+	 * @throws IOException if the request was not successful
+	 */
+	protected List<Object> performRequestArray(String url,
+			Map<String, String> additionalHeaders) throws IOException {
+		Response response = performRequest(url, additionalHeaders);
+		InputStream is = response.getInputStream();
+		try {
+			return parseResponseArray(response);
+		} finally {
+			is.close();
+		}
+	}
+	
+	/**
+	 * Performs a request
+	 * @param url the URL to query
+	 * @param additionalHeaders additional HTTP request headers (may be null)
+	 * @return the response
+	 * @throws IOException if the request was not successful
+	 */
+	protected Response performRequest(String url,
 			Map<String, String> additionalHeaders) throws IOException {
 		if (accessToken == null) {
 			throw new UnauthorizedException("Access token has not yet been requested");
 		}
 		URL u = new URL(url);
-		Response response = auth.request(u, Method.GET, accessToken, additionalHeaders);
-		InputStream is = response.getInputStream();
-		try {
-			return parseResponse(response);
-		} finally {
-			is.close();
-		}
+		return auth.request(u, Method.GET, accessToken, additionalHeaders);
 	}
 	
 	/**
@@ -177,9 +208,31 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	 * @return the parsed result
 	 * @throws IOException if the response could not be read
 	 */
-	protected Map<String, Object> parseResponse(Response response) throws IOException {
+	private JsonParser parseResponse(Response response) throws IOException {
 		InputStream is = response.getInputStream();
 		Reader r = new BufferedReader(new InputStreamReader(is));
-		return new JsonParser(new JsonLexer(r)).parseObject();
+		return new JsonParser(new JsonLexer(r));
+	}
+	
+	/**
+	 * Parses the given response. The response's input stream doesn't have
+	 * to be closed. The caller will already do this.
+	 * @param response the HTTP response to parse
+	 * @return the parsed result
+	 * @throws IOException if the response could not be read
+	 */
+	protected Map<String, Object> parseResponseObject(Response response) throws IOException {
+		return parseResponse(response).parseObject();
+	}
+	
+	/**
+	 * Parses the given response. The response's input stream doesn't have
+	 * to be closed. The caller will already do this.
+	 * @param response the HTTP response to parse
+	 * @return the parsed result
+	 * @throws IOException if the response could not be read
+	 */
+	protected List<Object> parseResponseArray(Response response) throws IOException {
+		return parseResponse(response).parseArray();
 	}
 }

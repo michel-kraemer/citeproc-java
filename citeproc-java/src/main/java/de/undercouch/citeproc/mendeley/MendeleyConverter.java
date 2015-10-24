@@ -46,7 +46,7 @@ public class MendeleyConverter {
 	private static final String FIELD_EDITION = "edition";
 	private static final String FIELD_EDITORS = "editors";
 	private static final String FIELD_ENCYCLOPEDIA = "encyclopedia";
-	private static final String FIELD_FORENAME = "forename";
+	private static final String FIELD_FIRSTNAME = "first_name";
 	private static final String FIELD_GENRE = "genre";
 	private static final String FIELD_ISBN = "isbn";
 	private static final String FIELD_ISSUE = "issue";
@@ -62,7 +62,7 @@ public class MendeleyConverter {
 	private static final String FIELD_REVISION_NUMBER = "revisionNumber";
 	private static final String FIELD_SHORT_TITLE = "shortTitle";
 	private static final String FIELD_SOURCE = "source";
-	private static final String FIELD_SURNAME = "surname";
+	private static final String FIELD_LASTNAME = "last_name";
 	private static final String FIELD_TITLE = "title";
 	private static final String FIELD_TYPE = "type";
 	private static final String FIELD_URL = "url";
@@ -234,11 +234,11 @@ public class MendeleyConverter {
 		int i = 0;
 		for (Map<String, Object> a : authors) {
 			CSLNameBuilder builder = new CSLNameBuilder();
-			if (a.containsKey(FIELD_FORENAME)) {
-				builder.given(strOrNull(a.get(FIELD_FORENAME)));
+			if (a.containsKey(FIELD_FIRSTNAME)) {
+				builder.given(strOrNull(a.get(FIELD_FIRSTNAME)));
 			}
-			if (a.containsKey(FIELD_SURNAME)) {
-				builder.family(strOrNull(a.get(FIELD_SURNAME)));
+			if (a.containsKey(FIELD_LASTNAME)) {
+				builder.family(strOrNull(a.get(FIELD_LASTNAME)));
 			}
 			builder.parseNames(true);
 			result[i] = builder.build();

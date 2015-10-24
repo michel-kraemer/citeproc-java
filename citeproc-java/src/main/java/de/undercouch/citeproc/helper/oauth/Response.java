@@ -17,6 +17,8 @@ package de.undercouch.citeproc.helper.oauth;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A response of an OAuth request
@@ -52,5 +54,18 @@ public class Response {
 	 */
 	public String getHeader(String name) {
 		return conn.getHeaderField(name);
+	}
+	
+	/**
+	 * Gets the values of a named response header field
+	 * @param name the header field's name
+	 * @return the header's values or null if there is no such header field
+	 */
+	public List<String> getHeaders(String name) {
+		Map<String, List<String>> fields = conn.getHeaderFields();
+		if (fields == null) {
+			return null;
+		}
+		return fields.get(name);
 	}
 }
