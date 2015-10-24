@@ -332,6 +332,23 @@ public class CSLTest {
 	}
 	
 	/**
+	 * Checks if event-place is considered
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void eventPlace() throws Exception {
+		CSLItemData item = new CSLItemDataBuilder()
+				.type(CSLType.PAPER_CONFERENCE)
+				.title("The Paper")
+				.author("The", "Author")
+				.event("Conference")
+				.eventPlace("The Place")
+				.build();
+		String bib = CSL.makeAdhocBibliography("ieee", "text", item).makeString();
+		assertEquals("[1]T. Author, \u201cThe Paper,\u201d presented at the Conference, The Place.\n", bib);
+	}
+	
+	/**
 	 * Tests the {@link CSL#makeCitation(CSLCitation, List, List)} method
 	 * @throws Exception if something goes wrong
 	 */

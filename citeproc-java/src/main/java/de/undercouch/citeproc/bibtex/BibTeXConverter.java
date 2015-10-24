@@ -198,10 +198,10 @@ public class BibTeXConverter {
 		
 		//map address
 		if (entries.containsKey(FIELD_LOCATION)) {
-			builder.eventplace(entries.get(FIELD_LOCATION));
+			builder.eventPlace(entries.get(FIELD_LOCATION));
 			builder.publisherPlace(entries.get(FIELD_LOCATION));
 		} else {
-			builder.eventplace(entries.get(FIELD_ADDRESS));
+			builder.eventPlace(entries.get(FIELD_ADDRESS));
 			builder.publisherPlace(entries.get(FIELD_ADDRESS));
 		}
 		

@@ -180,7 +180,7 @@
         },
         {
             "type": "String",
-            "name": "eventplace"
+            "name": "event-place"
         },
         {
             "type": "String",

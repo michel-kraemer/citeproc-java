@@ -52,7 +52,7 @@ public class EndNoteConverterTest {
 		assertEquals("8", item.getNumber());
 		assertEquals("8", item.getIssue());
 		assertEquals("Bell Laboratories,", item.getPublisher());
-		assertEquals("Murray Hill, NJ, USA", item.getEventplace());
+		assertEquals("Murray Hill, NJ, USA", item.getEventPlace());
 		assertEquals("Murray Hill, NJ, USA", item.getPublisherPlace());
 		assertEquals("Johnson:1973:PLB", item.getId());
 		assertEquals(2, item.getAuthor().length);

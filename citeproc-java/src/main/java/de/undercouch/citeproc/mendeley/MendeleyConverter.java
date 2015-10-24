@@ -194,7 +194,7 @@ public class MendeleyConverter {
 		//convert other fields
 		builder.abstrct(strOrNull(document.get(FIELD_ABSTRACT)));
 		builder.chapterNumber(strOrNull(document.get(FIELD_CHAPTER)));
-		builder.eventplace(strOrNull(document.get(FIELD_CITY)));
+		builder.eventPlace(strOrNull(document.get(FIELD_CITY)));
 		builder.publisherPlace(strOrNull(document.get(FIELD_CITY)));
 		builder.DOI(strOrNull(document.get(FIELD_DOI)));
 		builder.edition(strOrNull(document.get(FIELD_EDITION)));
