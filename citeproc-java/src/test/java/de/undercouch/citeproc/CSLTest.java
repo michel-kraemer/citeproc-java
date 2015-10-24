@@ -412,7 +412,7 @@ public class CSLTest {
 		
 		List<Citation> a = citeproc.makeCitation(items[0].getId());
 		assertEquals(0, a.get(0).getIndex());
-		assertEquals("Johnson and Kernighan, B.", a.get(0).getText());
+		assertEquals("Johnson and Kernighan, \u201cB.\u201d", a.get(0).getText());
 	}
 	
 	/**
