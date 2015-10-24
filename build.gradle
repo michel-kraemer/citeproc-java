@@ -3,7 +3,7 @@ subprojects {
     apply plugin: 'osgi'
     apply plugin: 'eclipse'
     
-    version = '0.6'
+    version = '1.0.0-SNAPSHOT'
     group = 'de.undercouch'
     sourceCompatibility = '1.6'
     targetCompatibility = '1.6'
