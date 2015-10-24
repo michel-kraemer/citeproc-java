@@ -32,7 +32,7 @@ import org.jbibtex.LaTeXObject;
 import org.jbibtex.LaTeXParser;
 import org.jbibtex.LaTeXPrinter;
 import org.jbibtex.ParseException;
-import org.jbibtex.TokenMgrError;
+import org.jbibtex.TokenMgrException;
 import org.jbibtex.Value;
 
 import de.undercouch.citeproc.csl.CSLDate;
@@ -109,8 +109,22 @@ public class BibTeXConverter {
 	private static final String TYPE_UNPUBLISHED = "unpublished";
 	private static final String TYPE_WWW = "www";
 	
-	private LaTeXParser latexParser = new LaTeXParser();
-	private LaTeXPrinter latexPrinter = new LaTeXPrinter();
+	private final LaTeXParser latexParser;
+	private final LaTeXPrinter latexPrinter;
+	
+	/**
+	 * Default constructor
+	 */
+	public BibTeXConverter() {
+		try {
+			latexParser = new LaTeXParser();
+		} catch (ParseException e) {
+			// can actually never happen because the default constructor
+			// of LaTeXParser doesn't throw
+			throw new RuntimeException(e);
+		}
+		latexPrinter = new LaTeXPrinter();
+	}
 	
 	/**
 	 * <p>Loads a BibTeX database from a stream.</p>
@@ -133,7 +147,7 @@ public class BibTeXConverter {
 		};
 		try {
 			return parser.parse(reader);
-		} catch (TokenMgrError err) {
+		} catch (TokenMgrException err) {
 			throw new ParseException("Could not parse BibTeX library: " +
 					err.getMessage());
 		}
@@ -169,7 +183,7 @@ public class BibTeXConverter {
 				us = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
 			} catch (ParseException ex) {
 				//ignore
-			} catch (TokenMgrError err) {
+			} catch (TokenMgrException err) {
 				//ignore
 			}
 			

@@ -23,9 +23,9 @@ configurations {
 }
 
 dependencies {
-    compile 'org.apache.commons:commons-lang3:3.3.2'
-    compile 'org.jbibtex:jbibtex:1.0.11'
-    compile 'org.antlr:antlr4-runtime:4.2'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.jbibtex:jbibtex:1.0.15'
+    compile 'org.antlr:antlr4-runtime:4.5.1-1'
     
     provided 'org.mozilla:rhino:1.7R4'
     
@@ -33,7 +33,7 @@ dependencies {
     testCompile 'org.mozilla:rhino:1.7R4'
     testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
     testCompile 'org.citationstyles:locales:1.0.1-SNAPSHOT'
-    testCompile 'com.carrotsearch:junit-benchmarks:0.7.0'
+    testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
 }
 
 task downloadCiteprocJs(type: Download) {
