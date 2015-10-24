@@ -151,7 +151,7 @@ public class ${desc}Converter {
 		<% } %>
 		
 		//map location
-		builder.eventplace(ref.getPlace());
+		builder.eventPlace(ref.getPlace());
 		builder.publisherPlace(ref.getPlace());
 		
 		//map other attributes
