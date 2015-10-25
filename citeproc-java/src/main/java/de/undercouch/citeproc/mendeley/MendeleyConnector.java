@@ -67,6 +67,11 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	private static final String LINK = "Link";
 	
 	/**
+	 * Parameter to get all attributes of a document
+	 */
+	private static final String VIEWALL = "view=all";
+	
+	/**
 	 * The remote service's authorization end-point
 	 */
 	private final String oauthAuthorizationUrl;
@@ -146,7 +151,7 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	
 	@Override
 	public List<String> getItemIDs() throws IOException {
-		String nextLink = MENDELEY_DOCUMENTS_ENDPOINT;
+		String nextLink = MENDELEY_DOCUMENTS_ENDPOINT + "?" + VIEWALL;
 		List<String> result = new ArrayList<String>();
 		clearCache();
 		
@@ -197,13 +202,13 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	}
 	
 	@Override
-	public CSLItemData getItem(String documentId) throws IOException {
-		CSLItemData item = getFromCache(documentId);
+	public CSLItemData getItem(String itemId) throws IOException {
+		CSLItemData item = getFromCache(itemId);
 		if (item == null) {
 			Map<String, Object> response = performRequestObject(
-					MENDELEY_DOCUMENTS_ENDPOINT + documentId, null);
-			item = MendeleyConverter.convert(documentId, response);
-			addToCache(documentId, item);
+					MENDELEY_DOCUMENTS_ENDPOINT + itemId + "?" + VIEWALL, null);
+			item = MendeleyConverter.convert(itemId, response);
+			addToCache(itemId, item);
 		}
 		return item;
 	}

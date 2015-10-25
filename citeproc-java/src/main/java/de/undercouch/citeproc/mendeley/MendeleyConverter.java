@@ -17,6 +17,9 @@ package de.undercouch.citeproc.mendeley;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
+import de.undercouch.citeproc.bibtex.NameParser;
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
@@ -34,62 +37,63 @@ import de.undercouch.citeproc.csl.CSLType;
  */
 public class MendeleyConverter {
 	private static final String FIELD_ABSTRACT = "abstract";
+	private static final String FIELD_ACCESSED = "accessed";
 	private static final String FIELD_AUTHORS = "authors";
-	private static final String FIELD_BOOK = "book";
 	private static final String FIELD_CHAPTER = "chapter";
 	private static final String FIELD_CITATION_KEY = "citation_key";
 	private static final String FIELD_CITY = "city";
-	private static final String FIELD_DATE_ACCESSED = "dateAccessed";
 	private static final String FIELD_DAY = "day";
-	private static final String FIELD_DISTRIBUTOR = "distributor";
-	private static final String FIELD_DOI = "doi";
 	private static final String FIELD_EDITION = "edition";
 	private static final String FIELD_EDITORS = "editors";
-	private static final String FIELD_ENCYCLOPEDIA = "encyclopedia";
 	private static final String FIELD_FIRSTNAME = "first_name";
 	private static final String FIELD_GENRE = "genre";
-	private static final String FIELD_ISBN = "isbn";
+	private static final String FIELD_IDENTIFIERS = "identifiers";
 	private static final String FIELD_ISSUE = "issue";
-	private static final String FIELD_ISSUER = "issuer";
+	private static final String FIELD_KEYWORDS = "keywords";
+	private static final String FIELD_LANGUAGE = "language";
+	private static final String FIELD_MEDIUM = "medium";
 	private static final String FIELD_MONTH = "month";
-	private static final String FIELD_NOTE = "note";
-	private static final String FIELD_NUMBER = "number";
 	private static final String FIELD_PAGES = "pages";
-	private static final String FIELD_PUBLICATION = "publication";
-	private static final String FIELD_PUBLICATION_OUTLET = "publication_outlet";
-	private static final String FIELD_PUBLISHED_IN = "published_in";
 	private static final String FIELD_PUBLISHER = "publisher";
-	private static final String FIELD_REVISION_NUMBER = "revisionNumber";
-	private static final String FIELD_SHORT_TITLE = "shortTitle";
+	private static final String FIELD_REVISION = "revision";
+	private static final String FIELD_SERIES = "series";
+	private static final String FIELD_SERIES_EDITOR = "series_editor";
+	private static final String FIELD_SERIES_NUMBER = "series_number";
+	private static final String FIELD_SHORT_TITLE = "short_title";
 	private static final String FIELD_SOURCE = "source";
 	private static final String FIELD_LASTNAME = "last_name";
 	private static final String FIELD_TITLE = "title";
+	private static final String FIELD_TRANSLATORS = "translators";
 	private static final String FIELD_TYPE = "type";
-	private static final String FIELD_URL = "url";
-	private static final String FIELD_VERSION = "version";
 	private static final String FIELD_VOLUME = "volume";
+	private static final String FIELD_WEBSITES = "websites";
 	private static final String FIELD_YEAR = "year";
 	
-	private static final String TYPE_BILL = "Bill";
-	private static final String TYPE_BOOK = "Book";
-	private static final String TYPE_BOOK_SECTION = "Book Section";
-	private static final String TYPE_CASE = "Case";
-	private static final String TYPE_COMPUTER_PROGRAM = "Computer Program";
-	private static final String TYPE_CONFERENCE_PROCEEDINGS = "Conference Proceedings";
-	private static final String TYPE_ENCYCLOPEDIA_ARTICLE = "Encyclopedia Article";
-	private static final String TYPE_FILM = "Film";
-	private static final String TYPE_GENERIC = "Generic";
-	private static final String TYPE_HEARING = "Hearing";
-	private static final String TYPE_JOURNAL_ARTICLE = "Journal Article";
-	private static final String TYPE_MAGAZINE_ARTICLE = "Magazine Article";
-	private static final String TYPE_NEWSPAPER_ARTICLE = "Newspaper Article";
-	private static final String TYPE_PATENT = "Patent";
-	private static final String TYPE_REPORT = "Report";
-	private static final String TYPE_STATUTE = "Statute";
-	private static final String TYPE_TELEVISION_BROADCAST = "Television Broadcast";
-	private static final String TYPE_THESIS = "Thesis";
-	private static final String TYPE_WEB_PAGE = "Web Page";
-	private static final String TYPE_WORKING_PAPER = "Working Paper";
+	private static final String IDENTIFIER_DOI = "doi";
+	private static final String IDENTIFIER_ISBN = "isbn";
+	private static final String IDENTIFIER_ISSN = "issn";
+	private static final String IDENTIFIER_PMID = "pmid";
+	
+	private static final String TYPE_BILL = "bill";
+	private static final String TYPE_BOOK = "book";
+	private static final String TYPE_BOOK_SECTION = "book_section";
+	private static final String TYPE_CASE = "case";
+	private static final String TYPE_COMPUTER_PROGRAM = "computer_program";
+	private static final String TYPE_CONFERENCE_PROCEEDINGS = "conference_proceedings";
+	private static final String TYPE_ENCYCLOPEDIA_ARTICLE = "encyclopedia_article";
+	private static final String TYPE_FILM = "film";
+	private static final String TYPE_GENERIC = "generic";
+	private static final String TYPE_HEARING = "hearing";
+	private static final String TYPE_JOURNAL = "journal";
+	private static final String TYPE_MAGAZINE_ARTICLE = "magazine_article";
+	private static final String TYPE_NEWSPAPER_ARTICLE = "newspaper_article";
+	private static final String TYPE_PATENT = "patent";
+	private static final String TYPE_REPORT = "report";
+	private static final String TYPE_STATUTE = "statute";
+	private static final String TYPE_TELEVISION_BROADCAST = "television_broadcast";
+	private static final String TYPE_THESIS = "thesis";
+	private static final String TYPE_WEB_PAGE = "web_page";
+	private static final String TYPE_WORKING_PAPER = "working_paper";
 
 	/**
 	 * Converts the given Mendeley document to CSL item data
@@ -128,6 +132,22 @@ public class MendeleyConverter {
 			builder.containerAuthor(editors);
 		}
 		
+		if (document.containsKey(FIELD_SERIES_EDITOR)) {
+			String seriesEditor = strOrNull(document.get(FIELD_SERIES_EDITOR));
+			if (seriesEditor != null) {
+				CSLName[] sen = NameParser.parse(seriesEditor);
+				builder.collectionEditor(sen);
+				builder.containerAuthor(sen);
+			}
+		}
+		
+		//convert translators
+		if (document.containsKey(FIELD_TRANSLATORS)) {
+			@SuppressWarnings("unchecked")
+			List<Map<String, Object>> tl = (List<Map<String, Object>>)document.get(FIELD_TRANSLATORS);
+			builder.translator(toAuthors(tl));
+		}
+		
 		//convert issue date
 		if (document.containsKey(FIELD_YEAR)) {
 			CSLDateBuilder db = new CSLDateBuilder();
@@ -149,46 +169,60 @@ public class MendeleyConverter {
 		}
 		
 		//convert number
-		if (mtype.equalsIgnoreCase(TYPE_COMPUTER_PROGRAM) && document.containsKey(FIELD_VERSION)) {
-			builder.number(strOrNull(document.get(FIELD_VERSION)));
-		} else if (document.containsKey(FIELD_REVISION_NUMBER)) {
-			builder.number(strOrNull(document.get(FIELD_REVISION_NUMBER)));
+		if (document.containsKey(FIELD_REVISION)) {
+			builder.number(strOrNull(document.get(FIELD_REVISION)));
 		} else {
-			builder.number(strOrNull(document.get(FIELD_NUMBER)));
+			builder.number(strOrNull(document.get(FIELD_SERIES_NUMBER)));
 		}
 		
 		//convert container title
 		String containerTitle;
-		if (mtype.equalsIgnoreCase(TYPE_BOOK_SECTION) && document.containsKey(FIELD_BOOK)) {
-			containerTitle = strOrNull(document.get(FIELD_BOOK));
-		} else if (mtype.equalsIgnoreCase(TYPE_ENCYCLOPEDIA_ARTICLE) &&
-				document.containsKey(FIELD_ENCYCLOPEDIA)) {
-			containerTitle = strOrNull(document.get(FIELD_ENCYCLOPEDIA));
-		} else if (document.containsKey(FIELD_PUBLISHED_IN)) {
-			containerTitle = strOrNull(document.get(FIELD_PUBLISHED_IN));
-		} else if (document.containsKey(FIELD_PUBLICATION_OUTLET)) {
-			containerTitle = strOrNull(document.get(FIELD_PUBLICATION_OUTLET));
+		if (document.containsKey(FIELD_SERIES)) {
+			containerTitle = strOrNull(document.get(FIELD_SERIES));
 		} else {
-			containerTitle = strOrNull(document.get(FIELD_PUBLICATION));
+			containerTitle = strOrNull(document.get(FIELD_SOURCE));
 		}
 		builder.containerTitle(containerTitle);
 		builder.collectionTitle(containerTitle);
 		
 		//convert publisher
-		if (mtype.equalsIgnoreCase(TYPE_PATENT) && document.containsKey(FIELD_ISSUER)) {
-			builder.publisher(strOrNull(document.get(FIELD_ISSUER)));
-		} else if (mtype.equalsIgnoreCase(TYPE_PATENT) && document.containsKey(FIELD_SOURCE)) {
+		if (mtype.equalsIgnoreCase(TYPE_PATENT) && document.containsKey(FIELD_SOURCE)) {
 			builder.publisher(strOrNull(document.get(FIELD_SOURCE)));
-		} else if (mtype.equalsIgnoreCase(TYPE_FILM) && document.containsKey(FIELD_DISTRIBUTOR)) {
-			builder.publisher(strOrNull(document.get(FIELD_DISTRIBUTOR)));
 		} else {
 			builder.publisher(strOrNull(document.get(FIELD_PUBLISHER)));
 		}
 		
 		//convert access date
-		if (document.containsKey(FIELD_DATE_ACCESSED)) {
+		if (document.containsKey(FIELD_ACCESSED)) {
 			builder.accessed(new CSLDateBuilder().raw(
-					strOrNull(document.get(FIELD_DATE_ACCESSED))).build());
+					strOrNull(document.get(FIELD_ACCESSED))).build());
+		}
+		
+		//convert identifiers
+		if (document.containsKey(FIELD_IDENTIFIERS)) {
+			@SuppressWarnings("unchecked")
+			Map<String, String> identifiers = (Map<String, String>)document.get(FIELD_IDENTIFIERS);
+			builder.DOI(identifiers.get(IDENTIFIER_DOI));
+			builder.ISBN(identifiers.get(IDENTIFIER_ISBN));
+			builder.ISSN(identifiers.get(IDENTIFIER_ISSN));
+			builder.PMID(identifiers.get(IDENTIFIER_PMID));
+		}
+		
+		//convert keywords
+		if (document.containsKey(FIELD_KEYWORDS)) {
+			@SuppressWarnings("unchecked")
+			List<String> keywords = (List<String>)document.get(FIELD_KEYWORDS);
+			builder.keyword(StringUtils.join(keywords, ','));
+		}
+		
+		//convert URL
+		if (document.containsKey(FIELD_WEBSITES)) {
+			@SuppressWarnings("unchecked")
+			List<String> websites = (List<String>)document.get(FIELD_WEBSITES);
+			if (websites.size() > 0) {
+				//use the first website only
+				builder.URL(websites.get(0));
+			}
 		}
 		
 		//convert other fields
@@ -196,16 +230,14 @@ public class MendeleyConverter {
 		builder.chapterNumber(strOrNull(document.get(FIELD_CHAPTER)));
 		builder.eventPlace(strOrNull(document.get(FIELD_CITY)));
 		builder.publisherPlace(strOrNull(document.get(FIELD_CITY)));
-		builder.DOI(strOrNull(document.get(FIELD_DOI)));
 		builder.edition(strOrNull(document.get(FIELD_EDITION)));
 		builder.genre(strOrNull(document.get(FIELD_GENRE)));
-		builder.ISBN(strOrNull(document.get(FIELD_ISBN)));
 		builder.issue(strOrNull(document.get(FIELD_ISSUE)));
-		builder.note(strOrNull(document.get(FIELD_NOTE)));
+		builder.language(strOrNull(document.get(FIELD_LANGUAGE)));
+		builder.medium(strOrNull(document.get(FIELD_MEDIUM)));
 		builder.page(strOrNull(document.get(FIELD_PAGES)));
 		builder.shortTitle(strOrNull(document.get(FIELD_SHORT_TITLE)));
 		builder.title(strOrNull(document.get(FIELD_TITLE)));
-		builder.URL(strOrNull(document.get(FIELD_URL)));
 		builder.volume(strOrNull(document.get(FIELD_VOLUME)));
 		
 		return builder.build();
@@ -273,7 +305,7 @@ public class MendeleyConverter {
 			return CSLType.ARTICLE;
 		} else if (type.equalsIgnoreCase(TYPE_HEARING)) {
 			return CSLType.SPEECH;
-		} else if (type.equalsIgnoreCase(TYPE_JOURNAL_ARTICLE)) {
+		} else if (type.equalsIgnoreCase(TYPE_JOURNAL)) {
 			return CSLType.ARTICLE_JOURNAL;
 		} else if (type.equalsIgnoreCase(TYPE_MAGAZINE_ARTICLE)) {
 			return CSLType.ARTICLE_MAGAZINE;

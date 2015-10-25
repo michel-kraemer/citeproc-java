@@ -50,9 +50,9 @@ public class MendeleyConverterTest {
 		assertEquals(2011, item.getIssued().getDateParts()[0][0]);
 		assertEquals(10, item.getIssued().getDateParts()[0][1]);
 		assertNotNull(item.getDOI());
-		assertEquals(doc.get("doi"), item.getDOI());
+		assertEquals("10.1109/PACT.2011.15", item.getDOI());
 		assertNotNull(item.getISBN());
-		assertEquals(doc.get("isbn"), item.getISBN());
+		assertEquals("978-1-4577-1794-9", item.getISBN());
 		assertNotNull(item.getPage());
 		assertEquals(doc.get("pages"), item.getPage());
 		assertNotNull(item.getPublisher());
@@ -60,7 +60,7 @@ public class MendeleyConverterTest {
 		assertNotNull(item.getTitle());
 		assertEquals(doc.get("title"), item.getTitle());
 		assertNotNull(item.getContainerTitle());
-		assertEquals(doc.get("published_in"), item.getContainerTitle());
+		assertEquals(doc.get("source"), item.getContainerTitle());
 		assertEquals("Brown", item.getAuthor()[0].getFamily());
 		assertEquals("Kevin J.", item.getAuthor()[0].getGiven());
 		assertEquals(7, item.getAuthor().length);
