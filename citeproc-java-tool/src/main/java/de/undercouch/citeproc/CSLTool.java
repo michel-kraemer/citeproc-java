@@ -20,13 +20,6 @@ import java.io.PrintWriter;
 import java.net.URL;
 
 import de.undercouch.citeproc.helper.CSLUtils;
-import de.undercouch.citeproc.helper.tool.CommandDesc;
-import de.undercouch.citeproc.helper.tool.CommandDescList;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
-import de.undercouch.citeproc.helper.tool.OptionDesc;
-import de.undercouch.citeproc.helper.tool.OptionParserException;
-import de.undercouch.citeproc.helper.tool.StandardInputReader;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 import de.undercouch.citeproc.tool.BibliographyCommand;
 import de.undercouch.citeproc.tool.CSLToolContext;
@@ -39,6 +32,13 @@ import de.undercouch.citeproc.tool.MendeleyCommand;
 import de.undercouch.citeproc.tool.ProviderCommand;
 import de.undercouch.citeproc.tool.ShellCommand;
 import de.undercouch.citeproc.tool.ZoteroCommand;
+import de.undercouch.underline.CommandDesc;
+import de.undercouch.underline.CommandDescList;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.Option.ArgumentType;
+import de.undercouch.underline.OptionDesc;
+import de.undercouch.underline.OptionParserException;
+import de.undercouch.underline.StandardInputReader;
 
 /**
  * Command line tool for the CSL processor. Use <code>citeproc-java --help</code>

@@ -22,11 +22,11 @@ import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.CSLUtils;
-import de.undercouch.citeproc.helper.tool.CommandDesc;
-import de.undercouch.citeproc.helper.tool.CommandDescList;
-import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.zotero.ZoteroConnector;
 import de.undercouch.citeproc.zotero.ZoteroItemDataProvider;
+import de.undercouch.underline.CommandDesc;
+import de.undercouch.underline.CommandDescList;
+import de.undercouch.underline.OptionDesc;
 
 /**
  * Generates bibliographies and citations from Zotero

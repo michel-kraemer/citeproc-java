@@ -23,7 +23,7 @@ import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.StringJsonBuilderFactory;
-import de.undercouch.citeproc.helper.tool.InputReader;
+import de.undercouch.underline.InputReader;
 
 /**
  * CLI command that converts input bibliographies to JSON files

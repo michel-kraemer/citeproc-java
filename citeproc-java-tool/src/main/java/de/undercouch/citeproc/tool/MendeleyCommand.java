@@ -20,10 +20,10 @@ import javax.xml.bind.DatatypeConverter;
 
 import de.undercouch.citeproc.CSLTool;
 import de.undercouch.citeproc.helper.CSLUtils;
-import de.undercouch.citeproc.helper.tool.CommandDesc;
-import de.undercouch.citeproc.helper.tool.CommandDescList;
-import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.mendeley.MendeleyConnector;
+import de.undercouch.underline.CommandDesc;
+import de.undercouch.underline.CommandDescList;
+import de.undercouch.underline.OptionDesc;
 
 /**
  * Generates bibliographies and citations from Mendeley Web

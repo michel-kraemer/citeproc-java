@@ -22,13 +22,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.undercouch.citeproc.helper.tool.Command;
 import de.undercouch.citeproc.tool.BibliographyCommand;
 import de.undercouch.citeproc.tool.ListCommand;
 import de.undercouch.citeproc.tool.MendeleyCommand;
 import de.undercouch.citeproc.tool.MendeleyListCommand;
 import de.undercouch.citeproc.tool.ShellCommand;
 import de.undercouch.citeproc.tool.shell.ShellCommandParser.Result;
+import de.undercouch.underline.Command;
 
 /**
  * Tests the {@link ShellCommandParser}

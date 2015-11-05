@@ -17,11 +17,11 @@ package de.undercouch.citeproc.tool.shell;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import de.undercouch.citeproc.helper.tool.CommandDesc;
-import de.undercouch.citeproc.helper.tool.CommandDescList;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
+import de.undercouch.underline.CommandDesc;
+import de.undercouch.underline.CommandDescList;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.OptionParserException;
 
 /**
  * Assign values to variables that affect the operation of the interactive shell

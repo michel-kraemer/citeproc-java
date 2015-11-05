@@ -18,11 +18,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import de.undercouch.underline.InputReader;
 import jline.console.ConsoleReader;
 import jline.console.completer.Completer;
 import jline.console.history.History;
 import jline.console.history.MemoryHistory;
-import de.undercouch.citeproc.helper.tool.InputReader;
 
 /**
  * Reads input from the user, but first disables prompt, completions,

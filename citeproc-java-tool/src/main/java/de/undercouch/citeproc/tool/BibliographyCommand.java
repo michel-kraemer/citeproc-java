@@ -22,11 +22,11 @@ import java.util.Set;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
-import de.undercouch.citeproc.helper.tool.OptionDesc;
 import de.undercouch.citeproc.helper.tool.ToolUtils;
 import de.undercouch.citeproc.output.Bibliography;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.Option.ArgumentType;
+import de.undercouch.underline.OptionDesc;
 
 /**
  * CLI command that generates a bibliography

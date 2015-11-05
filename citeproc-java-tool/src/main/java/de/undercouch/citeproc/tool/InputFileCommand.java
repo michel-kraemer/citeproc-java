@@ -20,11 +20,11 @@ import java.io.PrintWriter;
 
 import de.undercouch.citeproc.BibliographyFileReader;
 import de.undercouch.citeproc.ItemDataProvider;
-import de.undercouch.citeproc.helper.tool.Command;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.Option.ArgumentType;
-import de.undercouch.citeproc.helper.tool.OptionDesc;
-import de.undercouch.citeproc.helper.tool.OptionParserException;
+import de.undercouch.underline.Command;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.Option.ArgumentType;
+import de.undercouch.underline.OptionDesc;
+import de.undercouch.underline.OptionParserException;
 
 /**
  * A command that reads input bibliography files and delegates them

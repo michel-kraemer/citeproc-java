@@ -23,8 +23,8 @@ import java.util.List;
 
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.helper.Levenshtein;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.UnknownAttributes;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.UnknownAttributes;
 
 /**
  * A base class for commands that accept citation IDs as arguments

@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.undercouch.citeproc.ItemDataProvider;
-import de.undercouch.citeproc.helper.tool.InputReader;
+import de.undercouch.underline.InputReader;
 
 /**
  * CLI command that lists items from an input bibliography

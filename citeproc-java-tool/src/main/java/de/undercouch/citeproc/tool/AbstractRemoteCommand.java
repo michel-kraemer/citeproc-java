@@ -31,10 +31,10 @@ import de.undercouch.citeproc.helper.oauth.FileAuthenticationStore;
 import de.undercouch.citeproc.helper.oauth.RequestException;
 import de.undercouch.citeproc.helper.oauth.UnauthorizedException;
 import de.undercouch.citeproc.helper.tool.CachingRemoteConnector;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.remote.AuthenticatedRemoteConnector;
 import de.undercouch.citeproc.remote.RemoteConnector;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.OptionParserException;
 
 /**
  * Generates bibliographies and citations from remote sources

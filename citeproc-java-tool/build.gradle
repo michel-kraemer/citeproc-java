@@ -7,6 +7,7 @@ repositories {
 dependencies {
     compile project(':citeproc-java')
     
+    compile 'de.undercouch:underline:1.0.0'
     compile 'jline:jline:2.11'
     compile 'org.mapdb:mapdb:1.0.4'
     

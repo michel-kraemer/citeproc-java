@@ -19,14 +19,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 
-import de.undercouch.citeproc.helper.tool.Command;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.OptionDesc;
-import de.undercouch.citeproc.helper.tool.OptionGroup;
-import de.undercouch.citeproc.helper.tool.OptionIntrospector;
-import de.undercouch.citeproc.helper.tool.OptionIntrospector.ID;
-import de.undercouch.citeproc.helper.tool.OptionParser;
-import de.undercouch.citeproc.helper.tool.OptionParserException;
+import de.undercouch.underline.Command;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.OptionDesc;
+import de.undercouch.underline.OptionGroup;
+import de.undercouch.underline.OptionIntrospector;
+import de.undercouch.underline.OptionIntrospector.ID;
+import de.undercouch.underline.OptionParser;
+import de.undercouch.underline.OptionParserException;
 
 /**
  * A base class for commands from the {@link de.undercouch.citeproc.CSLTool}

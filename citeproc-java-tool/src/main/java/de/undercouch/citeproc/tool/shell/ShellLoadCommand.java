@@ -22,11 +22,11 @@ import java.util.List;
 
 import de.undercouch.citeproc.BibliographyFileReader;
 import de.undercouch.citeproc.BibliographyFileReader.FileFormat;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.OptionParserException;
-import de.undercouch.citeproc.helper.tool.UnknownAttributes;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 import de.undercouch.citeproc.tool.CSLToolContext;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.OptionParserException;
+import de.undercouch.underline.UnknownAttributes;
 
 /**
  * Load an input bibliography

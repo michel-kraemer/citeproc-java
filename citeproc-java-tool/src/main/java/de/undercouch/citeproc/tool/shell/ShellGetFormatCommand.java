@@ -17,9 +17,9 @@ package de.undercouch.citeproc.tool.shell;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.OptionParserException;
 
 /**
  * Get the current output format

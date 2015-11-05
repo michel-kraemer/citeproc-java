@@ -17,9 +17,9 @@ package de.undercouch.citeproc.tool;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import de.undercouch.citeproc.helper.tool.Command;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.OptionParserException;
+import de.undercouch.underline.Command;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.OptionParserException;
 
 /**
  * An interface for commands from the {@link de.undercouch.citeproc.CSLTool}

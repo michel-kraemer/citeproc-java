@@ -16,7 +16,7 @@ package de.undercouch.citeproc.tool;
 
 import java.io.PrintWriter;
 
-import de.undercouch.citeproc.helper.tool.InputReader;
+import de.undercouch.underline.InputReader;
 
 /**
  * Synchronize with Mendeley Web

@@ -21,18 +21,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.undercouch.citeproc.CSLTool;
-import de.undercouch.citeproc.helper.tool.Command;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.Option;
-import de.undercouch.citeproc.helper.tool.OptionGroup;
-import de.undercouch.citeproc.helper.tool.OptionIntrospector;
-import de.undercouch.citeproc.helper.tool.OptionIntrospector.ID;
-import de.undercouch.citeproc.helper.tool.OptionParser;
-import de.undercouch.citeproc.helper.tool.OptionParserException;
-import de.undercouch.citeproc.helper.tool.UnknownAttributes;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 import de.undercouch.citeproc.tool.CSLToolCommand;
 import de.undercouch.citeproc.tool.ShellCommand;
+import de.undercouch.underline.Command;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.Option;
+import de.undercouch.underline.OptionGroup;
+import de.undercouch.underline.OptionIntrospector;
+import de.undercouch.underline.OptionIntrospector.ID;
+import de.undercouch.underline.OptionParser;
+import de.undercouch.underline.OptionParserException;
+import de.undercouch.underline.UnknownAttributes;
 
 /**
  * Displays help about a command in the interactive shell

@@ -14,9 +14,9 @@
 
 package de.undercouch.citeproc.tool.shell;
 
-import de.undercouch.citeproc.helper.tool.CommandDesc;
-import de.undercouch.citeproc.helper.tool.CommandDescList;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
+import de.undercouch.underline.CommandDesc;
+import de.undercouch.underline.CommandDescList;
 
 /**
  * Contains the configuration for all additional shell commands

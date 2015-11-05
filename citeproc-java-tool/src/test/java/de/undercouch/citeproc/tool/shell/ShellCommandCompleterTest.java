@@ -24,12 +24,12 @@ import java.util.List;
 import org.junit.Test;
 
 import de.undercouch.citeproc.CSLTool;
-import de.undercouch.citeproc.helper.tool.Command;
-import de.undercouch.citeproc.helper.tool.Option;
-import de.undercouch.citeproc.helper.tool.OptionGroup;
-import de.undercouch.citeproc.helper.tool.OptionIntrospector;
-import de.undercouch.citeproc.helper.tool.OptionIntrospector.ID;
 import de.undercouch.citeproc.tool.MendeleyCommand;
+import de.undercouch.underline.Command;
+import de.undercouch.underline.Option;
+import de.undercouch.underline.OptionGroup;
+import de.undercouch.underline.OptionIntrospector;
+import de.undercouch.underline.OptionIntrospector.ID;
 
 /**
  * Tests {@link ShellCommandCompleter}

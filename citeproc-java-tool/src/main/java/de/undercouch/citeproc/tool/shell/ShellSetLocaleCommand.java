@@ -19,13 +19,13 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 
-import jline.console.completer.Completer;
 import de.undercouch.citeproc.CSL;
-import de.undercouch.citeproc.helper.tool.InputReader;
-import de.undercouch.citeproc.helper.tool.OptionParserException;
 import de.undercouch.citeproc.helper.tool.ToolUtils;
-import de.undercouch.citeproc.helper.tool.UnknownAttributes;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
+import de.undercouch.underline.InputReader;
+import de.undercouch.underline.OptionParserException;
+import de.undercouch.underline.UnknownAttributes;
+import jline.console.completer.Completer;
 
 /**
  * Set the current citation locale
