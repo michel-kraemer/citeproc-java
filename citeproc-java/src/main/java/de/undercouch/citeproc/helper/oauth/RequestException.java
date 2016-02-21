@@ -24,6 +24,7 @@ public class RequestException extends IOException {
 	private static final long serialVersionUID = 3499522813501819757L;
 
 	/**
+	 * Constructs a new exception
 	 * @see Exception#Exception()
 	 */
 	public RequestException() {
@@ -31,6 +32,8 @@ public class RequestException extends IOException {
 	}
 
 	/**
+	 * Constructs a new exception with a detail message
+	 * @param message the detail message
 	 * @see Exception#Exception(String)
 	 */
 	public RequestException(String message) {
@@ -38,6 +41,8 @@ public class RequestException extends IOException {
 	}
 
 	/**
+	 * Constructs a new exception with a specified cause
+	 * @param cause the cause
 	 * @see Exception#Exception(Throwable)
 	 */
 	public RequestException(Throwable cause) {
@@ -45,6 +50,9 @@ public class RequestException extends IOException {
 	}
 
 	/**
+	 * Constructs a new exception with a specified detail message and cause
+	 * @param message the detail message
+	 * @param cause the cause
 	 * @see Exception#Exception(String, Throwable)
 	 */
 	public RequestException(String message, Throwable cause) {

@@ -27,6 +27,9 @@ public class ZoteroOAuth extends OAuth1 {
 	private static final String OAUTH_USERID = "userID";
 	
 	/**
+	 * Creates a new OAuth client for Zotero
+	 * @param consumerKey the consumer key
+	 * @param consumerSecret the consumer secret
 	 * @see OAuth1#OAuth1(String, String)
 	 */
 	public ZoteroOAuth(String consumerKey, String consumerSecret) {

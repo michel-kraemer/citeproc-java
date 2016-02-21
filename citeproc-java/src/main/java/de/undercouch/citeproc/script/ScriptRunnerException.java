@@ -23,6 +23,7 @@ public class ScriptRunnerException extends Exception {
 	private static final long serialVersionUID = -5745047071287708797L;
 
 	/**
+	 * Constructs a new exception
 	 * @see Exception#Exception()
 	 */
 	public ScriptRunnerException() {
@@ -30,6 +31,8 @@ public class ScriptRunnerException extends Exception {
 	}
 
 	/**
+	 * Constructs a new exception with a detail message
+	 * @param message the detail message
 	 * @see Exception#Exception(String)
 	 */
 	public ScriptRunnerException(String message) {
@@ -37,6 +40,8 @@ public class ScriptRunnerException extends Exception {
 	}
 
 	/**
+	 * Constructs a new exception with a specified cause
+	 * @param cause the cause
 	 * @see Exception#Exception(Throwable)
 	 */
 	public ScriptRunnerException(Throwable cause) {
@@ -44,6 +49,9 @@ public class ScriptRunnerException extends Exception {
 	}
 
 	/**
+	 * Constructs a new exception with a specified detail message and cause
+	 * @param message the detail message
+	 * @param cause the cause
 	 * @see Exception#Exception(String, Throwable)
 	 */
 	public ScriptRunnerException(String message, Throwable cause) {

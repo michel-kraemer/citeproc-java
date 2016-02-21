@@ -22,6 +22,7 @@ public class UnauthorizedException extends RequestException {
 	private static final long serialVersionUID = -4587555569639659798L;
 	
 	/**
+	 * Constructs a new exception
 	 * @see Exception#Exception()
 	 */
 	public UnauthorizedException() {
@@ -29,6 +30,8 @@ public class UnauthorizedException extends RequestException {
 	}
 
 	/**
+	 * Constructs a new exception with a detail message
+	 * @param message the detail message
 	 * @see Exception#Exception(String)
 	 */
 	public UnauthorizedException(String message) {
@@ -36,6 +39,8 @@ public class UnauthorizedException extends RequestException {
 	}
 
 	/**
+	 * Constructs a new exception with a specified cause
+	 * @param cause the cause
 	 * @see Exception#Exception(Throwable)
 	 */
 	public UnauthorizedException(Throwable cause) {
@@ -43,6 +48,9 @@ public class UnauthorizedException extends RequestException {
 	}
 
 	/**
+	 * Constructs a new exception with a specified detail message and cause
+	 * @param message the detail message
+	 * @param cause the cause
 	 * @see Exception#Exception(String, Throwable)
 	 */
 	public UnauthorizedException(String message, Throwable cause) {
