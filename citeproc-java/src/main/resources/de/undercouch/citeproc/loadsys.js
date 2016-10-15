@@ -28,11 +28,7 @@ Sys.prototype.handleReturnValue = function(val) {
 }
 
 Sys.prototype.retrieveLocale = function(lang) {
-	var l = this.localeProvider.retrieveLocale(lang);
-	if (l == null) {
-		return null;
-	}
-	return new String(l);
+	return this.localeProvider.retrieveLocale(lang);
 };
 
 Sys.prototype.retrieveItem = function(id) {

@@ -7,13 +7,10 @@ apply plugin: 'signing'
 
 import de.undercouch.gradle.tasks.download.Download
 
-ext.citeprocProjectBase = 'https://bitbucket.org/fbennett/citeproc-js/'
-ext.citeprocJsUrlBase = ext.citeprocProjectBase + 'raw/01297da0b8365851689d2c3d0a56e57147de1b67/'
+ext.citeprocJsUrlBase = 'https://raw.githubusercontent.com/Juris-M/citeproc-js/2d1bb8dddf152f7c3e034dda3df3ec7e426939a3/'
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
-ext.xmldomJsUrl = ext.citeprocJsUrlBase + 'xmldom.js'
-ext.xmle4xJsUrl = ext.citeprocJsUrlBase + 'xmle4x.js'
-ext.citeprocJsZip = '1.0.521.zip'
-ext.citeprocJsZipUrl = ext.citeprocProjectBase + 'get/' + ext.citeprocJsZip
+ext.citeprocJsZip = '1.1.137.zip'
+ext.citeprocJsZipUrl = "https://github.com/Juris-M/citeproc-js/archive/$citeprocJsZip"
 ext.citeprocTestSuiteZip = '9942299.zip'
 ext.citeprocTestSuiteUrl = 'https://bitbucket.org/bdarcus/citeproc-test/get/' + ext.citeprocTestSuiteZip
 
@@ -34,24 +31,13 @@ dependencies {
 }
 
 task downloadCiteprocJs(type: Download) {
+    acceptAnyCertificate true
     src citeprocJsUrl
     dest new File(projectDir, "src-gen/main/resources/de/undercouch/citeproc/citeproc.js")
     overwrite false
 }
 
-task downloadXmldomJs(type: Download) {
-    src xmldomJsUrl
-    dest new File(projectDir, "src-gen/main/resources/de/undercouch/citeproc/xmldom.js")
-    overwrite false
-}
-
-task downloadXmle4xJs(type: Download) {
-    src xmle4xJsUrl
-    dest new File(projectDir, "src-gen/main/resources/de/undercouch/citeproc/xmle4x.js")
-    overwrite false
-}
-
-task generateSources(dependsOn: [ downloadXmldomJs, downloadXmle4xJs, downloadCiteprocJs ]) {
+task generateSources(dependsOn: downloadCiteprocJs) {
     inputs.files fileTree(dir: projectDir, includes: [ 'templates/*', 'grammars/*',
         'src/main/resources/de/undercouch/citeproc/*.js',
         'src-gen/main/resources/de/undercouch/citeproc/*.js' ])

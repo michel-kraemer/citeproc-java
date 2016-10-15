@@ -54,10 +54,7 @@ public class CSLDateParser {
 					"var CSL = new function() {};" +
 					"CSL.DATE_PARTS_ALL = [\"year\", \"month\", \"day\", \"season\"];" +
 					"CSL.debug = function(msg) {};" +
-					"function makeParser() {" +
-						"var p = new CSL.DateParser();" +
-						"p.returnAsArray();" +
-						"return p; }"
+					"function getParser() { return CSL.DateParser; }"
 			));
 			runner.loadScript(getClass().getResource("dateparser.js"));
 		} catch (IOException e) {
@@ -69,7 +66,7 @@ public class CSLDateParser {
 		
 		//initialize parser
 		try {
-			parser = runner.callMethod("makeParser", Object.class);
+			parser = runner.callMethod("getParser", Object.class);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not initialize date parser", e);
 		}
@@ -84,7 +81,7 @@ public class CSLDateParser {
 		Map<String, Object> res;
 		try {
 			Map<String, Object> m = runner.callMethod(
-					parser, "parse", Map.class, str);
+					parser, "parseDateToArray", Map.class, str);
 			res = m;
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not update items", e);

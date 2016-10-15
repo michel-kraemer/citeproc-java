@@ -36,12 +36,6 @@ public interface ScriptRunner extends JsonBuilderFactory {
 	String getVersion();
 	
 	/**
-	 * @return true if this script runner supports the
-	 * ECMAScript for XML extension (E4X)
-	 */
-	boolean supportsE4X();
-	
-	/**
 	 * Loads a script from a URL and evaluates it
 	 * @param url the script's URL
 	 * @throws IOException if the script could not be loaded

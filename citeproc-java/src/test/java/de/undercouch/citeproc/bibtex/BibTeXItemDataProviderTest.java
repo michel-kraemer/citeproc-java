@@ -82,7 +82,7 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 		Bibliography b = citeproc.makeBibliography();
 		assertEquals(4, b.getEntries().length);
 		assertEquals("[1]S. C. Johnson and B. W. Kernighan, \u201cThe Programming Language B,\u201d "
-				+ "Bell Laboratories,, Murray Hill, NJ, USA, 8, 1973.\n", b.getEntries()[0]);
+				+ "Bell Laboratories, Murray Hill, NJ, USA, 8, 1973.\n", b.getEntries()[0]);
 		assertEquals("[2]D. M. Ritchie and K. Thompson, \u201cThe UNIX time-sharing system,\u201d "
 				+ "Operating Systems Review, vol. 7, no. 4, p. 27, Oct. 1973.\n", b.getEntries()[1]);
 		assertEquals("[3]D. W. Ritchie and K. Thompson, \u201cThe UNIX Time-Sharing System,\u201d "

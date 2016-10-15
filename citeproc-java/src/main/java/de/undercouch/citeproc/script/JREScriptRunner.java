@@ -51,12 +51,7 @@ public class JREScriptRunner extends AbstractScriptRunner {
 	public String getVersion() {
 		return engine.getFactory().getEngineVersion();
 	}
-	
-	@Override
-	public boolean supportsE4X() {
-		return false;
-	}
-	
+
 	@Override
 	public void eval(Reader reader) throws ScriptRunnerException {
 		try {
@@ -70,7 +65,7 @@ public class JREScriptRunner extends AbstractScriptRunner {
 	public JsonBuilder createJsonBuilder() {
 		return new StringJsonBuilder(this);
 	}
-	
+
 	@Override
 	public <T> T callMethod(String name, Class<T> resultType,
 			Object... args) throws ScriptRunnerException {

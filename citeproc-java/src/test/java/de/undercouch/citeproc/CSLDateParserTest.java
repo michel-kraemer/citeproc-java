@@ -64,6 +64,6 @@ public class CSLDateParserTest {
 		assertArrayEquals(new int[][] { new int[] { 2013, 11, 17 } }, date.getDateParts());
 		
 		date = parser.parse("11/17/2013");
-		assertArrayEquals(new int[][] { new int[] { 2013 } }, date.getDateParts());
+		assertArrayEquals(new int[][] { new int[] { 2013, 11, 17 } }, date.getDateParts());
 	}
 }
