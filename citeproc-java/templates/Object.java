@@ -213,7 +213,7 @@ public class $name <% if (!noJsonObject) { %>implements JsonObject<% } %> {
 		
 		<% for (p in props) { %>{
 			Object v = obj.get("${p.name}");
-			if (v != null) {
+			if (<% if (p.enumType) { %>!isFalsy(v)<% } else { %>v != null<% } %>) {
 				<% out << propertyTemplate(p, 'v') %>
 			}<% if (p.defval) { %> else {
 				builder.${p.normalizedName}(${p.defval});
@@ -224,6 +224,37 @@ public class $name <% if (!noJsonObject) { %>implements JsonObject<% } %> {
 		${additionalFromJsonCode.join('\n')}
 		
 		return builder.build();
+	}
+
+	private static boolean isFalsy(Object o) {
+		if (o == null) {
+			return true;
+		}
+		if (Boolean.FALSE.equals(o)) {
+			return true;
+		}
+		if ("".equals(o)) {
+			return true;
+		}
+		if (Integer.valueOf(0).equals(o)) {
+			return true;
+		}
+		if (Long.valueOf(0L).equals(o)) {
+			return true;
+		}
+		if (o instanceof Float && (Float.valueOf(0f).equals(o) || ((Float)o).isNaN())) {
+			return true;
+		}
+		if (o instanceof Double && (Double.valueOf(0d).equals(o) || ((Double)o).isNaN())) {
+			return true;
+		}
+		if (Byte.valueOf((byte)0).equals(o)) {
+			return true;
+		}
+		if (Short.valueOf((short)0).equals(o)) {
+			return true;
+		}
+		return false;
 	}
 	
 	private static int toInt(Object o) {
