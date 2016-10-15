@@ -8,7 +8,7 @@ dependencies {
     compile project(':citeproc-java')
     
     compile 'de.undercouch:underline:1.0.0'
-    compile 'jline:jline:2.11'
+    compile 'jline:jline:2.14.2'
     compile 'org.mapdb:mapdb:1.0.4'
     
     runtime 'org.citationstyles:styles:1.0.1-SNAPSHOT'
