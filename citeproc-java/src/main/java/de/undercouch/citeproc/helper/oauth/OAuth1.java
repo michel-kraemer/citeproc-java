@@ -91,7 +91,7 @@ public class OAuth1 implements OAuth {
 	@Override
 	public Token requestTemporaryCredentials(URL url, Method method)
 			throws IOException {
-		Map<String, String> aap = new HashMap<String, String>();
+		Map<String, String> aap = new HashMap<>();
 		aap.put(OAUTH_CALLBACK, CALLBACK_OOB);
 		return requestCredentials(url, method, null, aap);
 	}
@@ -99,7 +99,7 @@ public class OAuth1 implements OAuth {
 	@Override
 	public Token requestTokenCredentials(URL url, Method method,
 			Token temporaryCredentials, String verifier) throws IOException {
-		Map<String, String> aap = new HashMap<String, String>();
+		Map<String, String> aap = new HashMap<>();
 		aap.put(OAUTH_VERIFIER, verifier);
 		return requestCredentials(url, method, temporaryCredentials, aap);
 	}
@@ -178,7 +178,7 @@ public class OAuth1 implements OAuth {
 		String nonce = makeNonce(timestamp);
 		
 		//create OAuth parameters
-		Map<String, String> authParams = new HashMap<String, String>();
+		Map<String, String> authParams = new HashMap<>();
 		if (additionalAuthParams != null) {
 			authParams.putAll(additionalAuthParams);
 		}
@@ -294,10 +294,10 @@ public class OAuth1 implements OAuth {
 	 */
 	private static List<String> splitAndEncodeParams(URL url) {
 		if (url.getQuery() == null) {
-			return new ArrayList<String>();
+			return new ArrayList<>();
 		}
 		String[] params = url.getQuery().split("&");
-		List<String> result = new ArrayList<String>(params.length);
+		List<String> result = new ArrayList<>(params.length);
 		for (String p : params) {
 			String[] kv = p.split("=");
 			kv[0] = PercentEncoding.decode(kv[0]);
@@ -317,7 +317,7 @@ public class OAuth1 implements OAuth {
 	 */
 	private static Map<String, String> splitResponse(String response) {
 		String[] params = response.split("&");
-		Map<String, String> result = new HashMap<String, String>(params.length);
+		Map<String, String> result = new HashMap<>(params.length);
 		for (String p : params) {
 			String[] kv = p.split("=");
 			result.put(PercentEncoding.decode(kv[0]), PercentEncoding.decode(kv[1]));

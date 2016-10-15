@@ -56,7 +56,7 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	 */
 	private static final Map<String, String> DEFAULT_HEADERS;
 	static {
-		DEFAULT_HEADERS = new HashMap<String, String>();
+		DEFAULT_HEADERS = new HashMap<>();
 		// Mendeley API version 1
 		DEFAULT_HEADERS.put("Accept", "application/vnd.mendeley-document.1+json");
 	}
@@ -131,7 +131,7 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	
 	private void addToCache(String id, CSLItemData doc) {
 		if (cachedDocuments == null) {
-			cachedDocuments = new HashMap<String, CSLItemData>();
+			cachedDocuments = new HashMap<>();
 		}
 		cachedDocuments.put(id, doc);
 	}
@@ -152,7 +152,7 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	@Override
 	public List<String> getItemIDs() throws IOException {
 		String nextLink = MENDELEY_DOCUMENTS_ENDPOINT + "?" + VIEWALL;
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		clearCache();
 		
 		while (nextLink != null) {
@@ -180,8 +180,7 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 			}
 			
 			// get documents from response
-			InputStream is = response.getInputStream();
-			try {
+			try (InputStream is = response.getInputStream()) {
 				List<Object> docsArr = parseResponseArray(response);
 				for (Object docObj : docsArr) {
 					if (docObj instanceof Map) {
@@ -193,8 +192,6 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 						addToCache(id, doc);
 					}
 				}
-			} finally {
-				is.close();
 			}
 		}
 		
@@ -215,7 +212,7 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 	
 	@Override
 	public Map<String, CSLItemData> getItems(List<String> itemIds) throws IOException {
-		Map<String, CSLItemData> result = new LinkedHashMap<String, CSLItemData>(itemIds.size());
+		Map<String, CSLItemData> result = new LinkedHashMap<>(itemIds.size());
 		for (String id : itemIds) {
 			result.put(id, getItem(id));
 		}

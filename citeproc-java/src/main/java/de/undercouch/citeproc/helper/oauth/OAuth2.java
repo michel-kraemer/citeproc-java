@@ -81,7 +81,7 @@ public class OAuth2 implements OAuth {
 		body += "&" + REDIRECT_URI + "=" + URLEncoder.encode(redirectUri, UTF8);
 		
 		//prepare Authorization header
-		Map<String, String> headers = new HashMap<String, String>();
+		Map<String, String> headers = new HashMap<>();
 		String encodedUserPass = DatatypeConverter.printBase64Binary(
 				(consumerKey + ":" + consumerSecret).getBytes(UTF8));
 		headers.put(HEADER_AUTHORIZATION, BASIC + " " + encodedUserPass);
@@ -90,8 +90,7 @@ public class OAuth2 implements OAuth {
 		Response r = request(url, method, null, headers, body);
 		
 		//read response
-		InputStream is = r.getInputStream();
-		try {
+		try (InputStream is = r.getInputStream()) {
 			JsonParser parser = new JsonParser(new JsonLexer(
 					new InputStreamReader(is, UTF8)));
 			Map<String, Object> obj = parser.parseObject();
@@ -100,8 +99,6 @@ public class OAuth2 implements OAuth {
 				return null;
 			}
 			return new Token(at.toString(), at.toString());
-		} finally {
-			is.close();
 		}
 	}
 
@@ -148,12 +145,9 @@ public class OAuth2 implements OAuth {
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
 			
-			OutputStream os = conn.getOutputStream();
-			try {
+			try (OutputStream os = conn.getOutputStream()) {
 				os.write(by);
 				os.flush();
-			} finally {
-				os.close();
 			}
 		}
 		

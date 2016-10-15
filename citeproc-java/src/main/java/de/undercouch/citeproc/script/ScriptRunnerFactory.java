@@ -40,7 +40,7 @@ public class ScriptRunnerFactory {
 	 * The runner to create
 	 */
 	private static AtomicReference<RunnerType> runner =
-			new AtomicReference<RunnerType>(RunnerType.AUTO);
+			new AtomicReference<>(RunnerType.AUTO);
 	
 	/**
 	 * Sets the type of runners this factory creates. The default type is

@@ -29,7 +29,7 @@ public class ListItemDataProvider implements ItemDataProvider {
 	/**
 	 * The items that this provider holds
 	 */
-	protected Map<String, CSLItemData> items = new LinkedHashMap<String, CSLItemData>();
+	protected Map<String, CSLItemData> items = new LinkedHashMap<>();
 	
 	/**
 	 * Creates a data provider that serves items from the given array

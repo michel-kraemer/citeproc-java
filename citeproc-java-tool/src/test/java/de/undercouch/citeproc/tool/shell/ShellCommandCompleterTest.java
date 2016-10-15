@@ -52,7 +52,7 @@ public class ShellCommandCompleterTest {
 	 */
 	@Test
 	public void topLevel() throws Exception {
-		ArrayList<CharSequence> r = new ArrayList<CharSequence>();
+		ArrayList<CharSequence> r = new ArrayList<>();
 		int pos = complete("", r);
 		
 		OptionGroup<ID> options = OptionIntrospector.introspect(CSLTool.class);
@@ -71,29 +71,29 @@ public class ShellCommandCompleterTest {
 		}
 		assertEquals(0, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete(" ", r);
 		assertEquals(numCommands, r.size());
 		assertEquals(1, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("     ", r);
 		assertEquals(numCommands, r.size());
 		assertEquals(5, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("bibl", r);
 		assertEquals(1, r.size());
 		assertEquals("bibliography", r.get(0));
 		assertEquals(0, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("men", r);
 		assertEquals(1, r.size());
 		assertEquals("mendeley", r.get(0));
 		assertEquals(0, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("bla", r);
 		assertEquals(0, r.size());
 		assertEquals(-1, pos);
@@ -105,7 +105,7 @@ public class ShellCommandCompleterTest {
 	 */
 	@Test
 	public void subcommand() throws Exception {
-		ArrayList<CharSequence> r = new ArrayList<CharSequence>();
+		ArrayList<CharSequence> r = new ArrayList<>();
 		int pos = complete("mendeley", r);
 		
 		OptionGroup<ID> options = OptionIntrospector.introspect(
@@ -116,23 +116,23 @@ public class ShellCommandCompleterTest {
 		}
 		assertEquals(9, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("mendeley ", r);
 		assertEquals(options.getCommands().size(), r.size());
 		assertEquals(9, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("mendeley li", r);
 		assertEquals(1, r.size());
 		assertEquals("list", r.get(0));
 		assertEquals(9, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("mendeley list", r);
 		assertEquals(0, r.size());
 		assertEquals(-1, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("mendeley bla", r);
 		assertEquals(0, r.size());
 		assertEquals(-1, pos);
@@ -140,16 +140,15 @@ public class ShellCommandCompleterTest {
 	
 	/**
 	 * Tests if unknown attributes are ignored
-	 * @throws Exception if something goes wrong
 	 */
 	@Test
-	public void unknownAttributes() throws Exception {
-		ArrayList<CharSequence> r = new ArrayList<CharSequence>();
+	public void unknownAttributes() {
+		ArrayList<CharSequence> r = new ArrayList<>();
 		int pos = complete("mendeley bibliography test", r);
 		assertEquals(0, r.size());
 		assertEquals(-1, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("mendeley bibliography test test2", r);
 		assertEquals(0, r.size());
 		assertEquals(-1, pos);
@@ -161,7 +160,7 @@ public class ShellCommandCompleterTest {
 	 */
 	@Test
 	public void excludedCommands() throws Exception {
-		List<Class<? extends Command>> cmds = new ArrayList<Class<? extends Command>>();
+		List<Class<? extends Command>> cmds = new ArrayList<>();
 		cmds.add(MendeleyCommand.class);
 		
 		OptionGroup<ID> options = OptionIntrospector.introspect(CSLTool.class);
@@ -174,7 +173,7 @@ public class ShellCommandCompleterTest {
 		//subtract 1 again because we excluded one command
 		--numCommands;
 		
-		ArrayList<CharSequence> r = new ArrayList<CharSequence>();
+		ArrayList<CharSequence> r = new ArrayList<>();
 		complete("", r, cmds);
 		assertEquals(numCommands, r.size());
 	}
@@ -185,25 +184,25 @@ public class ShellCommandCompleterTest {
 	 */
 	@Test
 	public void help() throws Exception {
-		ArrayList<CharSequence> r = new ArrayList<CharSequence>();
+		ArrayList<CharSequence> r = new ArrayList<>();
 		int pos = complete("hel", r);
 		assertEquals(1, r.size());
 		assertEquals("help", r.get(0));
 		assertEquals(0, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("help me", r);
 		assertEquals(1, r.size());
 		assertEquals("mendeley", r.get(0));
 		assertEquals(5, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("help mendeley li", r);
 		assertEquals(1, r.size());
 		assertEquals("list", r.get(0));
 		assertEquals(14, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("help mendeley", r);
 		OptionGroup<ID> options = OptionIntrospector.introspect(MendeleyCommand.class);
 		assertEquals(options.getCommands().size(), r.size());
@@ -212,7 +211,7 @@ public class ShellCommandCompleterTest {
 		}
 		assertEquals(14, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("help", r);
 		options = OptionIntrospector.introspect(CSLTool.class);
 		options = OptionIntrospector.introspect(CSLTool.class);
@@ -231,13 +230,13 @@ public class ShellCommandCompleterTest {
 	 */
 	@Test
 	public void completeFormats() {
-		ArrayList<CharSequence> r = new ArrayList<CharSequence>();
+		ArrayList<CharSequence> r = new ArrayList<>();
 		int pos = complete("set format h", r);
 		assertEquals(1, r.size());
 		assertEquals("html", r.get(0));
 		assertEquals(11, pos);
 		
-		r = new ArrayList<CharSequence>();
+		r = new ArrayList<>();
 		pos = complete("set format", r);
 		assertEquals(5, r.size());
 		assertEquals(11, pos);

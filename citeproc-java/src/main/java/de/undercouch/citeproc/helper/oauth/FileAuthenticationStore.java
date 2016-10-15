@@ -44,11 +44,8 @@ public class FileAuthenticationStore implements AuthenticationStore {
 		p = new Properties();
 		
 		if (store.exists()) {
-			InputStream is = new FileInputStream(store);
-			try {
+			try (InputStream is = new FileInputStream(store)) {
 				p.load(is);
-			} finally {
-				is.close();
 			}
 		}
 	}
@@ -85,11 +82,8 @@ public class FileAuthenticationStore implements AuthenticationStore {
 	}
 	
 	private void doSave() throws IOException {
-		OutputStream os = new FileOutputStream(store);
-		try {
+		try (OutputStream os = new FileOutputStream(store)) {
 			p.store(os, COMMENT);
-		} finally {
-			os.close();
 		}
 	}
 }

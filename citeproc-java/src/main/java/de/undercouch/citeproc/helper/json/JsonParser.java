@@ -60,7 +60,7 @@ public class JsonParser {
 	 * the input stream contained an unexpected token
 	 */
 	private Map<String, Object> parseObjectInternal() throws IOException {
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		
 		Type t;
 		while (true) {
@@ -120,7 +120,7 @@ public class JsonParser {
 	 * the input stream contained an unexpected token
 	 */
 	private List<Object> parseArrayInternal() throws IOException {
-		List<Object> result = new ArrayList<Object>();
+		List<Object> result = new ArrayList<>();
 		
 		Type t;
 		while (true) {

@@ -48,7 +48,7 @@ public class ScriptRunnerBenchmark extends AbstractBibTeXTest {
 	
 	private static BibTeXDatabase db;
 	private static BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
-	private static List<Integer> rnds = new ArrayList<Integer>();
+	private static List<Integer> rnds = new ArrayList<>();
 	
 	/**
 	 * Set up this test
@@ -69,8 +69,8 @@ public class ScriptRunnerBenchmark extends AbstractBibTeXTest {
 		CSL citeproc = new CSL(sys, "ieee");
 		citeproc.setOutputFormat("text");
 		
-		List<Key> keys = new ArrayList<Key>(db.getEntries().keySet());
-		List<String> result = new ArrayList<String>();
+		List<Key> keys = new ArrayList<>(db.getEntries().keySet());
+		List<String> result = new ArrayList<>();
 		
 		for (Integer r : rnds) {
 			Key k = keys.get(r);

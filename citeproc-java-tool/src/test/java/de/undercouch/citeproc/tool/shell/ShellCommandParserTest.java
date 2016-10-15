@@ -103,8 +103,7 @@ public class ShellCommandParserTest {
 		assertEquals(0, pr.getRemainingArgs().length);
 		assertEquals(ShellCommand.class, pr.getFirstCommand());
 		
-		List<Class<? extends Command>> excluded =
-				new ArrayList<Class<? extends Command>>();
+		List<Class<? extends Command>> excluded = new ArrayList<>();
 		excluded.add(ShellCommand.class);
 		
 		pr = ShellCommandParser.parse("bibliography", excluded);

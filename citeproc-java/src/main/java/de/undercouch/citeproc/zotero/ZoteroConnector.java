@@ -68,7 +68,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 	
 	private static final String CSLJSON = "csljson";
 	
-	private static final Map<String, String> REQUEST_HEADERS = new HashMap<String, String>();
+	private static final Map<String, String> REQUEST_HEADERS = new HashMap<>();
 	static {
 		REQUEST_HEADERS.put("Zotero-API-Version", "2");
 	}
@@ -122,7 +122,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 		Map<String, Object> res = performRequestObject(ENDPOINT_USERS +
 				userId + "/items?key=" + key + "&newer=0&format=versions"
 						+ "&itemType=-attachment", REQUEST_HEADERS);
-		return new ArrayList<String>(res.keySet());
+		return new ArrayList<>(res.keySet());
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 				throw new IOException("Could not create XML parser", e);
 			}
 			
-			Map<String, Object> result = new HashMap<String, Object>();
+			Map<String, Object> result = new HashMap<>();
 			
 			//extract content in 'csljson' format
 			Element feed = doc.getDocumentElement();
@@ -205,7 +205,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 		String userId = accessToken.getToken();
 		String key = accessToken.getSecret();
 		
-		Map<String, CSLItemData> result = new LinkedHashMap<String, CSLItemData>(itemIds.size());
+		Map<String, CSLItemData> result = new LinkedHashMap<>(itemIds.size());
 		int s = 0;
 		while (s < itemIds.size()) {
 			int n = Math.min(getMaxBulkItems(), itemIds.size() - s);

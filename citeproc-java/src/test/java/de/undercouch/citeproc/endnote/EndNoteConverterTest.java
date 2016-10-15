@@ -28,10 +28,9 @@ import de.undercouch.citeproc.csl.CSLType;
 public class EndNoteConverterTest {
 	/**
 	 * Tests if a single entry can be converted correctly
-	 * @throws Exception if anything goes wrong
 	 */
 	@Test
-	public void singleEntry() throws Exception {
+	public void singleEntry() {
 		EndNoteReference ref = new EndNoteReferenceBuilder()
 			.type(EndNoteType.REPORT)
 			.title("The Programming Language B")

@@ -142,7 +142,7 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 				}
 				
 				//download all items
-				itemDataList = new ArrayList<CSLItemData>(items.size());
+				itemDataList = new ArrayList<>(items.size());
 				int s = 0;
 				int printed = 0;
 				int bulk = mc.getMaxBulkItems();
@@ -152,7 +152,7 @@ public abstract class AbstractRemoteCommand extends AbstractCSLToolCommand {
 				
 				while (s < items.size()) {
 					int n = 0;
-					List<String> itemsToRetrieve = new ArrayList<String>(bulk);
+					List<String> itemsToRetrieve = new ArrayList<>(bulk);
 					while (s < items.size() && n < bulk) {
 						String did = items.get(s);
 						if (!mc.containsItemId(did)) {

@@ -35,7 +35,7 @@ public class DateParser {
 	 * @see #getMonthNames(Locale)
 	 */
 	private static Map<Locale, Map<String, Integer>> MONTH_NAMES_CACHE =
-			new ConcurrentHashMap<Locale, Map<String,Integer>>();
+			new ConcurrentHashMap<>();
 	
 	/**
 	 * Converts a given date string to a {@link CSLDate} object. Does
@@ -288,7 +288,7 @@ public class DateParser {
 		Map<String, Integer> r = MONTH_NAMES_CACHE.get(locale);
 		if (r == null) {
 			DateFormatSymbols symbols = DateFormatSymbols.getInstance(locale);
-			r = new HashMap<String, Integer>(24);
+			r = new HashMap<>(24);
 			
 			//insert long month names
 			String[] months = symbols.getMonths();

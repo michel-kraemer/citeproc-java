@@ -27,10 +27,9 @@ import de.undercouch.citeproc.csl.CSLDate;
 public class CSLDateParserTest {
 	/**
 	 * Tests if simple dates can be parsed correctly
-	 * @throws Exception if something goes wrong
 	 */
 	@Test
-	public void simple() throws Exception {
+	public void simple() {
 		CSLDateParser parser = new CSLDateParser();
 		CSLDate date = parser.parse("2013-11-17");
 		assertArrayEquals(new int[][] { new int[] { 2013, 11, 17 } }, date.getDateParts());
@@ -47,10 +46,9 @@ public class CSLDateParserTest {
 	
 	/**
 	 * Tests if dates with literal month names can be parsed correctly
-	 * @throws Exception if something goes wrong
 	 */
 	@Test
-	public void alpha() throws Exception {
+	public void alpha() {
 		CSLDateParser parser = new CSLDateParser();
 		CSLDate date = parser.parse("November 2013");
 		assertArrayEquals(new int[][] { new int[] { 2013, 11 } }, date.getDateParts());
@@ -58,10 +56,9 @@ public class CSLDateParserTest {
 	
 	/**
 	 * Tests if dates with a slash can be parsed correctly
-	 * @throws Exception if something goes wrong
 	 */
 	@Test
-	public void slash() throws Exception {
+	public void slash() {
 		CSLDateParser parser = new CSLDateParser();
 		CSLDate date = parser.parse("2013/11/17");
 		assertArrayEquals(new int[][] { new int[] { 2013, 11, 17 } }, date.getDateParts());

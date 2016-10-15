@@ -83,7 +83,6 @@ public class CSLDateParser {
 	public CSLDate parse(String str) {
 		Map<String, Object> res;
 		try {
-			@SuppressWarnings("unchecked")
 			Map<String, Object> m = runner.callMethod(
 					parser, "parse", Map.class, str);
 			res = m;

@@ -67,13 +67,10 @@ public class MendeleyConverterTest {
 	}
 
 	private Map<String, Object> loadDoc(String name) throws IOException {
-		InputStream is = this.getClass().getClassLoader().getResourceAsStream(name);
 		Map<String, Object> doc;
-		try {
+		try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(name)) {
 			JsonParser p = new JsonParser(new JsonLexer(new InputStreamReader(is)));
 			doc = p.parseObject();
-		} finally {
-			is.close();
 		}
 		return doc;
 	}

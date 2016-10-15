@@ -33,13 +33,10 @@ public abstract class AbstractBibTeXTest {
 	 * @throws ParseException if the database is invalid
 	 */
 	protected static BibTeXDatabase loadUnixDatabase() throws IOException, ParseException {
-		InputStream is = AbstractBibTeXTest.class.getResourceAsStream("/unix.bib.gz");
 		BibTeXDatabase db;
-		try {
+		try (InputStream is = AbstractBibTeXTest.class.getResourceAsStream("/unix.bib.gz")) {
 			GZIPInputStream gis = new GZIPInputStream(is);
 			db = new BibTeXConverter().loadDatabase(gis);
-		} finally {
-			is.close();
 		}
 		return db;
 	}

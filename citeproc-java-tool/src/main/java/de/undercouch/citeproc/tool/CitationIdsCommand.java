@@ -39,7 +39,7 @@ public abstract class CitationIdsCommand extends AbstractCSLToolCommand implemen
 	/**
 	 * The citation IDs
 	 */
-	private List<String> citationIds = new ArrayList<String>();
+	private List<String> citationIds = new ArrayList<>();
 	
 	/**
 	 * Sets the citation IDs

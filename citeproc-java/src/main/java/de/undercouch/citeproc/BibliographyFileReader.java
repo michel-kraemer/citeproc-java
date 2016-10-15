@@ -98,12 +98,9 @@ public class BibliographyFileReader {
 			throw new FileNotFoundException("Bibliography file `" + 
 					bibfile.getName() + "' does not exist");
 		}
-		BufferedInputStream bis = new BufferedInputStream(
-				new FileInputStream(bibfile));
-		try {
+		try (BufferedInputStream bis = new BufferedInputStream(
+				new FileInputStream(bibfile))) {
 			return readBibliographyFile(bis, bibfile.getName());
-		} finally {
-			bis.close();
 		}
 	}
 	
@@ -163,7 +160,7 @@ public class BibliographyFileReader {
 				if (format == FileFormat.JSON_ARRAY) {
 					objs = parser.parseArray();
 				} else {
-					objs = new ArrayList<Object>();
+					objs = new ArrayList<>();
 					objs.add(parser.parseObject());
 				}
 				CSLItemData[] items = new CSLItemData[objs.size()];
@@ -208,12 +205,9 @@ public class BibliographyFileReader {
 			throw new FileNotFoundException("Bibliography file `" + 
 					bibfile.getName() + "' does not exist");
 		}
-		BufferedInputStream bis = new BufferedInputStream(
-				new FileInputStream(bibfile));
-		try {
+		try (BufferedInputStream bis = new BufferedInputStream(
+				new FileInputStream(bibfile))) {
 			return determineFileFormat(bis, bibfile.getName());
-		} finally {
-			bis.close();
 		}
 	}
 	

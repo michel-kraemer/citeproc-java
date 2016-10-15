@@ -35,7 +35,7 @@ public class MapJsonBuilder implements JsonBuilder {
 	 */
 	public MapJsonBuilder(JsonBuilderFactory factory) {
 		this.factory = factory;
-		m = new LinkedHashMap<String, Object>();
+		m = new LinkedHashMap<>();
 	}
 	
 	@Override
@@ -64,7 +64,7 @@ public class MapJsonBuilder implements JsonBuilder {
 		if (obj instanceof JsonObject) {
 			return ((JsonObject)obj).toJson(factory.createJsonBuilder());
 		} else if (obj.getClass().isArray()) {
-			List<Object> r = new ArrayList<Object>();
+			List<Object> r = new ArrayList<>();
 			int len = Array.getLength(obj);
 			for (int i = 0; i < len; ++i) {
 				Object ao = Array.get(obj, i);
@@ -73,14 +73,14 @@ public class MapJsonBuilder implements JsonBuilder {
 			return r;
 		} else if (obj instanceof Collection) {
 			Collection<?> coll = (Collection<?>)obj;
-			List<Object> r = new ArrayList<Object>();
+			List<Object> r = new ArrayList<>();
 			for (Object ao : coll) {
 				r.add(toJson(ao, factory));
 			}
 			return r;
 		} else if (obj instanceof Map) {
 			Map<?, ?> m = (Map<?, ?>)obj;
-			Map<String, Object> r = new LinkedHashMap<String, Object>();
+			Map<String, Object> r = new LinkedHashMap<>();
 			for (Map.Entry<?, ?> e : m.entrySet()) {
 				String key = toJson(e.getKey(), factory).toString();
 				Object value = toJson(e.getValue(), factory);

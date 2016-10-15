@@ -48,7 +48,7 @@ public class ListCommand extends AbstractCSLToolCommand implements ProviderComma
 	public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
 			throws IOException {
 		//list available citation ids and exit
-		List<String> ids = new ArrayList<String>(Arrays.asList(getProvider().getIds()));
+		List<String> ids = new ArrayList<>(Arrays.asList(getProvider().getIds()));
 		Collections.sort(ids);
 		for (String id : ids) {
 			out.println(id);

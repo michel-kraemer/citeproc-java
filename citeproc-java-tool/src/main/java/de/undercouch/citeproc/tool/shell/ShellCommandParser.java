@@ -141,9 +141,8 @@ public final class ShellCommandParser {
 	public static Result parse(String[] args,
 			Collection<Class<? extends Command>> excluded)
 			throws IntrospectionException, InvalidOptionException {
-		List<Class<? extends Command>> classes = new ArrayList<Class<? extends Command>>();
-		return getCommandClass(args, 0, classes,
-				new HashSet<Class<? extends Command>>(excluded));
+		List<Class<? extends Command>> classes = new ArrayList<>();
+		return getCommandClass(args, 0, classes, new HashSet<>(excluded));
 	}
 	
 	private static Result getCommandClass(String[] args, int i,

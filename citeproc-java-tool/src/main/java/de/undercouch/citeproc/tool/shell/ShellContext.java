@@ -20,7 +20,7 @@ package de.undercouch.citeproc.tool.shell;
  * @author Michel Kraemer
  */
 public class ShellContext {
-	private static ThreadLocal<ShellContext> current = new ThreadLocal<ShellContext>();
+	private static ThreadLocal<ShellContext> current = new ThreadLocal<>();
 	private String style = "ieee";
 	private String locale = "en-US";
 	private String format = "text";

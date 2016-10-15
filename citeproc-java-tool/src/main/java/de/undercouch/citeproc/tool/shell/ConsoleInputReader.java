@@ -45,7 +45,7 @@ public class ConsoleInputReader implements InputReader {
 		boolean oldHistoryEnabled = reader.isHistoryEnabled();
 		History oldHistory = reader.getHistory();
 		Collection<Completer> oldCompleters =
-				new ArrayList<Completer>(reader.getCompleters());
+				new ArrayList<>(reader.getCompleters());
 		String oldPrompt = reader.getPrompt();
 		try {
 			reader.setHistoryEnabled(false);

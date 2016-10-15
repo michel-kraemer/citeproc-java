@@ -25,7 +25,7 @@ import de.undercouch.citeproc.helper.tool.CachingBibliographyFileReader;
  * @author Michel Kraemer
  */
 public class CSLToolContext {
-	private static ThreadLocal<CSLToolContext> current = new ThreadLocal<CSLToolContext>();
+	private static ThreadLocal<CSLToolContext> current = new ThreadLocal<>();
 	private String toolName;
 	private File configDir;
 	private BibliographyFileReader bibReader = new CachingBibliographyFileReader();

@@ -159,11 +159,8 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	protected Map<String, Object> performRequestObject(String url,
 			Map<String, String> additionalHeaders) throws IOException {
 		Response response = performRequest(url, additionalHeaders);
-		InputStream is = response.getInputStream();
-		try {
+		try (InputStream is = response.getInputStream()) {
 			return parseResponseObject(response);
-		} finally {
-			is.close();
 		}
 	}
 	
@@ -177,11 +174,8 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	protected List<Object> performRequestArray(String url,
 			Map<String, String> additionalHeaders) throws IOException {
 		Response response = performRequest(url, additionalHeaders);
-		InputStream is = response.getInputStream();
-		try {
+		try (InputStream is = response.getInputStream()) {
 			return parseResponseArray(response);
-		} finally {
-			is.close();
 		}
 	}
 	

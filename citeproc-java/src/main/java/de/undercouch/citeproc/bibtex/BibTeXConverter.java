@@ -159,7 +159,7 @@ public class BibTeXConverter {
 	 * @return a map consisting of citation keys and citation items
 	 */
 	public Map<String, CSLItemData> toItemData(BibTeXDatabase db) {
-		Map<String, CSLItemData> result = new HashMap<String, CSLItemData>();
+		Map<String, CSLItemData> result = new HashMap<>();
 		for (Map.Entry<Key, BibTeXEntry> e : db.getEntries().entrySet()) {
 			result.put(e.getKey().getValue(), toItemData(e.getValue()));
 		}
@@ -173,7 +173,7 @@ public class BibTeXConverter {
 	 */
 	public CSLItemData toItemData(BibTeXEntry e) {
 		//get all fields from the BibTeX entry
-		Map<String, String> entries = new HashMap<String, String>();
+		Map<String, String> entries = new HashMap<>();
 		for (Map.Entry<Key, Value> field : e.getFields().entrySet()) {
 			String us = field.getValue().toUserString();
 			

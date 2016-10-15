@@ -122,8 +122,7 @@ public class CSL {
 	 * A thread-local holding a JavaScript runner that can
 	 * be shared amongst multiple instances of this class
 	 */
-	private static ThreadLocal<ScriptRunner> sharedRunner =
-			new ThreadLocal<ScriptRunner>();
+	private static ThreadLocal<ScriptRunner> sharedRunner = new ThreadLocal<>();
 	
 	/**
 	 * A JavaScript runner used to execute citeproc-js
@@ -265,9 +264,7 @@ public class CSL {
 	public static List<String> getSupportedOutputFormats() throws IOException {
 		ScriptRunner runner = getRunner();
 		try {
-			@SuppressWarnings("unchecked")
-			List<String> r = runner.callMethod("getSupportedFormats", List.class);
-			return r;
+			return runner.callMethod("getSupportedFormats", List.class);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalStateException("Could not get supported formats", e);
 		}
@@ -275,7 +272,7 @@ public class CSL {
 	
 	private static Set<String> getAvailableFiles(String prefix,
 			String knownName, String extension) throws IOException {
-		Set<String> result = new LinkedHashSet<String>();
+		Set<String> result = new LinkedHashSet<>();
 		
 		//first load a file that is known to exist
 		String name = prefix + knownName + "." + extension;
@@ -292,8 +289,7 @@ public class CSL {
 					//ignore
 					return result;
 				}
-				ZipFile zip = new ZipFile(new File(jarUri));
-				try {
+				try (ZipFile zip = new ZipFile(new File(jarUri))) {
 					Enumeration<? extends ZipEntry> entries = zip.entries();
 					while (entries.hasMoreElements()) {
 						ZipEntry e = entries.nextElement();
@@ -303,8 +299,6 @@ public class CSL {
 									prefix.length(), e.getName().length() - 4));
 						}
 					}
-				} finally {
-					zip.close();
 				}
 			}
 		}
@@ -346,7 +340,6 @@ public class CSL {
 	public static Set<String> getSupportedLocales() throws IOException {
 		Set<String> locales = getAvailableFiles("locales-", "en-US", "xml");
 		try {
-			@SuppressWarnings("unchecked")
 			List<String> baseLocales = getRunner().callMethod(
 					"getBaseLocales", List.class);
 			locales.addAll(baseLocales);
@@ -583,7 +576,7 @@ public class CSL {
 			throw new IllegalArgumentException("Could not make citation", e);
 		}
 		
-		List<Citation> result = new ArrayList<Citation>();
+		List<Citation> result = new ArrayList<>();
 		for (Object o : r) {
 			if (o instanceof Map) {
 				o = runner.convert(o, List.class);
@@ -643,7 +636,7 @@ public class CSL {
 			if ((selection == null || mode == null) && quash == null) {
 				r = runner.callMethod(engine, "makeBibliography", List.class);
 			} else {
-				Map<String, Object> args = new HashMap<String, Object>();
+				Map<String, Object> args = new HashMap<>();
 				if (selection != null && mode != null) {
 					args.put(mode.toString(), selectionToList(selection));
 				}
@@ -659,7 +652,6 @@ public class CSL {
 		
 		@SuppressWarnings("unchecked")
 		Map<String, Object> fpm = (Map<String, Object>)r.get(0);
-		@SuppressWarnings("unchecked")
 		List<CharSequence> entriesList = runner.convert(r.get(1), List.class);
 		
 		String[] entries = new String[entriesList.size()];
@@ -673,7 +665,7 @@ public class CSL {
 		int hangingIndent = getFromMap(fpm, "hangingindent", 0);
 		boolean done = getFromMap(fpm, "done", false);
 		List<?> srcEntryIds = runner.convert(fpm.get("entry_ids"), List.class);
-		List<String> dstEntryIds = new ArrayList<String>();
+		List<String> dstEntryIds = new ArrayList<>();
 		for (Object o : srcEntryIds) {
 			if (o instanceof Map) {
 				o = runner.convert(o, List.class);
@@ -719,7 +711,7 @@ public class CSL {
 	 */
 	private List<Map<String, Object>> selectionToList(CSLItemData[] selection) {
 		MapJsonBuilderFactory mjbf = new MapJsonBuilderFactory();
-		List<Map<String, Object>> sl = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> sl = new ArrayList<>();
 		for (CSLItemData item : selection) {
 			JsonBuilder jb = mjbf.createJsonBuilder();
 			@SuppressWarnings("unchecked")
@@ -752,7 +744,7 @@ public class CSL {
 
 	private void putSelectionFieldValue(List<Map<String, Object>> sl,
 			Map.Entry<String, Object> e, Object v) {
-		Map<String, Object> sf = new HashMap<String, Object>(2);
+		Map<String, Object> sf = new HashMap<>(2);
 		sf.put("field", e.getKey());
 		sf.put("value", v);
 		sl.add(sf);

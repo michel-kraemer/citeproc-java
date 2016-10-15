@@ -24,8 +24,7 @@ import de.undercouch.citeproc.csl.CSLAbbreviationList;
  * @author Michel Kraemer
  */
 public class DefaultAbbreviationProvider implements AbbreviationProvider {
-	private final Map<String, CSLAbbreviationList> lists =
-			new HashMap<String, CSLAbbreviationList>();
+	private final Map<String, CSLAbbreviationList> lists = new HashMap<>();
 	
 	/**
 	 * Adds an abbreviation list to this provider

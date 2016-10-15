@@ -60,9 +60,8 @@ public class TestSuiteRunner {
 	 * Main method of the test runner
 	 * @param args the first argument can either be a compiled test file (.json)
 	 * to run or a directory containing compiled test files
-	 * @throws IOException if a file could not be loaded
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		TestSuiteRunner runner = new TestSuiteRunner();
 		runner.runTests(new File(args[0]), RunnerType.AUTO);
 	}
@@ -73,9 +72,8 @@ public class TestSuiteRunner {
 	 * containing compiled test files
 	 * @param runnerType the type of the script runner that will be used
 	 * to execute all JavaScript code
-	 * @throws IOException if a file could not be loaded
 	 */
-	public void runTests(File f, RunnerType runnerType) throws IOException {
+	public void runTests(File f, RunnerType runnerType) {
 		ScriptRunnerFactory.setRunnerType(runnerType);
 		{
 			ScriptRunner sr = ScriptRunnerFactory.createRunner();
@@ -106,7 +104,7 @@ public class TestSuiteRunner {
 					Runtime.getRuntime().availableProcessors());
 			
 			//submit a job for each test file
-			List<Future<Boolean>> fus = new ArrayList<Future<Boolean>>();
+			List<Future<Boolean>> fus = new ArrayList<>();
 			for (File fi : testFiles) {
 				fus.add(executor.submit(new TestCallable(fi)));
 			}
@@ -217,15 +215,15 @@ public class TestSuiteRunner {
 		//convert citations
 		List<List<Object>> citations = null;
 		if (rawCitations != null) {
-			citations = new ArrayList<List<Object>>();
+			citations = new ArrayList<>();
 			for (List<Object> m : rawCitations) {
-				List<Object> cits = new ArrayList<Object>();
+				List<Object> cits = new ArrayList<>();
 				cits.add(CSLCitation.fromJson((Map<String, Object>)m.get(0)));
 				
 				Collection<List<Object>> coll1 = (Collection<List<Object>>)m.get(1);
 				Collection<List<Object>> coll2 = (Collection<List<Object>>)m.get(2);
-				List<CitationIDIndexPair> citsPre = new ArrayList<CitationIDIndexPair>();
-				List<CitationIDIndexPair> citsPost = new ArrayList<CitationIDIndexPair>();
+				List<CitationIDIndexPair> citsPre = new ArrayList<>();
+				List<CitationIDIndexPair> citsPost = new ArrayList<>();
 				for (List<Object> c1m : coll1) {
 					citsPre.add(CitationIDIndexPair.fromJson(c1m));
 				}
@@ -242,9 +240,9 @@ public class TestSuiteRunner {
 		//convert citation items
 		List<List<CSLCitationItem>> citationItems = null;
 		if (rawCitationItems != null) {
-			citationItems = new ArrayList<List<CSLCitationItem>>();
+			citationItems = new ArrayList<>();
 			for (List<Map<String, Object>> l : rawCitationItems) {
-				List<CSLCitationItem> cits = new ArrayList<CSLCitationItem>();
+				List<CSLCitationItem> cits = new ArrayList<>();
 				for (Map<String, Object> m : l) {
 					cits.add(CSLCitationItem.fromJson(m));
 				}
@@ -293,7 +291,7 @@ public class TestSuiteRunner {
 		
 		//set default citation items
 		if (citations == null && citationItems == null) {
-			citationItems = new ArrayList<List<CSLCitationItem>>();
+			citationItems = new ArrayList<>();
 			citationItems.add(citeproc.getRegistryReflist());
 		}
 		
@@ -321,14 +319,14 @@ public class TestSuiteRunner {
 					(List<CitationIDIndexPair>)citation.get(1),
 					(List<CitationIDIndexPair>)citation.get(2));
 			
-			Map<Integer, Integer> indexMap = new HashMap<Integer, Integer>();
+			Map<Integer, Integer> indexMap = new HashMap<>();
 			int pos = 0;
 			for (Citation c : r) {
 				indexMap.put(c.getIndex(), pos);
 				++pos;
 			}
 			
-			List<String> resultCitations = new ArrayList<String>();
+			List<String> resultCitations = new ArrayList<>();
 			for (int cpos = 0; cpos < citeproc.getCitationsByIndex().size(); ++cpos) {
 				if (indexMap.containsKey(cpos)) {
 					resultCitations.add(">>[" + cpos + "] " + r.get(indexMap.get(cpos)).getText());
@@ -375,8 +373,7 @@ public class TestSuiteRunner {
 	 * @throws IOException if the file could not be read
 	 */
 	private static Map<String, Object> readFile(File f) throws IOException {
-		FileInputStream fis = new FileInputStream(f);
-		try {
+		try (FileInputStream fis = new FileInputStream(f)) {
 			JsonLexer jsonLexer = new JsonLexer(new InputStreamReader(fis, "UTF-8"));
 			JsonParser jsonParser = new JsonParser(jsonLexer);
 			Map<String, Object> m = jsonParser.parseObject();
@@ -391,8 +388,6 @@ public class TestSuiteRunner {
 			}
 			
 			return m;
-		} finally {
-			fis.close();
 		}
 	}
 	
@@ -412,7 +407,7 @@ public class TestSuiteRunner {
 			} else if (f.equals("categories")) {
 				v = Arrays.asList(v);
 			}
-			Map<String, Object> m = new HashMap<String, Object>();
+			Map<String, Object> m = new HashMap<>();
 			m.put(f, v);
 			r[i++] = CSLItemData.fromJson(m);
 		}
@@ -455,7 +450,7 @@ public class TestSuiteRunner {
 				throw new IllegalArgumentException("Could not get registered citations", e);
 			}
 			
-			List<CSLCitation> result = new ArrayList<CSLCitation>();
+			List<CSLCitation> result = new ArrayList<>();
 			for (Object o : r) {
 				@SuppressWarnings("unchecked")
 				Map<String, Object> m = (Map<String, Object>)o;
@@ -481,7 +476,7 @@ public class TestSuiteRunner {
 				throw new IllegalArgumentException("Could not get registered citation items", e);
 			}
 			
-			List<CSLCitationItem> result = new ArrayList<CSLCitationItem>();
+			List<CSLCitationItem> result = new ArrayList<>();
 			for (Object o : r) {
 				@SuppressWarnings("unchecked")
 				Map<String, Object> m = (Map<String, Object>)o;

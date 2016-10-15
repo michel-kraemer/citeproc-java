@@ -86,11 +86,11 @@ public class Levenshtein {
 	 */
 	public static <T extends CharSequence> Collection<T> findMinimum(
 			Collection<T> ss, CharSequence t, int n, int threshold) {
-		LinkedList<Item<T>> result = new LinkedList<Item<T>>();
+		LinkedList<Item<T>> result = new LinkedList<>();
 		for (T s : ss) {
 			int d = StringUtils.getLevenshteinDistance(s, t);
 			if (d < threshold) {
-				result.offer(new Item<T>(s, d));
+				result.offer(new Item<>(s, d));
 				
 				if (result.size() > n + 10) {
 					//resort, but not too often
@@ -103,7 +103,7 @@ public class Levenshtein {
 		Collections.sort(result);
 		while (result.size() > n) result.removeLast();
 		
-		List<T> arr = new ArrayList<T>(n);
+		List<T> arr = new ArrayList<>(n);
 		for (Item<T> i : result) {
 			arr.add(i.str);
 		}
@@ -124,7 +124,7 @@ public class Levenshtein {
 	public static <T extends CharSequence> Collection<T> findSimilar(
 			Collection<T> ss, CharSequence t) {
 		//look for strings prefixed by 't'
-		Collection<T> result = new LinkedHashSet<T>();
+		Collection<T> result = new LinkedHashSet<>();
 		for (T s : ss) {
 			if (StringUtils.startsWithIgnoreCase(s, t)) {
 				result.add(s);

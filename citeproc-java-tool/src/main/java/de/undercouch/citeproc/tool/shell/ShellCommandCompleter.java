@@ -57,14 +57,14 @@ public class ShellCommandCompleter implements Completer {
 	 * excluded from completions
 	 */
 	public ShellCommandCompleter(List<Class<? extends Command>> excludedCommands) {
-		this.excludedCommands = new HashSet<Class<? extends Command>>(excludedCommands);
+		this.excludedCommands = new HashSet<>(excludedCommands);
 	}
 	
 	@Override
 	public int complete(String buffer, int cursor,
 			List<CharSequence> candidates) {
 		boolean allparsed;
-		Set<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<>();
 		
 		try {
 			Result pr = ShellCommandParser.parse(buffer, excludedCommands);
@@ -114,7 +114,7 @@ public class ShellCommandCompleter implements Completer {
 					//should never happen
 					throw new RuntimeException(e);
 				}
-				List<CharSequence> ccl = new ArrayList<CharSequence>();
+				List<CharSequence> ccl = new ArrayList<>();
 				String jra = StringUtils.join(pr.getRemainingArgs(), " ");
 				cc.complete(jra, jra.length(), ccl);
 				for (CharSequence cs : ccl) {
@@ -130,7 +130,7 @@ public class ShellCommandCompleter implements Completer {
 		}
 		
 		//sort completions
-		List<String> resultList = new ArrayList<String>(result);
+		List<String> resultList = new ArrayList<>(result);
 		Collections.sort(resultList);
 		candidates.addAll(resultList);
 		

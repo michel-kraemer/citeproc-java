@@ -25,11 +25,8 @@ import java.net.URL;
 public abstract class AbstractScriptRunner implements ScriptRunner {
 	@Override
 	public void loadScript(URL url) throws IOException, ScriptRunnerException {
-		InputStreamReader reader = new InputStreamReader(url.openStream(), "UTF-8");
-		try {
+		try (InputStreamReader reader = new InputStreamReader(url.openStream(), "UTF-8")) {
 			eval(reader);
-		} finally {
-			reader.close();
 		}
 	}
 }

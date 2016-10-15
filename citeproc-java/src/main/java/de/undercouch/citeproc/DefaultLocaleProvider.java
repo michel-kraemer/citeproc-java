@@ -30,7 +30,7 @@ public class DefaultLocaleProvider implements LocaleProvider {
 	/**
 	 * A cache for the serialized XML of locales
 	 */
-	private Map<String, String> locales = new HashMap<String, String>();
+	private Map<String, String> locales = new HashMap<>();
 	
 	/**
 	 * Retrieves the serialized XML for the given locale from the classpath.

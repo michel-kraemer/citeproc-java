@@ -88,8 +88,8 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 				
 				//disk cache is not available. use in-memory cache
 				db = null;
-				itemIds = new HashSet<String>();
-				items = new HashMap<String, String>();
+				itemIds = new HashSet<>();
+				items = new HashMap<>();
 				break;
 			}
 		}
@@ -102,7 +102,7 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 	@Override
 	public List<String> getItemIDs() throws IOException {
 		if (!_itemIds.isEmpty()) {
-			return new ArrayList<String>(_itemIds);
+			return new ArrayList<>(_itemIds);
 		}
 		List<String> ids = super.getItemIDs();
 		try {
@@ -139,8 +139,8 @@ public class CachingRemoteConnector extends RemoteConnectorAdapter {
 	
 	@Override
 	public Map<String, CSLItemData> getItems(List<String> itemIds) throws IOException {
-		Map<String, CSLItemData> result = new LinkedHashMap<String, CSLItemData>(itemIds.size());
-		List<String> unknownIds = new ArrayList<String>();
+		Map<String, CSLItemData> result = new LinkedHashMap<>(itemIds.size());
+		List<String> unknownIds = new ArrayList<>();
 		
 		//load items from cache
 		for (String id : itemIds) {

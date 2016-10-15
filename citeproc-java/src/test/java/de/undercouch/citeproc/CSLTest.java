@@ -413,7 +413,7 @@ public class CSLTest {
 	 */
 	@Test
 	public void abbreviations() throws Exception {
-		Map<String, String> titleAbbreviations = new HashMap<String, String>();
+		Map<String, String> titleAbbreviations = new HashMap<>();
 		titleAbbreviations.put("The Programming Language B", "B");
 		
 		CSLAbbreviationList abbrevs = new CSLAbbreviationListBuilder()

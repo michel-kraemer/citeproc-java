@@ -102,9 +102,9 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 		CSL citeproc = new CSL(sys, "din-1505-2-numeric-alphabetical");
 		citeproc.setOutputFormat("text");
 		
-		List<Key> keys = new ArrayList<Key>(db.getEntries().keySet());
-		List<String> result = new ArrayList<String>();
-		List<Integer> rnds = new ArrayList<Integer>();
+		List<Key> keys = new ArrayList<>(db.getEntries().keySet());
+		List<String> result = new ArrayList<>();
+		List<Integer> rnds = new ArrayList<>();
 		for (int i = 0; i < 10; ++i) {
 			int j = (int)(Math.random() * keys.size());
 			rnds.add(j);

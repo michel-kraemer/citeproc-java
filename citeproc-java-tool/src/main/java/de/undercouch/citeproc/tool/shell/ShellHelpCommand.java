@@ -39,7 +39,7 @@ import de.undercouch.underline.UnknownAttributes;
  * @author Michel Kraemer
  */
 public class ShellHelpCommand extends AbstractCSLToolCommand {
-	private List<String> commands = new ArrayList<String>();
+	private List<String> commands = new ArrayList<>();
 	
 	/**
 	 * Sets the commands to display the help for
@@ -89,7 +89,7 @@ public class ShellHelpCommand extends AbstractCSLToolCommand {
 			throw new RuntimeException(e);
 		}
 		
-		OptionGroup<ID> filtered = new OptionGroup<ID>();
+		OptionGroup<ID> filtered = new OptionGroup<>();
 		for (Option<ID> cmd : options.getCommands()) {
 			Class<? extends Command> cc =
 					OptionIntrospector.getCommand(cmd.getId());

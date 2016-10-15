@@ -28,10 +28,9 @@ import de.undercouch.citeproc.csl.CSLType;
 public class RISConverterTest {
 	/**
 	 * Tests if a single entry can be converted correctly
-	 * @throws Exception if anything goes wrong
 	 */
 	@Test
-	public void singleEntry() throws Exception {
+	public void singleEntry() {
 		RISReference ref = new RISReferenceBuilder()
 			.type(RISType.RPRT)
 			.title("The Programming Language B")

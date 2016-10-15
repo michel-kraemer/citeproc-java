@@ -35,8 +35,7 @@ import de.undercouch.citeproc.ItemDataProvider;
  * @author Michel Kraemer
  */
 public class CachingBibliographyFileReader extends BibliographyFileReader {
-	private Map<String, SoftReference<ItemDataProvider>> cache =
-			new HashMap<String, SoftReference<ItemDataProvider>>();
+	private Map<String, SoftReference<ItemDataProvider>> cache = new HashMap<>();
 	
 	@Override
 	public ItemDataProvider readBibliographyFile(File bibfile)
@@ -53,8 +52,7 @@ public class CachingBibliographyFileReader extends BibliographyFileReader {
 		
 		ItemDataProvider r = super.readBibliographyFile(bibfile);
 		if (r != null) {
-			cache.put(bibfile.getAbsolutePath(),
-					new SoftReference<ItemDataProvider>(r));
+			cache.put(bibfile.getAbsolutePath(), new SoftReference<>(r));
 		}
 		
 		return r;

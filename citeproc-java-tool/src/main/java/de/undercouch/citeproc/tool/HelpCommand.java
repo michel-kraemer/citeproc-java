@@ -30,7 +30,7 @@ import de.undercouch.underline.UnknownAttributes;
  * @author Michel Kraemer
  */
 public class HelpCommand extends AbstractCSLToolCommand {
-	private List<String> commands = new ArrayList<String>();
+	private List<String> commands = new ArrayList<>();
 	
 	/**
 	 * Sets the commands to display the help for

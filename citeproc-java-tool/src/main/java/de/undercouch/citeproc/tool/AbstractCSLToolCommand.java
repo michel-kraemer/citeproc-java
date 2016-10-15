@@ -32,7 +32,7 @@ import de.undercouch.underline.OptionParserException;
  * A base class for commands from the {@link de.undercouch.citeproc.CSLTool}
  * @author Michel Kraemer
  */
-public abstract class AbstractCSLToolCommand implements Command, CSLToolCommand {
+public abstract class AbstractCSLToolCommand implements CSLToolCommand {
 	private OptionGroup<ID> options;
 	private boolean displayHelp;
 	

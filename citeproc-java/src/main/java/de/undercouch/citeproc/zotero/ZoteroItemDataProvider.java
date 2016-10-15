@@ -47,7 +47,7 @@ public class ZoteroItemDataProvider extends ListItemDataProvider {
 	 * @return the sanitized items
 	 */
 	private static CSLItemData[] sanitizeItems(ItemDataProvider provider) {
-		Set<String> knownIds = new LinkedHashSet<String>();
+		Set<String> knownIds = new LinkedHashSet<>();
 		
 		//create a date parser which will be used to get the item's year
 		CSLDateParser dateParser = new CSLDateParser();

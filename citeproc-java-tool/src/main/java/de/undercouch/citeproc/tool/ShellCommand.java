@@ -56,7 +56,7 @@ public class ShellCommand extends AbstractCSLToolCommand {
 	 */
 	public static final List<Class<? extends Command>> EXCLUDED_COMMANDS;
 	static {{
-		List<Class<? extends Command>> ec = new ArrayList<Class<? extends Command>>();
+		List<Class<? extends Command>> ec = new ArrayList<>();
 		ec.add(HelpCommand.class);
 		ec.add(ShellCommand.class);
 		EXCLUDED_COMMANDS = Collections.unmodifiableList(ec);
