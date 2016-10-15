@@ -29,21 +29,14 @@ public class ScriptRunnerFactory {
 	 */
 	public static enum RunnerType {
 		/**
-		 * Automatically detect if Mozilla Rhino is in the classpath. If so,
-		 * create a runner that uses this, otherwise create a runner that
-		 * uses the Java Scripting API. (default)
+		 * Automatically detect the JavaScript engine
 		 */
 		AUTO,
 		
 		/**
 		 * Create a runner that explicitly uses the Java Scripting API
 		 */
-		JRE,
-		
-		/**
-		 * Create a runner that explicitly uses Rhino in the classpath
-		 */
-		RHINO
+		JRE
 	}
 	
 	/**
@@ -65,35 +58,10 @@ public class ScriptRunnerFactory {
 	}
 	
 	/**
-	 * @return a {@link ScriptRunner} that uses the Rhino embedded into the JRE
+	 * @return a {@link ScriptRunner} that uses the Java Scripting API
 	 */
 	private static ScriptRunner createJreRunner() {
-		//Rhino is not available. Check if we have the right JRE version
-		try {
-			if (!SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_1_7)) {
-				throw new RuntimeException("You're using a JRE 6 or lower and "
-						+ "Mozilla Rhino was not found in the classpath. The "
-						+ "bundled Rhino in JRE 6 does not support E4X "
-						+ "(ECMAScript for XML) which is needed for "
-						+ "citeproc-java. Either include Rhino in your "
-						+ "classpath or upgrade to a newer JRE.");
-			}
-		} catch (NullPointerException e) {
-			//java version could not be determined. It must be a very new one
-		}
 		return new JREScriptRunner();
-	}
-	
-	/**
-	 * @return a {@link ScriptRunner} that uses Rhino explicitly
-	 */
-	private static ScriptRunner createRhinoRunner() {
-		try {
-			return (ScriptRunner)Class.forName("de.undercouch.citeproc.script."
-					+ "RhinoScriptRunner").newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException("No JavaScript engine found", e);
-		}
 	}
 	
 	/**
@@ -106,21 +74,11 @@ public class ScriptRunnerFactory {
 		
 		switch (t) {
 		case AUTO:
-			try {
-				Class.forName("org.mozilla.javascript.Context");
-			} catch (ClassNotFoundException e) {
-				//fall back to JRE
-				return createJreRunner();
-			}
-			
-			//use Rhino
-			return createRhinoRunner();
+			//fall back to JRE
+			return createJreRunner();
 			
 		case JRE:
 			return createJreRunner();
-			
-		case RHINO:
-			return createRhinoRunner();
 			
 		default:
 			throw new RuntimeException("Invalid runner type");

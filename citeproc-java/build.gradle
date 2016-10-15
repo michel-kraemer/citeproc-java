@@ -27,10 +27,7 @@ dependencies {
     compile 'org.jbibtex:jbibtex:1.0.15'
     compile 'org.antlr:antlr4-runtime:4.5.1-1'
     
-    provided 'org.mozilla:rhino:1.7R4'
-    
     testCompile 'org.fusesource.jansi:jansi:1.11'
-    testCompile 'org.mozilla:rhino:1.7R4'
     testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
     testCompile 'org.citationstyles:locales:1.0.1-SNAPSHOT'
     testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
@@ -64,7 +61,6 @@ task generateSources(dependsOn: [ downloadXmldomJs, downloadXmle4xJs, downloadCi
     sg.renderTemplates()
     sg.renderGrammars()
     sg.filterScripts()
-    sg.compileScripts()
     sg.generateVersionFile()
 }
 

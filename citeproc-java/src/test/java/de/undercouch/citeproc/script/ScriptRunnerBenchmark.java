@@ -116,19 +116,4 @@ public class ScriptRunnerBenchmark extends AbstractBibTeXTest {
 			ScriptRunnerFactory.setRunnerType(prev);
 		}
 	}
-	
-	/**
-	 * Tests the Rhino script runner
-	 * @throws Exception if something goes wrong
-	 */
-	@BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 1)
-	@Test
-	public void rhino() throws Exception {
-		RunnerType prev = ScriptRunnerFactory.setRunnerType(RunnerType.RHINO);
-		try {
-			runTest();
-		} finally {
-			ScriptRunnerFactory.setRunnerType(prev);
-		}
-	}
 }

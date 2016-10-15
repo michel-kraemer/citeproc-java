@@ -122,10 +122,6 @@ public class StringJsonBuilder implements JsonBuilder {
 	 * @return the JSON string
 	 */
 	private static String toJson(String s) {
-		//we use escapeJava() instead of escapeJavaScript() here because
-		//we enclose the string in double quotes ourselves, so single
-		//quotes do not have to be escaped (and in fact shouldn't, because
-		//Rhino's JSON parser has got problems with this)
 		return "\"" + escapeJava(s) + "\"";
 	}
 	

@@ -29,8 +29,7 @@ import de.undercouch.citeproc.helper.json.JsonObject;
 import de.undercouch.citeproc.helper.json.StringJsonBuilder;
 
 /**
- * Executes JavaScript scripts through the Java Scripting API (using
- * Mozilla Rhino that is bundled with the JRE)
+ * Executes JavaScript scripts through the Java Scripting API
  * @author Michel Kraemer
  */
 public class JREScriptRunner extends AbstractScriptRunner {
@@ -55,11 +54,6 @@ public class JREScriptRunner extends AbstractScriptRunner {
 	
 	@Override
 	public boolean supportsE4X() {
-		//whether we support E4X or not depends on the engine used
-		if (engine.getFactory().getEngineName().contains("Rhino")) {
-			//Rhino always supports E4X
-			return true;
-		}
 		return false;
 	}
 	

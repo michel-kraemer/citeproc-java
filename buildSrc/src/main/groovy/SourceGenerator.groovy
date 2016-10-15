@@ -243,24 +243,6 @@ class SourceGenerator {
         }
     }
     
-    def compileScripts() {
-        compileScriptsFrom(new File(project.projectDir, 'src/main/resources/de/undercouch/citeproc'))
-        compileScriptsFrom(new File(project.projectDir, 'src-gen/main/resources/de/undercouch/citeproc'))
-    }
-    
-    def compileScriptsFrom(src) {
-        def dstRes = new File(project.projectDir, 'src-gen/main/resources')
-        for (s in project.fileTree(dir: src, include: '*.js')) {
-            org.mozilla.javascript.tools.jsc.Main.main([ '-opt', '9',
-                '-package', 'de.undercouch.citeproc', '-nosource', '-encoding', 'UTF-8',
-                '-d', dstRes.toString(), s.toString() ] as String[])
-            def name = s.getName().substring(0, s.getName().length() - 2)
-            def dstFile = new File(dstRes, 'de/undercouch/citeproc/' + name + 'dat')
-            dstFile.delete()
-            new File(dstRes, 'de/undercouch/citeproc/' + name + 'class').renameTo(dstFile)
-        }
-    }
-    
     def generateVersionFile() {
         def dstRes = new File(project.projectDir, 'src-gen/main/resources')
         def versionFile = new File(dstRes, 'de/undercouch/citeproc/version.dat')
