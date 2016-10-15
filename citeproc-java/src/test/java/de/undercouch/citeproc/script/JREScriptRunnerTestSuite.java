@@ -14,8 +14,6 @@
 
 package de.undercouch.citeproc.script;
 
-import org.apache.commons.lang3.JavaVersion;
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -40,12 +38,7 @@ public class JREScriptRunnerTestSuite {
 	 */
 	@BeforeClass
 	public static void setUp() {
-		if (!SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_1_7)) {
-			//don't use the JRE runner with Java 1.6. It would fail anyway.
-			prev = ScriptRunnerFactory.setRunnerType(RunnerType.AUTO);
-		} else {
-			prev = ScriptRunnerFactory.setRunnerType(RunnerType.JRE);
-		}
+		prev = ScriptRunnerFactory.setRunnerType(RunnerType.JRE);
 	}
 	
 	/**

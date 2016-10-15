@@ -16,9 +16,6 @@ package de.undercouch.citeproc.script;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.lang3.JavaVersion;
-import org.apache.commons.lang3.SystemUtils;
-
 /**
  * Creates {@link ScriptRunner} instances
  * @author Michel Kraemer

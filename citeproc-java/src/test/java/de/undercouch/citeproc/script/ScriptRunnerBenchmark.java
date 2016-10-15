@@ -19,8 +19,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.JavaVersion;
-import org.apache.commons.lang3.SystemUtils;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.Key;
 import org.junit.BeforeClass;
@@ -104,11 +102,6 @@ public class ScriptRunnerBenchmark extends AbstractBibTeXTest {
 	@BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 1)
 	@Test
 	public void jre() throws Exception {
-		if (!SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_1_7)) {
-			//skip test for Java 1.6. It would fail anyway
-			return;
-		}
-		
 		RunnerType prev = ScriptRunnerFactory.setRunnerType(RunnerType.JRE);
 		try {
 			runTest();
