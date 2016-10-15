@@ -7,12 +7,11 @@ apply plugin: 'signing'
 
 import de.undercouch.gradle.tasks.download.Download
 
+// citeproc version 1.1.137
 ext.citeprocJsUrlBase = 'https://raw.githubusercontent.com/Juris-M/citeproc-js/2d1bb8dddf152f7c3e034dda3df3ec7e426939a3/'
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
-ext.citeprocJsZip = '1.1.137.zip'
-ext.citeprocJsZipUrl = "https://github.com/Juris-M/citeproc-js/archive/$citeprocJsZip"
-ext.citeprocTestSuiteZip = '9942299.zip'
-ext.citeprocTestSuiteUrl = 'https://bitbucket.org/bdarcus/citeproc-test/get/' + ext.citeprocTestSuiteZip
+ext.citeprocTestSuiteZip = '9ec40dae08ba63422ea0ea18ac68d65d143a73cf.zip'
+ext.citeprocTestSuiteUrl = 'https://github.com/citation-style-language/test-suite/archive/' + ext.citeprocTestSuiteZip
 
 configurations {
     // define a configuration for compile-time-only dependencies
@@ -54,13 +53,6 @@ task cleanGeneratedSources(type: Delete) {
     delete 'src-gen'
 }
 
-task downloadCiteprocJsZip(type: Download) {
-    src citeprocJsZipUrl
-    dest new File(buildDir, "test-suite/${citeprocJsZip}")
-    compress false
-    overwrite false
-}
-
 task downloadTestSuite(type: Download) {
     src citeprocTestSuiteUrl
     dest new File(buildDir, "test-suite/${citeprocTestSuiteZip}")
@@ -68,9 +60,8 @@ task downloadTestSuite(type: Download) {
     overwrite false
 }
 
-task runTestSuite(dependsOn: [ downloadCiteprocJsZip, downloadTestSuite, testClasses ]) << {
-    def tr = new CSLTestSuite(project, new File(buildDir, 'test-suite/' + citeprocTestSuiteZip),
-        new File(buildDir, 'test-suite/' + citeprocJsZip))
+task runTestSuite(dependsOn: [ downloadTestSuite, testClasses ]) << {
+    def tr = new CSLTestSuite(project, new File(buildDir, 'test-suite/' + citeprocTestSuiteZip))
     tr.compile()
     tr.fix()
     tr.run()

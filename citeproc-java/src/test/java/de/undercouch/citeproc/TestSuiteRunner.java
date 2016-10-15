@@ -149,9 +149,7 @@ public class TestSuiteRunner {
 			try {
 				runTest(file);
 				ex = null;
-			} catch (IllegalStateException e) {
-				ex = e;
-			} catch (IOException e) {
+			} catch (IllegalArgumentException | IllegalStateException | IOException e) {
 				ex = e;
 			}
 			

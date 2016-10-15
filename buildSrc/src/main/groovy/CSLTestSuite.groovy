@@ -25,7 +25,7 @@ class CSLTestSuite {
     private def processorPyFile
     private def testFiles
     
-    CSLTestSuite(project, zip, citeprocZip) {
+    CSLTestSuite(project, zip) {
         this.project = project
         
         def zipFiles = project.zipTree(zip)
@@ -33,12 +33,8 @@ class CSLTestSuite {
             it.toURI().getPath() =~ /.*\/processor-tests\/humans\/.*\.txt/ }
         processorPyFile = zipFiles.find { it.getPath().endsWith('processor.py') }
         
-        def citeprocZipFiles = project.zipTree(citeprocZip)
-        def citeprocLocales = citeprocZipFiles.find  { it.toURI().path =~ /.*\/locales\/.*/ }
-        citeprocLocales = citeprocLocales.parentFile.toURI().toURL()
-        
         def cp = project.test.classpath
-        def urls = [ citeprocLocales ] + cp.files.collect { it.toURI().toURL() }
+        def urls = cp.files.collect { it.toURI().toURL() }
         cl = new URLClassLoader(urls.toArray(new URL[urls.size()]))
     }
     
@@ -59,8 +55,8 @@ class CSLTestSuite {
         println('Fixing invalid tests ...')
         
         //we cannot parse '"label": 0'. use a reasonable default value.
-        fixInFile('bugreports_NumericStyleFirstRefMultipleCiteFailure.json',
-            '"label": 0,', '"label": "note",')
+        // fixInFile('bugreports_NumericStyleFirstRefMultipleCiteFailure.json',
+        //     '"label": 0,', '"label": "note",')
     }
     
     private def fixInFile(name, s, d) {
