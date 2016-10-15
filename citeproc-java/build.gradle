@@ -8,8 +8,11 @@ apply plugin: 'signing'
 import de.undercouch.gradle.tasks.download.Download
 
 // citeproc version 1.1.137
-ext.citeprocJsUrlBase = 'https://raw.githubusercontent.com/Juris-M/citeproc-js/2d1bb8dddf152f7c3e034dda3df3ec7e426939a3/'
+ext.citeprocJsSHA = '2d1bb8dddf152f7c3e034dda3df3ec7e426939a3'
+ext.citeprocJsUrlBase = "https://raw.githubusercontent.com/Juris-M/citeproc-js/${ext.citeprocJsSHA}/"
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
+ext.citeprocZip = ext.citeprocJsSHA + '.zip'
+ext.citeprocZipUrl = 'https://github.com/Juris-M/citeproc-js/archive/' + ext.citeprocZip
 ext.citeprocTestSuiteZip = '9ec40dae08ba63422ea0ea18ac68d65d143a73cf.zip'
 ext.citeprocTestSuiteUrl = 'https://github.com/citation-style-language/test-suite/archive/' + ext.citeprocTestSuiteZip
 
@@ -60,8 +63,37 @@ task downloadTestSuite(type: Download) {
     overwrite false
 }
 
-task runTestSuite(dependsOn: [ downloadTestSuite, testClasses ]) << {
-    def tr = new CSLTestSuite(project, new File(buildDir, 'test-suite/' + citeprocTestSuiteZip))
+task downloadCiteprocZip(type: Download) {
+    acceptAnyCertificate true
+    src citeprocZipUrl
+    dest new File(buildDir, "test-suite/${citeprocZip}")
+    overwrite false
+}
+
+task extractCiteprocZip(type: Copy, dependsOn: downloadCiteprocZip) {
+    from zipTree(file(downloadCiteprocZip.dest))
+    into new File(buildDir, "test-suite/extracted/")
+    eachFile { fcp ->
+        // strip off first directory
+        fcp.relativePath = new RelativePath(!fcp.file.isDirectory(),
+                fcp.relativePath.segments[1..-1] as String[])
+    }
+    includeEmptyDirs = false
+}
+
+task extractTestSuite(type: Copy, dependsOn: [ downloadTestSuite, extractCiteprocZip ]) {
+    from zipTree(file(downloadTestSuite.dest))
+    into new File(buildDir, "test-suite/extracted/tests/fixtures/std")
+    eachFile { fcp ->
+        // strip off first directory
+        fcp.relativePath = new RelativePath(!fcp.file.isDirectory(),
+                fcp.relativePath.segments[1..-1] as String[])
+    }
+    includeEmptyDirs = false
+}
+
+task runTestSuite(dependsOn: [ extractTestSuite, testClasses ]) << {
+    def tr = new CSLTestSuite(project, new File(buildDir, 'test-suite/extracted'))
     tr.compile()
     tr.fix()
     tr.run()

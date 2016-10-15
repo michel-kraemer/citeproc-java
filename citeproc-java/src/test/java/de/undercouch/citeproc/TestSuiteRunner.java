@@ -24,10 +24,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -203,6 +205,14 @@ public class TestSuiteRunner {
 		Map<String, Collection<Map<String, Object>>> rawBibsection =
 				(Map<String, Collection<Map<String, Object>>>)conf.get("bibsection");
 		
+		//parse mode
+		String[] modes = mode.split("-");
+		mode = modes[0];
+		Set<String> submodes = new HashSet<>();
+		for (int i = 1; i < modes.length; ++i) {
+			submodes.add(modes[i]);
+		}
+		
 		//convert item data
 		int i = 0;
 		CSLItemData[] items = new CSLItemData[input.size()];
@@ -277,8 +287,19 @@ public class TestSuiteRunner {
 		ListItemDataProvider itemDataProvider = new ListItemDataProvider(items);
 		TestSuiteCSL citeproc = new TestSuiteCSL(itemDataProvider, abbreviationProvider, style);
 		
+		//set development options
+		Map<String, Object> options = (Map<String, Object>)conf.get("options");
+		if (options != null) {
+			for (Map.Entry<String, Object> e : options.entrySet()) {
+				if (e.getKey().equals("variableWrapper")) {
+					continue;
+				}
+				citeproc.setDevelopmentExtension(e.getKey(), e.getValue());
+			}
+		}
+		
 		//register citation items
-		boolean nosort = mode.equals("bibliography-nosort");
+		boolean nosort = submodes.contains("nosort");
 		if (bibentries != null) {
 			for (List<String> be : bibentries) {
 				citeproc.registerCitationItems(be.toArray(new String[be.size()]), nosort);
@@ -336,14 +357,14 @@ public class TestSuiteRunner {
 		}
 		
 		//make bibliography
-		if (mode.equals("bibliography") || mode.equals("bibliography-nosort")) {
+		if (mode.equals("bibliography") && !submodes.contains("header")) {
 			if (bibSection != null || bibSectionQuash != null) {
 				citationResult = citeproc.makeBibliography(bibSectionMode,
 						bibSection, bibSectionQuash).makeString();
 			} else {
 				citationResult = citeproc.makeBibliography().makeString();
 			}
-		} else if (mode.equals("bibliography-header")) {
+		} else if (submodes.contains("header")) {
 			Bibliography p = citeproc.makeBibliography();
 			citationResult = "";
 			citationResult += "bibend: " + p.getBibEnd() + "\n";
@@ -433,6 +454,9 @@ public class TestSuiteRunner {
 						
 						+ "function __getRefList(engine) {"
 						+ "return engine.registry.reflist; }"
+						
+						+ "function __setDevelopmentExtension(engine, key, value) {"
+						+ "engine.opt.development_extensions[key] = value; }"
 				));
 			} catch (ScriptRunnerException e) {
 				throw new IOException("Could not evaluate inline scripts", e);
@@ -489,6 +513,14 @@ public class TestSuiteRunner {
 						"makeCitationCluster", String.class, (Object)citation);
 			} catch (ScriptRunnerException e) {
 				throw new IllegalArgumentException("Could not make citation custer", e);
+			}
+		}
+		
+		public void setDevelopmentExtension(String key, Object value) {
+			try {
+				getScriptRunner().callMethod("__setDevelopmentExtension", getEngine(), key, value);
+			} catch (ScriptRunnerException e) {
+				throw new IllegalArgumentException("Could not set development extension", e);
 			}
 		}
 	}

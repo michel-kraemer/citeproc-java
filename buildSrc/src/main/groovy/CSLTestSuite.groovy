@@ -22,16 +22,14 @@ import org.python.util.PythonInterpreter
 class CSLTestSuite {
     private def project
     private def cl
-    private def processorPyFile
+    private def testPyFile
     private def testFiles
     
-    CSLTestSuite(project, zip) {
+    CSLTestSuite(project, path) {
         this.project = project
         
-        def zipFiles = project.zipTree(zip)
-        testFiles = zipFiles.filter {
-            it.toURI().getPath() =~ /.*\/processor-tests\/humans\/.*\.txt/ }
-        processorPyFile = zipFiles.find { it.getPath().endsWith('processor.py') }
+        testFiles = new File(path, 'tests/fixtures/run/machines').listFiles()
+        testPyFile = new File(path, 'test.py')
         
         def cp = project.test.classpath
         def urls = cp.files.collect { it.toURI().toURL() }
@@ -39,15 +37,15 @@ class CSLTestSuite {
     }
     
     def compile() {
-        int count = testFiles.files.size()
-        print("Compiling ${count} tests ...")
+        int count = testFiles.size()
+        println("Compiling ${count} tests ...")
         def state = new PySystemState()
-        state.setCurrentWorkingDir(processorPyFile.getParent())
+        state.setCurrentWorkingDir(testPyFile.getParent())
         state.argv.clear()
-        state.argv.append(new PyString(processorPyFile.getPath()))
+        state.argv.append(new PyString(testPyFile.getPath()))
         state.argv.append(new PyString('-g'))
         def interp = new PythonInterpreter(null, state)
-        interp.execfile(processorPyFile.getPath())
+        interp.execfile(testPyFile.getPath())
         interp.cleanup()
     }
     
@@ -82,7 +80,7 @@ class CSLTestSuite {
     }
     
     def run() {
-        def dir = new File(processorPyFile.getParentFile(), 'processor-tests/machines')
+        def dir = new File(testPyFile.getParentFile(), 'tests/fixtures/run/machines')
         
         def runnerTypeClass = cl.loadClass('de.undercouch.citeproc.script.ScriptRunnerFactory$RunnerType')
         def testSuiteRunnerClass = cl.loadClass('de.undercouch.citeproc.TestSuiteRunner')
