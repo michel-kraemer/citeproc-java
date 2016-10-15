@@ -1,4 +1,4 @@
-citeproc-java [![Build Status](https://travis-ci.org/michel-kraemer/citeproc-java.png?branch=master)](https://travis-ci.org/michel-kraemer/citeproc-java)
+citeproc-java [![Build Status](https://travis-ci.org/michel-kraemer/citeproc-java.svg?branch=master)](https://travis-ci.org/michel-kraemer/citeproc-java)
 =============
 
 A [Citation Style Language (CSL)](http://citationstyles.org/) processor
