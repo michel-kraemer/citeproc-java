@@ -71,7 +71,10 @@ task downloadCiteprocZip(type: Download) {
 }
 
 task extractCiteprocZip(type: Copy, dependsOn: downloadCiteprocZip) {
-    from zipTree(file(downloadCiteprocZip.dest))
+    from(zipTree(file(downloadCiteprocZip.dest))) {
+        // exclude tests for non-standard features
+        exclude '**/fixtures/local/*'
+    }
     into new File(buildDir, "test-suite/extracted/")
     eachFile { fcp ->
         // strip off first directory
