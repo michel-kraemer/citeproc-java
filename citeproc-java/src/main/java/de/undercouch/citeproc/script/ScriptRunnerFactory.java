@@ -33,7 +33,12 @@ public class ScriptRunnerFactory {
 		/**
 		 * Create a runner that explicitly uses the Java Scripting API
 		 */
-		JRE
+		JRE,
+		
+		/**
+		 * Create a runner that explicitly uses the V8 runtime
+		 */
+		V8
 	}
 	
 	/**
@@ -62,6 +67,13 @@ public class ScriptRunnerFactory {
 	}
 	
 	/**
+	 * @return a {@link ScriptRunner} that uses the V8 runtime
+	 */
+	private static ScriptRunner createV8Runner() {
+		return new V8ScriptRunner();
+	}
+	
+	/**
 	 * Creates a new {@link ScriptRunner} instance according to the
 	 * type set with {@link #setRunnerType(RunnerType)}
 	 * @return the script runner
@@ -71,14 +83,32 @@ public class ScriptRunnerFactory {
 		
 		switch (t) {
 		case AUTO:
+			if (supportsV8()) {
+				return createV8Runner();
+			}
 			//fall back to JRE
 			return createJreRunner();
-			
+		
 		case JRE:
 			return createJreRunner();
-			
+		
+		case V8:
+			return createV8Runner();
+		
 		default:
 			throw new RuntimeException("Invalid runner type");
+		}
+	}
+	
+	/**
+	 * @return true if the V8 runtime is available, false otherwise
+	 */
+	private static boolean supportsV8() {
+		try {
+			Class.forName("com.eclipsesource.v8.V8");
+			return true;
+		} catch (Throwable e) {
+			return false;
 		}
 	}
 }

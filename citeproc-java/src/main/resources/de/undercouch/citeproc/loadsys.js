@@ -20,11 +20,13 @@ Sys.prototype.handleReturnValue = function(val) {
 	if (val == null) {
 		return null;
 	}
-	var ji = val.toJson(this.scriptRunner.createJsonBuilder());
-	if (ji.hasOwnProperty('length')) {
-		return JSON.parse(ji);
+	if (typeof val.toJson === "function") {
+		val = val.toJson(this.scriptRunner.createJsonBuilder());
 	}
-	return ji;
+	if (val.hasOwnProperty('length')) {
+		return JSON.parse(val);
+	}
+	return val;
 }
 
 Sys.prototype.retrieveLocale = function(lang) {

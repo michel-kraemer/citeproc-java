@@ -1,3 +1,9 @@
+buildscript {
+    dependencies {
+        classpath 'org.apache.commons:commons-lang3:3.4'
+    }
+}
+
 plugins {
     id "de.undercouch.download" version "3.1.1"
 }
@@ -6,6 +12,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 import de.undercouch.gradle.tasks.download.Download
+import org.apache.commons.lang3.SystemUtils
 
 // citeproc version 1.1.137
 ext.citeprocJsSHA = '2d1bb8dddf152f7c3e034dda3df3ec7e426939a3'
@@ -16,6 +23,26 @@ ext.citeprocZipUrl = 'https://github.com/Juris-M/citeproc-js/archive/' + ext.cit
 ext.citeprocTestSuiteZip = '9ec40dae08ba63422ea0ea18ac68d65d143a73cf.zip'
 ext.citeprocTestSuiteUrl = 'https://github.com/citation-style-language/test-suite/archive/' + ext.citeprocTestSuiteZip
 
+def getV8Dependency() {
+    def arch = System.getProperty('os.arch')
+    def dep = null
+    if (SystemUtils.IS_OS_WINDOWS) {
+        dep = 'win32_x86'
+        if (arch.equals('amd64')) {
+            dep += '_64'
+        }
+    } else if (SystemUtils.IS_OS_MAC && (arch.equals('amd64') || arch.equals('x86_64'))) {
+        dep = 'macosx_x86_64'
+    } else if (SystemUtils.IS_OS_LINUX && arch.equals('amd64')) {
+        dep = 'linux_x86_64'
+    }
+    if (dep == null) {
+        logger.error("Could not find V8 runtime compatible to this system")
+        return null
+    }
+    return 'com.eclipsesource.j2v8:j2v8_' + dep + ':4.5.0'
+}
+
 configurations {
     // define a configuration for compile-time-only dependencies
     provided
@@ -25,6 +52,10 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.jbibtex:jbibtex:1.0.15'
     compile 'org.antlr:antlr4-runtime:4.5.3'
+
+    if (getV8Dependency() != null) {
+        provided getV8Dependency()
+    }
     
     testCompile 'org.fusesource.jansi:jansi:1.14'
     testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
