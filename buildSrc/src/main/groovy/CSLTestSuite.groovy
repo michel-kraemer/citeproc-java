@@ -23,12 +23,10 @@ class CSLTestSuite {
     private def project
     private def cl
     private def testPyFile
-    private def testFiles
     
     CSLTestSuite(project, path) {
         this.project = project
         
-        testFiles = new File(path, 'tests/fixtures/run/machines').listFiles()
         testPyFile = new File(path, 'test.py')
         
         def cp = project.test.classpath
@@ -37,8 +35,7 @@ class CSLTestSuite {
     }
     
     def compile() {
-        int count = testFiles.size()
-        println("Compiling ${count} tests ...")
+        println("Compiling tests ...")
         def state = new PySystemState()
         state.setCurrentWorkingDir(testPyFile.getParent())
         state.argv.clear()
