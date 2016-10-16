@@ -287,6 +287,11 @@ public class TestSuiteRunner {
 		ListItemDataProvider itemDataProvider = new ListItemDataProvider(items);
 		TestSuiteCSL citeproc = new TestSuiteCSL(itemDataProvider, abbreviationProvider, style);
 		
+		//set output format
+		if (submodes.contains("rtf")) {
+			citeproc.setOutputFormat("rtf");
+		}
+		
 		//set development options
 		Map<String, Object> options = (Map<String, Object>)conf.get("options");
 		if (options != null) {
