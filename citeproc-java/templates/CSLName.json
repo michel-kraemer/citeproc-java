@@ -37,6 +37,10 @@
             "name": "static-ordering"
         },
         {
+            "type": "Boolean",
+            "name": "static-particles"
+        },
+        {
             "type": "String",
             "name": "literal"
         },
