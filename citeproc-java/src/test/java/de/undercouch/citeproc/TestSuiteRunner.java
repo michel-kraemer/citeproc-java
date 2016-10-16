@@ -437,10 +437,23 @@ public class TestSuiteRunner {
 	 * A special citation processor that allows access to the internal API
 	 */
 	private static class TestSuiteCSL extends CSL {
+		private static class TestSuiteLocaleProvider extends DefaultLocaleProvider {
+			@Override
+			public String retrieveLocale(String lang) {
+				String r = super.retrieveLocale(lang);
+				if (r == null) {
+					// fall back to empty locale definition for invalid lang tags
+					r = "[]";
+				}
+				return r;
+			}
+		}
+
 		public TestSuiteCSL(ItemDataProvider itemDataProvider,
 				AbbreviationProvider abbreviationProvider, String style)
 				throws IOException {
-			super(itemDataProvider, abbreviationProvider, style);
+			super(itemDataProvider, new TestSuiteLocaleProvider(),
+					abbreviationProvider, style, "en-US", false);
 			
 			ScriptRunner sr = getScriptRunner();
 			try {
