@@ -43,6 +43,10 @@
         {
             "type": "Boolean",
             "name": "parse-names"
+        },
+        {
+            "type": "Boolean",
+            "name": "isInstitution"
         }
     ],
     
