@@ -151,7 +151,6 @@ jar {
         name = 'citeproc-java'
         symbolicName = "de.undercouch.citeproc"
         vendor = 'Michel Kraemer'
-        instruction 'Import-Package', '*,org.mozilla.javascript;resolution:=optional'
         instruction 'Export-Package', "de.undercouch.*;version=${version}"
     }
     
