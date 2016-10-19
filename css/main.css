@@ -4,7 +4,7 @@ p {
 }
 
 pre {
-  font-size: 18px;
+  font-size: 17px;
 }
 
 li {
@@ -127,7 +127,7 @@ pre {
   padding-bottom: 58px;
   margin-bottom: 10px;
   border-bottom: 1px solid #ecf0f1;
-  font-size: 18px;
+  font-size: 17px;
 }
 
 .sample pre {
@@ -139,7 +139,7 @@ pre {
 }
 
 .sample .label {
-  font-size: 18px;
+  font-size: 17px;
 }
 
 .sample .tab-content {
