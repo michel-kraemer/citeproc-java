@@ -22,8 +22,8 @@ bibliographies. Some of the highlights in citeproc-java are:
   and want to test your style files in an easy and quick manner. The
   command line tool even contains an interactive shell with command
   completion and automatic suggestions.
-* citeproc-java contains connectors for [Mendeley]({{ site.baseurl }}using/mendeley)
-  as well as [Zotero]({{ site.baseurl }}using/zotero) that allow you to
+* citeproc-java contains [remote connectors]({{ site.baseurl }}using/remote)
+  for Mendeley as well as Zotero that allow you to
   use your online resources as input for citations or bibliographies.
 * citeproc-java is CSL 1.0.1 compliant and all tests from the
   [CSL test suite](https://bitbucket.org/bdarcus/citeproc-test) run

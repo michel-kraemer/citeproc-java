@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Output formats
-prev: using/mendeley/
-prevtitle: Mendeley connector
+prev: using/remote/
+prevtitle: Remote connectors
 next: using/command-line-tool/
 nexttitle: Command line tool
 ---

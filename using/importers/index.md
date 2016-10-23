@@ -3,8 +3,8 @@ layout: default
 title: Importers
 prev: using/building/
 prevtitle: Building
-next: using/mendeley/
-nexttitle: Mendeley connector
+next: using/remote/
+nexttitle: Remote connectors
 ---
 
 citeproc-java supports several input file formats. This allows you
