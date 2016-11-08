@@ -43,9 +43,9 @@ $ ./gradlew installApp
 
 The command line tool will be installed to ``citeproc-java-tool/build/install/citeproc-java-tool``.
 
-citeproc-java is CSL 1.0.1 compliant and *all tests* from the
-[CSL test suite](https://bitbucket.org/bdarcus/citeproc-test) run
-successfully. To run the test suite on your computer just execute the
+citeproc-java is CSL 1.0.1 compliant and *all standard tests* from the
+[CSL test suite](https://github.com/citation-style-language/test-suite) run
+successfully. To run the test suite on your computer execute the
 following command:
 
 {% highlight bash %}

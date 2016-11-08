@@ -26,7 +26,7 @@ BibTeXDatabase db = new BibTeXConverter().loadDatabase(
     new FileInputStream("mydb.bib"));
 {% endhighlight %}
 
-After that, you can create a `ItemDataProvider` and pass it to the
+After that, you can create an `ItemDataProvider` and pass it to the
 CSL processor.
 
 {% highlight java %}

@@ -55,7 +55,7 @@ import de.undercouch.citeproc.helper.oauth.AuthenticationStore;
 import de.undercouch.citeproc.helper.oauth.FileAuthenticationStore;
 import de.undercouch.citeproc.remote.AuthenticatedRemoteConnector;
 
-//configure authentication store
+// configure authentication store
 File configDir = new File(System.getProperty("user.home"), ".yourapp");
 configDir.mkdirs();
 File authStoreFile = new File(configDir, "your-auth-store.conf");
@@ -77,12 +77,12 @@ while (true) {
     break;
   } catch (UnauthorizedException e) {
     if (retries == 0) {
-      //too may retries
+      // too many retries
       throw new IllegalStateException("Authorization failed.");
     }
     --retries;
     
-    //get authorization URL
+    // get authorization URL
     String authUrl = rc.getAuthorizationURL();
     
     System.out.println("This tool requires authorization. Please point your "
@@ -90,15 +90,15 @@ while (true) {
     System.out.println(authUrl);
     System.out.println();
     
-    //read verification code from console
+    // read verification code from console
     System.out.print("Enter verification code: ");
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     String verificationCode = br.readLine();
     
-    //authorize...
+    // authorize...
     rc.authorize(verificationCode);
     
-    //retry
+    // retry
     continue;
   }
 }
@@ -110,10 +110,10 @@ items from the server and to obtain details for each of them.
 {% highlight java %}
 import de.undercouch.citeproc.csl.CSLItemData;
 
-//read list of Mendeley document IDs
+// read list of Mendeley document IDs
 List<String> ids = rc.getItemIDs();
 
-//read details for each document
+// read details for each document
 List<CSLItemData> items = new ArrayList<CSLItemData>();
 for (String id : ids) {
   CSLItemData item = rc.getItem(id);
@@ -131,5 +131,5 @@ import de.undercouch.citeproc.ListItemDataProvider;
 
 ItemDataProvider provider = new ListItemDataProvider(items);
 CSL citeproc = new CSL(provider, "ieee");
-//...
+// ...
 {% endhighlight %}

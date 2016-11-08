@@ -10,7 +10,7 @@ nexttitle: Building
 or that you [built]({{ site.baseurl }}using/building) it from source.
 
 In order to use citeproc-java in your application you first have to
-create a `ItemDataProvider` that provides
+create an `ItemDataProvider` that provides
 citation item data to the CSL processor. For example, the following
 dummy provider returns always the same data:
 
