@@ -98,7 +98,7 @@ class SourceGenerator {
                 if (p.required) {
                     attrs.requiredProps += p
                 }
-                p.enumType = (p.type.equals("CSLType") || p.type.equals("CSLLabel"))
+                p.enumType = (p.type.equals("CSLType") || p.type.equals("CSLLabel") || p.type.equals("Context"))
                 p.cslType = (p.type.startsWith("CSL"))
                 if (p.type.endsWith("[]")) {
                     p.arrayType = true
@@ -117,7 +117,11 @@ class SourceGenerator {
             }
             attrs.props.removeAll(attrs.requiredProps)
         }
-        
+
+        if (attrs.additionalImports == null) {
+            attrs.additionalImports = []
+        }
+
         if (attrs.additionalMethods == null) {
             attrs.additionalMethods = []
         }
@@ -184,6 +188,7 @@ class SourceGenerator {
         def dst = new File(project.projectDir, 'src-gen/main/java')
         dst.mkdirs()
         
+        renderTemplatesInternal('Context', dst, true)
         renderTemplatesInternal('CSLType', dst, true)
         renderTemplatesInternal('CSLLabel', dst, true)
         renderTemplatesInternal('SecondFieldAlign', dst, true)
@@ -203,6 +208,8 @@ class SourceGenerator {
         
         renderTemplatesInternal('Bibliography', dst)
         renderTemplatesInternal('Citation', dst)
+
+        renderTemplatesInternal('VariableWrapperParams', dst)
         
         renderParserTemplate('EndNoteParser', dst)
         renderParserTemplate('RISParser', dst)

@@ -16,6 +16,10 @@ package $pkg;
 
 import java.util.Map;
 
+<% for (i in additionalImports) { %>
+import ${i};
+<% } %>
+
 /**
  * Builder for {@link $name}
  * @author Michel Kraemer

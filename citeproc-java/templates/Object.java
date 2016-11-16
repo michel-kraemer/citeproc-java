@@ -24,6 +24,10 @@ import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.JsonObject;
 <% } %>
 
+<% for (i in additionalImports) { %>
+import ${i};
+<% } %>
+
 /**
  * $description
  * @author Michel Kraemer

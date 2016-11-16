@@ -239,6 +239,28 @@ public class CSL {
 	public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
 			AbbreviationProvider abbreviationProvider, String style,
 			String lang, boolean forceLang) throws IOException {
+		this(itemDataProvider, localeProvider, abbreviationProvider, null,
+				style, lang, forceLang);
+	}
+	
+	/**
+	 * Constructs a new citation processor
+	 * @param itemDataProvider an object that provides citation item data
+	 * @param localeProvider an object that provides CSL locales
+	 * @param abbreviationProvider an object that provides abbreviations
+	 * @param variableWrapper an object that decorates rendered items
+	 * @param style the citation style to use. May either be a serialized
+	 * XML representation of the style or a style's name such as <code>ieee</code>.
+	 * In the latter case, the processor loads the style from the classpath (e.g.
+	 * <code>/ieee.csl</code>)
+	 * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
+	 * @param forceLang true if the given locale should overwrite any default locale
+	 * @throws IOException if the underlying JavaScript files or the CSL style
+	 * could not be loaded 
+	 */
+	public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
+			AbbreviationProvider abbreviationProvider, VariableWrapper variableWrapper,
+			String style, String lang, boolean forceLang) throws IOException {
 		runner = getRunner();
 		
 		//load style if needed
@@ -250,7 +272,7 @@ public class CSL {
 		try {
 			engine = runner.callMethod("makeCsl", Object.class,
 					style, lang, forceLang, runner, itemDataProvider,
-					localeProvider, abbreviationProvider);
+					localeProvider, abbreviationProvider, variableWrapper);
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not parse arguments", e);
 		}
@@ -468,7 +490,7 @@ public class CSL {
 			throw new IllegalArgumentException("Could not set abbreviations", e);
 		}
 	}
-
+	
 	/**
 	 * Introduces the given citation IDs to the processor. The processor will
 	 * call {@link ItemDataProvider#retrieveItem(String)} for each ID to get

@@ -54,12 +54,17 @@ Sys.prototype.setAbbreviations = function(name) {
 };
 
 function makeCsl(style, lang, forceLang, scriptRunner, itemDataProvider,
-		localeProvider, abbreviationProvider) {
+		localeProvider, abbreviationProvider, variableWrapper) {
 	var sys = new Sys();
 	sys.scriptRunner = scriptRunner;
 	sys.itemDataProvider = itemDataProvider;
 	sys.localeProvider = localeProvider;
 	sys.abbreviationProvider = abbreviationProvider;
+	if (variableWrapper) {
+		sys.variableWrapper = function(params, prePunct, str, postPunct) {
+			return variableWrapper.wrap(params, prePunct, str, postPunct);
+		};
+	}
 	return new CSL.Engine(sys, style, lang, forceLang);
 }
 

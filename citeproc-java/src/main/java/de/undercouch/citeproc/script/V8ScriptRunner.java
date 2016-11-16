@@ -34,6 +34,8 @@ import com.eclipsesource.v8.V8Value;
 import de.undercouch.citeproc.AbbreviationProvider;
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.LocaleProvider;
+import de.undercouch.citeproc.VariableWrapper;
+import de.undercouch.citeproc.VariableWrapperParams;
 import de.undercouch.citeproc.csl.CSLAbbreviationList;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
@@ -223,7 +225,9 @@ public class V8ScriptRunner extends AbstractScriptRunner {
 		//convert the values
 		for (int i = 0; i < args.length; ++i) {
 			Object o = args[i];
-			if (o instanceof JsonObject || o instanceof Collection ||
+			if (o == null) {
+				result.push(V8Value.NULL);
+			} else if (o instanceof JsonObject || o instanceof Collection ||
 					o.getClass().isArray() || o instanceof Map) {
 				V8Object v = runtime.executeObjectScript("(" +
 						createJsonBuilder().toJson(o).toString() + ")");
@@ -244,6 +248,11 @@ public class V8ScriptRunner extends AbstractScriptRunner {
 				result.push(v8o);
 			} else if (o instanceof AbbreviationProvider) {
 				o = new AbbreviationProviderWrapper((AbbreviationProvider)o);
+				V8Object v8o = convertJavaObject(o);
+				newValues.add(v8o);
+				result.push(v8o);
+			} else if (o instanceof VariableWrapper) {
+				o = new VariableWrapperWrapper((VariableWrapper)o);
 				V8Object v8o = convertJavaObject(o);
 				newValues.add(v8o);
 				result.push(v8o);
@@ -332,6 +341,35 @@ public class V8ScriptRunner extends AbstractScriptRunner {
 				return null;
 			}
 			return a.toJson(createJsonBuilder());
+		}
+	}
+	
+	/**
+	 * Wraps around {@link VariableWrapper} and converts
+	 * {@link VariableWrapperParams} objects to JSON objects
+	 * @author Michel Kraemer
+	 */
+	private class VariableWrapperWrapper {
+		private final VariableWrapper wrapper;
+		
+		public VariableWrapperWrapper(VariableWrapper wrapper) {
+			this.wrapper = wrapper;
+		}
+		
+		/**
+		 * Call the {@link VariableWrapper} with the given parameters
+		 * @param params the context in which an item should be rendered
+		 * @param prePunct the text that precedes the item to render
+		 * @param str the item to render
+		 * @param postPunct the text that follows the item to render
+		 * @return the string to be rendered
+		 */
+		@SuppressWarnings("unused")
+		public String wrap(Object params, String prePunct,
+				String str, String postPunct) {
+			Map<String, Object> m = convertObject((V8Object)params);
+			VariableWrapperParams p = VariableWrapperParams.fromJson(m);
+			return wrapper.wrap(p, prePunct, str, postPunct);
 		}
 	}
 }

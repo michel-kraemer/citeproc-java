@@ -24,6 +24,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import de.undercouch.citeproc.VariableWrapper;
+import de.undercouch.citeproc.VariableWrapperParams;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.JsonObject;
 import de.undercouch.citeproc.helper.json.StringJsonBuilder;
@@ -136,13 +138,51 @@ public class JREScriptRunner extends AbstractScriptRunner {
 			Object o = args[i];
 			//convert JSON objects, collections, arrays, and maps, but do
 			//not convert script objects (such as Bindings)
-			if (o instanceof JsonObject || o instanceof Collection || o.getClass().isArray() ||
+			if (o == null) {
+				result[i] = null;
+			} else if (o instanceof JsonObject || o instanceof Collection || o.getClass().isArray() ||
 					(o instanceof Map && o.getClass().getPackage().getName().startsWith("java."))) {
 				result[i] = engine.eval("(" + createJsonBuilder().toJson(o).toString() + ")");
+			} else if (o instanceof VariableWrapper) {
+				o = new VariableWrapperWrapper((VariableWrapper)o);
+				result[i] = o;
 			} else {
 				result[i] = o;
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * <p>Wraps around {@link VariableWrapper} and converts
+	 * {@link VariableWrapperParams} objects to JSON objects</p>
+	 * <p>Note: this class must be public so Nashorn can inspect it and
+	 * find the <code>wrap()</code> method.</p>
+	 * @author Michel Kraemer
+	 */
+	public static class VariableWrapperWrapper {
+		private final VariableWrapper wrapper;
+		
+		/**
+		 * Creates a new wrapper
+		 * @param wrapper the variable wrapper to wrap around
+		 */
+		public VariableWrapperWrapper(VariableWrapper wrapper) {
+			this.wrapper = wrapper;
+		}
+		
+		/**
+		 * Call the {@link VariableWrapper} with the given parameters
+		 * @param params the context in which an item should be rendered
+		 * @param prePunct the text that precedes the item to render
+		 * @param str the item to render
+		 * @param postPunct the text that follows the item to render
+		 * @return the string to be rendered
+		 */
+		public String wrap(Map<String, Object> params, String prePunct,
+				String str, String postPunct) {
+			VariableWrapperParams p = VariableWrapperParams.fromJson(params);
+			return wrapper.wrap(p, prePunct, str, postPunct);
+		}
 	}
 }

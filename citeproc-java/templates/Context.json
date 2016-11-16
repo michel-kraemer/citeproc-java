@@ -1,0 +1,10 @@
+{
+    "name": "Context",
+    "pkg": "de.undercouch.citeproc",
+    "description": "A context in which rendering happens",
+    
+    "types": [
+        "citation",
+        "bibliography"
+    ]
+}
