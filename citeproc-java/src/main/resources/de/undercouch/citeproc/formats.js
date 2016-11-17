@@ -175,11 +175,16 @@ CSL.Output.Formats.fo = {
 	},
 	
 	"@bibliography/entry": function (state, str) {
+		var indent = "";
+		if (state.bibliography && state.bibliography.opt && state.bibliography.opt.hangingindent) {
+			var hi = state.bibliography.opt.hangingindent;
+			indent = " start-indent=\"" + hi +"em\" text-indent=\"-" + hi + "em\"";
+		}
 		var insert = "";
 		if (state.sys.embedBibliographyEntry) {
 			insert = state.sys.embedBibliographyEntry(this.item_id) + "\n";
 		}
-		return "<fo:block id=\"" + this.system_id + "\">" + str + "</fo:block>\n" + insert;
+		return "<fo:block id=\"" + this.system_id + "\"" + indent + ">" + str + "</fo:block>\n" + insert;
 	},
 	
 	"@display/block": function (state, str) {
