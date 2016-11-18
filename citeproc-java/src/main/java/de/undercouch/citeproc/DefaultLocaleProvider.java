@@ -44,7 +44,11 @@ public class DefaultLocaleProvider implements LocaleProvider {
 			try {
 				URL u = getClass().getResource("/locales-" + lang + ".xml");
 				if (u == null) {
-					return null;
+					throw new IllegalArgumentException("Unable to load locale " +
+							lang + ". Make sure you have a file called " +
+							"'/locales-" + lang + ".xml' at the root of your " +
+							"classpath. Did you add the CSL locale files to "
+							+ "your classpath?");
 				}
 				r = CSLUtils.readURLToString(u, "UTF-8");
 			} catch (IOException e) {
