@@ -44,6 +44,8 @@ The next sections describe the commands you can use and their options.
 - [json](#json) - Convert input bibliography to JSON.
 - [mendeley](#mendeley) - Connect to Mendeley Web and generate styled citations and bibliographies.
 - [zotero](#zotero) - Connect to Zotero and generate styled citations and bibliographies.
+- [shell](#shell) - Run citeproc-java in interactive mode.
+- [help](#help) - Display help about citeproc-java or about a specific command.
 
 bibliography
 ------------
@@ -151,7 +153,7 @@ json
     citeproc-java json [OPTION]... [CITATION ID]...
 
 Convert input bibliography to JSON. The resulting JSON object can be used as
-input to other CSL processors such as [citeproc-js](https://bitbucket.org/fbennett/citeproc-js/wiki/Home).
+input to other CSL processors such as [citeproc-js](https://github.com/Juris-M/citeproc-js).
 
 ### Options
 

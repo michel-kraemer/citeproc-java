@@ -182,12 +182,12 @@
 
 <div class="tab-pane" id="sample-others" markdown="1">
 
-<h2>More than 7000 styles</h2>
+<h2>More than 8000 styles</h2>
 
-citeproc-java is based on [citeproc-js](https://bitbucket.org/fbennett/citeproc-js/wiki/Home)
+citeproc-java is based on [citeproc-js](https://github.com/Juris-M/citeproc-js)
 and uses the [Citation Style Language (CSL)](http://citationstyles.org/) citation styles.
 
-Select from more than [7000 styles](http://citationstyles.org/styles). All
+Select from more than [8000 styles](http://citationstyles.org/styles). All
 CSL styles are freely available and distributed under a
 [Creative Commons Attribution-ShareAlike license](http://creativecommons.org/licenses/by-sa/3.0/).
 

@@ -16,12 +16,12 @@ Alternatively, you can download citeproc-java from Maven central:
 
 [http://central.maven.org/maven2/de/undercouch/citeproc-java/0.6](http://central.maven.org/maven2/de/undercouch/citeproc-java/0.6)
 
-The library has dependencies to [JBibTeX 1.0.8](https://code.google.com/p/java-bibtex/),
-[ANTLR 4.1](http://www.antlr.org/), and [Apache Commons Lang 2.6](http://commons.apache.org/proper/commons-lang/).
+The library has dependencies to [JBibTeX](https://github.com/jbibtex/jbibtex),
+[ANTLR](http://www.antlr.org/), and [Apache Commons Lang](http://commons.apache.org/proper/commons-lang/).
 
 I highly recommend using a build tool such as [Maven](http://maven.apache.org/)
 or [Gradle](http://www.gradle.org/) to manage your application dependencies.
-The following snippet can be added to your build file:
+You can add the following snippet to your build file:
 
 <ul class="nav nav-tabs" id="installing-tab">
   <li class="active"><a href="#installing-maven" data-toggle="tab" class="no-scroll">Maven</a></li>
@@ -66,7 +66,7 @@ In order to use citeproc-java you need three things: the library itself,
 the Citation Style Language Styles, and the locales. The [binary bundle](#top)
 includes all what you need. However, if you don't use the binary
 package (e.g. because you're installing citeproc-java via Maven) you
-will certainly need to download the CSL styles and locales.
+will need to download the CSL styles and locales.
 
 <div class="alert alert-success" markdown="1">
 Please note that without these files the citeproc-java library alone

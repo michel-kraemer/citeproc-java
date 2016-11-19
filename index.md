@@ -25,8 +25,8 @@ bibliographies. Some of the highlights in citeproc-java are:
 * citeproc-java contains [remote connectors]({{ site.baseurl }}using/remote)
   for Mendeley as well as Zotero that allow you to
   use your online resources as input for citations or bibliographies.
-* citeproc-java is CSL 1.0.1 compliant and all tests from the
-  [CSL test suite](https://bitbucket.org/bdarcus/citeproc-test) run
+* citeproc-java is CSL 1.0.1 compliant and all standard tests from the
+  [CSL test suite](https://github.com/citation-style-language/test-suite) run
   successfully.
 
 Example
