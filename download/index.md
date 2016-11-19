@@ -12,6 +12,8 @@ for you in the following binary package:
 <a href="https://github.com/michel-kraemer/citeproc-java/archive/1.0.0.tar.gz" class="btn btn-default btn-lg download-link-main"><i class="icon-download-alt"></i> Source code</a>
 </div>
 
+citeproc-java requires Java 8 or higher.
+
 ### Installing with Homebrew
 
 On macOS you can install citeproc-java with the [Homebrew package manager](http://brew.sh).
