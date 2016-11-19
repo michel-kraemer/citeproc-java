@@ -12,7 +12,17 @@ for you in the following binary package:
 <a href="https://github.com/michel-kraemer/citeproc-java/archive/1.0.0.tar.gz" class="btn btn-default btn-lg download-link-main"><i class="icon-download-alt"></i> Source code</a>
 </div>
 
-Alternatively, you can download citeproc-java from Maven central:
+### Installing with Homebrew
+
+On macOS you can install citeproc-java with the [Homebrew package manager](http://brew.sh).
+
+    brew tap michel-kraemer/citeproc-java
+    brew install citeproc-java
+
+### Installing the library for development
+
+You can download the citeproc-java library from Maven central to include it into
+your own application.
 
 [http://central.maven.org/maven2/de/undercouch/citeproc-java/1.0.0/](http://central.maven.org/maven2/de/undercouch/citeproc-java/1.0.0/)
 
