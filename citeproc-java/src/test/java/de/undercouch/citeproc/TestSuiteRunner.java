@@ -445,12 +445,12 @@ public class TestSuiteRunner {
 		private static class TestSuiteLocaleProvider extends DefaultLocaleProvider {
 			@Override
 			public String retrieveLocale(String lang) {
-				String r = super.retrieveLocale(lang);
-				if (r == null) {
+				try {
+					return super.retrieveLocale(lang);
+				} catch (IllegalArgumentException e) {
 					// fall back to empty locale definition for invalid lang tags
-					r = "[]";
+					return "[]";
 				}
-				return r;
 			}
 		}
 
