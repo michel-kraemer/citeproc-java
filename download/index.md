@@ -7,14 +7,14 @@ Everything you need to use citeproc-java has already been prepared
 for you in the following binary package:
 
 <div class="download-section">
-<a href="https://github.com/michel-kraemer/citeproc-java/releases/download/0.6/citeproc-java-0.6.zip" class="btn btn-primary btn-lg download-link-main"><i class="icon-download-alt"></i> Download citeproc-java 0.6 (binaries)</a>
-<a href="https://github.com/michel-kraemer/citeproc-java/releases/download/0.6/citeproc-java-0.6-javadoc.jar" class="btn btn-default btn-lg download-link-main"><i class="icon-download-alt"></i> JavaDoc</a>
-<a href="https://github.com/michel-kraemer/citeproc-java/archive/0.6.tar.gz" class="btn btn-default btn-lg download-link-main"><i class="icon-download-alt"></i> Source code</a>
+<a href="https://github.com/michel-kraemer/citeproc-java/releases/download/1.0.0/citeproc-java-tool-1.0.0.zip" class="btn btn-primary btn-lg download-link-main"><i class="icon-download-alt"></i> Download citeproc-java 1.0.0 (binaries)</a>
+<a href="https://github.com/michel-kraemer/citeproc-java/releases/download/1.0.0/citeproc-java-1.0.0-javadoc.jar" class="btn btn-default btn-lg download-link-main"><i class="icon-download-alt"></i> JavaDoc</a>
+<a href="https://github.com/michel-kraemer/citeproc-java/archive/1.0.0.tar.gz" class="btn btn-default btn-lg download-link-main"><i class="icon-download-alt"></i> Source code</a>
 </div>
 
 Alternatively, you can download citeproc-java from Maven central:
 
-[http://central.maven.org/maven2/de/undercouch/citeproc-java/0.6](http://central.maven.org/maven2/de/undercouch/citeproc-java/0.6)
+[http://central.maven.org/maven2/de/undercouch/citeproc-java/1.0.0/](http://central.maven.org/maven2/de/undercouch/citeproc-java/1.0.0/)
 
 The library has dependencies to [JBibTeX](https://github.com/jbibtex/jbibtex),
 [ANTLR](http://www.antlr.org/), and [Apache Commons Lang](http://commons.apache.org/proper/commons-lang/).
@@ -37,7 +37,7 @@ You can add the following snippet to your build file:
   <dependency>
     <groupId>de.undercouch</groupId>
     <artifactId>citeproc-java</artifactId>
-    <version>0.6</version>
+    <version>1.0.0</version>
   </dependency>
 </dependencies>
 {% endhighlight %}
@@ -52,7 +52,7 @@ repositories {
 }
 
 dependencies {
-    compile 'de.undercouch:citeproc-java:0.6'
+    compile 'de.undercouch:citeproc-java:1.0.0'
 }
 {% endhighlight %}
 
