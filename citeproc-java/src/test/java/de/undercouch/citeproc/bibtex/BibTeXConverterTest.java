@@ -22,6 +22,7 @@ import java.util.Map;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
 import org.jbibtex.Key;
+import org.jbibtex.StringValue;
 import org.junit.Test;
 
 import de.undercouch.citeproc.csl.CSLItemData;
@@ -121,5 +122,19 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
 		assertEquals("365", cid.getPageFirst());
 		assertEquals("The UNIX Time-Sharing System", cid.getTitle());
 		assertArrayEquals(new int[][] { new int[] { 1974, 7 } }, cid.getIssued().getDateParts());
+	}
+	
+	/**
+	 * Test if a BibTeX entry whose title contains a CR character (\r) can
+	 * be converted correctly.
+	 */
+	@Test
+	public void carriageReturnInTitle() {
+		BibTeXEntry e = new BibTeXEntry(new Key("article"), new Key("a"));
+		e.addField(new Key("title"), new StringValue(
+				"syst\\`emes\r\ndiff\\'erentiels", StringValue.Style.QUOTED));
+		BibTeXConverter conv = new BibTeXConverter();
+		CSLItemData i = conv.toItemData(e);
+		assertEquals("systèmes différentiels", i.getTitle());
 	}
 }

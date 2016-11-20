@@ -175,7 +175,7 @@ public class BibTeXConverter {
 		//get all fields from the BibTeX entry
 		Map<String, String> entries = new HashMap<>();
 		for (Map.Entry<Key, Value> field : e.getFields().entrySet()) {
-			String us = field.getValue().toUserString();
+			String us = field.getValue().toUserString().replaceAll("\\r", "");
 			
 			//convert LaTeX string to normal text
 			try {
