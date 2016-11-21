@@ -137,4 +137,32 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
 		CSLItemData i = conv.toItemData(e);
 		assertEquals("systèmes différentiels", i.getTitle());
 	}
+	
+	/**
+	 * Test if a BibTeX entry whose title contains a CR character (\r) only
+	 * (without a line feed \n) can be converted correctly.
+	 */
+	@Test
+	public void carriageReturnOnlyInTitle() {
+		BibTeXEntry e = new BibTeXEntry(new Key("article"), new Key("a"));
+		e.addField(new Key("title"), new StringValue(
+				"syst\\`emes\rdiff\\'erentiels", StringValue.Style.QUOTED));
+		BibTeXConverter conv = new BibTeXConverter();
+		CSLItemData i = conv.toItemData(e);
+		assertEquals("systèmes différentiels", i.getTitle());
+	}
+	
+	/**
+	 * Test if a BibTeX entry whose title contains a LF character (\n) can
+	 * be converted correctly.
+	 */
+	@Test
+	public void lineFeedOnlyInTitle() {
+		BibTeXEntry e = new BibTeXEntry(new Key("article"), new Key("a"));
+		e.addField(new Key("title"), new StringValue(
+				"syst\\`emes\ndiff\\'erentiels", StringValue.Style.QUOTED));
+		BibTeXConverter conv = new BibTeXConverter();
+		CSLItemData i = conv.toItemData(e);
+		assertEquals("systèmes différentiels", i.getTitle());
+	}
 }

@@ -175,12 +175,14 @@ public class BibTeXConverter {
 		//get all fields from the BibTeX entry
 		Map<String, String> entries = new HashMap<>();
 		for (Map.Entry<Key, Value> field : e.getFields().entrySet()) {
-			String us = field.getValue().toUserString().replaceAll("\\r", "");
+			String us = field.getValue().toUserString()
+					.replaceAll("\\r\\n", " ")
+					.replace('\r', ' ');
 			
 			//convert LaTeX string to normal text
 			try {
 				List<LaTeXObject> objs = latexParser.parse(new StringReader(us));
-				us = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
+				us = latexPrinter.print(objs).replace('\n', ' ').replaceAll("\\r", "").trim();
 			} catch (ParseException ex) {
 				//ignore
 			} catch (TokenMgrException err) {
