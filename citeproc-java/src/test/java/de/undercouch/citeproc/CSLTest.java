@@ -397,7 +397,7 @@ public class CSLTest {
 		assertEquals("[3]", a3.get(1).getText());
 		assertEquals(2, a3.get(1).getIndex());
 		
-		//we should now have to items with ID [2], but different indexes
+		//we should now have two items with ID [2], but different indexes
 		assertEquals(3, a4.size());
 		assertEquals("[2]", a4.get(0).getText());
 		assertEquals(1, a4.get(0).getIndex());
