@@ -91,7 +91,7 @@ CSL.Output.Formats.asciidoc = {
 		return " " + str;
 	},
 	"@showid/true": function (state, str, cslid) {
-		if (!state.tmp.just_looking && !state.tmp.suppress_decorations) {
+		if (!state.tmp.just_looking && !state.tmp.suppress_decorations && this.params && "string" === typeof str) {
 			var prePunct = "";
 			if (str) {
 				var m = str.match(CSL.VARIABLE_WRAPPER_PREPUNCT_REX);
@@ -212,7 +212,7 @@ CSL.Output.Formats.fo = {
 		return "<fo:block margin-left=\"2em\">" + str + "</fo:block>\n";
 	},
 	"@showid/true": function (state, str, cslid) {
-		if (!state.tmp.just_looking && !state.tmp.suppress_decorations) {
+		if (!state.tmp.just_looking && !state.tmp.suppress_decorations && this.params && "string" === typeof str) {
 			var prePunct = "";
 			if (str) {
 				var m = str.match(CSL.VARIABLE_WRAPPER_PREPUNCT_REX);
