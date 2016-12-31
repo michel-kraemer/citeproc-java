@@ -17,8 +17,11 @@ package de.undercouch.citeproc.tool;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.undercouch.citeproc.BibliographyFileReader;
+import de.undercouch.citeproc.CompoundItemDataProvider;
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.underline.Command;
 import de.undercouch.underline.InputReader;
@@ -35,9 +38,9 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 	private final ProviderCommand delegate;
 
 	/**
-	 * The input bibliography file
+	 * The input bibliography file(s)
 	 */
-	private String input;
+	private List<String> inputs = new ArrayList<>();
 	
 	/**
 	 * Constructs a new command
@@ -56,7 +59,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 			argumentName = "FILE", argumentType = ArgumentType.STRING,
 			priority = 1)
 	public void setInput(String input) {
-		this.input = input;
+		inputs.add(input);
 	}
 	
 	@Override
@@ -96,7 +99,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 	@Override
 	public boolean checkArguments() {
 		//check if there is a bibliography file
-		if (input == null) {
+		if (inputs == null || inputs.isEmpty()) {
 			error("no input bibliography specified.");
 			return false;
 		}
@@ -111,7 +114,15 @@ public class InputFileCommand extends AbstractCSLToolCommand {
 		try {
 			BibliographyFileReader reader =
 					CSLToolContext.current().getBibliographyFileReader();
-			provider = reader.readBibliographyFile(new File(input));
+			if (inputs.size() == 1) {
+				provider = reader.readBibliographyFile(new File(inputs.get(0)));
+			} else {
+				List<ItemDataProvider> providers = new ArrayList<>();
+				for (String input : inputs) {
+					providers.add(reader.readBibliographyFile(new File(input)));
+				}
+				provider = new CompoundItemDataProvider(providers);
+			}
 		} catch (IOException e) {
 			error(e.getMessage());
 			return 1;
