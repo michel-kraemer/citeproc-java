@@ -72,6 +72,7 @@ public class BibliographyFileReader {
 		
 		/**
 		 * A YAML document
+		 * @since 1.1.0
 		 */
 		YAML,
 		
