@@ -22,11 +22,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.ParseException;
+import org.yaml.snakeyaml.Yaml;
 
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
@@ -66,6 +69,11 @@ public class BibliographyFileReader {
 		 * An array of CSL JSON objects
 		 */
 		JSON_ARRAY,
+		
+		/**
+		 * A YAML document
+		 */
+		YAML,
 		
 		/**
 		 * An EndNote file
@@ -170,6 +178,33 @@ public class BibliographyFileReader {
 					items[i] = CSLItemData.fromJson(obj);
 				}
 				provider = new ListItemDataProvider(items);
+			} else if (format == FileFormat.YAML) {
+				Yaml yaml = new Yaml();
+				Iterable<Object> documentsIterable = yaml.loadAll(bibstream);
+				List<List<Object>> documents = new ArrayList<>();
+				documentsIterable.forEach(o -> {
+					if (o instanceof Map) {
+						documents.add(Arrays.asList(o));
+					} else {
+						documents.add(new ArrayList<>((Collection<?>)o));
+					}
+				});
+				List<ItemDataProvider> providers = new ArrayList<>();
+				for (List<Object> objs : documents) {
+					CSLItemData[] items = new CSLItemData[objs.size()];
+					for (int i = 0; i < items.length; ++i) {
+						@SuppressWarnings("unchecked")
+						Map<String, Object> obj = (Map<String, Object>)objs.get(i);
+						items[i] = CSLItemData.fromJson(obj);
+					}
+					ItemDataProvider p = new ListItemDataProvider(items);
+					providers.add(p);
+				}
+				if (providers.size() == 1) {
+					provider = providers.get(0);
+				} else {
+					provider = new CompoundItemDataProvider(providers);
+				}
 			} else if (format == FileFormat.ENDNOTE) {
 				EndNoteLibrary lib = new EndNoteConverter().loadLibrary(bibstream);
 				EndNoteItemDataProvider endnoteprovider = new EndNoteItemDataProvider();
@@ -239,18 +274,31 @@ public class BibliographyFileReader {
 			}
 		}
 		
-		//check if it's an EndNote library
+		//check the first couple of bytes
 		bis.mark(len);
 		try {
-			byte[] firstCharacters = new byte[5];
+			byte[] firstCharacters = new byte[6];
 			bis.read(firstCharacters);
 			
+			//check if the file starts with a %YAML directive
+			if (firstCharacters[0] == '%' &&
+					firstCharacters[1] == 'Y' &&
+					firstCharacters[2] == 'A' &&
+					firstCharacters[3] == 'M' &&
+					firstCharacters[4] == 'L' &&
+					Character.isWhitespace(firstCharacters[5])) {
+				return FileFormat.YAML;
+			}
+			
 			//check if the file starts with an EndNote tag, but
-			//also make sure the extension is not 'bib' because
-			//BibTeX comments look like EndNote tags
+			//also make sure the extension is not 'bib' or 'yml'/'yaml'
+			//because BibTeX comments and YAML directives look like
+			//EndNote tags
 			if (firstCharacters[0] == '%' &&
 					Character.isWhitespace(firstCharacters[2]) &&
-					!ext.equalsIgnoreCase("bib")) {
+					!ext.equalsIgnoreCase("bib") &&
+					!ext.equalsIgnoreCase("yaml") &&
+					!ext.equalsIgnoreCase("yml")) {
 				return FileFormat.ENDNOTE;
 			}
 			
@@ -265,7 +313,7 @@ public class BibliographyFileReader {
 			bis.reset();
 		}
 		
-		//now check if it's json or bibtex
+		//now check if it's json, bibtex or yaml
 		bis.mark(len);
 		try {
 			while (true) {
@@ -280,6 +328,10 @@ public class BibliographyFileReader {
 						return FileFormat.JSON_ARRAY;
 					} else if (c == '{') {
 						return FileFormat.JSON_OBJECT;
+					}
+					if (ext.equalsIgnoreCase("yaml") ||
+							ext.equalsIgnoreCase("yml")) {
+						return FileFormat.YAML;
 					}
 					return FileFormat.BIBTEX;
 				}
