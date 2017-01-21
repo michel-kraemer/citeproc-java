@@ -16,6 +16,8 @@ package de.undercouch.citeproc.bibtex;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,6 +129,42 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 			String pc = result.get(c);
 			assertEquals(nc, pc);
 			++c;
+		}
+	}
+	
+	/**
+	 * Test if an invalid month can be handled correctly (i.e. if it will be ignored)
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void issue34() throws Exception {
+		String entry = "@inproceedings{ICIP99inv," +
+				"author = \"M.G. Strintzis and I. Kompatsiaris\"," +
+				"title = \"{3D Model-Based Segmentation of Videoconference Image Sequences}\"," +
+				"booktitle = \"IEEE International Conference on Image Processing (ICIP)\"," +
+				"address = \"Kobe, Japan\"," +
+				"month = \"October 25-28\"," +
+				"year = \"1999\"," +
+				"note = {invited paper}," +
+				"pages = \"\"," +
+		"}";
+		ByteArrayInputStream bais = new ByteArrayInputStream(
+				entry.getBytes(StandardCharsets.UTF_8));
+		
+		BibTeXDatabase db = new BibTeXConverter().loadDatabase(bais);
+		BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
+		sys.addDatabase(db);
+		
+		CSL citeproc = new CSL(sys, "ieee");
+		citeproc.setOutputFormat("text");
+		sys.registerCitationItems(citeproc);
+		
+		Bibliography bibl = citeproc.makeBibliography();
+		for (String e : bibl.getEntries()) {
+			assertEquals("[1]M. G. Strintzis and I. Kompatsiaris, "
+					+ "\u201c3D Model-Based Segmentation of Videoconference "
+					+ "Image Sequences,\u201d in IEEE International Conference "
+					+ "on Image Processing (ICIP), Kobe, Japan, 1999.", e.trim());
 		}
 	}
 }

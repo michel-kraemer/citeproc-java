@@ -260,6 +260,10 @@ public class DateParser {
 		if (month != null && !month.isEmpty()) {
 			if (StringUtils.isNumeric(month)) {
 				m = Integer.parseInt(month);
+				if (m < 1 || m > 12) {
+					//invalid month
+					m = -1;
+				}
 			} else {
 				m = tryParseMonth(month, Locale.ENGLISH);
 				if (m <= 0) {
