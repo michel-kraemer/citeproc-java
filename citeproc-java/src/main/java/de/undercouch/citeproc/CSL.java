@@ -383,6 +383,7 @@ public class CSL {
 			
 			//load bundled scripts
 			try {
+				runner.loadScript(CSL.class.getResource("dump.js"));
 				runner.loadScript(CSL.class.getResource("citeproc.js"));
 				runner.loadScript(CSL.class.getResource("formats.js"));
 				runner.loadScript(CSL.class.getResource("loadsys.js"));
