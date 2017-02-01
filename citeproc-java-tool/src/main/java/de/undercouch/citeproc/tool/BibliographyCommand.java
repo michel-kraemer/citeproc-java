@@ -172,10 +172,9 @@ public class BibliographyCommand extends CitationIdsCommand {
 		String[] citationIdsArr = new String[citationIds.size()];
 		citationIdsArr = citationIds.toArray(citationIdsArr);
 		if (citationIds.isEmpty()) {
-			citeproc.registerCitationItems(provider.getIds());
-		} else {
-			citeproc.registerCitationItems(citationIdsArr);
+			citationIdsArr = provider.getIds();
 		}
+		citeproc.registerCitationItems(citationIdsArr);
 		
 		//generate bibliography
 		doGenerateCSL(citeproc, citationIdsArr, out);

@@ -18,7 +18,6 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import de.undercouch.citeproc.CSL;
-import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.output.Citation;
 
 /**
@@ -34,15 +33,6 @@ public class CitationCommand extends BibliographyCommand {
 	@Override
 	public String getUsageDescription() {
 		return "Generate citations from an input file";
-	}
-	
-	@Override
-	protected boolean checkCitationIds(List<String> citationIds, ItemDataProvider provider) {
-		if (citationIds.isEmpty()) {
-			error("no citation id specified.");
-			return false;
-		}
-		return super.checkCitationIds(citationIds, provider);
 	}
 	
 	@Override
