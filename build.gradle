@@ -21,6 +21,8 @@ subprojects {
     
     //configure javadoc
     javadoc {
+        failOnError false
+
         //exclude internal packages
         exclude '**/internal/**'
         
