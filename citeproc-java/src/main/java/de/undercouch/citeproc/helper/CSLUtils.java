@@ -19,7 +19,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Utilities for the CSL processor
@@ -34,9 +36,33 @@ public class CSLUtils {
 	 * @throws IOException if the URL contents could not be read
 	 */
 	public static String readURLToString(URL u, String encoding) throws IOException {
-		return readStreamToString(u.openStream(), encoding);
+		for (int i = 0; i < 30; ++i) {
+			URLConnection conn = u.openConnection();
+
+			// handle HTTP URLs
+			if (conn instanceof HttpURLConnection) {
+				HttpURLConnection hconn = (HttpURLConnection)conn;
+
+				// set timeouts
+				hconn.setConnectTimeout(15000);
+				hconn.setReadTimeout(15000);
+
+				// handle redirects
+				switch (hconn.getResponseCode()) {
+				case HttpURLConnection.HTTP_MOVED_PERM:
+				case HttpURLConnection.HTTP_MOVED_TEMP:
+					String location = hconn.getHeaderField("Location");
+					u = new URL(u, location);
+					continue;
+				}
+			}
+
+			return readStreamToString(conn.getInputStream(), encoding);
+		}
+
+		throw new IOException("Too many HTTP redirects");
 	}
-	
+
 	/**
 	 * Reads a string from a file.
 	 * @param f the file
