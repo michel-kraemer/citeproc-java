@@ -17,6 +17,7 @@ package de.undercouch.citeproc;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -28,8 +29,20 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
@@ -436,17 +449,97 @@ public class CSL {
 	 * @throws IOException if the style could not be loaded
 	 */
 	private String loadStyle(String styleName) throws IOException {
-		if (!styleName.endsWith(".csl")) {
-			styleName = styleName + ".csl";
+		URL url;
+		if (styleName.startsWith("http://") || styleName.startsWith("https://")) {
+			try {
+				// try to load matching style from classpath
+				return loadStyle(styleName.substring(styleName.lastIndexOf('/') + 1));
+			} catch (FileNotFoundException e) {
+				// there is no matching style in classpath
+				url = new URL(styleName);
+			}
+		} else {
+			// normalize file name
+			if (!styleName.endsWith(".csl")) {
+				styleName = styleName + ".csl";
+			}
+			if (!styleName.startsWith("/")) {
+				styleName = "/" + styleName;
+			}
+
+			// try to find style in classpath
+			url = getClass().getResource(styleName);
+			if (url == null) {
+				throw new FileNotFoundException("Could not find style in "
+						+ "classpath: " + styleName);
+			}
 		}
-		if (!styleName.startsWith("/")) {
-			styleName = "/" + styleName;
+
+		// load style
+		String result = CSLUtils.readURLToString(url, "UTF-8");
+
+		// handle dependent styles
+		if (isDependent(result)) {
+			String independentParentLink;
+			try {
+				independentParentLink = getIndependentParentLink(result);
+			} catch (ParserConfigurationException | IOException | SAXException e) {
+				throw new IOException("Could not load independent parent style", e);
+			}
+			if (independentParentLink == null) {
+				throw new IOException("Dependent style does not have an "
+						+ "independent parent");
+			}
+			return loadStyle(independentParentLink);
 		}
-		URL url = getClass().getResource(styleName);
-		if (url == null) {
-			throw new FileNotFoundException("Could not find style in classpath: " + styleName);
+		
+		return result;
+	}
+
+	/**
+	 * Test if the given string represents a dependent style
+	 * @param style the style
+	 * @return true if the string is a dependent style, false otherwise
+	 */
+	private boolean isDependent(String style) {
+		if (!style.trim().startsWith("<")) {
+			return false;
 		}
-		return CSLUtils.readURLToString(url, "UTF-8");
+		Pattern p = Pattern.compile("rel\\s*=\\s*\"\\s*independent-parent\\s*\"");
+		Matcher m = p.matcher(style);
+		return m.find();
+	}
+
+	/**
+	 * Parse a string representing a dependent parent style and
+	 * get link to its independent parent style
+	 * @param style the dependent style
+	 * @return the link to the parent style or <code>null</code> if the link
+	 * could not be found
+	 * @throws ParserConfigurationException if the XML parser could not be created
+	 * @throws IOException if the string could not be read
+	 * @throws SAXException if the string could not be parsed
+	 */
+	public String getIndependentParentLink(String style)
+			throws ParserConfigurationException, IOException, SAXException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		InputSource src = new InputSource(new StringReader(style));
+		Document doc = builder.parse(src);
+		NodeList links = doc.getElementsByTagName("link");
+		for (int i = 0; i < links.getLength(); ++i) {
+			Node n = links.item(i);
+			Node relAttr = n.getAttributes().getNamedItem("rel");
+			if (relAttr != null) {
+				if ("independent-parent".equals(relAttr.getTextContent())) {
+					Node hrefAttr = n.getAttributes().getNamedItem("href");
+					if (hrefAttr != null) {
+						return hrefAttr.getTextContent();
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
