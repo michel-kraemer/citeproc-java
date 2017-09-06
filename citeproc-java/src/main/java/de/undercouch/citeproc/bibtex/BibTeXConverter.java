@@ -214,7 +214,6 @@ public class BibTeXConverter {
 		if (entries.containsKey(FIELD_EDITOR)) {
 			builder.editor(NameParser.parse(entries.get(FIELD_EDITOR)));
 			builder.collectionEditor(NameParser.parse(entries.get(FIELD_EDITOR)));
-			builder.containerAuthor(NameParser.parse(entries.get(FIELD_EDITOR)));
 		}
 		
 		//map date

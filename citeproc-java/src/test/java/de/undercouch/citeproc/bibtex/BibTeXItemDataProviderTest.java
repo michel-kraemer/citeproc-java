@@ -167,4 +167,49 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 					+ "on Image Processing (ICIP), Kobe, Japan, 1999.", e.trim());
 		}
 	}
+	
+	/**
+	 * Check that we never set the "collection-author" attribute (see issue #38)
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void noCollectionAuthor() throws Exception {
+		// compare with an item from the unix database
+		CSL citeproc = new CSL(sys, "apa");
+		citeproc.setOutputFormat("text");
+		
+		List<Citation> a = citeproc.makeCitation("Sterling:2001:BCCa");
+		assertEquals("(Sterling, 2001)", a.get(0).getText());
+		
+		Bibliography b = citeproc.makeBibliography();
+		assertEquals(1, b.getEntries().length);
+		assertEquals("Sterling, T. L. (Ed.). (2001). Beowulf Cluster Computing with Linux "
+				+ "(p. xxxiii,496). Cambridge, MA, USA: MIT Press.\n", b.getEntries()[0]);
+		
+		// compare with the item from issue #38
+		String entry = "@book{EconBiz-10009450595," +
+			"title = {{Essays on the Role of Specific Human Capital}}," +
+			"author = {Hu, Xiaohan}," +
+			"editor = {Hellerstein, Judith}," +
+			"year = {2007-06-04}," +
+			"type= {Thesis}," +
+			"language= {eng}," +
+		"}";
+
+		ByteArrayInputStream bais = new ByteArrayInputStream(
+				entry.getBytes(StandardCharsets.UTF_8));
+		
+		BibTeXDatabase db = new BibTeXConverter().loadDatabase(bais);
+		BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
+		sys.addDatabase(db);
+		
+		citeproc = new CSL(sys, "apa");
+		citeproc.setOutputFormat("text");
+		sys.registerCitationItems(citeproc);
+		
+		b = citeproc.makeBibliography();
+		assertEquals(1, b.getEntries().length);
+		assertEquals("Hu, X. (2007). Essays on the Role of Specific Human Capital. "
+				+ "(J. Hellerstein, Ed.).\n", b.getEntries()[0]);
+	}
 }
