@@ -71,6 +71,7 @@ public class BibTeXConverter {
 	private static final String FIELD_ISSN = "issn";
 	private static final String FIELD_ISSUE = "issue";
 	private static final String FIELD_JOURNAL = "journal";
+	private static final String FIELD_JOURNALTITLE = "journaltitle";
 	private static final String FIELD_KEYWORDS = "keywords";
 	private static final String FIELD_LOCATION = "location";
 	private static final String FIELD_MONTH = "month";
@@ -230,10 +231,13 @@ public class BibTeXConverter {
 			builder.eventDate(date);
 		}
 		
-		//map journal, booktitle, series
+		//map journal/journaltitle, booktitle, series
 		if (entries.containsKey(FIELD_JOURNAL)) {
 			builder.containerTitle(entries.get(FIELD_JOURNAL));
 			builder.collectionTitle(entries.get(FIELD_JOURNAL));
+		} else if (entries.containsKey(FIELD_JOURNALTITLE)) {
+			builder.containerTitle(entries.get(FIELD_JOURNALTITLE));
+			builder.collectionTitle(entries.get(FIELD_JOURNALTITLE));
 		} else if (entries.containsKey(FIELD_BOOKTITLE)) {
 			builder.containerTitle(entries.get(FIELD_BOOKTITLE));
 			builder.collectionTitle(entries.get(FIELD_BOOKTITLE));
