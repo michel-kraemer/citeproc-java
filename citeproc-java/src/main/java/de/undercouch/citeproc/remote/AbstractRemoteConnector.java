@@ -204,7 +204,7 @@ public abstract class AbstractRemoteConnector implements RemoteConnector {
 	 */
 	private JsonParser parseResponse(Response response) throws IOException {
 		InputStream is = response.getInputStream();
-		Reader r = new BufferedReader(new InputStreamReader(is));
+		Reader r = new BufferedReader(new InputStreamReader(is, "UTF-8")); // Does not help the Zotero import issue, however!
 		return new JsonParser(new JsonLexer(r));
 	}
 	
