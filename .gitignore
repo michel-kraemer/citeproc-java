@@ -1,4 +1,6 @@
 .gradle/
+.idea/
+.vscode/
 build/
 target/
 reports/
@@ -6,6 +8,7 @@ src-gen/
 gradle.properties
 
 bin/
+out/
 .externalToolBuilders/
 .settings/
 .classpath
