@@ -35,7 +35,7 @@ public class MendeleyCommand extends AbstractRemoteCommand {
 	 * citeproc-java access to their Mendeley library
 	 */
 	private static final String REDIRECT_URI =
-			"http://www.undercouch.de/citeproc-java/authorize/";
+			"https://michelkraemer.com/citeproc-java/authorize/";
 	
 	@OptionDesc(longName = "sync", shortName = "s",
 			description = "force synchronization with Mendeley Web")
@@ -112,7 +112,7 @@ public class MendeleyCommand extends AbstractRemoteCommand {
 		arr = DatatypeConverter.parseBase64Binary(new String(arr));
 		
 		String[] result = new String[] { "", "" };
-		for (int i = 0; i < 2; ++i) {
+		for (int i = 0; i < 4; ++i) {
 			result[0] += (char)arr[i + 31];
 		}
 		for (int i = 0; i < 16; ++i) {

@@ -161,21 +161,23 @@ public class MendeleyConnector extends AbstractRemoteConnector {
 			// get link to next page from response
 			nextLink = null;
 			List<String> linkHeaders = response.getHeaders(LINK);
-			for (String linkHeader : linkHeaders) {
-				String[] linksHeaderParts = linkHeader.split("\\s*,\\s*");
-				for (String linksHeaderPart : linksHeaderParts) {
-					String[] parts = linksHeaderPart.split("\\s*;\\s*");
-					if (parts.length > 1 && parts[1].equals("rel=\"next\"")) {
-						nextLink = parts[0];
+			if (linkHeaders != null) {
+				for (String linkHeader : linkHeaders) {
+					String[] linksHeaderParts = linkHeader.split("\\s*,\\s*");
+					for (String linksHeaderPart : linksHeaderParts) {
+						String[] parts = linksHeaderPart.split("\\s*;\\s*");
+						if (parts.length > 1 && parts[1].equals("rel=\"next\"")) {
+							nextLink = parts[0];
+							break;
+						}
+					}
+					if (nextLink != null) {
+						if (nextLink.charAt(0) == '<' &&
+								nextLink.charAt(nextLink.length() - 1) == '>') {
+							nextLink = nextLink.substring(1, nextLink.length() - 1);
+						}
 						break;
 					}
-				}
-				if (nextLink != null) {
-					if (nextLink.charAt(0) == '<' &&
-							nextLink.charAt(nextLink.length() - 1) == '>') {
-						nextLink = nextLink.substring(1, nextLink.length() - 1);
-					}
-					break;
 				}
 			}
 			
