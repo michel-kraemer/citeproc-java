@@ -937,17 +937,30 @@ public class CSL {
 	 * could not be loaded
 	 */
 	public static Bibliography makeAdhocBibliography(String style, String outputFormat,
-			CSLItemData... items) throws IOException {
+	                                                 CSLItemData... items) throws IOException {
 		ItemDataProvider provider = new ListItemDataProvider(items);
-		CSL csl = new CSL(provider, style);
-		csl.setOutputFormat(outputFormat);
-		
-		String[] ids = new String[items.length];
-		for (int i = 0; i < items.length; ++i) {
-			ids[i] = items[i].getId();
+		CSL csl = null;
+		try {
+			csl = new CSL(provider, style);
+			csl.setOutputFormat(outputFormat);
+
+			String[] ids = new String[items.length];
+			for (int i = 0; i < items.length; ++i) {
+				ids[i] = items[i].getId();
+			}
+			csl.registerCitationItems(ids);
+
+			return csl.makeBibliography();
+		} finally {
+			if (csl != null) {
+				csl.release();
+			}
 		}
-		csl.registerCitationItems(ids);
-		
-		return csl.makeBibliography();
+	}
+
+	private void release() {
+		if ((engine != null) && com.eclipsesource.v8.V8Object.class.isAssignableFrom(engine.getClass())) {
+			((com.eclipsesource.v8.V8Object)engine).release();
+		}
 	}
 }

@@ -57,7 +57,7 @@ public class V8ScriptRunner extends AbstractScriptRunner {
 	}
 	
 	public void release() {
-		runtime.release();
+		runtime.release(true);
 	}
 	
 	@Override
@@ -331,7 +331,7 @@ public class V8ScriptRunner extends AbstractScriptRunner {
 		/**
 		 * Retrieve an abbreviation list from the {@link AbbreviationProvider}
 		 * and convert it to a JSON object
-		 * @param id the name of the list to retrieve
+		 * @param name the name of the list to retrieve
 		 * @return the JSON object
 		 */
 		@SuppressWarnings("unused")
