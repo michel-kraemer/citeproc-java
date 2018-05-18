@@ -14,6 +14,7 @@
 
 package de.undercouch.citeproc.script;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URL;
@@ -24,7 +25,7 @@ import de.undercouch.citeproc.helper.json.JsonBuilderFactory;
  * Executes JavaScript scripts
  * @author Michel Kraemer
  */
-public interface ScriptRunner extends JsonBuilderFactory {
+public interface ScriptRunner extends JsonBuilderFactory, Closeable {
 	/**
 	 * @return the runner's name
 	 */
@@ -103,4 +104,10 @@ public interface ScriptRunner extends JsonBuilderFactory {
 	 * @return the converted object
 	 */
 	<T> T convert(Object o, Class<T> type);
+
+	/**
+	 * Release an object and free up its resources
+	 * @param o the object to release
+	 */
+	void release(Object o);
 }

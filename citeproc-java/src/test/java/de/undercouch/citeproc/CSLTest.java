@@ -119,41 +119,42 @@ public class CSLTest {
 	 */
 	@Test
 	public void bibliography() throws Exception {
-		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
-		citeproc.setOutputFormat("text");
-		
-		List<Citation> a = citeproc.makeCitation(items[0].getId());
-		assertEquals(0, a.get(0).getIndex());
-		assertEquals("[1]", a.get(0).getText());
-		
-		a = citeproc.makeCitation(items[1].getId());
-		assertEquals(1, a.get(0).getIndex());
-		assertEquals("[2]", a.get(0).getText());
-		
-		a = citeproc.makeCitation(items[0].getId(), items[1].getId());
-		assertEquals(2, a.get(0).getIndex());
-		assertEquals("[1], [2]", a.get(0).getText());
-		
-		a = citeproc.makeCitation(items[2].getId(), items[0].getId());
-		assertEquals(3, a.get(0).getIndex());
-		assertEquals("[1], [3]", a.get(0).getText());
-		
-		a = citeproc.makeCitation(items[3].getId());
-		assertEquals(4, a.get(0).getIndex());
-		assertEquals("[4]", a.get(0).getText());
-		
-		Bibliography b = citeproc.makeBibliography();
-		assertEquals(4, b.getEntries().length);
-		assertEquals("[1]S. C. Johnson and B. W. Kernighan, \u201cThe Programming Language B,\u201d "
-				+ "Bell Laboratories, Murray Hill, NJ, USA, 8, 1973.\n", b.getEntries()[0]);
-		assertEquals("[2]D. M. Ritchie and K. Thompson, \u201cThe UNIX time-sharing system,\u201d "
-				+ "Operating Systems Review, vol. 7, no. 4, p. 27, Oct. 1973.\n", b.getEntries()[1]);
-		assertEquals("[3]D. M. Ritchie and K. Thompson, \u201cThe UNIX Time-Sharing System,\u201d "
-				+ "Communications of the Association for Computing Machinery, vol. 17, no. 7, pp. 365\u2013375, "
-				+ "Jul. 1974.\n", b.getEntries()[2]);
-		assertEquals("[4]H. Lycklama, \u201cUNIX Time-Sharing System: UNIX on a Microprocessor,\u201d "
-				+ "The Bell System Technical Journal, vol. 57, no. 6, pp. 2087\u20132101, "
-				+ "Jul.\u2013Aug. 1978.\n", b.getEntries()[3]);
+		try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee")) {
+			citeproc.setOutputFormat("text");
+
+			List<Citation> a = citeproc.makeCitation(items[0].getId());
+			assertEquals(0, a.get(0).getIndex());
+			assertEquals("[1]", a.get(0).getText());
+
+			a = citeproc.makeCitation(items[1].getId());
+			assertEquals(1, a.get(0).getIndex());
+			assertEquals("[2]", a.get(0).getText());
+
+			a = citeproc.makeCitation(items[0].getId(), items[1].getId());
+			assertEquals(2, a.get(0).getIndex());
+			assertEquals("[1], [2]", a.get(0).getText());
+
+			a = citeproc.makeCitation(items[2].getId(), items[0].getId());
+			assertEquals(3, a.get(0).getIndex());
+			assertEquals("[1], [3]", a.get(0).getText());
+
+			a = citeproc.makeCitation(items[3].getId());
+			assertEquals(4, a.get(0).getIndex());
+			assertEquals("[4]", a.get(0).getText());
+
+			Bibliography b = citeproc.makeBibliography();
+			assertEquals(4, b.getEntries().length);
+			assertEquals("[1]S. C. Johnson and B. W. Kernighan, \u201cThe Programming Language B,\u201d "
+					+ "Bell Laboratories, Murray Hill, NJ, USA, 8, 1973.\n", b.getEntries()[0]);
+			assertEquals("[2]D. M. Ritchie and K. Thompson, \u201cThe UNIX time-sharing system,\u201d "
+					+ "Operating Systems Review, vol. 7, no. 4, p. 27, Oct. 1973.\n", b.getEntries()[1]);
+			assertEquals("[3]D. M. Ritchie and K. Thompson, \u201cThe UNIX Time-Sharing System,\u201d "
+					+ "Communications of the Association for Computing Machinery, vol. 17, no. 7, pp. 365\u2013375, "
+					+ "Jul. 1974.\n", b.getEntries()[2]);
+			assertEquals("[4]H. Lycklama, \u201cUNIX Time-Sharing System: UNIX on a Microprocessor,\u201d "
+					+ "The Bell System Technical Journal, vol. 57, no. 6, pp. 2087\u20132101, "
+					+ "Jul.\u2013Aug. 1978.\n", b.getEntries()[3]);
+		}
 	}
 	
 	/**
@@ -162,21 +163,22 @@ public class CSLTest {
 	 */
 	@Test
 	public void bibliographySelection() throws Exception {
-		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
-		citeproc.setOutputFormat("text");
-		
-		List<Citation> a = citeproc.makeCitation(items[0].getId());
-		assertEquals(0, a.get(0).getIndex());
-		assertEquals("[1]", a.get(0).getText());
-		
-		a = citeproc.makeCitation(items[1].getId());
-		assertEquals(1, a.get(0).getIndex());
-		assertEquals("[2]", a.get(0).getText());
-		
-		Bibliography b = citeproc.makeBibliography(SelectionMode.SELECT,
-				new CSLItemDataBuilder().title("The Programming Language B").build());
-		assertEquals(1, b.getEntries().length);
-		assertTrue(b.getEntries()[0].startsWith("[1]S. C. Johnson"));
+		try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee")) {
+			citeproc.setOutputFormat("text");
+
+			List<Citation> a = citeproc.makeCitation(items[0].getId());
+			assertEquals(0, a.get(0).getIndex());
+			assertEquals("[1]", a.get(0).getText());
+
+			a = citeproc.makeCitation(items[1].getId());
+			assertEquals(1, a.get(0).getIndex());
+			assertEquals("[2]", a.get(0).getText());
+
+			Bibliography b = citeproc.makeBibliography(SelectionMode.SELECT,
+					new CSLItemDataBuilder().title("The Programming Language B").build());
+			assertEquals(1, b.getEntries().length);
+			assertTrue(b.getEntries()[0].startsWith("[1]S. C. Johnson"));
+		}
 	}
 	
 	/**
@@ -208,8 +210,9 @@ public class CSLTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void missingItem() throws Exception {
-		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
-		citeproc.makeCitation("foobar");
+		try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee")) {
+			citeproc.makeCitation("foobar");
+		}
 	}
 	
 	/**
@@ -228,23 +231,24 @@ public class CSLTest {
 			.accessed(2013, 9, 11)
 			.build();
 		
-		CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee");
-		citeproc.setOutputFormat("html");
-		citeproc.setConvertLinks(true);
-		
-		List<Citation> a = citeproc.makeCitation("citeproc-java");
-		assertEquals(0, a.get(0).getIndex());
-		assertEquals("[1]", a.get(0).getText());
-		
-		Bibliography b = citeproc.makeBibliography();
-		assertEquals(1, b.getEntries().length);
-		assertEquals("  <div class=\"csl-entry\">\n"
-				+ "    <div class=\"csl-left-margin\">[1]</div><div class=\"csl-right-inline\">"
-				+ "M. Kr\u00E4mer, \u201cciteproc-java: A Citation Style Language (CSL) processor for Java,\u201d"
-				+ " 09-Sep-2013. [Online]. Available: "
-				+ "<a href=\"http://michel-kraemer.github.io/citeproc-java/\">http://michel-kraemer.github.io/citeproc-java/</a>. "
-				+ "[Accessed: 11-Sep-2013].</div>\n"
-				+ "  </div>\n", b.getEntries()[0]);
+		try (CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee")) {
+			citeproc.setOutputFormat("html");
+			citeproc.setConvertLinks(true);
+
+			List<Citation> a = citeproc.makeCitation("citeproc-java");
+			assertEquals(0, a.get(0).getIndex());
+			assertEquals("[1]", a.get(0).getText());
+
+			Bibliography b = citeproc.makeBibliography();
+			assertEquals(1, b.getEntries().length);
+			assertEquals("  <div class=\"csl-entry\">\n"
+					+ "    <div class=\"csl-left-margin\">[1]</div><div class=\"csl-right-inline\">"
+					+ "M. Kr\u00E4mer, \u201cciteproc-java: A Citation Style Language (CSL) processor for Java,\u201d"
+					+ " 09-Sep-2013. [Online]. Available: "
+					+ "<a href=\"http://michel-kraemer.github.io/citeproc-java/\">http://michel-kraemer.github.io/citeproc-java/</a>. "
+					+ "[Accessed: 11-Sep-2013].</div>\n"
+					+ "  </div>\n", b.getEntries()[0]);
+		}
 	}
 	
 	/**
@@ -263,17 +267,18 @@ public class CSLTest {
 			.accessed(2013, 9, 11)
 			.build();
 		
-		CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee");
-		citeproc.setOutputFormat("asciidoc");
-		citeproc.makeCitation("citeproc-java");
-		
-		Bibliography b = citeproc.makeBibliography();
-		
-		assertEquals(1, b.getEntries().length);
-		assertEquals("[1] M. Kr\u00E4mer, ``citeproc-java: A Citation Style "
-				+ "Language (CSL) processor for Java,'' 09-Sep-2013. [Online]. "
-				+ "Available: http://michel-kraemer.github.io/citeproc-java/. "
-				+ "[Accessed: 11-Sep-2013].\n", b.getEntries()[0]);
+		try (CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee")) {
+			citeproc.setOutputFormat("asciidoc");
+			citeproc.makeCitation("citeproc-java");
+
+			Bibliography b = citeproc.makeBibliography();
+
+			assertEquals(1, b.getEntries().length);
+			assertEquals("[1] M. Kr\u00E4mer, ``citeproc-java: A Citation Style "
+					+ "Language (CSL) processor for Java,'' 09-Sep-2013. [Online]. "
+					+ "Available: http://michel-kraemer.github.io/citeproc-java/. "
+					+ "[Accessed: 11-Sep-2013].\n", b.getEntries()[0]);
+		}
 	}
 	
 	/**
@@ -282,31 +287,32 @@ public class CSLTest {
 	 */
 	@Test
 	public void asciiFOFormat() throws Exception {
-		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
-		citeproc.setOutputFormat("fo");
-		citeproc.makeCitation(items[0].getId());
-		
-		Bibliography b = citeproc.makeBibliography();
-		
-		assertEquals(1, b.getEntries().length);
-		assertEquals("<fo:block id=\"Johnson:1973:PLB\">\n"
-				+ "  <fo:table table-layout=\"fixed\" width=\"100%\">\n"
-				+ "    <fo:table-column column-number=\"1\" column-width=\"2.5em\"/>\n"
-				+ "    <fo:table-column column-number=\"2\" column-width=\"proportional-column-width(1)\"/>\n"
-				+ "    <fo:table-body>\n"
-				+ "      <fo:table-row>\n"
-				+ "        <fo:table-cell>\n"
-				+ "          <fo:block>[1]</fo:block>\n"
-				+ "        </fo:table-cell>\n"
-				+ "        <fo:table-cell>\n"
-				+ "          <fo:block>S. C. Johnson and B. W. Kernighan, "
-				+ "\u201cThe Programming Language B,\u201d Bell Laboratories, "
-				+ "Murray Hill, NJ, USA, 8, 1973.</fo:block>\n"
-				+ "        </fo:table-cell>\n"
-				+ "      </fo:table-row>\n"
-				+ "    </fo:table-body>\n"
-				+ "  </fo:table>\n"
-				+ "</fo:block>\n", b.getEntries()[0]);
+		try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee")) {
+			citeproc.setOutputFormat("fo");
+			citeproc.makeCitation(items[0].getId());
+
+			Bibliography b = citeproc.makeBibliography();
+
+			assertEquals(1, b.getEntries().length);
+			assertEquals("<fo:block id=\"Johnson:1973:PLB\">\n"
+					+ "  <fo:table table-layout=\"fixed\" width=\"100%\">\n"
+					+ "    <fo:table-column column-number=\"1\" column-width=\"2.5em\"/>\n"
+					+ "    <fo:table-column column-number=\"2\" column-width=\"proportional-column-width(1)\"/>\n"
+					+ "    <fo:table-body>\n"
+					+ "      <fo:table-row>\n"
+					+ "        <fo:table-cell>\n"
+					+ "          <fo:block>[1]</fo:block>\n"
+					+ "        </fo:table-cell>\n"
+					+ "        <fo:table-cell>\n"
+					+ "          <fo:block>S. C. Johnson and B. W. Kernighan, "
+					+ "\u201cThe Programming Language B,\u201d Bell Laboratories, "
+					+ "Murray Hill, NJ, USA, 8, 1973.</fo:block>\n"
+					+ "        </fo:table-cell>\n"
+					+ "      </fo:table-row>\n"
+					+ "    </fo:table-body>\n"
+					+ "  </fo:table>\n"
+					+ "</fo:block>\n", b.getEntries()[0]);
+		}
 	}
 	
 	/**
@@ -315,20 +321,21 @@ public class CSLTest {
 	 */
 	@Test
 	public void reset() throws Exception {
-		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
-		citeproc.setOutputFormat("text");
-		
-		List<Citation> a = citeproc.makeCitation(items[0].getId());
-		assertEquals(0, a.get(0).getIndex());
-		assertEquals("[1]", a.get(0).getText());
-		
-		Bibliography b = citeproc.makeBibliography();
-		assertEquals(1, b.getEntries().length);
-		
-		citeproc.reset();
-		
-		b = citeproc.makeBibliography();
-		assertEquals(0, b.getEntries().length);
+		try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee")) {
+			citeproc.setOutputFormat("text");
+
+			List<Citation> a = citeproc.makeCitation(items[0].getId());
+			assertEquals(0, a.get(0).getIndex());
+			assertEquals("[1]", a.get(0).getText());
+
+			Bibliography b = citeproc.makeBibliography();
+			assertEquals(1, b.getEntries().length);
+
+			citeproc.reset();
+
+			b = citeproc.makeBibliography();
+			assertEquals(0, b.getEntries().length);
+		}
 	}
 	
 	/**
@@ -354,57 +361,58 @@ public class CSLTest {
 	 */
 	@Test
 	public void makeCitationPrePost() throws Exception {
-		CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
-		citeproc.setOutputFormat("text");
-		
-		CSLCitation cit1 = new CSLCitation(new CSLCitationItem[] {
-				new CSLCitationItem(items[0].getId()) }, "CITATION-1",
-				new CSLPropertiesBuilder().noteIndex(1).build());
-		CSLCitation cit2 = new CSLCitation(new CSLCitationItem[] {
-				new CSLCitationItem(items[2].getId()) }, "CITATION-2",
-				new CSLPropertiesBuilder().noteIndex(2).build());
-		CSLCitation cit3 = new CSLCitation(new CSLCitationItem[] {
-				new CSLCitationItem(items[3].getId()) }, "CITATION-3",
-				new CSLPropertiesBuilder().noteIndex(3).build());
-		CSLCitation cit4 = new CSLCitation(new CSLCitationItem[] {
-				new CSLCitationItem(items[2].getId()) }, "CITATION-4",
-				new CSLPropertiesBuilder().noteIndex(2).build());
-		
-		List<Citation> a1 = citeproc.makeCitation(cit1,
-				Collections.<CitationIDIndexPair>emptyList(),
-				Collections.<CitationIDIndexPair>emptyList());
-		List<Citation> a2 = citeproc.makeCitation(cit2,
-				Arrays.asList(new CitationIDIndexPair(cit1)),
-				Collections.<CitationIDIndexPair>emptyList());
-		List<Citation> a3 = citeproc.makeCitation(cit3,
-				Arrays.asList(new CitationIDIndexPair(cit1)),
-				Arrays.asList(new CitationIDIndexPair(cit2)));
-		List<Citation> a4 = citeproc.makeCitation(cit4,
-				Arrays.asList(new CitationIDIndexPair(cit1)),
-				Arrays.asList(new CitationIDIndexPair(cit2), new CitationIDIndexPair(cit3)));
-		
-		assertEquals(1, a1.size());
-		assertEquals("[1]", a1.get(0).getText());
-		assertEquals(0, a1.get(0).getIndex());
-		
-		assertEquals(1, a2.size());
-		assertEquals("[2]", a2.get(0).getText());
-		assertEquals(1, a2.get(0).getIndex());
-		
-		assertEquals(2, a3.size());
-		assertEquals("[2]", a3.get(0).getText());
-		assertEquals(1, a3.get(0).getIndex());
-		assertEquals("[3]", a3.get(1).getText());
-		assertEquals(2, a3.get(1).getIndex());
-		
-		//we should now have two items with ID [2], but different indexes
-		assertEquals(3, a4.size());
-		assertEquals("[2]", a4.get(0).getText());
-		assertEquals(1, a4.get(0).getIndex());
-		assertEquals("[2]", a4.get(1).getText());
-		assertEquals(2, a4.get(1).getIndex());
-		assertEquals("[3]", a4.get(2).getText());
-		assertEquals(3, a4.get(2).getIndex());
+		try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee")) {
+			citeproc.setOutputFormat("text");
+
+			CSLCitation cit1 = new CSLCitation(new CSLCitationItem[] {
+					new CSLCitationItem(items[0].getId()) }, "CITATION-1",
+					new CSLPropertiesBuilder().noteIndex(1).build());
+			CSLCitation cit2 = new CSLCitation(new CSLCitationItem[] {
+					new CSLCitationItem(items[2].getId()) }, "CITATION-2",
+					new CSLPropertiesBuilder().noteIndex(2).build());
+			CSLCitation cit3 = new CSLCitation(new CSLCitationItem[] {
+					new CSLCitationItem(items[3].getId()) }, "CITATION-3",
+					new CSLPropertiesBuilder().noteIndex(3).build());
+			CSLCitation cit4 = new CSLCitation(new CSLCitationItem[] {
+					new CSLCitationItem(items[2].getId()) }, "CITATION-4",
+					new CSLPropertiesBuilder().noteIndex(2).build());
+
+			List<Citation> a1 = citeproc.makeCitation(cit1,
+					Collections.<CitationIDIndexPair>emptyList(),
+					Collections.<CitationIDIndexPair>emptyList());
+			List<Citation> a2 = citeproc.makeCitation(cit2,
+					Arrays.asList(new CitationIDIndexPair(cit1)),
+					Collections.<CitationIDIndexPair>emptyList());
+			List<Citation> a3 = citeproc.makeCitation(cit3,
+					Arrays.asList(new CitationIDIndexPair(cit1)),
+					Arrays.asList(new CitationIDIndexPair(cit2)));
+			List<Citation> a4 = citeproc.makeCitation(cit4,
+					Arrays.asList(new CitationIDIndexPair(cit1)),
+					Arrays.asList(new CitationIDIndexPair(cit2), new CitationIDIndexPair(cit3)));
+
+			assertEquals(1, a1.size());
+			assertEquals("[1]", a1.get(0).getText());
+			assertEquals(0, a1.get(0).getIndex());
+
+			assertEquals(1, a2.size());
+			assertEquals("[2]", a2.get(0).getText());
+			assertEquals(1, a2.get(0).getIndex());
+
+			assertEquals(2, a3.size());
+			assertEquals("[2]", a3.get(0).getText());
+			assertEquals(1, a3.get(0).getIndex());
+			assertEquals("[3]", a3.get(1).getText());
+			assertEquals(2, a3.get(1).getIndex());
+
+			//we should now have two items with ID [2], but different indexes
+			assertEquals(3, a4.size());
+			assertEquals("[2]", a4.get(0).getText());
+			assertEquals(1, a4.get(0).getIndex());
+			assertEquals("[2]", a4.get(1).getText());
+			assertEquals(2, a4.get(1).getIndex());
+			assertEquals("[3]", a4.get(2).getText());
+			assertEquals(3, a4.get(2).getIndex());
+		}
 	}
 	
 	/**
@@ -423,13 +431,14 @@ public class CSLTest {
 		DefaultAbbreviationProvider prov = new DefaultAbbreviationProvider();
 		prov.add(AbbreviationProvider.DEFAULT_LIST_NAME, abbrevs);
 		
-		CSL citeproc = new CSL(new ListItemDataProvider(items), prov, "chicago-note-bibliography");
-		citeproc.setOutputFormat("text");
-		citeproc.setAbbreviations(AbbreviationProvider.DEFAULT_LIST_NAME);
-		
-		List<Citation> a = citeproc.makeCitation(items[0].getId());
-		assertEquals(0, a.get(0).getIndex());
-		assertEquals("Johnson and Kernighan, \u201cB.\u201d", a.get(0).getText());
+		try (CSL citeproc = new CSL(new ListItemDataProvider(items), prov, "chicago-note-bibliography")) {
+			citeproc.setOutputFormat("text");
+			citeproc.setAbbreviations(AbbreviationProvider.DEFAULT_LIST_NAME);
+
+			List<Citation> a = citeproc.makeCitation(items[0].getId());
+			assertEquals(0, a.get(0).getIndex());
+			assertEquals("Johnson and Kernighan, \u201cB.\u201d", a.get(0).getText());
+		}
 	}
 	
 	/**
@@ -450,15 +459,15 @@ public class CSLTest {
 			}
 		};
 		
-		CSL citeproc = new CSL(new ListItemDataProvider(items),
+		try (CSL citeproc = new CSL(new ListItemDataProvider(items),
 				new DefaultLocaleProvider(), new DefaultAbbreviationProvider(),
-				wrapper, "chicago-note-bibliography", "en-US", false);
-		
-		List<Citation> a = citeproc.makeCitation(items[0].getId());
-		assertEquals(0, a.get(0).getIndex());
-		assertEquals("<strong>Johnson and Kernighan</strong>, "
-				+ "\u201cThe Programming Language B.\u201d",
-				a.get(0).getText());
+				wrapper, "chicago-note-bibliography", "en-US", false)) {
+			List<Citation> a = citeproc.makeCitation(items[0].getId());
+			assertEquals(0, a.get(0).getIndex());
+			assertEquals("<strong>Johnson and Kernighan</strong>, "
+					+ "\u201cThe Programming Language B.\u201d",
+					a.get(0).getText());
+		}
 	}
 	
 	/**
@@ -467,24 +476,25 @@ public class CSLTest {
 	 */
 	@Test
 	public void registerUnsorted() throws Exception {
-		CSL citeproc = new CSL(new ListItemDataProvider(items), "chicago-note-bibliography");
-		citeproc.setOutputFormat("text");
-		
-		String[] ids = new String[] { items[0].getId(), items[1].getId(), items[3].getId() };
-		citeproc.registerCitationItems(ids);
-		
-		Bibliography b = citeproc.makeBibliography();
-		assertEquals(3, b.getEntries().length);
-		assertTrue(b.getEntries()[0].startsWith("Johnson"));
-		assertTrue(b.getEntries()[1].startsWith("Lycklama"));
-		assertTrue(b.getEntries()[2].startsWith("Ritchie"));
-		
-		citeproc.registerCitationItems(ids, true);
-		b = citeproc.makeBibliography();
-		assertEquals(3, b.getEntries().length);
-		assertTrue(b.getEntries()[0].startsWith("Johnson"));
-		assertTrue(b.getEntries()[1].startsWith("Ritchie"));
-		assertTrue(b.getEntries()[2].startsWith("Lycklama"));
+		try (CSL citeproc = new CSL(new ListItemDataProvider(items), "chicago-note-bibliography")) {
+			citeproc.setOutputFormat("text");
+
+			String[] ids = new String[] { items[0].getId(), items[1].getId(), items[3].getId() };
+			citeproc.registerCitationItems(ids);
+
+			Bibliography b = citeproc.makeBibliography();
+			assertEquals(3, b.getEntries().length);
+			assertTrue(b.getEntries()[0].startsWith("Johnson"));
+			assertTrue(b.getEntries()[1].startsWith("Lycklama"));
+			assertTrue(b.getEntries()[2].startsWith("Ritchie"));
+
+			citeproc.registerCitationItems(ids, true);
+			b = citeproc.makeBibliography();
+			assertEquals(3, b.getEntries().length);
+			assertTrue(b.getEntries()[0].startsWith("Johnson"));
+			assertTrue(b.getEntries()[1].startsWith("Ritchie"));
+			assertTrue(b.getEntries()[2].startsWith("Lycklama"));
+		}
 	}
 	
 	/**

@@ -14,6 +14,7 @@
 
 package de.undercouch.citeproc;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -109,6 +110,18 @@ import de.undercouch.citeproc.script.ScriptRunnerFactory;
  *     .build();
  *     
  * String bibl = CSL.makeAdhocBibliography("ieee", item).makeString();</pre></blockquote>
+ *
+ * <h3>Cleanup</h3>
+ *
+ * <p>Make sure to call {@link #close()} to release all resources associated
+ * with the CSL processor when you're done with it. We recommend using a
+ * try-with-resources statement:</p>
+ *
+ * <blockquote><pre>
+ * try (CSL citeproc = new CSL(new MyItemProvider(), "ieee")) {
+ *     citeproc.setOutputFormat("html");
+ *     ...
+ * }</pre></blockquote>
  * 
  * <h3>Thread-safety</h3>
  * 
@@ -130,7 +143,7 @@ import de.undercouch.citeproc.script.ScriptRunnerFactory;
  * 
  * @author Michel Kraemer
  */
-public class CSL {
+public class CSL implements Closeable {
 	/**
 	 * A thread-local holding a JavaScript runner that can
 	 * be shared amongst multiple instances of this class
@@ -275,12 +288,12 @@ public class CSL {
 			AbbreviationProvider abbreviationProvider, VariableWrapper variableWrapper,
 			String style, String lang, boolean forceLang) throws IOException {
 		runner = getRunner();
-		
+
 		//load style if needed
 		if (!isStyle(style)) {
 			style = loadStyle(style);
 		}
-		
+
 		//initialize engine
 		try {
 			engine = runner.callMethod("makeCsl", Object.class,
@@ -937,11 +950,9 @@ public class CSL {
 	 * could not be loaded
 	 */
 	public static Bibliography makeAdhocBibliography(String style, String outputFormat,
-	                                                 CSLItemData... items) throws IOException {
+			CSLItemData... items) throws IOException {
 		ItemDataProvider provider = new ListItemDataProvider(items);
-		CSL csl = null;
-		try {
-			csl = new CSL(provider, style);
+		try (CSL csl = new CSL(provider, style)) {
 			csl.setOutputFormat(outputFormat);
 
 			String[] ids = new String[items.length];
@@ -951,16 +962,11 @@ public class CSL {
 			csl.registerCitationItems(ids);
 
 			return csl.makeBibliography();
-		} finally {
-			if (csl != null) {
-				csl.release();
-			}
 		}
 	}
 
-	private void release() {
-		if ((engine != null) && com.eclipsesource.v8.V8Object.class.isAssignableFrom(engine.getClass())) {
-			((com.eclipsesource.v8.V8Object)engine).release();
-		}
+	@Override
+	public void close() {
+		runner.release(engine);
 	}
 }

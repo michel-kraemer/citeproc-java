@@ -56,10 +56,6 @@ public class V8ScriptRunner extends AbstractScriptRunner {
 		runtime = V8.createV8Runtime();
 	}
 	
-	public void release() {
-		runtime.release(true);
-	}
-	
 	@Override
 	public String getName() {
 		return "V8";
@@ -286,6 +282,20 @@ public class V8ScriptRunner extends AbstractScriptRunner {
 					m.getParameterTypes());
 		}
 		return v8o;
+	}
+
+	@Override
+	public void close() {
+		runtime.release(true);
+	}
+
+	@Override
+	public void release(Object o) {
+		if (o instanceof V8Object) {
+			((V8Object)o).release();
+		} else if (o instanceof V8Array) {
+			((V8Array)o).release();
+		}
 	}
 	
 	/**

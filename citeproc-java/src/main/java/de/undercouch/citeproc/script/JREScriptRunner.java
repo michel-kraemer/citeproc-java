@@ -152,7 +152,19 @@ public class JREScriptRunner extends AbstractScriptRunner {
 		}
 		return result;
 	}
-	
+
+	@Override
+	public void close() {
+		// nothing to do here
+		// runner will be garbage collected
+	}
+
+	@Override
+	public void release(Object o) {
+		// nothing to do here
+		// object will be garbage collected
+	}
+
 	/**
 	 * <p>Wraps around {@link VariableWrapper} and converts
 	 * {@link VariableWrapperParams} objects to JSON objects</p>

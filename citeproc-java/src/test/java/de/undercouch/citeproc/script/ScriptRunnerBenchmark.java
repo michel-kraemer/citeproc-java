@@ -66,32 +66,33 @@ public class ScriptRunnerBenchmark extends AbstractBibTeXTest {
 	}
 	
 	private void runTest() throws Exception {
-		CSL citeproc = new CSL(sys, "ieee");
-		citeproc.setOutputFormat("text");
-		
-		List<Key> keys = new ArrayList<>(db.getEntries().keySet());
-		List<String> result = new ArrayList<>();
-		
-		for (Integer r : rnds) {
-			Key k = keys.get(r);
-			List<Citation> cs = citeproc.makeCitation(k.getValue());
-			for (Citation c : cs) {
-				while (result.size() <= c.getIndex()) {
-					result.add("");
+		try (CSL citeproc = new CSL(sys, "ieee")) {
+			citeproc.setOutputFormat("text");
+
+			List<Key> keys = new ArrayList<>(db.getEntries().keySet());
+			List<String> result = new ArrayList<>();
+
+			for (Integer r : rnds) {
+				Key k = keys.get(r);
+				List<Citation> cs = citeproc.makeCitation(k.getValue());
+				for (Citation c : cs) {
+					while (result.size() <= c.getIndex()) {
+						result.add("");
+					}
+					result.set(c.getIndex(), c.getText());
 				}
-				result.set(c.getIndex(), c.getText());
 			}
-		}
-		
-		int c = 0;
-		for (Integer r : rnds) {
-			Key k = keys.get(r);
-			List<Citation> cs = citeproc.makeCitation(k.getValue());
-			assertEquals(1, cs.size());
-			String nc = cs.get(0).getText();
-			String pc = result.get(c);
-			assertEquals(nc, pc);
-			++c;
+
+			int c = 0;
+			for (Integer r : rnds) {
+				Key k = keys.get(r);
+				List<Citation> cs = citeproc.makeCitation(k.getValue());
+				assertEquals(1, cs.size());
+				String nc = cs.get(0).getText();
+				String pc = result.get(c);
+				assertEquals(nc, pc);
+				++c;
+			}
 		}
 	}
 
