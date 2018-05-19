@@ -56,10 +56,6 @@ public class V8ScriptRunner extends AbstractScriptRunner {
 		runtime = V8.createV8Runtime();
 	}
 	
-	public void release() {
-		runtime.release();
-	}
-	
 	@Override
 	public String getName() {
 		return "V8";
@@ -287,6 +283,20 @@ public class V8ScriptRunner extends AbstractScriptRunner {
 		}
 		return v8o;
 	}
+
+	@Override
+	public void close() {
+		runtime.release(true);
+	}
+
+	@Override
+	public void release(Object o) {
+		if (o instanceof V8Object) {
+			((V8Object)o).release();
+		} else if (o instanceof V8Array) {
+			((V8Array)o).release();
+		}
+	}
 	
 	/**
 	 * Wraps around {@link ItemDataProvider} and converts all retrieved
@@ -331,7 +341,7 @@ public class V8ScriptRunner extends AbstractScriptRunner {
 		/**
 		 * Retrieve an abbreviation list from the {@link AbbreviationProvider}
 		 * and convert it to a JSON object
-		 * @param id the name of the list to retrieve
+		 * @param name the name of the list to retrieve
 		 * @return the JSON object
 		 */
 		@SuppressWarnings("unused")
