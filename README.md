@@ -10,7 +10,7 @@ bibliographies. In addition to that, citeproc-java contains a
 database entries to CSL citations.
 
 The documentation is available at the following site:  
-http://michel-kraemer.github.io/citeproc-java/
+https://michel-kraemer.github.io/citeproc-java/
 
 citeproc-js
 -----------
@@ -38,7 +38,7 @@ The BibTeX to CSL converter is based on the mapping used in
 Docear is released under the GPLv2 but its code
 [may also be reused](http://www.docear.org/software/licence/)
 in projects licensed under Apache License 2.0. The mapping is released here
-under the Apache License 2.0 by permission of Joaran Beel, Docear.
+under the Apache License 2.0 by permission of Joeran Beel, Docear.
 
 License
 -------
