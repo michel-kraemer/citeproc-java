@@ -37,10 +37,12 @@ public class RISParserTest {
 			"AU  - Johnson, S. C.\n" + 
 			"AU  - Kernighan, B. W.\n" + 
 			"PY  - 1973//\n" + 
-			"TI  - The Programming Language B\n" + 
+			"TI  - The Programming Language B\n" +
+			"\n" + // empty line
 			"IS  - 8\n" + 
 			"PB  - Bell Laboratories,\n" + 
-			"CY  - Murray Hill, NJ, USA\n" + 
+			"CY  - Murray Hill, NJ, USA\n" +
+			"MK  - INVALID TAG - SHOULD BE IGNORED\n" +
 			"ID  - Johnson:1973:PLB\n" + 
 			"ER  - ";
 		
