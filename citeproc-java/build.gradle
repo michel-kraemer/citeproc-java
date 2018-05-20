@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id "de.undercouch.download" version "3.1.1"
+    id "de.undercouch.download" version "3.4.3"
     id "nebula.optional-base" version "3.0.3"
 }
 
@@ -13,7 +13,6 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'nebula.optional-base'
 
-import de.undercouch.gradle.tasks.download.Download
 import org.apache.commons.lang3.SystemUtils
 
 // citeproc version 1.1.137
