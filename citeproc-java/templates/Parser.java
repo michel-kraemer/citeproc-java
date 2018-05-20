@@ -80,8 +80,11 @@ public class $name {
 				builder = null;
 				continue;
 			}
+			if (line.isEmpty()) { 
+				continue;    // allow for empty lines if the separator is not empty? This is wrong format, but exported thus by Zotero
+			}
 			
-			if (line.length() < ${valuePos + 1}) {
+			if ((line.length()>0) && (line.length() < ${valuePos + 1})) {  // allow for empty lines
 				throw new IOException("Line " + lc + " is too short");
 			}
 			<% if (!firstCharInLine.empty) { %>
@@ -135,8 +138,7 @@ public class $name {
 			<% } else { %>
 				{
 			<% } %>
-				throw new IOException("Illegal tag " + key +
-						" in line " + lc);
+				// don't throw new IOException("Illegal tag " + key +	" in line " + lc);
 			}
 		}
 		
