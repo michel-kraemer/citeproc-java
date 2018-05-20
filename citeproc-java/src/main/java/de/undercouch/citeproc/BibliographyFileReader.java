@@ -164,7 +164,7 @@ public class BibliographyFileReader {
 			} else if (format == FileFormat.JSON_ARRAY ||
 					format == FileFormat.JSON_OBJECT) {
 				JsonParser parser = new JsonParser(new JsonLexer(
-						new InputStreamReader(bibstream)));
+						new InputStreamReader(bibstream, "UTF-8")));
 				List<Object> objs;
 				if (format == FileFormat.JSON_ARRAY) {
 					objs = parser.parseArray();

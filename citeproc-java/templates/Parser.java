@@ -80,6 +80,13 @@ public class $name {
 				builder = null;
 				continue;
 			}
+			<% if (!entrySeparator.empty) { %>
+			if (line.isEmpty()) {
+				// allow for empty lines. this does not comply with the
+				// standard but is exported by Zotero
+				continue;
+			}
+			<% } %>
 			
 			if (line.length() < ${valuePos + 1}) {
 				throw new IOException("Line " + lc + " is too short");
@@ -135,8 +142,10 @@ public class $name {
 			<% } else { %>
 				{
 			<% } %>
-				throw new IOException("Illegal tag " + key +
-						" in line " + lc);
+				// ignore unknown tags
+				<% if (useSwitch) { %>
+				break;
+				<% } %>
 			}
 		}
 		
