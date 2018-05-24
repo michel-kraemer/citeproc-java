@@ -92,6 +92,8 @@ public class $name <% if (!noJsonObject) { %>implements JsonObject<% } %> {
 	@SuppressWarnings("unchecked")
 	public static $name fromJson(Map<String, Object> obj) {
 		<% for (p in requiredProps) { %>${p.type} ${p.normalizedName};<% } %>
+
+		${additionalFromJsonCodePre.join('\n')}
 		
 		<%
 		def castTemplate = { type, v ->

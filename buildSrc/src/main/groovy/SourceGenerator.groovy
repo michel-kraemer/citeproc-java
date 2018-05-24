@@ -129,6 +129,10 @@ class SourceGenerator {
         if (attrs.additionalBuilderMethods == null) {
             attrs.additionalBuilderMethods = []
         }
+
+        if (attrs.additionalFromJsonCodePre == null) {
+            attrs.additionalFromJsonCodePre = []
+        }
         
         if (attrs.additionalFromJsonCode == null) {
             attrs.additionalFromJsonCode = []

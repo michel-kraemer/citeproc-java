@@ -49,13 +49,13 @@ class CSLTestSuite {
     def fix() {
         println('Fixing invalid tests ...')
         
-        //we cannot parse '"label": 0'. use a reasonable default value.
-        // fixInFile('bugreports_NumericStyleFirstRefMultipleCiteFailure.json',
-        //     '"label": 0,', '"label": "note",')
+        // type 'film' does not comply with the standard
+        fixInFile('bugreports_MissingItemInJoin.json',
+            '"type": "film"', '"type": "motion_picture"')
     }
     
     private def fixInFile(name, s, d) {
-        def dir = new File(processorPyFile.getParentFile(), 'processor-tests/machines')
+        def dir = new File(testPyFile.getParentFile(), 'tests/fixtures/run/machines')
         def f = new File(dir, name)
         def found = false
         def tempFile = File.createTempFile('citeproc', 'json')
