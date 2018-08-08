@@ -26,6 +26,10 @@
             "name": "raw"
         }
     ],
+
+    "additionalFromJsonCodePre": [
+        "{ Object v = obj.get(\"date-parts\"); if (v instanceof Map) v = ((Map<?, ?>)v).values(); if (v instanceof Collection) { Collection<?> cv = (Collection<?>)v; for (Object vo : cv) { if (vo instanceof Map) vo = ((Map<?, ?>)vo).values(); if (vo instanceof Collection) { Collection<?> icv = (Collection<?>) vo; java.util.Iterator<?> i = icv.iterator(); while(i.hasNext()) { Object s = i.next(); if (s instanceof String && ((String)s).isEmpty()) { i.remove(); while(i.hasNext()) { i.next(); i.remove(); } } } } } } }"
+    ],
     
     "additionalBuilderMethods": [
         "public CSLDateBuilder dateParts(int year) { dateParts(new int[] { year }); return this; }",

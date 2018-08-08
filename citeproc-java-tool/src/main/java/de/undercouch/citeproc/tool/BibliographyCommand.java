@@ -157,28 +157,25 @@ public class BibliographyCommand extends CitationIdsCommand {
 		}
 		
 		//initialize citation processor
-		CSL citeproc;
-		try {
-			citeproc = new CSL(provider, style, locale);
+		try (CSL citeproc = new CSL(provider, style, locale)) {
+			//set output format
+			citeproc.setOutputFormat(format);
+
+			//register citation items
+			String[] citationIdsArr = new String[citationIds.size()];
+			citationIdsArr = citationIds.toArray(citationIdsArr);
+			if (citationIds.isEmpty()) {
+				citationIdsArr = provider.getIds();
+			}
+			citeproc.registerCitationItems(citationIdsArr);
+
+			//generate bibliography
+			doGenerateCSL(citeproc, citationIdsArr, out);
 		} catch (FileNotFoundException e) {
 			error(e.getMessage());
 			return 1;
 		}
-		
-		//set output format
-		citeproc.setOutputFormat(format);
-		
-		//register citation items
-		String[] citationIdsArr = new String[citationIds.size()];
-		citationIdsArr = citationIds.toArray(citationIdsArr);
-		if (citationIds.isEmpty()) {
-			citationIdsArr = provider.getIds();
-		}
-		citeproc.registerCitationItems(citationIdsArr);
-		
-		//generate bibliography
-		doGenerateCSL(citeproc, citationIdsArr, out);
-		
+
 		return 0;
 	}
 	

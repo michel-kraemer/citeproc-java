@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id "de.undercouch.download" version "3.1.1"
+    id "de.undercouch.download" version "3.4.3"
     id "nebula.optional-base" version "3.0.3"
 }
 
@@ -13,16 +13,15 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'nebula.optional-base'
 
-import de.undercouch.gradle.tasks.download.Download
 import org.apache.commons.lang3.SystemUtils
 
-// citeproc version 1.1.137
-ext.citeprocJsSHA = '2d1bb8dddf152f7c3e034dda3df3ec7e426939a3'
+// citeproc version 1.1.206
+ext.citeprocJsSHA = 'd2ca79088b97c87ccc51ae2d798d6c9c3238f840'
 ext.citeprocJsUrlBase = "https://raw.githubusercontent.com/Juris-M/citeproc-js/${ext.citeprocJsSHA}/"
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
 ext.citeprocZip = ext.citeprocJsSHA + '.zip'
 ext.citeprocZipUrl = 'https://github.com/Juris-M/citeproc-js/archive/' + ext.citeprocZip
-ext.citeprocTestSuiteZip = '9ec40dae08ba63422ea0ea18ac68d65d143a73cf.zip'
+ext.citeprocTestSuiteZip = '25e6a1e213ff776d5ccd7928ccbadf0566ea176d.zip'
 ext.citeprocTestSuiteUrl = 'https://github.com/citation-style-language/test-suite/archive/' + ext.citeprocTestSuiteZip
 
 def getV8Dependency() {

@@ -54,7 +54,7 @@ import de.undercouch.citeproc.script.ScriptRunnerFactory;
 import de.undercouch.citeproc.script.ScriptRunnerFactory.RunnerType;
 
 /**
- * Runs the CSL test suite (<a href="https://bitbucket.org/bdarcus/citeproc-test">https://bitbucket.org/bdarcus/citeproc-test</a>)
+ * Runs the CSL test suite (<a href="https://github.com/citation-style-language/test-suite">https://github.com/citation-style-language/test-suite</a>)
  * @author Michel Kraemer
  */
 public class TestSuiteRunner {
@@ -320,9 +320,8 @@ public class TestSuiteRunner {
 		}
 		
 		//make citations
-		String citationResult = null;
+		String citationResult = "";
 		if (citationItems != null) {
-			citationResult = "";
 			for (List<CSLCitationItem> cits : citationItems) {
 				if (citationResult.length() > 0) {
 					citationResult += "\n";
@@ -330,7 +329,7 @@ public class TestSuiteRunner {
 				citationResult += citeproc.makeCitationCluster(
 						cits.toArray(new CSLCitationItem[cits.size()]));
 			}
-		} else if (citations != null) {
+		} else if (citations != null && !citations.isEmpty()) {
 			List<List<Object>> slice = citations.subList(0, citations.size() - 1);
 			for (List<Object> cit : slice) {
 				citeproc.makeCitation((CSLCitation)cit.get(0),

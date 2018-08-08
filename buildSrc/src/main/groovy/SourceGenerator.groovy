@@ -129,6 +129,10 @@ class SourceGenerator {
         if (attrs.additionalBuilderMethods == null) {
             attrs.additionalBuilderMethods = []
         }
+
+        if (attrs.additionalFromJsonCodePre == null) {
+            attrs.additionalFromJsonCodePre = []
+        }
         
         if (attrs.additionalFromJsonCode == null) {
             attrs.additionalFromJsonCode = []
@@ -234,7 +238,7 @@ class SourceGenerator {
             dst.withWriter { w ->
                 def include = false
                 def line
-                while (line = r.readLine()) {
+                while ((line = r.readLine()) != null) {
                     if (line == start) {
                         include = true
                     }
