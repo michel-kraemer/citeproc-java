@@ -135,7 +135,7 @@ public class ZoteroConnector extends AbstractRemoteConnector {
 	protected Map<String, Object> parseResponseObject(Response response) throws IOException {
 		String contentType = response.getHeader("Content-Type");
 		InputStream is = response.getInputStream();
-		Reader r = new BufferedReader(new InputStreamReader(is));
+		Reader r = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 		if (contentType != null && contentType.equals("application/atom+xml")) {
 			//response is an Atom. parse it...
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
