@@ -22,14 +22,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -312,7 +305,11 @@ public class CSL implements Closeable {
 	public static List<String> getSupportedOutputFormats() throws IOException {
 		ScriptRunner runner = getRunner();
 		try {
-			return runner.callMethod("getSupportedFormats", List.class);
+            List<String> formats = new ArrayList<>();
+            ((Iterable<?>) runner.callMethod("getSupportedFormats", List.class)).forEach(
+                    f -> formats.add((String) f)
+            );
+			return formats;
 		} catch (ScriptRunnerException e) {
 			throw new IllegalStateException("Could not get supported formats", e);
 		}
@@ -388,9 +385,9 @@ public class CSL implements Closeable {
 	public static Set<String> getSupportedLocales() throws IOException {
 		Set<String> locales = getAvailableFiles("locales-", "en-US", "xml");
 		try {
-			List<String> baseLocales = getRunner().callMethod(
-					"getBaseLocales", List.class);
-			locales.addAll(baseLocales);
+            ((Iterable<?>) getRunner().callMethod("getBaseLocales", List.class)).forEach(
+                    l -> locales.add((String) l)
+            );
 		} catch (ScriptRunnerException e) {
 			//ignore. don't add base locales
 		}
@@ -685,7 +682,7 @@ public class CSL implements Closeable {
 	public List<Citation> makeCitation(CSLCitation citation,
 			List<CitationIDIndexPair> citationsPre,
 			List<CitationIDIndexPair> citationsPost) {
-		List<?> r;
+		Iterable r;
 		try {
 			if (citationsPre == null && citationsPost == null) {
 				r = runner.callMethod(engine, "appendCitationCluster",
@@ -693,7 +690,9 @@ public class CSL implements Closeable {
 			} else {
 				r = runner.callMethod(engine, "processCitationCluster",
 						List.class, citation, citationsPre, citationsPost);
-				r = runner.convert(r.get(1), List.class);
+                Iterator i = r.iterator();
+                i.next();
+                r = runner.convert(i.next(), List.class);
 			}
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not make citation", e);
@@ -704,12 +703,13 @@ public class CSL implements Closeable {
 			if (o instanceof Map) {
 				o = runner.convert(o, List.class);
 			}
-			if (o instanceof List) {
-				@SuppressWarnings("unchecked")
-				List<Object> i = (List<Object>)o;
-				if (i.get(0) instanceof Number && i.get(1) instanceof CharSequence) {
-					int index = ((Number)i.get(0)).intValue();
-					String text = i.get(1).toString();
+			if (o instanceof Iterable) {
+                Iterator iter = ((Iterable) o).iterator();
+				Object num = iter.next();
+				Object charSeq = iter.next();
+				if (num instanceof Number && charSeq instanceof CharSequence) {
+					int index = ((Number) num).intValue();
+					String text = charSeq.toString();
 					result.add(new Citation(index, text));
 				}
 			}
@@ -754,10 +754,10 @@ public class CSL implements Closeable {
 	 */
 	public Bibliography makeBibliography(SelectionMode mode,
 			CSLItemData[] selection, CSLItemData[] quash) {
-		List<?> r;
+		Iterator iter;
 		try {
 			if ((selection == null || mode == null) && quash == null) {
-				r = runner.callMethod(engine, "makeBibliography", List.class);
+                iter = ((Iterable) runner.callMethod(engine, "makeBibliography", List.class)).iterator();
 			} else {
 				Map<String, Object> args = new HashMap<>();
 				if (selection != null && mode != null) {
@@ -766,17 +766,19 @@ public class CSL implements Closeable {
 				if (quash != null) {
 					args.put("quash", selectionToList(quash));
 				}
-				r = runner.callMethod(engine, "makeBibliography",
-						List.class, args);
+                iter = ((Iterable) runner.callMethod(engine, "makeBibliography", List.class, args)).iterator();
 			}
 		} catch (ScriptRunnerException e) {
 			throw new IllegalArgumentException("Could not make bibliography", e);
 		}
 		
-		@SuppressWarnings("unchecked")
-		Map<String, Object> fpm = (Map<String, Object>)r.get(0);
-		List<CharSequence> entriesList = runner.convert(r.get(1), List.class);
-		
+		Map<String, Object> fpm = (Map<String, Object>) iter.next();
+		List<CharSequence> entriesList = new ArrayList<>();
+		Iterator entriesIter = ((Iterable) runner.convert(iter.next(), List.class)).iterator();
+		while (entriesIter.hasNext()) {
+		    entriesList.add((CharSequence) entriesIter.next());
+        }
+
 		String[] entries = new String[entriesList.size()];
 		for (int i = 0; i < entries.length; ++i) {
 			entries[i] = entriesList.get(i).toString();
@@ -787,15 +789,14 @@ public class CSL implements Closeable {
 		int lineSpacing = getFromMap(fpm, "linespacing", 0);
 		int hangingIndent = getFromMap(fpm, "hangingindent", 0);
 		boolean done = getFromMap(fpm, "done", false);
-		List<?> srcEntryIds = runner.convert(fpm.get("entry_ids"), List.class);
+		Iterable srcEntryIds = runner.convert(fpm.get("entry_ids"), List.class);
 		List<String> dstEntryIds = new ArrayList<>();
 		for (Object o : srcEntryIds) {
 			if (o instanceof Map) {
 				o = runner.convert(o, List.class);
 			}
-			if (o instanceof Collection) {
-				Collection<?> oc = (Collection<?>)o;
-				for (Object oco : oc) {
+			if (o instanceof Iterable) {
+				for (Object oco : (Iterable) o) {
 					dstEntryIds.add(oco.toString());
 				}
 			} else {
