@@ -59,6 +59,7 @@ public class BibTeXConverter {
     private static final String FIELD_JOURNAL = "journal";
     private static final String FIELD_JOURNALTITLE = "journaltitle";
     private static final String FIELD_KEYWORDS = "keywords";
+    private static final String FIELD_LANGUAGE = "language";
     private static final String FIELD_LOCATION = "location";
     private static final String FIELD_MONTH = "month";
     private static final String FIELD_NOTE = "note";
@@ -289,6 +290,11 @@ public class BibTeXConverter {
         // map last accessed date
         if (entries.containsKey(FIELD_ACCESSED)) {
             builder.accessed(DateParser.toDate(entries.get(FIELD_ACCESSED)));
+        }
+
+        // map language
+        if (entries.containsKey(FIELD_LANGUAGE)) {
+            builder.language(entries.get(FIELD_LANGUAGE));
         }
 
         // map other attributes
