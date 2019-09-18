@@ -5,7 +5,6 @@ build/
 target/
 reports/
 src-gen/
-gradle.properties
 
 bin/
 out/
