@@ -40,7 +40,7 @@ public class CSLDateParser {
                     "var CSL = new function() {};" +
                             "CSL.DATE_PARTS_ALL = [\"year\", \"month\", \"day\", \"season\"];" +
                             "CSL.debug = function(msg) {};" +
-                            "function getParser() { return CSL.DateParser; }"
+                            "function getParser() { return new CSL.DateParser; }"
             ));
             runner.loadScript(getClass().getResource("dateparser.js"));
         } catch (IOException e) {
