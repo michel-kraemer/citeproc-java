@@ -15,13 +15,16 @@ apply plugin: 'nebula.optional-base'
 
 import org.apache.commons.lang3.SystemUtils
 
-// citeproc version 1.1.206
-ext.citeprocJsSHA = 'd2ca79088b97c87ccc51ae2d798d6c9c3238f840'
+// citeproc-js version 1.2.25
+ext.citeprocJsSHA = '1.2.25'
+
 ext.citeprocJsUrlBase = "https://raw.githubusercontent.com/Juris-M/citeproc-js/${ext.citeprocJsSHA}/"
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
 ext.citeprocZip = ext.citeprocJsSHA + '.zip'
 ext.citeprocZipUrl = 'https://github.com/Juris-M/citeproc-js/archive/' + ext.citeprocZip
-ext.citeprocTestSuiteZip = '25e6a1e213ff776d5ccd7928ccbadf0566ea176d.zip'
+
+// citation-style-language/test-suite - Commit on 2019-09-09. As for 2019-09-23, this repo has not released any tag
+ext.citeprocTestSuiteZip = 'd72a1ebb959dc67e8b1c6dbfc2e6a8be934ecb68.zip'
 ext.citeprocTestSuiteUrl = 'https://github.com/citation-style-language/test-suite/archive/' + ext.citeprocTestSuiteZip
 
 ext.graalVMVersion = "19.2.0.1"
@@ -54,7 +57,7 @@ configurations {
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.9'
     compile 'org.apache.commons:commons-text:1.8'
-    compile 'org.jbibtex:jbibtex:1.0.15'
+    compile 'org.jbibtex:jbibtex:1.0.17'
     compile 'org.antlr:antlr4-runtime:4.5.3'
     compile 'org.yaml:snakeyaml:1.17', optional
 

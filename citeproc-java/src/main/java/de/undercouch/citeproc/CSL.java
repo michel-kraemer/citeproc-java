@@ -772,7 +772,7 @@ public class CSL implements Closeable {
         int maxOffset = getFromMap(fpm, "maxoffset", 0);
         int entrySpacing = getFromMap(fpm, "entryspacing", 0);
         int lineSpacing = getFromMap(fpm, "linespacing", 0);
-        int hangingIndent = getFromMap(fpm, "hangingindent", 0);
+        boolean hangingIndent = getFromMap(fpm, "hangingindent", false);
         boolean done = getFromMap(fpm, "done", false);
         List<?> srcEntryIds = runner.convert(fpm.get("entry_ids"), List.class);
         List<String> dstEntryIds = new ArrayList<>();

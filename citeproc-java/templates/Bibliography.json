@@ -42,7 +42,7 @@
             "normalizedName": "lineSpacing"
         },
         {
-            "type": "Integer",
+            "type": "Boolean",
             "name": "hangingindent",
             "normalizedName": "hangingIndent"
         },
