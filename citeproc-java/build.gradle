@@ -5,8 +5,8 @@ buildscript {
 }
 
 plugins {
-    id "de.undercouch.download" version "3.4.3"
-    id "nebula.optional-base" version "3.0.3"
+    id "de.undercouch.download" version "4.0.0"
+    id "nebula.optional-base" version "5.0.3"
 }
 
 apply plugin: 'maven'
@@ -15,8 +15,8 @@ apply plugin: 'nebula.optional-base'
 
 import org.apache.commons.lang3.SystemUtils
 
-// citeproc-js version 1.2.25
-ext.citeprocJsSHA = '1.2.25'
+// citeproc-js version 1.2.26
+ext.citeprocJsSHA = '1.2.26'
 
 ext.citeprocJsUrlBase = "https://raw.githubusercontent.com/Juris-M/citeproc-js/${ext.citeprocJsSHA}/"
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
