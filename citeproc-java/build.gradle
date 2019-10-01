@@ -126,7 +126,7 @@ task extractCiteprocZip(type: Copy, dependsOn: downloadCiteprocZip) {
 
 task extractTestSuite(type: Copy, dependsOn: [ downloadTestSuite, extractCiteprocZip ]) {
     from zipTree(file(downloadTestSuite.dest))
-    into new File(buildDir, "test-suite/extracted/tests/fixtures/std")
+    into new File(buildDir, "test-suite/extracted/fixtures/std")
     eachFile { fcp ->
         // strip off first directory
         fcp.relativePath = new RelativePath(!fcp.file.isDirectory(),
