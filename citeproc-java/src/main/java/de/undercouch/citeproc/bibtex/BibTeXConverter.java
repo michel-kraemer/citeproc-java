@@ -293,7 +293,7 @@ public class BibTeXConverter {
             builder.accessed(DateParser.toDate(entries.get(FIELD_ACCESSED)));
         }
 
-        // map genre as per https://aurimasv.github.io/z2csl/typeMap.xml#map-thesis
+        //map genre as per https://aurimasv.github.io/z2csl/typeMap.xml#map-thesis
         switch (type) {
             case BOOK:
             case MANUSCRIPT:
