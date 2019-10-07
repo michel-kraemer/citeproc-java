@@ -185,7 +185,6 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
                 "author = {Hu, Xiaohan}," +
                 "editor = {Hellerstein, Judith}," +
                 "year = {2007-06-04}," +
-                "type= {Thesis}," +
                 "language= {eng}," +
                 "}";
 
