@@ -308,7 +308,15 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 
         try (CSL citeproc = new CSL(sys, "ieee")) {
             citeproc.setOutputFormat("text");
-            sys.registerCitationItems(citeproc);
+            String id0 = "IEEEexample:techreptype";
+            String id1 = "IEEEexample:techreptypeii";
+            List<Citation> a = citeproc.makeCitation(id0);
+            assertEquals(0, a.get(0).getIndex());
+            assertEquals("[1]", a.get(0).getText());
+
+            a = citeproc.makeCitation(id1);
+            assertEquals(1, a.get(0).getIndex());
+            assertEquals("[2]", a.get(0).getText());
 
             Bibliography b = citeproc.makeBibliography();
             assertEquals(2, b.getEntries().length);
