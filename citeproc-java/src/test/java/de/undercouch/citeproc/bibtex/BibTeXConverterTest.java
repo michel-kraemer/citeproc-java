@@ -158,4 +158,17 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals("Bach:1986:UTS", cid.getId());
         assertEquals("German", cid.getLanguage());
     }
+
+    /**
+     * Test if the field {@code genre} of the CSL entry is set for theses.
+     */
+    @Test
+    public void shouldSetGenreFromTypeForTheses() throws IOException, ParseException {
+        BibTeXDatabase db = loadUnixDatabase();
+        BibTeXEntry e = db.resolveEntry(new Key("Wang:2002:DIR"));
+        BibTeXConverter conv = new BibTeXConverter();
+        CSLItemData cid = conv.toItemData(e);
+        assertEquals("CSL 'type' not set", CSLType.THESIS, cid.getType());
+        assertEquals("CSL 'genre' not set", "Thesis (Ph.D.)", cid.getGenre());
+    }
 }
