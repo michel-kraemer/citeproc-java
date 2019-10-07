@@ -202,4 +202,59 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
                     + "Capital (J. Hellerstein, ed.) [Thesis].\n", b.getEntries()[0]);
         }
     }
+
+    /**
+     * Check that we set the "genre" attribute (see issue #63)
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    public void techReportWithExplicitType() throws Exception {
+        // compare with the item from issue #63. Example from
+        // http://tug.ctan.org/tex-archive/biblio/bibtex/contrib/IEEEtran/IEEEexample.bib
+        String entry = "@techreport{IEEEexample:techreptype,\n" +
+                "  author        = \"J. Padhye and V. Firoiu and D. Towsley\",\n" +
+                "  title         = \"A Stochastic Model of {TCP} {R}eno Congestion Avoidance\n" +
+                "                   and Control\",\n" +
+                "  institution   = \"Univ. of Massachusetts\",\n" +
+                "  address       = \"Amherst, MA\",\n" +
+                "  type          = \"CMPSCI Tech. Rep.\",\n" +
+                "  number        = \"99-02\",\n" +
+                "  year          = \"1999\"\n" +
+                "}\n" +
+                "\n" +
+                "@techreport{IEEEexample:techreptypeii,\n" +
+                "  author        = \"D. Middleton and A. D. Spaulding\",\n" +
+                "  title         = \"A Tutorial Review of Elements of Weak Signal Detection\n" +
+                "                   in Non-{G}aussian {EMI} Environments\",\n" +
+                "  institution   = \"National Telecommunications and Information\n" +
+                "                   Administration ({NTIA}), U.S. Dept. of Commerce\",\n" +
+                "  type          = \"NTIA Report\",\n" +
+                "  number        = \"86-194\",\n" +
+                "  month         = may,\n" +
+                "  year          = \"1986\"\n" +
+                "}";
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(
+                entry.getBytes(StandardCharsets.UTF_8));
+
+        BibTeXDatabase db = new BibTeXConverter().loadDatabase(bais);
+        BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
+        sys.addDatabase(db);
+
+        try (CSL citeproc = new CSL(sys, "ieee")) {
+            citeproc.setOutputFormat("text");
+            sys.registerCitationItems(citeproc);
+
+            Bibliography b = citeproc.makeBibliography();
+            assertEquals(2, b.getEntries().length);
+            assertEquals("[1]J. Padhye, V. Firoiu, and D. Towsley, " +
+                    "“A Stochastic Model of TCP Reno Congestion Avoidance and Control,” " +
+                    "Univ. of Massachusetts, Amherst, MA, CMPSCI Tech. Rep. " +
+                    "99–02, 1999.\n", b.getEntries()[0]);
+            assertEquals("[2]D. Middleton and A. D. Spaulding, " +
+                    "“A Tutorial Review of Elements of Weak Signal Detection in Non-Gaussian EMI Environments,” " +
+                    "National Telecommunications and Information Administration (NTIA), " +
+                    "U.S. Dept. of Commerce, NTIA Report 86–194, May 1986.\n", b.getEntries()[1]);
+        }
+    }
 }
