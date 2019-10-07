@@ -15,8 +15,8 @@ apply plugin: 'nebula.optional-base'
 
 import org.apache.commons.lang3.SystemUtils
 
-// citeproc-js version 1.2.26
-ext.citeprocJsSHA = '1.2.26'
+// citeproc-js version 1.2.27
+ext.citeprocJsSHA = '1.2.27'
 
 ext.citeprocJsUrlBase = "https://raw.githubusercontent.com/Juris-M/citeproc-js/${ext.citeprocJsSHA}/"
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
