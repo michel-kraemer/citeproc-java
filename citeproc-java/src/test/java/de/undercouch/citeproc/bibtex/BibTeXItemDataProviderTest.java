@@ -176,13 +176,14 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
         }
 
         // compare with the item from issue #38
-        String entry = "@book{EconBiz-10009450595," +
-                "title = {{Essays on the Role of Specific Human Capital}}," +
-                "author = {Hu, Xiaohan}," +
-                "editor = {Hellerstein, Judith}," +
-                "year = {2007-06-04}," +
-                "type= {Thesis}," +
-                "language= {eng}," +
+        String entry = "@book{rice_five_1993," +
+                "address = {Santa Fe, NM}," +
+                "title = {Five steps to {HP}-{UX}}," +
+                "isbn = {0-934605-24-6}," +
+                "publisher = {OnWord Press}," +
+                "editor = {Rice, Jim}," +
+                "year = {1993}," +
+                "lccn = {QA76.8.H48 F58 1993}" +
                 "}";
 
         ByteArrayInputStream bais = new ByteArrayInputStream(
@@ -198,8 +199,7 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 
             Bibliography b = citeproc.makeBibliography();
             assertEquals(1, b.getEntries().length);
-            assertEquals("Hu, X. (2007). Essays on the Role of Specific Human "
-                    + "Capital (J. Hellerstein, ed.) [Thesis].\n", b.getEntries()[0]);
+            assertEquals("Rice, J. (Ed.). (1993). Five steps to HP-UX. Santa Fe, NM: OnWord Press.\n", b.getEntries()[0]);
         }
     }
 
