@@ -103,5 +103,5 @@ SPACE : ' '+ ;
 COMMA : ',' ;
 UWORD : ULETTER ( ULETTER | LLETTER )* ;
 LWORD : LLETTER ( ULETTER | LLETTER )* ;
-fragment ULETTER : [A-Z\u00C0-\uFFFF\(\?] ;
-fragment LLETTER : [a-z\-\)\&\/\.] ;
+fragment ULETTER : [A-Z\u00C0-\uFFFF(?] ;
+fragment LLETTER : [a-z\-)&/.] ;
