@@ -85,4 +85,4 @@ range
 SPACE : ' '+ ;
 COMMA : ',' ;
 DASH : [-\u2013]+ ;
-PAGE : [0-9a-zA-Z\?\:\u00C0-\u2012\u2014-\uFFFF]+ ;
+PAGE : [0-9a-zA-Z?:\u00C0-\u2012\u2014-\uFFFF]+ ;

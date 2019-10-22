@@ -8,12 +8,12 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
     
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
-    compile 'org.antlr:antlr4:4.5.3'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9.3'
+    compile 'org.antlr:antlr4:4.7.2'
     compile 'org.apache.directory.studio:org.apache.commons.io:2.4'
-    compile 'org.eclipse.tycho:org.eclipse.jdt.core:3.9.0.v20130604-1421'
-    compile 'org.fusesource.jansi:jansi:1.14'
-    compile 'org.mod4j.org.eclipse.jface:text:3.5.0'
-    compile 'org.mod4j.org.eclipse.core:resources:3.5.0'
-    compile 'org.python:jython-standalone:2.7-b1'
+    compile 'org.eclipse.tycho:org.eclipse.jdt.core:3.14.0.v20171206-0802'
+    compile 'org.fusesource.jansi:jansi:1.18'
+    compile 'org.eclipse.platform:org.eclipse.text:3.9.0'
+    compile 'org.eclipse.platform:org.eclipse.core.resources:3.13.500'
+    compile 'org.python:jython-standalone:2.7.1'
 }
