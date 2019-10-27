@@ -1,4 +1,4 @@
-// Copyright 2014 Michel Kraemer
+// Copyright 2014-2019 Michel Kraemer
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +14,20 @@
 
 package de.undercouch.citeproc.tool.shell;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.junit.Test;
-
 import de.undercouch.citeproc.CSLTool;
-import de.undercouch.citeproc.tool.MendeleyCommand;
 import de.undercouch.underline.Command;
 import de.undercouch.underline.Option;
 import de.undercouch.underline.OptionGroup;
 import de.undercouch.underline.OptionIntrospector;
 import de.undercouch.underline.OptionIntrospector.ID;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests {@link ShellCommandCompleter}
@@ -37,7 +35,7 @@ import de.undercouch.underline.OptionIntrospector.ID;
  */
 public class ShellCommandCompleterTest {
 	private int complete(String buffer, ArrayList<CharSequence> r) {
-		return complete(buffer, r, Collections.<Class<? extends Command>>emptyList());
+		return complete(buffer, r, Collections.emptyList());
 	}
 	
 	private int complete(String buffer, ArrayList<CharSequence> r,
@@ -88,9 +86,9 @@ public class ShellCommandCompleterTest {
 		assertEquals(0, pos);
 		
 		r = new ArrayList<>();
-		pos = complete("men", r);
+		pos = complete("ge", r);
 		assertEquals(1, r.size());
-		assertEquals("mendeley", r.get(0));
+		assertEquals("get", r.get(0));
 		assertEquals(0, pos);
 		
 		r = new ArrayList<>();
@@ -106,34 +104,34 @@ public class ShellCommandCompleterTest {
 	@Test
 	public void subcommand() throws Exception {
 		ArrayList<CharSequence> r = new ArrayList<>();
-		int pos = complete("mendeley", r);
+		int pos = complete("get", r);
 		
 		OptionGroup<ID> options = OptionIntrospector.introspect(
-				MendeleyCommand.class);
+				ShellGetCommand.class);
 		assertEquals(options.getCommands().size(), r.size());
 		for (Option<ID> o : options.getCommands()) {
 			assertTrue(r.contains(o.getLongName()));
 		}
-		assertEquals(9, pos);
+		assertEquals(4, pos);
 		
 		r = new ArrayList<>();
-		pos = complete("mendeley ", r);
+		pos = complete("get ", r);
 		assertEquals(options.getCommands().size(), r.size());
-		assertEquals(9, pos);
+		assertEquals(4, pos);
 		
 		r = new ArrayList<>();
-		pos = complete("mendeley li", r);
+		pos = complete("get st", r);
 		assertEquals(1, r.size());
-		assertEquals("list", r.get(0));
-		assertEquals(9, pos);
+		assertEquals("style", r.get(0));
+		assertEquals(4, pos);
 		
 		r = new ArrayList<>();
-		pos = complete("mendeley list", r);
+		pos = complete("get style", r);
 		assertEquals(0, r.size());
 		assertEquals(-1, pos);
 		
 		r = new ArrayList<>();
-		pos = complete("mendeley bla", r);
+		pos = complete("get bla", r);
 		assertEquals(0, r.size());
 		assertEquals(-1, pos);
 	}
@@ -144,12 +142,12 @@ public class ShellCommandCompleterTest {
 	@Test
 	public void unknownAttributes() {
 		ArrayList<CharSequence> r = new ArrayList<>();
-		int pos = complete("mendeley bibliography test", r);
+		int pos = complete("get style test", r);
 		assertEquals(0, r.size());
 		assertEquals(-1, pos);
 		
 		r = new ArrayList<>();
-		pos = complete("mendeley bibliography test test2", r);
+		pos = complete("get style test test2", r);
 		assertEquals(0, r.size());
 		assertEquals(-1, pos);
 	}
@@ -161,7 +159,7 @@ public class ShellCommandCompleterTest {
 	@Test
 	public void excludedCommands() throws Exception {
 		List<Class<? extends Command>> cmds = new ArrayList<>();
-		cmds.add(MendeleyCommand.class);
+		cmds.add(ShellGetCommand.class);
 		
 		OptionGroup<ID> options = OptionIntrospector.introspect(CSLTool.class);
 		OptionGroup<ID> optionsAdditional = OptionIntrospector.introspect(
@@ -191,29 +189,28 @@ public class ShellCommandCompleterTest {
 		assertEquals(0, pos);
 		
 		r = new ArrayList<>();
-		pos = complete("help me", r);
+		pos = complete("help ge", r);
 		assertEquals(1, r.size());
-		assertEquals("mendeley", r.get(0));
+		assertEquals("get", r.get(0));
 		assertEquals(5, pos);
 		
 		r = new ArrayList<>();
-		pos = complete("help mendeley li", r);
+		pos = complete("help get st", r);
 		assertEquals(1, r.size());
-		assertEquals("list", r.get(0));
-		assertEquals(14, pos);
+		assertEquals("style", r.get(0));
+		assertEquals(9, pos);
 		
 		r = new ArrayList<>();
-		pos = complete("help mendeley", r);
-		OptionGroup<ID> options = OptionIntrospector.introspect(MendeleyCommand.class);
+		pos = complete("help get", r);
+		OptionGroup<ID> options = OptionIntrospector.introspect(ShellGetCommand.class);
 		assertEquals(options.getCommands().size(), r.size());
 		for (Option<ID> cmd : options.getCommands()) {
 			assertTrue(r.contains(cmd.getLongName()));
 		}
-		assertEquals(14, pos);
+		assertEquals(9, pos);
 		
 		r = new ArrayList<>();
 		pos = complete("help", r);
-		options = OptionIntrospector.introspect(CSLTool.class);
 		options = OptionIntrospector.introspect(CSLTool.class);
 		OptionGroup<ID> optionsAdditional = OptionIntrospector.introspect(
 				AdditionalShellCommands.class);

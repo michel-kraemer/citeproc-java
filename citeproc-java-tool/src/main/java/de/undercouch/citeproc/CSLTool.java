@@ -29,10 +29,8 @@ import de.undercouch.citeproc.tool.InputFileCommand;
 import de.undercouch.citeproc.tool.JsonCommand;
 import de.undercouch.citeproc.tool.LintCommand;
 import de.undercouch.citeproc.tool.ListCommand;
-import de.undercouch.citeproc.tool.MendeleyCommand;
 import de.undercouch.citeproc.tool.ProviderCommand;
 import de.undercouch.citeproc.tool.ShellCommand;
-import de.undercouch.citeproc.tool.ZoteroCommand;
 import de.undercouch.underline.CommandDesc;
 import de.undercouch.underline.CommandDescList;
 import de.undercouch.underline.InputReader;
@@ -99,12 +97,6 @@ public class CSLTool extends AbstractCSLToolCommand {
 		@CommandDesc(longName = "json",
 				description = "convert input bibliography to JSON",
 				command = JsonCommand.class),
-		@CommandDesc(longName = "mendeley",
-				description = "connect to Mendeley Web",
-				command = MendeleyCommand.class),
-		@CommandDesc(longName = "zotero",
-				description = "connect to Zotero",
-				command = ZoteroCommand.class),
 		@CommandDesc(longName = "shell",
 				description = "run citeproc-java in interactive mode",
 				command = ShellCommand.class),

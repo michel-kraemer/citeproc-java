@@ -1,4 +1,4 @@
-// Copyright 2014 Michel Kraemer
+// Copyright 2014-2019 Michel Kraemer
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import org.junit.Test;
 
 import de.undercouch.citeproc.tool.BibliographyCommand;
 import de.undercouch.citeproc.tool.ListCommand;
-import de.undercouch.citeproc.tool.MendeleyCommand;
-import de.undercouch.citeproc.tool.MendeleyListCommand;
 import de.undercouch.citeproc.tool.ShellCommand;
 import de.undercouch.citeproc.tool.shell.ShellCommandParser.Result;
 import de.undercouch.underline.Command;
@@ -57,15 +55,15 @@ public class ShellCommandParserTest {
 	 */
 	@Test
 	public void subcommands() throws Exception {
-		Result pr = ShellCommandParser.parse("mendeley list");
+		Result pr = ShellCommandParser.parse("get style");
 		assertEquals(0, pr.getRemainingArgs().length);
-		assertEquals(MendeleyCommand.class, pr.getFirstCommand());
-		assertEquals(MendeleyListCommand.class, pr.getLastCommand());
+		assertEquals(ShellGetCommand.class, pr.getFirstCommand());
+		assertEquals(ShellGetStyleCommand.class, pr.getLastCommand());
 		
-		pr = ShellCommandParser.parse("  mendeley    list  ");
+		pr = ShellCommandParser.parse("  get    style  ");
 		assertEquals(0, pr.getRemainingArgs().length);
-		assertEquals(MendeleyCommand.class, pr.getFirstCommand());
-		assertEquals(MendeleyListCommand.class, pr.getLastCommand());
+		assertEquals(ShellGetCommand.class, pr.getFirstCommand());
+		assertEquals(ShellGetStyleCommand.class, pr.getLastCommand());
 	}
 	
 	/**
@@ -86,11 +84,11 @@ public class ShellCommandParserTest {
 		assertNull(pr.getFirstCommand());
 		assertNull(pr.getLastCommand());
 		
-		pr = ShellCommandParser.parse("mendeley l");
+		pr = ShellCommandParser.parse("get s");
 		assertEquals(1, pr.getRemainingArgs().length);
-		assertEquals("l", pr.getRemainingArgs()[0]);
-		assertEquals(MendeleyCommand.class, pr.getFirstCommand());
-		assertEquals(MendeleyCommand.class, pr.getLastCommand());
+		assertEquals("s", pr.getRemainingArgs()[0]);
+		assertEquals(ShellGetCommand.class, pr.getFirstCommand());
+		assertEquals(ShellGetCommand.class, pr.getLastCommand());
 	}
 	
 	/**
