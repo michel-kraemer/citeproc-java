@@ -151,14 +151,6 @@ tasks['eclipseClasspath'].dependsOn(generateSources)
 tasks['clean'].dependsOn(cleanGeneratedSources)
 
 jar {
-    // define OSGi bundle manifest
-    manifest {
-        name = 'citeproc-java'
-        symbolicName = "de.undercouch.citeproc"
-        vendor = 'Michel Kraemer'
-        instruction 'Export-Package', "de.undercouch.*;version=${version}"
-    }
-    
     // include license into jar
     from new File(project.rootDir, 'LICENSE.txt')
 }

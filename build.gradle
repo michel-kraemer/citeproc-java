@@ -1,6 +1,5 @@
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'osgi'
     apply plugin: 'eclipse'
     
     version = '2.0.0-SNAPSHOT'
