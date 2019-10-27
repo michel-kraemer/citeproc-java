@@ -41,8 +41,3 @@ subprojects {
         classifier = 'sources'
     }
 }
-
-// initialize gradle wrapper
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.1'
-}

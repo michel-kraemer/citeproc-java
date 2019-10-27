@@ -77,12 +77,13 @@ task generateSources(dependsOn: downloadCiteprocJs) {
         'src/main/resources/de/undercouch/citeproc/*.js',
         'src-gen/main/resources/de/undercouch/citeproc/*.js' ])
     outputs.files fileTree(dir: 'src-gen', includes: [ '**/*.java', '**/*.dat' ])
-} << {
-    SourceGenerator sg = new SourceGenerator(project)
-    sg.renderTemplates()
-    sg.renderGrammars()
-    sg.filterScripts()
-    sg.generateVersionFile()
+    doLast {
+        SourceGenerator sg = new SourceGenerator(project)
+        sg.renderTemplates()
+        sg.renderGrammars()
+        sg.filterScripts()
+        sg.generateVersionFile()
+    }
 }
 
 task cleanGeneratedSources(type: Delete) {
@@ -128,11 +129,13 @@ task extractTestSuite(type: Copy, dependsOn: [ downloadTestSuite, extractCitepro
     includeEmptyDirs = false
 }
 
-task runTestSuite(dependsOn: [ extractTestSuite, testClasses ]) << {
-    def tr = new CSLTestSuite(project, new File(buildDir, 'test-suite/extracted'))
-    tr.compile()
-    tr.fix()
-    tr.run()
+task runTestSuite(dependsOn: [ extractTestSuite, testClasses ]) {
+    doLast {
+        def tr = new CSLTestSuite(project, new File(buildDir, 'test-suite/extracted'))
+        tr.compile()
+        tr.fix()
+        tr.run()
+    }
 }
 
 // include generated sources
