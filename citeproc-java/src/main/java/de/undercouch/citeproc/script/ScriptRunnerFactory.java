@@ -1,4 +1,4 @@
-// Copyright 2013 Michel Kraemer
+// Copyright 2013-2019 Michel Kraemer
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
 
 package de.undercouch.citeproc.script;
 
+import org.apache.commons.lang3.JavaVersion;
+import org.apache.commons.lang3.SystemUtils;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -24,7 +27,7 @@ public class ScriptRunnerFactory {
 	/**
 	 * The different types of runners this factory can create
 	 */
-	public static enum RunnerType {
+	public enum RunnerType {
 		/**
 		 * Automatically detect the JavaScript engine
 		 */
@@ -38,7 +41,12 @@ public class ScriptRunnerFactory {
 		/**
 		 * Create a runner that explicitly uses the V8 runtime
 		 */
-		V8
+		V8,
+
+		/**
+		 * Create a runner that explicitly uses GraalVM JavaScript
+		 */
+		GRAALJS
 	}
 	
 	/**
@@ -72,7 +80,14 @@ public class ScriptRunnerFactory {
 	private static ScriptRunner createV8Runner() {
 		return new V8ScriptRunner();
 	}
-	
+
+	/**
+	 * @return a {@link ScriptRunner} that uses GraalVM JavaScript
+	 */
+	private static ScriptRunner createGraalRunner() {
+		return new GraalScriptRunner();
+	}
+
 	/**
 	 * Creates a new {@link ScriptRunner} instance according to the
 	 * type set with {@link #setRunnerType(RunnerType)}
@@ -86,6 +101,9 @@ public class ScriptRunnerFactory {
 			if (supportsV8()) {
 				return createV8Runner();
 			}
+			if (SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_11)) {
+				return createGraalRunner();
+			}
 			//fall back to JRE
 			return createJreRunner();
 		
@@ -94,7 +112,10 @@ public class ScriptRunnerFactory {
 		
 		case V8:
 			return createV8Runner();
-		
+
+		case GRAALJS:
+			return createGraalRunner();
+
 		default:
 			throw new RuntimeException("Invalid runner type");
 		}

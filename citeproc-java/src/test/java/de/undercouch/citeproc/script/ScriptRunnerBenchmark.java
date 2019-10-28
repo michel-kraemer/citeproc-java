@@ -22,6 +22,7 @@ import java.util.List;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.Key;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -102,8 +103,27 @@ public class ScriptRunnerBenchmark extends AbstractBibTeXTest {
 	 */
 	@BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 1)
 	@Test
+	@Ignore("Should not be called together with other tests because it sets " +
+			"CSL.sharedRunner, which cannot be reset")
 	public void jre() throws Exception {
 		RunnerType prev = ScriptRunnerFactory.setRunnerType(RunnerType.JRE);
+		try {
+			runTest();
+		} finally {
+			ScriptRunnerFactory.setRunnerType(prev);
+		}
+	}
+
+	/**
+	 * Tests the GraalVM JavaScript script runner
+	 * @throws Exception if something goes wrong
+	 */
+	@BenchmarkOptions(benchmarkRounds = 10, warmupRounds = 1)
+	@Test
+	@Ignore("Should not be called together with other tests because it sets " +
+			"CSL.sharedRunner, which cannot be reset")
+	public void graaljs() throws Exception {
+		RunnerType prev = ScriptRunnerFactory.setRunnerType(RunnerType.GRAALJS);
 		try {
 			runTest();
 		} finally {

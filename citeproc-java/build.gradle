@@ -24,6 +24,8 @@ ext.citeprocZipUrl = 'https://github.com/Juris-M/citeproc-js/archive/' + ext.cit
 ext.citeprocTestSuiteZip = '25e6a1e213ff776d5ccd7928ccbadf0566ea176d.zip'
 ext.citeprocTestSuiteUrl = 'https://github.com/citation-style-language/test-suite/archive/' + ext.citeprocTestSuiteZip
 
+ext.graalVMVersion = "19.2.0.1"
+
 def getV8Dependency() {
     def arch = System.getProperty('os.arch')
     def dep = null
@@ -50,19 +52,22 @@ configurations {
 }
 
 dependencies {
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'org.jbibtex:jbibtex:1.0.15'
-    compile 'org.antlr:antlr4-runtime:4.5.3'
-    compile 'org.yaml:snakeyaml:1.17', optional
+    compile 'org.apache.commons:commons-lang3:3.9'
+    implementation 'org.jbibtex:jbibtex:1.0.15'
+    implementation 'org.antlr:antlr4-runtime:4.5.3'
+    implementation 'org.yaml:snakeyaml:1.17', optional
+
+    implementation "org.graalvm.sdk:graal-sdk:$graalVMVersion"
+    implementation "org.graalvm.js:js:$graalVMVersion"
 
     if (getV8Dependency() != null) {
         provided getV8Dependency()
     }
     
-    testCompile 'org.fusesource.jansi:jansi:1.14'
-    testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
-    testCompile 'org.citationstyles:locales:1.0.1-SNAPSHOT'
-    testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
+    testImplementation 'org.fusesource.jansi:jansi:1.14'
+    testImplementation 'org.citationstyles:styles:1.0.1-SNAPSHOT'
+    testImplementation 'org.citationstyles:locales:1.0.1-SNAPSHOT'
+    testImplementation 'com.carrotsearch:junit-benchmarks:0.7.2'
 }
 
 task downloadCiteprocJs(type: Download) {
