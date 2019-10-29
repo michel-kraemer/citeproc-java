@@ -16,8 +16,11 @@ package de.undercouch.citeproc.bibtex;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
@@ -122,6 +125,25 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
 		assertEquals("365", cid.getPageFirst());
 		assertEquals("The UNIX Time-Sharing System", cid.getTitle());
 		assertArrayEquals(new int[][] { new int[] { 1974, 7 } }, cid.getIssued().getDateParts());
+	}
+
+	/**
+	 * Tests if order of items in the BibTeX file is preserved when converting
+	 * @throws Exception if something goes wrong
+	 */
+	@Test
+	public void preserveOrder() throws Exception {
+		BibTeXDatabase db = loadUnixDatabase();
+		BibTeXConverter conv = new BibTeXConverter();
+		Map<String, CSLItemData> cids = conv.toItemData(db);
+
+		Iterator<Key> ik1 = db.getEntries().keySet().iterator();
+		Iterator<String> ik2 = cids.keySet().iterator();
+		while (ik1.hasNext() && ik2.hasNext()) {
+			assertEquals(ik1.next().getValue(), ik2.next());
+		}
+		assertFalse(ik1.hasNext());
+		assertFalse(ik2.hasNext());
 	}
 	
 	/**

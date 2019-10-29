@@ -1,4 +1,4 @@
-// Copyright 2013 The Docear Project and Michel Kraemer
+// Copyright 2013-2019 The Docear Project and Michel Kraemer
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
 
 package de.undercouch.citeproc.bibtex;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import de.undercouch.citeproc.csl.CSLDate;
+import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.csl.CSLItemDataBuilder;
+import de.undercouch.citeproc.csl.CSLType;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
 import org.jbibtex.BibTeXParser;
@@ -35,10 +30,15 @@ import org.jbibtex.ParseException;
 import org.jbibtex.TokenMgrException;
 import org.jbibtex.Value;
 
-import de.undercouch.citeproc.csl.CSLDate;
-import de.undercouch.citeproc.csl.CSLItemData;
-import de.undercouch.citeproc.csl.CSLItemDataBuilder;
-import de.undercouch.citeproc.csl.CSLType;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Converts BibTeX items to CSL citation items</p>
@@ -133,17 +133,14 @@ public class BibTeXConverter {
 	 * responsible for closing it.</p>
 	 * @param is the input stream to read from
 	 * @return the BibTeX database
-	 * @throws IOException if the database could not be read
 	 * @throws ParseException if the database is invalid
 	 */
-	public BibTeXDatabase loadDatabase(InputStream is) throws IOException, ParseException {
-		Reader reader = new InputStreamReader(is, "UTF-8");
+	public BibTeXDatabase loadDatabase(InputStream is) throws ParseException {
+		Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
 		BibTeXParser parser = new BibTeXParser() {
 			@Override
 			public void checkStringResolution(Key key, BibTeXString string) {
-				if (string == null) {
-					//ignore
-				}
+				//ignore
 			}
 		};
 		try {
@@ -160,7 +157,7 @@ public class BibTeXConverter {
 	 * @return a map consisting of citation keys and citation items
 	 */
 	public Map<String, CSLItemData> toItemData(BibTeXDatabase db) {
-		Map<String, CSLItemData> result = new HashMap<>();
+		Map<String, CSLItemData> result = new LinkedHashMap<>();
 		for (Map.Entry<Key, BibTeXEntry> e : db.getEntries().entrySet()) {
 			result.put(e.getKey().getValue(), toItemData(e.getValue()));
 		}
@@ -182,12 +179,10 @@ public class BibTeXConverter {
 			try {
 				List<LaTeXObject> objs = latexParser.parse(new StringReader(us));
 				us = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
-			} catch (ParseException ex) {
-				//ignore
-			} catch (TokenMgrException err) {
+			} catch (ParseException | TokenMgrException ex) {
 				//ignore
 			}
-			
+
 			entries.put(field.getKey().getValue().toLowerCase(), us);
 		}
 		
