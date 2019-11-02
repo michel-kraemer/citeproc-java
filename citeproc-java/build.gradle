@@ -53,21 +53,22 @@ configurations {
 
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.9'
-    implementation 'org.jbibtex:jbibtex:1.0.15'
-    implementation 'org.antlr:antlr4-runtime:4.5.3'
-    implementation 'org.yaml:snakeyaml:1.17', optional
+    compile 'org.apache.commons:commons-text:1.8'
+    compile 'org.jbibtex:jbibtex:1.0.15'
+    compile 'org.antlr:antlr4-runtime:4.5.3'
+    compile 'org.yaml:snakeyaml:1.17', optional
 
-    implementation "org.graalvm.sdk:graal-sdk:$graalVMVersion"
-    implementation "org.graalvm.js:js:$graalVMVersion"
+    compile "org.graalvm.sdk:graal-sdk:$graalVMVersion"
+    compile "org.graalvm.js:js:$graalVMVersion"
 
     if (getV8Dependency() != null) {
         provided getV8Dependency()
     }
     
-    testImplementation 'org.fusesource.jansi:jansi:1.14'
-    testImplementation 'org.citationstyles:styles:1.0.1-SNAPSHOT'
-    testImplementation 'org.citationstyles:locales:1.0.1-SNAPSHOT'
-    testImplementation 'com.carrotsearch:junit-benchmarks:0.7.2'
+    testCompile 'org.fusesource.jansi:jansi:1.14'
+    testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
+    testCompile 'org.citationstyles:locales:1.0.1-SNAPSHOT'
+    testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
 }
 
 task downloadCiteprocJs(type: Download) {
@@ -161,7 +162,7 @@ jar {
 }
 
 javadoc {
-    //add compile-time-only dependencies
+    // add compile-time-only dependencies
     classpath += configurations.provided
 }
 

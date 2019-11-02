@@ -18,12 +18,12 @@ subprojects {
         testImplementation 'junit:junit:4.12'
     }
     
-    //configure javadoc
+    // configure javadoc
     javadoc {
-        //exclude internal packages
+        // exclude internal packages
         exclude '**/internal/**'
         
-        //link to JRE6 documentation
+        // link to JRE6 documentation
         options.author true
         options.links 'http://download.oracle.com/javase/6/docs/api/'
     }

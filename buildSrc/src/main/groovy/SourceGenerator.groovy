@@ -1,17 +1,3 @@
-// Copyright 2013 Michel Kraemer
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.text.GStringTemplateEngine
 import org.antlr.v4.Tool
@@ -20,6 +6,7 @@ import org.eclipse.jface.text.Document
 import org.eclipse.jdt.core.JavaCore
 import org.eclipse.jdt.core.ToolFactory
 import org.eclipse.jdt.core.formatter.CodeFormatter
+import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 
 class SourceGenerator {
     private def project
@@ -53,7 +40,8 @@ class SourceGenerator {
         def options = [
             (JavaCore.COMPILER_SOURCE): "1.6",
             (JavaCore.COMPILER_COMPLIANCE): "1.6",
-            (JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM): "1.6"
+            (JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM): "1.6",
+            (DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR): JavaCore.SPACE
         ]
         def codeFormatter = ToolFactory.createCodeFormatter(options)
         def textEdit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS,
@@ -114,8 +102,12 @@ class SourceGenerator {
                     p.arrayArrayType = false
                     p.typeNoArrayNoArray = p.type
                 }
+                p.primitiveType = (p.type == "boolean" || p.type == "char" || p.type == "byte" ||
+                        p.type == "short" || p.type == "int" || p.type == "long" ||
+                        p.type == "float" || p.type == "double")
             }
             attrs.props.removeAll(attrs.requiredProps)
+            attrs.allProps = attrs.props + attrs.requiredProps
         }
 
         if (attrs.additionalImports == null) {
