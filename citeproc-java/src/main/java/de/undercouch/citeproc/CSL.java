@@ -956,4 +956,14 @@ public class CSL implements Closeable {
     public void close() {
         runner.release(engine);
     }
+
+    /**
+     * Removes the shared JavaScript runner from the internal thread-local.
+     * Only call this method if you want to force re-initialization of the
+     * shared runner or if you want to gracefully shutdown the JVM and clean up
+     * behind you (usually not necessary).
+     */
+    public static void removeThreadLocals() {
+        sharedRunner.remove();
+    }
 }
