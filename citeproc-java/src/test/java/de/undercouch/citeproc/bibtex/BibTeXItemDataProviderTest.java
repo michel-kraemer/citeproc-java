@@ -248,13 +248,13 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
             Bibliography b = citeproc.makeBibliography();
             assertEquals(2, b.getEntries().length);
             assertEquals("[1]J. Padhye, V. Firoiu, and D. Towsley, " +
-                    "“A Stochastic Model of TCP Reno Congestion Avoidance and Control,” " +
+                    "\u201cA Stochastic Model of TCP Reno Congestion Avoidance and Control,\u201d " +
                     "Univ. of Massachusetts, Amherst, MA, CMPSCI Tech. Rep. " +
-                    "99–02, 1999.\n", b.getEntries()[0]);
+                    "99\u201302, 1999.\n", b.getEntries()[0]);
             assertEquals("[2]D. Middleton and A. D. Spaulding, " +
-                    "“A Tutorial Review of Elements of Weak Signal Detection in Non-Gaussian EMI Environments,” " +
+                    "\u201cA Tutorial Review of Elements of Weak Signal Detection in Non-Gaussian EMI Environments,\u201d " +
                     "National Telecommunications and Information Administration (NTIA), " +
-                    "U.S. Dept. of Commerce, NTIA Report 86–194, May 1986.\n", b.getEntries()[1]);
+                    "U.S. Dept. of Commerce, NTIA Report 86\u2013194, May 1986.\n", b.getEntries()[1]);
         }
     }
 }
