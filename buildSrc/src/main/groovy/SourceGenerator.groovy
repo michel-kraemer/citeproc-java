@@ -222,7 +222,7 @@ class SourceGenerator {
     def filterScripts() {
         def src = new File(project.projectDir, 'src-gen/main/resources/de/undercouch/citeproc/citeproc.js')
         def dst = new File(project.projectDir, 'src-gen/main/resources/de/undercouch/citeproc/dateparser.js')
-        filterScript(src, dst, 'CSL.DateParser = new function () {', '};')
+        filterScript(src, dst, 'CSL.DateParser = function () {', '};')
     }
     
     def filterScript(src, dst, start, end) {
