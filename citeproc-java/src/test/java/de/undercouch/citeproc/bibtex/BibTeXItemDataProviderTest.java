@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 
@@ -93,8 +94,9 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
             List<Key> keys = new ArrayList<>(db.getEntries().keySet());
             List<String> result = new ArrayList<>();
             List<Integer> rnds = new ArrayList<>();
+            Random rnd = new Random(11);
             for (int i = 0; i < 10; ++i) {
-                int j = (int)(Math.random() * keys.size());
+                int j = (int)(rnd.nextFloat() * keys.size());
                 rnds.add(j);
                 Key k = keys.get(j);
                 List<Citation> cs = citeproc.makeCitation(k.getValue());
