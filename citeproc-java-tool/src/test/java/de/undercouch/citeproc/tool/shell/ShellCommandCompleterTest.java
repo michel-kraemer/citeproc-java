@@ -221,7 +221,7 @@ public class ShellCommandCompleterTest {
 
         r = new ArrayList<>();
         pos = complete("set format", r);
-        assertEquals(5, r.size());
+        assertEquals(6, r.size());
         assertEquals(11, pos);
     }
 }
