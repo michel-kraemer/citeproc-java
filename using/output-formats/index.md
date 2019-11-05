@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Output formats
-prev: using/remote/
-prevtitle: Remote connectors
+prev: using/importers/
+prevtitle: Importers
 next: using/command-line-tool/
 nexttitle: Command line tool
 ---

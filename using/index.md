@@ -9,7 +9,6 @@ Please select a subpage.
 <li><a href="{{ site.baseurl }}using/getting-started">Getting started</a></li>
 <li><a href="{{ site.baseurl }}using/building">Building</a></li>
 <li><a href="{{ site.baseurl }}using/importers">Importers</a></li>
-<li><a href="{{ site.baseurl }}using/remote">Remote connectors</a></li>
 <li><a href="{{ site.baseurl }}using/output-formats">Output formats</a></li>
 <li><a href="{{ site.baseurl }}using/command-line-tool">Command line tool</a></li>
 </ol>

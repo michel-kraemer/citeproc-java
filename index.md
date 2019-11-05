@@ -14,7 +14,7 @@ bibliographies. Some of the highlights in citeproc-java are:
 * [Importers]({{ site.baseurl }}using/importers) for Bib<span class="tex">T<sub>e</sub>X</span>,
   EndNote, and RIS allow you to create citations and bibliographies from
   your existing citation databases.
-* The library supports a wide range of [output formats]({{ site.baseurl }}using/output-formats)
+* The library supports a range of [output formats]({{ site.baseurl }}using/output-formats)
   such as `html`, `text`, `asciidoc`, `rtf`, and `fo`.
 * Use the [command line tool]({{ site.baseurl }}using/command-line-tool)
   to execute the library without setting up a development environment.
@@ -22,9 +22,6 @@ bibliographies. Some of the highlights in citeproc-java are:
   and want to test your style files in an easy and quick manner. The
   command line tool even contains an interactive shell with command
   completion and automatic suggestions.
-* citeproc-java contains [remote connectors]({{ site.baseurl }}using/remote)
-  for Mendeley as well as Zotero that allow you to
-  use your online resources as input for citations or bibliographies.
 * citeproc-java is CSL 1.0.1 compliant and all standard tests from the
   [CSL test suite](https://github.com/citation-style-language/test-suite) run
   successfully.

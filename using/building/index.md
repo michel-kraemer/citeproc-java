@@ -8,7 +8,7 @@ nexttitle: Importers
 ---
 
 If you want to hack on citeproc-java (which would be much appreciated
-by the way) download its source code from the
+by the way), download its source code from the
 [GitHub repository](https://github.com/michel-kraemer/citeproc-java).
 Execute the following command to compile the library and to run the
 unit tests:
@@ -38,23 +38,16 @@ If you want to build the [command line tool]({{ site.baseurl }}using/command-lin
 run the following command:
 
 {% highlight bash %}
-$ ./gradlew installApp
+$ ./gradlew installDist
 {% endhighlight %}
 
 The command line tool will be installed to ``citeproc-java-tool/build/install/citeproc-java-tool``.
 
 citeproc-java is CSL 1.0.1 compliant and *all standard tests* from the
 [CSL test suite](https://github.com/citation-style-language/test-suite) run
-successfully. To run the test suite on your computer execute the
+successfully. To run the test suite on your computer, execute the
 following command:
 
 {% highlight bash %}
 $ ./gradlew runTestSuite
-{% endhighlight %}
-
-You can create a project which you can import into
-[Eclipse](http://www.eclipse.org) with the following command:
-
-{% highlight bash %}
-$ ./gradlew eclipse
 {% endhighlight %}

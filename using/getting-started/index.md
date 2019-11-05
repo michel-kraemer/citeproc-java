@@ -33,20 +33,19 @@ public class MyItemProvider implements ItemDataProvider {
             .build();
     }
     public String[] getIds() {
-        String ids[] = {"ID-0", "ID-1", "ID-2"};
-        return ids;
+        return new String[] {"ID-0", "ID-1", "ID-2"};
     }
 }
 {% endhighlight %}
 
-Note how the item data is created through a neat builder DSL.
+Note how the item data is created through a builder DSL.
 In citeproc-java you can use builders for all model objects.
 
 Of course, in a real implementation you would normally load the
 citation item data from a file or a database---e.g. see the predefined
 <a href="{{ site.baseurl }}using/importers">BibTeXItemDataProvider</a>.
 
-Now you can instantiate the CSL processor.
+You can now instantiate the CSL processor.
 
 {% highlight java %}
 import de.undercouch.citeproc.CSL;
