@@ -543,8 +543,8 @@ public class CSL implements Closeable {
 
     /**
      * Sets the processor's output format
-     * @param format the format (one of {@code "html"}, {@code "text"}, {@code "asciidoc"}, {@code "fo"},
-     * {@code "latex"}, or {@code "rtf"}
+     * @param format the format (one of {@code "html"}, {@code "text"},
+     * {@code "asciidoc"}, {@code "fo"}, {@code "latex"}, or {@code "rtf"}
      */
     public void setOutputFormat(String format) {
         try {

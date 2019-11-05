@@ -16,14 +16,12 @@ apply plugin: 'nebula.optional-base'
 import org.apache.commons.lang3.SystemUtils
 
 // citeproc-js version 1.2.27
-ext.citeprocJsSHA = '1.2.27'
+ext.citeprocJsSHA = '3674b4ad553118c66ee21cc142fe2a64293f368d'
 
 ext.citeprocJsUrlBase = "https://raw.githubusercontent.com/Juris-M/citeproc-js/${ext.citeprocJsSHA}/"
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
 ext.citeprocZip = ext.citeprocJsSHA + '.zip'
 ext.citeprocZipUrl = 'https://github.com/Juris-M/citeproc-js/archive/' + ext.citeprocZip
-
-// citation-style-language/test-suite - Commit on 2019-09-09. As for 2019-09-23, this repo has not released any tag
 ext.citeprocTestSuiteZip = 'd72a1ebb959dc67e8b1c6dbfc2e6a8be934ecb68.zip'
 ext.citeprocTestSuiteUrl = 'https://github.com/citation-style-language/test-suite/archive/' + ext.citeprocTestSuiteZip
 
