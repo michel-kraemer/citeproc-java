@@ -56,8 +56,8 @@ citeproc.setOutputFormat("html");
 {% endhighlight %}
 
 You have to provide the item data provider and a CSL style (select
-one from the 8000+ styles provided by
-[CitationStyles.org](http://citationstyles.org/styles/)). The
+one from the 9000+ styles provided by
+[CitationStyles.org](http://citationstyles.org/)). The
 processor tries to load the style from the classpath, but you may
 also pass your own style as a serialized CSL string to the
 constructor.
