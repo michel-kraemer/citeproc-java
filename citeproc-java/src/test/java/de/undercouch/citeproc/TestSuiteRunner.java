@@ -14,6 +14,7 @@ import de.undercouch.citeproc.script.ScriptRunnerException;
 import de.undercouch.citeproc.script.ScriptRunnerFactory;
 import de.undercouch.citeproc.script.ScriptRunnerFactory.RunnerType;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -76,7 +77,9 @@ public class TestSuiteRunner {
             testFiles = new File[] { f };
         }
 
-        AnsiConsole.systemInstall();
+        if (!SystemUtils.IS_OS_MAC_OSX) {
+            AnsiConsole.systemInstall();
+        }
         try {
             long start = System.currentTimeMillis();
             int count = testFiles.length;
@@ -111,7 +114,9 @@ public class TestSuiteRunner {
             System.out.println("Successfully executed " + success + " of " + count + " tests.");
             System.out.println(String.format(Locale.ENGLISH, "Total time: %.3f secs", time));
         } finally {
-            AnsiConsole.systemUninstall();
+            if (!SystemUtils.IS_OS_MAC_OSX) {
+                AnsiConsole.systemUninstall();
+            }
         }
     }
 
