@@ -397,7 +397,6 @@ public class CSL implements Closeable {
             try {
                 runner.loadScript(CSL.class.getResource("dump.js"));
                 runner.loadScript(CSL.class.getResource("citeproc.js"));
-                runner.loadScript(CSL.class.getResource("formats.js"));
                 runner.loadScript(CSL.class.getResource("loadsys.js"));
             } catch (ScriptRunnerException e) {
                 // should never happen because bundled JavaScript files
