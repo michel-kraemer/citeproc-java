@@ -12,9 +12,9 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Tests the BibTeX citation item provider
@@ -94,9 +94,8 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
             List<Key> keys = new ArrayList<>(db.getEntries().keySet());
             List<String> result = new ArrayList<>();
             List<Integer> rnds = new ArrayList<>();
-            Random rnd = new Random(11);
             for (int i = 0; i < 10; ++i) {
-                int j = (int)(rnd.nextFloat() * keys.size());
+                int j = (int)(Math.random() * keys.size());
                 rnds.add(j);
                 Key k = keys.get(j);
                 List<Citation> cs = citeproc.makeCitation(k.getValue());
@@ -108,15 +107,23 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
                 }
             }
 
-            int c = 0;
+            int j = 0;
             for (Integer r : rnds) {
                 Key k = keys.get(r);
                 List<Citation> cs = citeproc.makeCitation(k.getValue());
-                assertEquals(1, cs.size());
+                for (Citation c : cs) {
+                    if (c.getIndex() < result.size()) {
+                        assertEquals(result.get(c.getIndex()), c.getText());
+                    } else if (c.getIndex() == result.size()) {
+                        result.add(c.getIndex(), c.getText());
+                    } else {
+                        fail("New index must not be larger than " + result.size());
+                    }
+                }
                 String nc = cs.get(0).getText();
-                String pc = result.get(c);
+                String pc = result.get(j);
                 assertEquals(nc, pc);
-                ++c;
+                ++j;
             }
         }
     }
