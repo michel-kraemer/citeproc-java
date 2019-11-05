@@ -23,9 +23,9 @@ subprojects {
         // exclude internal packages
         exclude '**/internal/**'
         
-        // link to JRE6 documentation
+        // link to Java 8 documentation
         options.author true
-        options.links 'http://download.oracle.com/javase/6/docs/api/'
+        options.links 'https://docs.oracle.com/javase/8/docs/api/'
     }
     
     // package javadoc into a jar file
