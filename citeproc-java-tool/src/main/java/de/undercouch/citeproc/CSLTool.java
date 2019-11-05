@@ -8,7 +8,6 @@ import de.undercouch.citeproc.tool.CitationCommand;
 import de.undercouch.citeproc.tool.HelpCommand;
 import de.undercouch.citeproc.tool.InputFileCommand;
 import de.undercouch.citeproc.tool.JsonCommand;
-import de.undercouch.citeproc.tool.LintCommand;
 import de.undercouch.citeproc.tool.ListCommand;
 import de.undercouch.citeproc.tool.ProviderCommand;
 import de.undercouch.citeproc.tool.ShellCommand;
@@ -72,9 +71,6 @@ public class CSLTool extends AbstractCSLToolCommand {
             @CommandDesc(longName = "list",
                     description = "display sorted list of available citation IDs",
                     command = ListCommand.class),
-            @CommandDesc(longName = "lint",
-                    description = "validate citation items",
-                    command = LintCommand.class),
             @CommandDesc(longName = "json",
                     description = "convert input bibliography to JSON",
                     command = JsonCommand.class),
