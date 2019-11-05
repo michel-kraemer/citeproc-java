@@ -64,15 +64,21 @@ class CSLTestSuite {
     
     def run() {
         def dir = new File(testPyFile.getParentFile(), 'tests/fixtures/run/machines')
-        
-        def runnerTypeClass = cl.loadClass('de.undercouch.citeproc.script.ScriptRunnerFactory$RunnerType')
-        def testSuiteRunnerClass = cl.loadClass('de.undercouch.citeproc.TestSuiteRunner')
-        def testSuiteRunner = testSuiteRunnerClass.newInstance()
-        if (project.ext.properties.containsKey('scriptRunnerType')) {
-            testSuiteRunner.runTests(dir, runnerTypeClass[
-                    project.ext.scriptRunnerType.toUpperCase()])
-        } else {
-            testSuiteRunner.runTests(dir, runnerTypeClass.AUTO)
+
+        def oldContextClassLoader = Thread.currentThread().contextClassLoader
+        Thread.currentThread().setContextClassLoader(cl)
+        try {
+            def runnerTypeClass = cl.loadClass('de.undercouch.citeproc.script.ScriptRunnerFactory$RunnerType')
+            def testSuiteRunnerClass = cl.loadClass('de.undercouch.citeproc.TestSuiteRunner')
+            def testSuiteRunner = testSuiteRunnerClass.newInstance()
+            if (project.ext.properties.containsKey('scriptRunnerType')) {
+                testSuiteRunner.runTests(dir, runnerTypeClass[
+                        project.ext.scriptRunnerType.toUpperCase()])
+            } else {
+                testSuiteRunner.runTests(dir, runnerTypeClass.AUTO)
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldContextClassLoader)
         }
     }
 }
