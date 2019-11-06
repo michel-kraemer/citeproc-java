@@ -1,0 +1,13 @@
+diff --git a/processor.py b/processor.py
+index 90b039c..5e744f8 100755
+--- a/processor.py
++++ b/processor.py
+@@ -226,7 +226,7 @@ class CslTest:
+         self.hp = os.path.sep.join( hpath )
+         self.CREATORS = ["author","editor","translator","recipient","interviewer"]
+         self.CREATORS += ["composer","original-author","container-author","collection-editor"]
+-        self.RE_ELEMENT = '(?sm)^(.*>>=.*%s[^\n]+)(.*)(\n<<=.*%s.*)'
++        self.RE_ELEMENT = '(?sm)^(.*>>=[^\n]*%s[^\n]+)(.*)(\n<<=.*%s.*)'
+         self.RE_FILENAME = '^[a-z]+_[a-zA-Z0-9]+\.txt$'
+         self.script = os.path.split(sys.argv[0])[1]
+         self.pickle = ".".join((os.path.splitext( self.script )[0], "pkl"))

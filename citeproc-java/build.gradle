@@ -134,6 +134,13 @@ task extractTestSuite(type: Copy, dependsOn: [ downloadTestSuite, extractCitepro
                 fcp.relativePath.segments[1..-1] as String[])
     }
     includeEmptyDirs = false
+
+    // patch processor.py. This is necessary until the following issue is fixed:
+    // https://github.com/citation-style-language/test-suite/pull/10
+    doLast {
+        ant.patch(patchfile: new File(projectDir, "processor.py.patch"),
+            originalfile: new File(buildDir, "test-suite/extracted/fixtures/std/processor.py"))
+    }
 }
 
 task runTestSuite(dependsOn: [ extractTestSuite, testClasses ]) {
