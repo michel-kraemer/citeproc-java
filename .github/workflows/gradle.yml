@@ -28,3 +28,18 @@ jobs:
       env:
         GRADLE_OPTS: "-Xmx2048m"
       run: ./gradlew rTS --no-daemon
+
+  publishDockerImage:
+    needs: [build, runTestSuite]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Docker Login
+      run: echo $DOCKER_HUB_ACCESS_TOKEN | docker login --username michelkraemer --password-stdin
+      env:
+        DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    - name: Build Docker image
+      run: docker build -t michelkraemer/citeproc-java:latest .
+    - name: Push to Docker Hub
+      run: docker push michelkraemer/citeproc-java:latest
