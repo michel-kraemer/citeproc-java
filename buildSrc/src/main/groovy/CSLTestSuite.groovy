@@ -33,8 +33,8 @@ class CSLTestSuite {
         println('Fixing invalid tests ...')
         
         // type 'film' does not comply with the standard
-        fixInFile('bugreports_MissingItemInJoin.json',
-            '"type": "film"', '"type": "motion_picture"')
+        // fixInFile('bugreports_MissingItemInJoin.json',
+        //     '"type": "film"', '"type": "motion_picture"')
     }
     
     private def fixInFile(name, s, d) {
