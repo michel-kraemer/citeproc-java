@@ -38,9 +38,9 @@ class SourceGenerator {
         def r = t.toString()
         
         def options = [
-            (JavaCore.COMPILER_SOURCE): "1.6",
-            (JavaCore.COMPILER_COMPLIANCE): "1.6",
-            (JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM): "1.6",
+            (JavaCore.COMPILER_SOURCE): "1.8",
+            (JavaCore.COMPILER_COMPLIANCE): "1.8",
+            (JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM): "1.8",
             (DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR): JavaCore.SPACE
         ]
         def codeFormatter = ToolFactory.createCodeFormatter(options)
