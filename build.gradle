@@ -26,6 +26,7 @@ subprojects {
         // link to Java 8 documentation
         options.author true
         options.links 'https://docs.oracle.com/javase/8/docs/api/'
+        options.source '8' // Java version
     }
     
     // package javadoc into a jar file

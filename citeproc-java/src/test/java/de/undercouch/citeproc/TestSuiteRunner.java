@@ -14,9 +14,7 @@ import de.undercouch.citeproc.script.ScriptRunnerException;
 import de.undercouch.citeproc.script.ScriptRunnerFactory;
 import de.undercouch.citeproc.script.ScriptRunnerFactory.RunnerType;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -77,45 +75,45 @@ public class TestSuiteRunner {
             testFiles = new File[] { f };
         }
 
-        if (!SystemUtils.IS_OS_MAC_OSX) {
-            AnsiConsole.systemInstall();
+        long start = System.currentTimeMillis();
+        int count = testFiles.length;
+        int success = 0;
+
+        ExecutorService executor = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors());
+
+        // submit a job for each test file
+        List<Future<Boolean>> fus = new ArrayList<>();
+        for (File fi : testFiles) {
+            fus.add(executor.submit(new TestCallable(fi)));
         }
+
+        // receive results
         try {
-            long start = System.currentTimeMillis();
-            int count = testFiles.length;
-            int success = 0;
-
-            ExecutorService executor = Executors.newFixedThreadPool(
-                    Runtime.getRuntime().availableProcessors());
-
-            // submit a job for each test file
-            List<Future<Boolean>> fus = new ArrayList<>();
-            for (File fi : testFiles) {
-                fus.add(executor.submit(new TestCallable(fi)));
-            }
-
-            // receive results
-            try {
-                for (Future<Boolean> fu : fus) {
-                    if (fu.get()) {
-                        ++success;
-                    }
+            for (Future<Boolean> fu : fus) {
+                if (fu.get()) {
+                    ++success;
                 }
-            } catch (Exception e) {
-                // should never happen
-                throw new RuntimeException(e);
             }
+        } catch (Exception e) {
+            // should never happen
+            throw new RuntimeException(e);
+        }
 
-            executor.shutdown();
+        executor.shutdown();
 
-            // output total time
-            long end = System.currentTimeMillis();
-            double time = (end - start) / 1000.0;
-            System.out.println("Successfully executed " + success + " of " + count + " tests.");
-            System.out.println(String.format(Locale.ENGLISH, "Total time: %.3f secs", time));
-        } finally {
-            if (!SystemUtils.IS_OS_MAC_OSX) {
-                AnsiConsole.systemUninstall();
+        // output total time
+        long end = System.currentTimeMillis();
+        double time = (end - start) / 1000.0;
+        System.out.println("Successfully executed " + success + " of " + count + " tests.");
+        System.out.println(String.format(Locale.ENGLISH, "Total time: %.3f secs", time));
+
+        if (success < count) {
+            int failed = count - success;
+            if (failed == 1) {
+                throw new RuntimeException("1 test failed.");
+            } else {
+                throw new RuntimeException(failed + " tests failed.");
             }
         }
     }
@@ -189,6 +187,11 @@ public class TestSuiteRunner {
                 (Collection<List<String>>)conf.get("bibentries");
         Map<String, Collection<Map<String, Object>>> rawBibsection =
                 (Map<String, Collection<Map<String, Object>>>)conf.get("bibsection");
+
+        if (rawCitationItems != null && rawCitations != null) {
+            // Only one of the two can be tested. Prefer rawCitations.
+            rawCitationItems = null;
+        }
 
         // parse mode
         String[] modes = mode.split("-");
