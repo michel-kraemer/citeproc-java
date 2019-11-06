@@ -31,7 +31,7 @@ jobs:
 
   publishDockerImage:
     needs: [build, runTestSuite]
-    if: github.event_name == "push"
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
