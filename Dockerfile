@@ -1,15 +1,12 @@
-FROM openjdk:8-jre-alpine
+FROM openjdk:8-jdk-alpine AS build
 MAINTAINER Michel Kraemer <michel@undercouch.de>
 
-RUN CITEPROC_JAVA_VERSION=1.0.1 \
-    && CITEPROC_JAVA_ARCHIVENAME=citeproc-java-tool-$CITEPROC_JAVA_VERSION \
-    && apk --no-cache add wget bash \
-    && wget https://github.com/michel-kraemer/citeproc-java/releases/download/$CITEPROC_JAVA_VERSION/$CITEPROC_JAVA_ARCHIVENAME.zip \
-    && unzip $CITEPROC_JAVA_ARCHIVENAME.zip \
-    && rm $CITEPROC_JAVA_ARCHIVENAME.zip \
-    && apk del wget \
-    && echo "#!/bin/bash" > entrypoint.sh \
-    && echo "$CITEPROC_JAVA_ARCHIVENAME/bin/citeproc-java \$@" >> entrypoint.sh \
-    && chmod +x entrypoint.sh
+COPY . /citeproc-java
+WORKDIR /citeproc-java
+RUN ./gradlew installDist
 
-ENTRYPOINT ["./entrypoint.sh"]
+FROM openjdk:11-jre-slim
+MAINTAINER Michel Kraemer <michel@undercouch.de>
+
+COPY --from=build /citeproc-java/citeproc-java-tool/build/install/citeproc-java-tool /citeproc-java-tool
+ENTRYPOINT ["/citeproc-java-tool/bin/citeproc-java"]
