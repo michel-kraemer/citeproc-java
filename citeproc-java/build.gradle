@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id 'de.undercouch.download' version '4.0.0'
+    id 'de.undercouch.download' version '4.0.1'
     id 'nebula.optional-base' version '5.0.3'
 }
 
