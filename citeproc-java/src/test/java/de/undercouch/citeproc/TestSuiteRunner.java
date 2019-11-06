@@ -190,6 +190,11 @@ public class TestSuiteRunner {
         Map<String, Collection<Map<String, Object>>> rawBibsection =
                 (Map<String, Collection<Map<String, Object>>>)conf.get("bibsection");
 
+        if (rawCitationItems != null && rawCitations != null) {
+            // Only one of the two can be tested. Prefer rawCitations.
+            rawCitationItems = null;
+        }
+
         // parse mode
         String[] modes = mode.split("-");
         mode = modes[0];
