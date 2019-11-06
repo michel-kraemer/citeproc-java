@@ -107,6 +107,15 @@ public class TestSuiteRunner {
         double time = (end - start) / 1000.0;
         System.out.println("Successfully executed " + success + " of " + count + " tests.");
         System.out.println(String.format(Locale.ENGLISH, "Total time: %.3f secs", time));
+
+        if (success < count) {
+            int failed = count - success;
+            if (failed == 1) {
+                throw new RuntimeException("1 test failed.");
+            } else {
+                throw new RuntimeException(failed + " tests failed.");
+            }
+        }
     }
 
     /**
