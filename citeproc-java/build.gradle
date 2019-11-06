@@ -1,12 +1,12 @@
 buildscript {
     dependencies {
-        classpath 'org.apache.commons:commons-lang3:3.4'
+        classpath 'org.apache.commons:commons-lang3:3.9'
     }
 }
 
 plugins {
-    id "de.undercouch.download" version "3.4.3"
-    id "nebula.optional-base" version "3.0.3"
+    id 'de.undercouch.download' version '4.0.1'
+    id 'nebula.optional-base' version '5.0.3'
 }
 
 apply plugin: 'maven'
@@ -44,7 +44,7 @@ def getV8Dependency() {
         logger.error("Could not find V8 runtime compatible to this system")
         return null
     }
-    return 'com.eclipsesource.j2v8:j2v8_' + dep + ':4.5.0'
+    return 'com.eclipsesource.j2v8:j2v8_' + dep + ':4.6.0'
 }
 
 configurations {
@@ -55,9 +55,9 @@ configurations {
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.9'
     compile 'org.apache.commons:commons-text:1.8'
-    compile 'org.jbibtex:jbibtex:1.0.15'
-    compile 'org.antlr:antlr4-runtime:4.5.3'
-    compile 'org.yaml:snakeyaml:1.17', optional
+    compile 'org.jbibtex:jbibtex:1.0.17'
+    compile 'org.antlr:antlr4-runtime:4.7.2'
+    compile 'org.yaml:snakeyaml:1.25', optional
 
     compile "org.graalvm.sdk:graal-sdk:$graalVMVersion"
     compile "org.graalvm.js:js:$graalVMVersion"
@@ -65,8 +65,12 @@ dependencies {
     if (getV8Dependency() != null) {
         provided getV8Dependency()
     }
-    
-    testCompile 'org.fusesource.jansi:jansi:1.14'
+
+    // compile-time-only dependency to jackson annotations to avoid
+    // warnings during javadoc generation
+    provided "com.fasterxml.jackson.core:jackson-annotations:2.+"
+
+    testCompile 'org.fusesource.jansi:jansi:1.18'
     testCompile 'org.citationstyles:styles:2.0.0'
     testCompile 'org.citationstyles:locales:2.0.0'
     testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
