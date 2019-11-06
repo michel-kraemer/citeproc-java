@@ -11,8 +11,8 @@ dependencies {
     implementation 'jline:jline:2.14.2'
     implementation 'org.mapdb:mapdb:1.0.4'
 
-    runtime 'org.citationstyles:styles:1.0.1-SNAPSHOT'
-    runtime 'org.citationstyles:locales:1.0.1-SNAPSHOT'
+    runtime 'org.citationstyles:styles:2.0.0'
+    runtime 'org.citationstyles:locales:2.0.0'
 }
 
 mainClassName = 'de.undercouch.citeproc.CSLTool'

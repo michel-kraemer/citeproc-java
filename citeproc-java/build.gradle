@@ -67,8 +67,8 @@ dependencies {
     }
     
     testCompile 'org.fusesource.jansi:jansi:1.14'
-    testCompile 'org.citationstyles:styles:1.0.1-SNAPSHOT'
-    testCompile 'org.citationstyles:locales:1.0.1-SNAPSHOT'
+    testCompile 'org.citationstyles:styles:2.0.0'
+    testCompile 'org.citationstyles:locales:2.0.0'
     testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
 }
 
