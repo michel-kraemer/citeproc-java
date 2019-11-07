@@ -30,7 +30,8 @@ your own application.
 
 The library has dependencies to [JBibTeX](https://github.com/jbibtex/jbibtex),
 [ANTLR](http://www.antlr.org/), [Apache Commons Lang](http://commons.apache.org/proper/commons-lang/),
-[Apache Commons Text](https://commons.apache.org/proper/commons-text/), and
+[Apache Commons Text](https://commons.apache.org/proper/commons-text/),
+[SnakeYAML](http://www.snakeyaml.org), and
 [GraalVM JavaScript](https://github.com/graalvm/graaljs).
 
 I highly recommend using a build tool such as [Maven](http://maven.apache.org/)
