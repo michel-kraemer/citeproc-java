@@ -61,7 +61,11 @@ function setConvertLinks(engine, convert) {
 function getSupportedFormats() {
     var result = [];
     for (var f in CSL.Output.Formats) {
-        result.push(f);
+        // disable LaTeX output format until the following issue has been solved:
+        // https://github.com/Juris-M/citeproc-js/issues/122
+        if (f !== "latex") {
+            result.push(f);
+        }
     }
     return result;
 }
