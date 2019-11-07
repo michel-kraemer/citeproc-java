@@ -301,6 +301,17 @@ public class CSLTest {
     }
 
     /**
+     * Tests if an exception is thrown if we try to set an illegal output format
+     * @throws Exception if everything is OK
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void setIllegalOutputFormat() throws Exception {
+        try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee")) {
+            citeproc.setOutputFormat("MY_ILLEGAL_OUTPUT_FORMAT");
+        }
+    }
+
+    /**
      * Tests if the processor's state can be reset
      * @throws Exception if something goes wrong
      */

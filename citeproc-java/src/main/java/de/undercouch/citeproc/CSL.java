@@ -295,6 +295,10 @@ public class CSL implements Closeable {
      */
     public static List<String> getSupportedOutputFormats() throws IOException {
         ScriptRunner runner = getRunner();
+        return getSupportedOutputFormats(runner);
+    }
+
+    private static List<String> getSupportedOutputFormats(ScriptRunner runner) {
         try {
             // noinspection unchecked
             return runner.callMethod("getSupportedFormats", List.class);
@@ -546,6 +550,10 @@ public class CSL implements Closeable {
      * {@code "asciidoc"}, {@code "fo"}, {@code "latex"}, or {@code "rtf"}
      */
     public void setOutputFormat(String format) {
+        if (!getSupportedOutputFormats(runner).contains(format)) {
+            throw new IllegalArgumentException("Unknown output format: " + format);
+        }
+
         try {
             runner.callMethod(engine, "setOutputFormat", format);
             outputFormat = format;
