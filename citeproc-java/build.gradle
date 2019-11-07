@@ -47,11 +47,6 @@ def getV8Dependency() {
     return 'com.eclipsesource.j2v8:j2v8_' + dep + ':4.6.0'
 }
 
-configurations {
-    // define a configuration for compile-time-only dependencies
-    provided
-}
-
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.9'
     compile 'org.apache.commons:commons-text:1.8'
@@ -63,17 +58,18 @@ dependencies {
     compile "org.graalvm.js:js:$graalVMVersion"
 
     if (getV8Dependency() != null) {
-        provided getV8Dependency()
+        compileOnly getV8Dependency()
     }
-
-    // compile-time-only dependency to jackson annotations to avoid
-    // warnings during javadoc generation
-    provided "com.fasterxml.jackson.core:jackson-annotations:2.+"
 
     testCompile 'org.fusesource.jansi:jansi:1.18'
     testCompile 'org.citationstyles:styles:2.0.0'
     testCompile 'org.citationstyles:locales:2.0.0'
     testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
+
+    // compile-time-only dependency to jackson annotations to avoid
+    // warnings during javadoc generation
+    compileOnly "com.fasterxml.jackson.core:jackson-annotations:2.+"
+    testCompileOnly "com.fasterxml.jackson.core:jackson-annotations:2.+"
 }
 
 task downloadCiteprocJs(type: Download) {
@@ -160,10 +156,6 @@ task runTestSuite(dependsOn: [ extractTestSuite, testClasses ]) {
 sourceSets.main.java.srcDirs 'src-gen/main/java'
 sourceSets.main.resources.srcDirs 'src-gen/main/resources'
 
-// include compile-time-only dependencies
-sourceSets.main.compileClasspath += configurations.provided
-eclipse.classpath.plusConfigurations << configurations.provided
-
 tasks['compileJava'].dependsOn(generateSources)
 tasks['eclipseClasspath'].dependsOn(generateSources)
 tasks['clean'].dependsOn(cleanGeneratedSources)
@@ -171,11 +163,6 @@ tasks['clean'].dependsOn(cleanGeneratedSources)
 jar {
     // include license into jar
     from new File(project.rootDir, 'LICENSE.txt')
-}
-
-javadoc {
-    // add compile-time-only dependencies
-    classpath += configurations.provided
 }
 
 // define artifacts for upload
