@@ -25,7 +25,7 @@ ext.citeprocZipUrl = 'https://github.com/Juris-M/citeproc-js/archive/' + ext.cit
 ext.citeprocTestSuiteZip = 'd72a1ebb959dc67e8b1c6dbfc2e6a8be934ecb68.zip'
 ext.citeprocTestSuiteUrl = 'https://github.com/citation-style-language/test-suite/archive/' + ext.citeprocTestSuiteZip
 
-ext.graalVMVersion = "19.2.0.1"
+ext.graalVMVersion = "19.2.1"
 
 def getV8Dependency() {
     def arch = System.getProperty('os.arch')
