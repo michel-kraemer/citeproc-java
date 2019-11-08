@@ -13,7 +13,7 @@
 > processor for Java. It interprets CSL styles and generates citations and
 > bibliographies.
 
-[![Apache License, Version 2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Actions Status](https://github.com/michel-kraemer/citeproc-java/workflows/CI/badge.svg)](https://github.com/michel-kraemer/citeproc-java/actions)
+[![Apache License, Version 2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Actions Status](https://github.com/michel-kraemer/citeproc-java/workflows/Java%20CI/badge.svg)](https://github.com/michel-kraemer/citeproc-java/actions)
 
 Documentation
 -------------
