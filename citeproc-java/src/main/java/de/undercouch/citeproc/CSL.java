@@ -298,9 +298,9 @@ public class CSL implements Closeable {
         return getSupportedOutputFormats(runner);
     }
 
+    @SuppressWarnings("unchecked")
     private static List<String> getSupportedOutputFormats(ScriptRunner runner) {
         try {
-            // noinspection unchecked
             return runner.callMethod("getSupportedFormats", List.class);
         } catch (ScriptRunnerException e) {
             throw new IllegalStateException("Could not get supported formats", e);

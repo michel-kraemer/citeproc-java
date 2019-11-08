@@ -40,4 +40,9 @@ subprojects {
         from sourceSets.main.allSource
         classifier = 'sources'
     }
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << '-Xlint:unchecked'
+        options.deprecation = true
+    }
 }

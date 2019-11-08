@@ -5,7 +5,8 @@ import de.undercouch.citeproc.bibtex.internal.InternalNameParser;
 import de.undercouch.citeproc.bibtex.internal.InternalNameParser.NamesContext;
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.CSLNameBuilder;
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 /**
@@ -23,8 +24,8 @@ public class NameParser {
      * @return the {@link CSLName} objects (never {@code null} and never empty)
      */
     public static CSLName[] parse(String names) {
-        ANTLRInputStream is = new ANTLRInputStream(names);
-        InternalNameLexer lexer = new InternalNameLexer(is);
+        CharStream cs = CharStreams.fromString(names);
+        InternalNameLexer lexer = new InternalNameLexer(cs);
         lexer.removeErrorListeners(); // do not output errors to console
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         InternalNameParser parser = new InternalNameParser(tokens);

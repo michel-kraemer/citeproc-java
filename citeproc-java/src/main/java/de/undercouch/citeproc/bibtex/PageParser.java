@@ -3,7 +3,8 @@ package de.undercouch.citeproc.bibtex;
 import de.undercouch.citeproc.bibtex.internal.InternalPageLexer;
 import de.undercouch.citeproc.bibtex.internal.InternalPageParser;
 import de.undercouch.citeproc.bibtex.internal.InternalPageParser.PagesContext;
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 /**
@@ -18,8 +19,8 @@ public class PageParser {
      * @return the parsed page or page range (never {@code null})
      */
     public static PageRange parse(String pages) {
-        ANTLRInputStream is = new ANTLRInputStream(pages);
-        InternalPageLexer lexer = new InternalPageLexer(is);
+        CharStream cs = CharStreams.fromString(pages);
+        InternalPageLexer lexer = new InternalPageLexer(cs);
         lexer.removeErrorListeners(); // do not output errors to console
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         InternalPageParser parser = new InternalPageParser(tokens);
