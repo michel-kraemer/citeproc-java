@@ -1,27 +1,37 @@
-citeproc-java [![Build Status](https://travis-ci.org/michel-kraemer/citeproc-java.svg?branch=master)](https://travis-ci.org/michel-kraemer/citeproc-java)
-=============
+<h1 align="center">
+	<br>
+	<br>
+	<img width="200" src="https://michel-kraemer.github.io/citeproc-java/images/reader.svg" alt="GeoRocket">
+	<br>
+	citeproc-java
+	<br>
+	<br>
+	<br>
+</h1>
 
-A [Citation Style Language (CSL)](http://citationstyles.org/) processor
-for Java.
+> citeproc-java is a [Citation Style Language (CSL)](http://citationstyles.org/)
+> processor for Java. It interprets CSL styles and generates citations and
+> bibliographies.
 
-The library interprets CSL styles and generates citations and
-bibliographies. In addition to that, citeproc-java contains a
-[BibTeX](http://www.bibtex.org/) converter that is able to map BibTeX
-database entries to CSL citations.
+[![Apache License, Version 2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![Actions Status](https://github.com/michel-kraemer/citeproc-java/workflows/CI/badge.svg)](https://github.com/michel-kraemer/citeproc-java/actions)
 
-The documentation is available at the following site:  
+Documentation
+-------------
+
+The full documentation is available at the project's website:  
 https://michel-kraemer.github.io/citeproc-java/
 
-citeproc-js
------------
+Notes on used components
+------------------------
+
+### citeproc-js
 
 The library includes [citeproc-js](https://bitbucket.org/fbennett/citeproc-js/wiki/Home),
 a CSL processor written in JavaScript. citeproc-js has been created
 by Frank G. Bennett and is licensed under the
 [Common Public Attribution License Version 1.0](http://bitbucket.org/fbennett/citeproc-js/src/tip/LICENSE).
 
-Name Parser
------------
+### Name Parser
 
 The BibTeX name parser's grammar is based on the one found
 in the [bibtex-ruby](https://github.com/inukshuk/bibtex-ruby).
@@ -29,8 +39,7 @@ The original grammar is licensed under GPL v3. It has been
 converted to ANTLR and is released here under the Apache License
 2.0 by permission of the original author Sylvester Keil.
 
-BibTeX Converter
-----------------
+### BibTeX Converter
 
 The BibTeX to CSL converter is based on the mapping used in
 [Docear](http://www.docear.org) as [presented by Joeran Beel](http://www.docear.org/2012/08/08/docear4word-mapping-bibtex-fields-and-types-with-the-citation-style-language).
@@ -43,7 +52,7 @@ under the Apache License 2.0 by permission of Joeran Beel, Docear.
 License
 -------
 
-citepro-java is licensed under the
+citeproc-java is licensed under the
 [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 Unless required by applicable law or agreed to in writing, software
