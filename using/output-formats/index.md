@@ -3,8 +3,8 @@ layout: default
 title: Output formats
 prev: using/importers/
 prevtitle: Importers
-next: using/command-line-tool/
-nexttitle: Command line tool
+next: using/javascript-engines/
+nexttitle: JavaScript engines
 ---
 
 citeproc-java supports several output formats. The most common

@@ -1,8 +1,8 @@
 ---
 layout: default
 title: citeproc-java command line tool
-prev: using/output-formats/
-prevtitle: Output formats
+prev: using/javascript-engines/
+prevtitle: JavaScript engines
 ---
 
 The [binary bundle]({{ site.baseurl }}download) of citeproc-java

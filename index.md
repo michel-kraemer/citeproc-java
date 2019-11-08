@@ -22,7 +22,9 @@ bibliographies. Some of the highlights in citeproc-java are:
   and want to test your style files in an easy and quick manner. The
   command line tool even contains an interactive shell with command
   completion and automatic suggestions.
-* citeproc-java is CSL 1.0.1 compliant and all standard tests from the
+* citeproc-java is backed by the popular [citeproc-js](https://github.com/Juris-M/citeproc-js)
+  library, which is very mature and stable.
+* It is CSL 1.0.1 compliant and all standard tests from the
   [CSL test suite](https://github.com/citation-style-language/test-suite) run
   successfully.
 
