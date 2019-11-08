@@ -1,9 +1,7 @@
 <h1 align="center">
 	<br>
 	<br>
-	<img width="200" src="https://michel-kraemer.github.io/citeproc-java/images/reader.svg" alt="GeoRocket">
-	<br>
-	citeproc-java
+	<img width="100%" src="https://michel-kraemer.github.io/citeproc-java/images/logo.svg" alt="citeproc-java">
 	<br>
 	<br>
 	<br>
