@@ -44,7 +44,7 @@ def getV8Dependency() {
         logger.error("Could not find V8 runtime compatible to this system")
         return null
     }
-    return 'com.eclipsesource.j2v8:j2v8_' + dep + ':4.6.0'
+    return "com.eclipsesource.j2v8:j2v8_$dep:4.6.0"
 }
 
 dependencies {
