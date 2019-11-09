@@ -12,14 +12,26 @@ for you in the following binary package:
 <a href="https://github.com/michel-kraemer/citeproc-java/archive/2.0.0.tar.gz" class="btn btn-default btn-lg download-link-main"><i class="icon-download-alt"></i> Source code</a>
 </div>
 
-citeproc-java requires Java 8 or higher.
+citeproc-java requires Java 8 or higher but I recommend running it with Java 11
+or higher to benefit from the new GraalVM JavaScript engine, which provides a
+much higher performance (see [JavaScript engines]({{ site.baseurl }}using/javascript-engines/)).
 
-### Installing with Homebrew
+### Installing the tool with Homebrew
 
-On macOS, you can install citeproc-java with the [Homebrew package manager](http://brew.sh).
+On macOS, you can install the citeproc-java
+[command line tool]({{ site.baseurl }}using/command-line-tool/) with the
+[Homebrew package manager](http://brew.sh).
 
     brew tap michel-kraemer/citeproc-java
     brew install citeproc-java
+
+### Running the tool with Docker
+
+A Docker image for the citeproc-java
+[command line tool]({{ site.baseurl }}using/command-line-tool/) is available
+from [Docker Hub](https://hub.docker.com/repository/docker/michelkraemer/citeproc-java):
+
+    docker run michelkraemer/citeproc-java
 
 ### Installing the library for development
 
