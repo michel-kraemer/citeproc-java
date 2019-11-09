@@ -353,6 +353,38 @@ public class CSL implements Closeable {
     }
 
     /**
+     * Get version of the underlying citeproc-js CSL processor
+     * @return the version string
+     * @throws IOException if the version could not be obtained
+     */
+    public static String getCiteprocJsVersion() throws IOException {
+        ScriptRunner runner = getRunner();
+        try {
+            return runner.callMethod("getCiteprocJsVersion", String.class);
+        } catch (ScriptRunnerException e) {
+            throw new IllegalStateException("Could not get citeproc-js version", e);
+        }
+    }
+
+    /**
+     * Get the name of the underlying JavaScript engine
+     * @return the engine name
+     * @throws IOException if the JavaScript engine could not be initialized
+     */
+    public static String getJavaScriptEngineName() throws IOException {
+        return getRunner().getName();
+    }
+
+    /**
+     * Get the version of the underlying JavaScript engine
+     * @return the version string
+     * @throws IOException if the JavaScript engine could not be initialized
+     */
+    public static String getJavaScriptEngineVersion() throws IOException {
+        return getRunner().getVersion();
+    }
+
+    /**
      * Checks if a given citation style is supported
      * @param style the citation style's name
      * @return true if the style is supported, false otherwise

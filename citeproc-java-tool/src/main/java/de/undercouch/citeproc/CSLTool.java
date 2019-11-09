@@ -162,10 +162,14 @@ public class CSLTool extends AbstractCSLToolCommand {
 
     /**
      * Prints out version information
+     * @throws IOException if the version information could not be obtained
      */
-    private void version() {
-        System.out.println(CSLToolContext.current().getToolName() + " " +
+    private void version() throws IOException {
+        System.out.println(CSLToolContext.current().getToolName() + ": " +
                 getVersion());
+        System.out.println("citeproc-js: " + CSL.getCiteprocJsVersion());
+        System.out.println("JavaScript engine: " + CSL.getJavaScriptEngineName() +
+                " " + CSL.getJavaScriptEngineVersion());
     }
 
     /**

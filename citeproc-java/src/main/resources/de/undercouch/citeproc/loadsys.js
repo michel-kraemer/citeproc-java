@@ -77,3 +77,7 @@ function getBaseLocales() {
     }
     return result;
 }
+
+function getCiteprocJsVersion() {
+    return CSL.PROCESSOR_VERSION;
+}
