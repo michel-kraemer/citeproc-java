@@ -11,7 +11,7 @@ citeproc-java is a wrapper around [citeproc-js](https://github.com/Juris-M/citep
 which is a popular CSL processor written in JavaScript. Running JavaScript on
 the JVM is a topic that seems to be in constant flux. While older versions of
 citeproc-java used [Mozilla Rhino](https://www.mozilla.org/rhino/), as of
-version 2.0.0, there are three alternatives you can chose from differing in
+version 2.0.0, there are three alternatives you can choose from differing in
 performance and compatibility to a specific Java version.
 
 Nashorn
