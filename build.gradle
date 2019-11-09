@@ -1,7 +1,6 @@
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'eclipse'
-    
+
     version = '2.0.0-SNAPSHOT'
     group = 'de.undercouch'
     sourceCompatibility = '1.8'

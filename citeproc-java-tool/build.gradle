@@ -9,7 +9,6 @@ dependencies {
 
     implementation 'de.undercouch:underline:1.0.0'
     implementation 'jline:jline:2.14.2'
-    implementation 'org.mapdb:mapdb:1.0.4'
 
     runtime 'org.citationstyles:styles:2.0.0'
     runtime 'org.citationstyles:locales:2.0.0'
