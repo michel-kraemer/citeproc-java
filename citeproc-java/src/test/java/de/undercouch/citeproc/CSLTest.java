@@ -15,6 +15,10 @@ import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -552,5 +556,80 @@ public class CSLTest {
                 "text", items[0]).makeString();
         assertEquals("[1]S. C. Johnson and B. W. Kernighan, \u201cThe Programming Language B,\u201d "
                 + "Bell Laboratories, Murray Hill, NJ, USA, 8, 1973.\n", bibl);
+    }
+
+    @Test
+    public void shouldRenderAnEntryWithUnexpectedFields_FromJSON_Correctly() throws IOException {
+        final String BOOK_WITH_UNEXPECTED_FIELDS_JSON =
+                "[\n" +
+                "    {\n" +
+                "        \"id\": \"http://zotero.org/users/local/xesCO2jf/items/3GCX8KWL\",\n" +
+                "        \"type\": \"book\",\n" +
+                "        \"title\": \"Book_Title\",\n" +
+                "        \"collection-title\": \"Series\",\n" +
+                "        \"collection-number\": \"Series Number\",\n" +
+                "        \"publisher\": \"Publisher\",\n" +
+                "        \"publisher-place\": \"Place\",\n" +
+                "        \"volume\": \"Volume\",\n" +
+                "        \"number-of-volumes\": \"# of Volumes\",\n" +
+                "        \"number-of-pages\": \"# of Pages\",\n" +
+                "        \"edition\": \"Edition\",\n" +
+                "        \"source\": \"Library Catalog\",\n" +
+                "        \"archive\": \"Archive\",\n" +
+                "        \"archive_location\": \"Loc. in Archive\",\n" +
+                "        \"event-place\": \"Place\",\n" +
+                "        \"abstract\": \"Abstract\",\n" +
+                "        \"URL\": \"URL\",\n" +
+                "        \"ISBN\": \"ISBN\",\n" +
+                "        \"call-number\": \"Call Number\",\n" +
+                "        \"note\": \"Extra\",\n" +
+                "        \"title-short\": \"Short Title\",\n" +
+                "        \"language\": \"Language\",\n" +
+                "        \"author\": [\n" +
+                "            {\n" +
+                "                \"literal\": \"Author_Fullname\"\n" +
+                "            }\n" +
+                "        ],\n" +
+                "        \"issued\": {\n" +
+                "            \"literal\": \"Date\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "]";
+        InputStream is = new ByteArrayInputStream(BOOK_WITH_UNEXPECTED_FIELDS_JSON.getBytes(StandardCharsets.UTF_8));
+        ItemDataProvider provider = new BibliographyFileReader().readBibliographyFile(is, BibliographyFileReader.FileFormat.JSON_ARRAY);
+        CSLItemData item = provider.retrieveItem(provider.getIds()[0]);
+
+        final String EXPECTED = "Author_Fullname. (Date). Book_Title (Edition). Retrieved from URL";
+
+        assertEquals(EXPECTED, CSL.makeAdhocBibliography("apa", "text", item).makeString().trim());
+    }
+
+    @Test
+    public void shouldRenderAnEntryWithUnexpectedFields_FromBIBTEX_Correctly() throws IOException {
+        final String BOOK_WITH_UNEXPECTED_FIELDS_BIBTEX =
+                "@book{author_fullname_book_title_nodate,\n" +
+                "    address = {Place},\n" +
+                "    edition = {Edition},\n" +
+                "    series = {Series},\n" +
+                "    title = {Book\\_Title},\n" +
+                "    volume = {Volume},\n" +
+                "    copyright = {Rights},\n" +
+                "    isbn = {ISBN},\n" +
+                "    shorttitle = {Short {Title}},\n" +
+                "    url = {URL},\n" +
+                "    abstract = {Abstract},\n" +
+                "    language = {Language},\n" +
+                "    number = {Series Number},\n" +
+                "    publisher = {Publisher},\n" +
+                "    author = {{Author\\_Fullname}},\n" +
+                "    note = {Extra}\n" +
+                "}";
+        InputStream is = new ByteArrayInputStream(BOOK_WITH_UNEXPECTED_FIELDS_BIBTEX.getBytes(StandardCharsets.UTF_8));
+        ItemDataProvider provider = new BibliographyFileReader().readBibliographyFile(is, BibliographyFileReader.FileFormat.BIBTEX);
+        CSLItemData item = provider.retrieveItem(provider.getIds()[0]);
+
+        final String EXPECTED = "Author_Fullname. (Date). Book_Title (Edition). Retrieved from URL";
+
+        assertEquals(EXPECTED, CSL.makeAdhocBibliography("apa", "text", item).makeString().trim());
     }
 }
