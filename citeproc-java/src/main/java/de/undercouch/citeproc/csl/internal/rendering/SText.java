@@ -49,6 +49,8 @@ public class SText implements SRenderingElement {
                 if (variable.equals("page")) {
                     String delimiter = ctx.getTerm("page-range-delimiter");
                     v = v.replace("-", delimiter);
+                } else if (variable.equals("number")) {
+                    v = v.replace("-", "\u2013");
                 }
                 ctx.emit(v);
             }

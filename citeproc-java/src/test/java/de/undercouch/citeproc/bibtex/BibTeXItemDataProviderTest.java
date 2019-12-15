@@ -222,7 +222,8 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
      * @throws Exception if something goes wrong
      */
     @Test
-    public void techReportWithExplicitType() throws Exception {
+    @Parameters({"false", "true"})
+    public void techReportWithExplicitType(boolean experimentalMode) throws Exception {
         // compare with the item from issue #63. Example from
         // http://tug.ctan.org/tex-archive/biblio/bibtex/contrib/IEEEtran/IEEEexample.bib
         String entry = "@techreport{IEEEexample:techreptype,\n" +
@@ -255,7 +256,7 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
         BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
         sys.addDatabase(db);
 
-        try (CSL citeproc = new CSL(sys, "ieee")) {
+        try (CSL citeproc = new CSL(sys, "ieee", experimentalMode)) {
             citeproc.setOutputFormat("text");
             sys.registerCitationItems(citeproc);
 
