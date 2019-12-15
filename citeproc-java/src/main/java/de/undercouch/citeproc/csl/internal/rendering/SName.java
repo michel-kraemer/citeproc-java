@@ -63,7 +63,7 @@ public class SName implements SElement {
             boolean found = true;
             for (int i = 0; i < given.length(); ++i) {
                 char c = given.charAt(i);
-                if (Character.isWhitespace(c)) {
+                if (Character.isWhitespace(c) || c == '.') {
                     found = true;
                 } else if (found) {
                     result.append(c).append(initializeWith);

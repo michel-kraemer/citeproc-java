@@ -3,10 +3,13 @@ package de.undercouch.citeproc.bibtex;
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.Key;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -20,6 +23,7 @@ import static org.junit.Assert.fail;
  * Tests the BibTeX citation item provider
  * @author Michel Kraemer
  */
+@RunWith(JUnitParamsRunner.class)
 public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
     private static BibTeXDatabase db;
     private static BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
@@ -133,7 +137,8 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
      * @throws Exception if something goes wrong
      */
     @Test
-    public void issue34() throws Exception {
+    @Parameters({"false", "true"})
+    public void issue34(boolean experimentalMode) throws Exception {
         String entry = "@inproceedings{ICIP99inv," +
                 "author = \"M.G. Strintzis and I. Kompatsiaris\"," +
                 "title = \"{3D Model-Based Segmentation of Videoconference Image Sequences}\"," +
@@ -151,7 +156,7 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
         BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
         sys.addDatabase(db);
 
-        try (CSL citeproc = new CSL(sys, "ieee")) {
+        try (CSL citeproc = new CSL(sys, "ieee", experimentalMode)) {
             citeproc.setOutputFormat("text");
             sys.registerCitationItems(citeproc);
 

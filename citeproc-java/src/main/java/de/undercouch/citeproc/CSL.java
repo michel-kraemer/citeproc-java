@@ -192,7 +192,26 @@ public class CSL implements Closeable {
      * could not be loaded
      */
     public CSL(ItemDataProvider itemDataProvider, String style) throws IOException {
-        this(itemDataProvider, style, "en-US");
+        this(itemDataProvider, style, false);
+    }
+
+    /**
+     * Constructs a new citation processor
+     * @param itemDataProvider an object that provides citation item data
+     * @param style the citation style to use. May either be a serialized
+     * XML representation of the style or a style's name such as <code>ieee</code>.
+     * In the latter case, the processor loads the style from the classpath (e.g.
+     * <code>/ieee.csl</code>)
+     * @param experimentalMode {@code true} if the new experimental pure Java
+     * CSL processor should be used
+     * @throws IOException if the underlying JavaScript files or the CSL style
+     * could not be loaded
+     */
+    public CSL(ItemDataProvider itemDataProvider, String style,
+            boolean experimentalMode) throws IOException {
+        this(itemDataProvider, new DefaultLocaleProvider(),
+                new DefaultAbbreviationProvider(), null, style, "en-US",
+                false, experimentalMode);
     }
 
     /**
@@ -682,6 +701,14 @@ public class CSL implements Closeable {
      * {@code "asciidoc"}, {@code "fo"}, or {@code "rtf"}
      */
     public void setOutputFormat(String format) {
+        if (experimentalMode) {
+            if (!"text".equals(format)) {
+                throw new IllegalArgumentException("Experimental mode " +
+                        "only supports text output format at the moment.");
+            }
+            return;
+        }
+
         if (!getSupportedOutputFormats(runner).contains(format)) {
             throw new IllegalArgumentException("Unknown output format: " + format);
         }
@@ -1131,9 +1158,7 @@ public class CSL implements Closeable {
     public static Bibliography makeAdhocBibliography(String style, String outputFormat,
             boolean experimentalMode, CSLItemData... items) throws IOException {
         ItemDataProvider provider = new ListItemDataProvider(items);
-        try (CSL csl = new CSL(provider, new DefaultLocaleProvider(),
-                new DefaultAbbreviationProvider(), null, style, "en-US",
-                false, experimentalMode)) {
+        try (CSL csl = new CSL(provider, style, experimentalMode)) {
             if (!experimentalMode) {
                 csl.setOutputFormat(outputFormat);
             }
