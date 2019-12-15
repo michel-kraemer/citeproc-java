@@ -6,9 +6,6 @@ import de.undercouch.citeproc.csl.internal.SElement;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 /**
  * A name element from a style file
  * @author Michel Kraemer
@@ -16,6 +13,8 @@ import java.util.stream.Collectors;
 public class SName implements SElement {
     private final String variable;
     private final String and;
+    private final String delimiter;
+    private final String delimiterPrecedesLast;
     private final String initializeWith;
 
     /**
@@ -26,6 +25,20 @@ public class SName implements SElement {
     public SName(Node node, String variable) {
         this.variable = variable;
         and = NodeHelper.getAttrValue(node, "and");
+
+        String delimiter = NodeHelper.getAttrValue(node, "delimiter");
+        if (delimiter == null) {
+            delimiter = ", ";
+        }
+        this.delimiter = delimiter;
+
+        String delimiterPrecedesLast = NodeHelper.getAttrValue(node,
+                "delimiter-precedes-last");
+        if (delimiterPrecedesLast == null) {
+            delimiterPrecedesLast = "contextual";
+        }
+        this.delimiterPrecedesLast = delimiterPrecedesLast;
+
         initializeWith = NodeHelper.getAttrValue(node, "initialize-with");
     }
 
@@ -36,21 +49,49 @@ public class SName implements SElement {
             throw new IllegalStateException("Selected names are empty");
         }
 
-        String delimiter;
-        if ("text".equals(and)) {
-            delimiter = ctx.getTerm("and");
-        } else if ("symbol".equals(and)) {
-            delimiter = "&";
+        String and;
+        if ("text".equals(this.and)) {
+            and = ctx.getTerm("and");
+        } else if ("symbol".equals(this.and)) {
+            and = "&";
         } else {
             throw new IllegalArgumentException("Unknown value for `and' " +
-                    "attribute: " + and);
+                    "attribute: " + this.and);
         }
-        delimiter = " " + delimiter + " ";
 
-        String result = Arrays.stream(names)
-                .map(this::render)
-                .collect(Collectors.joining(delimiter));
-        ctx.emit(result);
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < names.length; ++i) {
+            builder.append(render(names[i]));
+            if (i < names.length - 1) {
+                if (i == names.length - 2) {
+                    switch (delimiterPrecedesLast) {
+                        case "contextual":
+                            if (names.length > 2) {
+                                builder.append(delimiter);
+                            }
+                            break;
+
+                        case "always":
+                            builder.append(delimiter);
+                            break;
+
+                        default:
+                            break;
+                    }
+                    appendAnd(builder, and);
+                } else {
+                    builder.append(delimiter);
+                }
+            }
+        }
+        ctx.emit(builder.toString());
+    }
+
+    private void appendAnd(StringBuilder builder, String and) {
+        if (!Character.isWhitespace(builder.charAt(builder.length() - 1))) {
+            builder.append(" ");
+        }
+        builder.append(and).append(" ");
     }
 
     private String render(CSLName name) {
