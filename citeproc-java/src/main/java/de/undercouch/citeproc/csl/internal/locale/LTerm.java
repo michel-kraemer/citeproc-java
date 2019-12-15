@@ -6,19 +6,51 @@ import org.w3c.dom.NodeList;
 
 import java.util.Objects;
 
+/**
+ * A term defined in a local file
+ * @author Michel Kraemer
+ */
 public class LTerm {
     private final String name;
     private final Form form;
     private final String single;
     private final String multiple;
 
+    /**
+     * The form in which the term was defined
+     */
     public enum Form {
+        /**
+         * A long term
+         */
         LONG,
+
+        /**
+         * A short term
+         */
         SHORT,
+
+        /**
+         * A verb
+         */
         VERB,
+
+        /**
+         * The short form of a verb
+         */
         VERB_SHORT,
+
+        /**
+         * A symbol
+         */
         SYMBOL;
 
+        /**
+         * Parse the term from from a string
+         * @param str the string to parse
+         * @return the term form
+         * @throws IllegalArgumentException if the string contains an unknown form
+         */
         public static Form fromString(String str) {
             switch (str) {
                 case "long":
@@ -37,6 +69,10 @@ public class LTerm {
         }
     }
 
+    /**
+     * Parses a term from an XML node
+     * @param node the XML node
+     */
     public LTerm(Node node) {
         name = NodeHelper.getAttrValue(node, "name");
         String strForm = NodeHelper.getAttrValue(node, "form");
@@ -81,18 +117,35 @@ public class LTerm {
         this.multiple = multiple;
     }
 
+    /**
+     * Get the term's name
+     * @return the term's name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get the term's form
+     * @return the term's form
+     */
     public Form getForm() {
         return form;
     }
 
+    /**
+     * Get the singular form of the term
+     * @return the singular form
+     */
     public String getSingle() {
         return single;
     }
 
+    /**
+     * Get the plural form of the term (might be the same as the singular form
+     * if no plural form was defined)
+     * @return the plural form
+     */
     public String getMultiple() {
         return multiple;
     }
