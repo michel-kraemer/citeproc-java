@@ -1,5 +1,6 @@
 package de.undercouch.citeproc.csl.internal;
 
+import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -13,10 +14,16 @@ import java.util.Map;
  * @author Michel Kraemer
  */
 public class SStyle {
+    private final LLocale locale;
     private final SBibliography bibliography;
     private final Map<String, SMacro> macros = new HashMap<>();
 
+    /**
+     * Creates the citation style from an XML document
+     * @param styleDocument the XML document
+     */
     public SStyle(Document styleDocument) {
+        LLocale locale = null;
         SBibliography bibl = null;
 
         Element styleRoot = styleDocument.getDocumentElement();
@@ -25,6 +32,9 @@ public class SStyle {
             Node c = styleChildren.item(i);
             String nodeName = c.getNodeName();
             switch (nodeName) {
+                case "locale":
+                    locale = new LLocale(c);
+                    break;
                 case "bibliography":
                     bibl = new SBibliography(c);
                     break;
@@ -35,7 +45,18 @@ public class SStyle {
             }
         }
 
+        this.locale = locale;
         this.bibliography = bibl;
+    }
+
+    /**
+     * Get additional localization data defined in the style file. This
+     * data may override or augments information from the locale file
+     * @return the additional localization data (or {@code null} if there
+     * is no additional information in the style file)
+     */
+    public LLocale getLocale() {
+        return locale;
     }
 
     /**

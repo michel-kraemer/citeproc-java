@@ -65,6 +65,7 @@ dependencies {
     testCompile 'org.citationstyles:styles:2.0.0'
     testCompile 'org.citationstyles:locales:2.0.0'
     testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
+    testCompile 'pl.pragmatists:JUnitParams:1.1.1'
 
     // compile-time-only dependency to jackson annotations to avoid
     // warnings during javadoc generation

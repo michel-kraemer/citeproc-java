@@ -13,7 +13,10 @@ import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.csl.CitationIDIndexPair;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +33,7 @@ import static org.junit.Assert.assertTrue;
  * Tests the CSL processor {@link CSL}
  * @author Michel Kraemer
  */
+@RunWith(JUnitParamsRunner.class)
 public class CSLTest {
     /**
      * Example citation items
@@ -171,7 +175,8 @@ public class CSLTest {
      * @throws Exception if something goes wrong
      */
     @Test
-    public void makeAdhocBibliography() throws Exception {
+    @Parameters({"false", "true"})
+    public void makeAdhocBibliography(boolean experimentalMode) throws Exception {
         CSLItemData item = new CSLItemDataBuilder()
                 .id("citeproc-java")
                 .type(CSLType.WEBPAGE)
@@ -182,7 +187,7 @@ public class CSLTest {
                 .accessed(2013, 12, 6)
                 .build();
 
-        String bibl = CSL.makeAdhocBibliography("ieee", "text", item).makeString();
+        String bibl = CSL.makeAdhocBibliography("ieee", "text", experimentalMode, item).makeString();
         assertEquals("[1]M. Kr\u00E4mer, \u201cciteproc-java: A Citation Style "
                 + "Language (CSL) processor for Java,\u201d 07-Sep-2013. [Online]. "
                 + "Available: http://michel-kraemer.github.io/citeproc-java/. [Accessed: 06-Dec-2013].\n", bibl);

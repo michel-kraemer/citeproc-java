@@ -8,6 +8,11 @@ import org.w3c.dom.Node;
  * @author Michel Kraemer
  */
 public class LStyleOptions {
+    /**
+     * Default options
+     */
+    public static final LStyleOptions DEFAULT = new LStyleOptions();
+
     private final boolean punctuationInQuote;
 
     /**
