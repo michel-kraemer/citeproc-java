@@ -282,7 +282,7 @@ public class RenderContext {
         }
 
         variablesCalled.incrementAndGet();
-        if (result == null) {
+        if (result == null || result.isEmpty()) {
             variablesEmpty.incrementAndGet();
         }
         return result;
