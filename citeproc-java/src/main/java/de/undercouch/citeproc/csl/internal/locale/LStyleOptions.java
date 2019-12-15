@@ -7,13 +7,13 @@ import org.w3c.dom.Node;
  * Global style rendering options
  * @author Michel Kraemer
  */
-public class StyleOptions {
+public class LStyleOptions {
     private final boolean punctuationInQuote;
 
     /**
      * Default constructor
      */
-    public StyleOptions() {
+    public LStyleOptions() {
         punctuationInQuote = false;
     }
 
@@ -21,7 +21,7 @@ public class StyleOptions {
      * Parses the style options from an XML node
      * @param node the XML node
      */
-    public StyleOptions(Node node) {
+    public LStyleOptions(Node node) {
         punctuationInQuote = Boolean.parseBoolean(NodeHelper.getAttrValue(
                 node, "punctuation-in-quote"));
     }

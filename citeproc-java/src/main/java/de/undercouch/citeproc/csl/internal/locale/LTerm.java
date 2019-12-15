@@ -6,7 +6,7 @@ import org.w3c.dom.NodeList;
 
 import java.util.Objects;
 
-public class Term {
+public class LTerm {
     private final String name;
     private final Form form;
     private final String single;
@@ -37,7 +37,7 @@ public class Term {
         }
     }
 
-    public Term(Node node) {
+    public LTerm(Node node) {
         name = NodeHelper.getAttrValue(node, "name");
         String strForm = NodeHelper.getAttrValue(node, "form");
         if (strForm == null) {
@@ -105,7 +105,7 @@ public class Term {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Term term = (Term)o;
+        LTerm term = (LTerm)o;
         return name.equals(term.name) &&
                 form.equals(term.form) &&
                 single.equals(term.single) &&

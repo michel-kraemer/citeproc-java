@@ -3,7 +3,8 @@ package de.undercouch.citeproc.csl.internal;
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLName;
-import de.undercouch.citeproc.csl.internal.locale.Term;
+import de.undercouch.citeproc.csl.internal.locale.LLocale;
+import de.undercouch.citeproc.csl.internal.locale.LTerm;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,14 +18,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class RenderContext {
     /**
-     * The macros defined in the style file
+     * The style used to render citation items and bibliographies
      */
-    private final Map<String, SMacro> macros;
+    private final SStyle style;
 
     /**
-     * The terms defined in the locale file
+     * Localization data
      */
-    private final Map<Term.Form, Map<String, Term>> terms;
+    private final LLocale locale;
 
     /**
      * The citation item to render
@@ -51,14 +52,13 @@ public class RenderContext {
 
     /**
      * Creates a new render context
-     * @param macros the macros defined in the style file
-     * @param terms the terms defined in the locale file
+     * @param style the style used to render citation items and bibliographies
+     * @param locale localization data
      * @param itemData the citation item to render
      */
-    public RenderContext(Map<String, SMacro> macros,
-            Map<Term.Form, Map<String, Term>> terms, CSLItemData itemData) {
-        this.macros = macros;
-        this.terms = terms;
+    public RenderContext(SStyle style, LLocale locale, CSLItemData itemData) {
+        this.style = style;
+        this.locale = locale;
         this.itemData = itemData;
         this.variablesCalled = new AtomicInteger(0);
         this.variablesEmpty = new AtomicInteger(0);
@@ -72,11 +72,19 @@ public class RenderContext {
      * @param parent the parent context
      */
     public RenderContext(RenderContext parent) {
-        this.macros = parent.macros;
-        this.terms = parent.terms;
+        this.style = parent.style;
+        this.locale = parent.locale;
         this.itemData = parent.itemData;
         this.variablesCalled = parent.variablesCalled;
         this.variablesEmpty = parent.variablesEmpty;
+    }
+
+    /**
+     * Get the localization data
+     * @return the localization data
+     */
+    public LLocale getLocale() {
+        return locale;
     }
 
     /**
@@ -85,7 +93,7 @@ public class RenderContext {
      * @return the macro (never {@code null})
      */
     public SMacro getMacro(String name) {
-        SMacro result = macros.get(name);
+        SMacro result = style.getMacros().get(name);
         if (result == null) {
             throw new IllegalArgumentException("Unknown macro: " + name);
         }
@@ -200,7 +208,7 @@ public class RenderContext {
      * @return the term's value (never {@code null})
      */
     public String getTerm(String name) {
-        return getTerm(name, Term.Form.LONG);
+        return getTerm(name, LTerm.Form.LONG);
     }
 
     /**
@@ -211,7 +219,7 @@ public class RenderContext {
      * @return the term's value (never {@code null})
      */
     public String getTerm(String name, boolean plural) {
-        return getTerm(name, Term.Form.LONG, plural);
+        return getTerm(name, LTerm.Form.LONG, plural);
     }
 
     /**
@@ -220,7 +228,7 @@ public class RenderContext {
      * @param form the form to retrieve
      * @return the term's value (never {@code null})
      */
-    public String getTerm(String name, Term.Form form) {
+    public String getTerm(String name, LTerm.Form form) {
         return getTerm(name, form, false);
     }
 
@@ -232,12 +240,12 @@ public class RenderContext {
      * {@code false} for the singular form
      * @return the term's value (never {@code null})
      */
-    public String getTerm(String name, Term.Form form, boolean plural) {
-        Map<String, Term> tm = terms.get(form);
+    public String getTerm(String name, LTerm.Form form, boolean plural) {
+        Map<String, LTerm> tm = locale.getTerms().get(form);
         if (tm == null) {
             throw new IllegalStateException("Unknown term form: " + form);
         }
-        Term t = tm.get(name);
+        LTerm t = tm.get(name);
         if (t == null) {
             throw new IllegalStateException("Unknown term: " + name);
         }

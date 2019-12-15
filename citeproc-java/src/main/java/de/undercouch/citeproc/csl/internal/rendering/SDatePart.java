@@ -4,7 +4,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SElement;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.StripPeriods;
-import de.undercouch.citeproc.csl.internal.locale.Term;
+import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
@@ -79,7 +79,7 @@ public class SDatePart implements SElement {
         String value;
         String p = StringUtils.leftPad(String.valueOf(month), 2, '0');
         if ("short".equals(form)) {
-            value = ctx.getTerm("month-" + p, Term.Form.SHORT);
+            value = ctx.getTerm("month-" + p, LTerm.Form.SHORT);
         } else if ("numeric".equals(form)) {
             value = String.valueOf(month);
         } else if ("numeric-leading-zeros".equals(form)) {

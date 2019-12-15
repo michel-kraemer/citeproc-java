@@ -4,7 +4,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.Quotes;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
-import de.undercouch.citeproc.csl.internal.locale.Term;
+import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
@@ -59,7 +59,7 @@ public class SText implements SRenderingElement {
             if (f == null) {
                 f = "long";
             }
-            ctx.emit(ctx.getTerm(term, Term.Form.fromString(f)));
+            ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(f)));
         } else if (value != null) {
             ctx.emit(value);
         } else {

@@ -3,7 +3,12 @@ package de.undercouch.citeproc;
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CitationIDIndexPair;
+import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.SStyle;
+import de.undercouch.citeproc.csl.internal.Token;
+import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
 import de.undercouch.citeproc.helper.json.MapJsonBuilderFactory;
@@ -40,6 +45,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -149,6 +155,31 @@ public class CSL implements Closeable {
      * @see #setOutputFormat(String)
      */
     private String outputFormat = "html";
+
+    /**
+     * {@code true} if the new experimental pure Java CSL processor should be used
+     */
+    private final boolean experimentalMode;
+
+    /**
+     * The CSL style used to render citations and bibliographies
+     */
+    private final SStyle style;
+
+    /**
+     * The localization data used to render citations and bibliographies
+     */
+    private final LLocale locale;
+
+    /**
+     * An object that provides citation item data
+     */
+    private final ItemDataProvider itemDataProvider;
+
+    /**
+     * Citation items registered through {@link #registerCitationItems(String...)}
+     */
+    private final List<CSLItemData> registeredItems = new ArrayList<>();
 
     /**
      * Constructs a new citation processor
@@ -271,20 +302,89 @@ public class CSL implements Closeable {
     public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
             AbbreviationProvider abbreviationProvider, VariableWrapper variableWrapper,
             String style, String lang, boolean forceLang) throws IOException {
-        runner = getRunner();
+        this(itemDataProvider, localeProvider, abbreviationProvider,
+                variableWrapper, style, lang, forceLang, false);
+    }
+
+    /**
+     * Constructs a new citation processor
+     * @param itemDataProvider an object that provides citation item data
+     * @param localeProvider an object that provides CSL locales
+     * @param abbreviationProvider an object that provides abbreviations
+     * @param variableWrapper an object that decorates rendered items
+     * @param style the citation style to use. May either be a serialized
+     * XML representation of the style or a style's name such as <code>ieee</code>.
+     * In the latter case, the processor loads the style from the classpath (e.g.
+     * <code>/ieee.csl</code>)
+     * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
+     * @param forceLang true if the given locale should overwrite any default locale
+     * @param experimentalMode {@code true} if the new experimental pure Java
+     * CSL processor should be used
+     * @throws IOException if the underlying JavaScript files or the CSL style
+     * could not be loaded
+     */
+    public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
+            AbbreviationProvider abbreviationProvider, VariableWrapper variableWrapper,
+            String style, String lang, boolean forceLang,
+            boolean experimentalMode) throws IOException {
+        this.experimentalMode = experimentalMode;
 
         // load style if needed
         if (!isStyle(style)) {
             style = loadStyle(style);
         }
 
-        // initialize engine
-        try {
-            engine = runner.callMethod("makeCsl", Object.class,
-                    style, lang, forceLang, runner, itemDataProvider,
-                    localeProvider, abbreviationProvider, variableWrapper);
-        } catch (ScriptRunnerException e) {
-            throw new IllegalArgumentException("Could not parse arguments", e);
+        if (experimentalMode) {
+            this.runner = null;
+            this.engine = null;
+            this.itemDataProvider = itemDataProvider;
+
+            // TODO parse style and locale directly from URL if possible
+            // TODO instead of loading them into strings first
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder;
+            try {
+                builder = factory.newDocumentBuilder();
+            } catch (ParserConfigurationException e) {
+                throw new IOException("Could not create document builder", e);
+            }
+
+            // load locale
+            String strLocale = localeProvider.retrieveLocale(lang);
+            Document localeDocument;
+            try {
+                localeDocument = builder.parse(new InputSource(
+                        new StringReader(strLocale)));
+            } catch (SAXException e) {
+                throw new IOException("Could not parse locale", e);
+            }
+            this.locale = new LLocale(localeDocument);
+
+            // load style
+            Document styleDocument;
+            try {
+                styleDocument = builder.parse(new InputSource(
+                        new StringReader(style)));
+            } catch (SAXException e) {
+                throw new IOException("Could not parse style", e);
+            }
+            this.style = new SStyle(styleDocument);
+        } else {
+            this.style = null;
+            this.locale = null;
+            this.itemDataProvider = null;
+
+            this.runner = getRunner();
+
+            // initialize engine
+            try {
+                this.engine = this.runner.callMethod("makeCsl", Object.class,
+                        style, lang, forceLang, this.runner, itemDataProvider,
+                        localeProvider, abbreviationProvider, variableWrapper);
+            } catch (ScriptRunnerException e) {
+                throw new IllegalArgumentException("Could not parse arguments", e);
+            }
         }
     }
 
@@ -633,10 +733,17 @@ public class CSL implements Closeable {
      * citation item data that does not exist
      */
     public void registerCitationItems(String... ids) {
-        try {
-            runner.callMethod(engine, "updateItems", new Object[] { ids });
-        } catch (ScriptRunnerException e) {
-            throw new IllegalArgumentException("Could not update items", e);
+        if (experimentalMode) {
+            for (String id : ids) {
+                CSLItemData item = itemDataProvider.retrieveItem(id);
+                registeredItems.add(item);
+            }
+        } else {
+            try {
+                runner.callMethod(engine, "updateItems", new Object[] { ids });
+            } catch (ScriptRunnerException e) {
+                throw new IllegalArgumentException("Could not update items", e);
+            }
         }
     }
 
@@ -772,11 +879,34 @@ public class CSL implements Closeable {
      * @param mode the selection mode
      * @param selection the example item data objects that contain
      * the fields and field values to match
-     * @param quash regardless of the item data in <code>selection</code>
+     * @param quash regardless of the item data in {@code selection}
      * skip items if all fields/values from this list match
      * @return the bibliography
      */
     public Bibliography makeBibliography(SelectionMode mode,
+            CSLItemData[] selection, CSLItemData[] quash) {
+        if (experimentalMode) {
+            String[] entries = new String[registeredItems.size()];
+            for (int i = 0; i < registeredItems.size(); ++i) {
+                CSLItemData item = registeredItems.get(i);
+                CSLItemData itemClone = new CSLItemDataBuilder(item)
+                        .citationNumber(String.valueOf(i + 1))
+                        .build();
+
+                RenderContext ctx = new RenderContext(style, locale, itemClone);
+                style.getBibliography().render(ctx);
+
+                entries[i] = ctx.getResult().getTokens().stream()
+                        .map(Token::getText)
+                        .collect(Collectors.joining()) + "\n";
+            }
+            return new Bibliography(entries);
+        } else {
+            return makeBibliographyLegacy(mode, selection, quash);
+        }
+    }
+
+    private Bibliography makeBibliographyLegacy(SelectionMode mode,
             CSLItemData[] selection, CSLItemData[] quash) {
         List<?> r;
         try {
@@ -976,9 +1106,37 @@ public class CSL implements Closeable {
      */
     public static Bibliography makeAdhocBibliography(String style, String outputFormat,
             CSLItemData... items) throws IOException {
+        return makeAdhocBibliography(style, outputFormat, false, items);
+    }
+
+    /**
+     * Creates an ad hoc bibliography from the given citation items. Calling
+     * this method is rather expensive as it initializes the CSL processor.
+     * If you need to create bibliographies multiple times in your application
+     * you should create the processor yourself and cache it if necessary.
+     * @param style the citation style to use. May either be a serialized
+     * XML representation of the style or a style's name such as <code>ieee</code>.
+     * In the latter case, the processor loads the style from the classpath (e.g.
+     * <code>/ieee.csl</code>)
+     * @param outputFormat the processor's output format (one of
+     * <code>"html"</code>, <code>"text"</code>, <code>"asciidoc"</code>,
+     * <code>"fo"</code>, or <code>"rtf"</code>)
+     * @param experimentalMode {@code true} if the new experimental pure Java
+     * CSL processor should be used
+     * @param items the citation items to add to the bibliography
+     * @return the bibliography
+     * @throws IOException if the underlying JavaScript files or the CSL style
+     * could not be loaded
+     */
+    public static Bibliography makeAdhocBibliography(String style, String outputFormat,
+            boolean experimentalMode, CSLItemData... items) throws IOException {
         ItemDataProvider provider = new ListItemDataProvider(items);
-        try (CSL csl = new CSL(provider, style)) {
-            csl.setOutputFormat(outputFormat);
+        try (CSL csl = new CSL(provider, new DefaultLocaleProvider(),
+                new DefaultAbbreviationProvider(), null, style, "en-US",
+                false, experimentalMode)) {
+            if (!experimentalMode) {
+                csl.setOutputFormat(outputFormat);
+            }
 
             String[] ids = new String[items.length];
             for (int i = 0; i < items.length; ++i) {
@@ -992,7 +1150,9 @@ public class CSL implements Closeable {
 
     @Override
     public void close() {
-        runner.release(engine);
+        if (!experimentalMode) {
+            runner.release(engine);
+        }
     }
 
     /**

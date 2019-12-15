@@ -4,7 +4,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.StripPeriods;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
-import de.undercouch.citeproc.csl.internal.locale.Term;
+import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.NodeHelper;
 import de.undercouch.citeproc.helper.NumberHelper;
 import de.undercouch.citeproc.helper.NumberHelper.NumberToken;
@@ -65,6 +65,6 @@ public class SLabel implements SRenderingElement {
             plural = numbers > 1;
         }
 
-        ctx.emit(ctx.getTerm(variable, Term.Form.fromString(form), plural));
+        ctx.emit(ctx.getTerm(variable, LTerm.Form.fromString(form), plural));
     }
 }
