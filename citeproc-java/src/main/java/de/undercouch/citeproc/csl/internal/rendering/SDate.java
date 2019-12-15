@@ -44,7 +44,7 @@ public class SDate implements SRenderingElement {
     public void render(RenderContext ctx) {
         CSLDate date = ctx.getDateVariable(variable);
         if (date == null) {
-            throw new IllegalStateException("No date selected");
+            return;
         }
 
         if (date.getDateParts().length > 0) {

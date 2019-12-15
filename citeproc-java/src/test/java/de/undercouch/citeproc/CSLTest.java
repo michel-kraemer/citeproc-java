@@ -344,7 +344,8 @@ public class CSLTest {
      * @throws Exception if something goes wrong
      */
     @Test
-    public void eventPlace() throws Exception {
+    @Parameters({"false", "true"})
+    public void eventPlace(boolean experimentalMode) throws Exception {
         CSLItemData item = new CSLItemDataBuilder()
                 .type(CSLType.PAPER_CONFERENCE)
                 .title("The Paper")
@@ -352,7 +353,7 @@ public class CSLTest {
                 .event("Conference")
                 .eventPlace("The Place")
                 .build();
-        String bib = CSL.makeAdhocBibliography("ieee", "text", item).makeString();
+        String bib = CSL.makeAdhocBibliography("ieee", "text", experimentalMode, item).makeString();
         assertEquals("[1]T. Author, \u201cThe Paper,\u201d presented at the Conference, The Place.\n", bib);
     }
 
