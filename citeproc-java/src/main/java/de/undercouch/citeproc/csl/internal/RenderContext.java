@@ -118,20 +118,122 @@ public class RenderContext {
     public String getVariable(String name) {
         String result;
         switch (name) {
-            case "genre":
-                result = itemData.getGenre();
+            case "abstract":
+                result = itemData.getAbstrct();
+                break;
+            case "annote":
+                result = itemData.getAnnote();
+                break;
+            case "archive":
+                result = itemData.getArchive();
+                break;
+            case "archive_location":
+                result = itemData.getArchiveLocation();
+                break;
+            case "archive-place":
+                result = itemData.getArchivePlace();
+                break;
+            case "authority":
+                result = itemData.getAuthority();
+                break;
+            case "call-number":
+                result = itemData.getCallNumber();
+                break;
+            case "chapter-number":
+                result = itemData.getChapterNumber();
+                break;
+            case "citation-label":
+                result = itemData.getCitationLabel();
                 break;
             case "citation-number":
                 result = itemData.getCitationNumber();
                 break;
+            case "collection-number":
+                result = itemData.getCollectionNumber();
+                break;
+            case "collection-title":
+                result = itemData.getCollectionTitle();
+                break;
             case "container-title":
                 result = itemData.getContainerTitle();
+                break;
+            case "container-title-short":
+                result = itemData.getContainerTitleShort();
+                break;
+            case "dimensions":
+                result = itemData.getDimensions();
+                break;
+            case "DOI":
+                result = itemData.getDOI();
+                break;
+            case "edition":
+                result = itemData.getEdition();
+                break;
+            case "event":
+                result = itemData.getEvent();
+                break;
+            case "event-place":
+                result = itemData.getEventPlace();
+                break;
+            case "first-reference-note-number":
+                result = itemData.getFirstReferenceNoteNumber();
+                break;
+            case "genre":
+                result = itemData.getGenre();
+                break;
+            case "ISBN":
+                result = itemData.getISBN();
+                break;
+            case "ISSN":
+                result = itemData.getISSN();
+                break;
+            case "issue":
+                result = itemData.getIssue();
+                break;
+            case "jurisdiction":
+                result = itemData.getJurisdiction();
+                break;
+            case "keyword":
+                result = itemData.getKeyword();
+                break;
+            case "locator":
+                result = itemData.getLocator();
+                break;
+            case "medium":
+                result = itemData.getMedium();
+                break;
+            case "note":
+                result = itemData.getNote();
                 break;
             case "number":
                 result = itemData.getNumber();
                 break;
+            case "number-of-pages":
+                result = itemData.getNumberOfPages();
+                break;
+            case "number-of-volumes":
+                result = itemData.getNumberOfVolumes();
+                break;
+            case "original-publisher":
+                result = itemData.getOriginalPublisher();
+                break;
+            case "original-publisher-place":
+                result = itemData.getOriginalPublisherPlace();
+                break;
+            case "original-title":
+                result = itemData.getOriginalTitle();
+                break;
             case "page":
                 result = itemData.getPage();
+                break;
+            case "page-first":
+                result = itemData.getPageFirst();
+                break;
+            case "PMCID":
+                result = itemData.getPMCID();
+                break;
+            case "PMID":
+                result = itemData.getPMID();
                 break;
             case "publisher":
                 result = itemData.getPublisher();
@@ -139,20 +241,41 @@ public class RenderContext {
             case "publisher-place":
                 result = itemData.getPublisherPlace();
                 break;
+            case "references":
+                result = itemData.getReferences();
+                break;
+            case "reviewed-title":
+                result = itemData.getReviewedTitle();
+                break;
+            case "scale":
+                result = itemData.getScale();
+                break;
+            case "section":
+                result = itemData.getSection();
+                break;
+            case "source":
+                result = itemData.getSource();
+                break;
+            case "status":
+                result = itemData.getStatus();
+                break;
             case "title":
                 result = itemData.getTitle();
+                break;
+            case "title-short":
+                result = itemData.getTitleShort();
                 break;
             case "URL":
                 result = itemData.getURL();
                 break;
+            case "version":
+                result = itemData.getVersion();
+                break;
             case "volume":
                 result = itemData.getVolume();
                 break;
-            case "number-of-volumes":
-                result = itemData.getNumberOfVolumes();
-                break;
-            case "issue":
-                result = itemData.getIssue();
+            case "year-suffix":
+                result = itemData.getYearSuffix();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown variable: " + name);
@@ -177,8 +300,20 @@ public class RenderContext {
             case "accessed":
                 result = itemData.getAccessed();
                 break;
+            case "container":
+                result = itemData.getContainer();
+                break;
+            case "event-date":
+                result = itemData.getEventDate();
+                break;
             case "issued":
                 result = itemData.getIssued();
+                break;
+            case "original-date":
+                result = itemData.getOriginalDate();
+                break;
+            case "submitted":
+                result = itemData.getSubmitted();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown date variable: " + name);
@@ -197,8 +332,41 @@ public class RenderContext {
             case "author":
                 result = itemData.getAuthor();
                 break;
+            case "collection-editor":
+                result = itemData.getCollectionEditor();
+                break;
+            case "composer":
+                result = itemData.getComposer();
+                break;
+            case "container-author":
+                result = itemData.getContainerAuthor();
+                break;
+            case "director":
+                result = itemData.getDirector();
+                break;
             case "editor":
                 result = itemData.getEditor();
+                break;
+            case "editorial-director":
+                result = itemData.getEditorialDirector();
+                break;
+            case "illustrator":
+                result = itemData.getIllustrator();
+                break;
+            case "interviewer":
+                result = itemData.getInterviewer();
+                break;
+            case "original-author":
+                result = itemData.getOriginalAuthor();
+                break;
+            case "recipient":
+                result = itemData.getRecipient();
+                break;
+            case "reviewed-author":
+                result = itemData.getReviewedAuthor();
+                break;
+            case "translator":
+                result = itemData.getTranslator();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown name variable: " + name);
