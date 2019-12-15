@@ -553,9 +553,10 @@ public class CSLTest {
      * @throws Exception if something goes wrong
      */
     @Test
-    public void dependentStyle() throws Exception {
+    @Parameters({"false", "true"})
+    public void dependentStyle(boolean experimentalMode) throws Exception {
         String bibl = CSL.makeAdhocBibliography("dependent/proceedings-of-the-ieee.csl",
-                "text", items[0]).makeString();
+                "text", experimentalMode, items[0]).makeString();
         assertEquals("[1]S. C. Johnson and B. W. Kernighan, \u201cThe Programming Language B,\u201d "
                 + "Bell Laboratories, Murray Hill, NJ, USA, 8, 1973.\n", bibl);
     }

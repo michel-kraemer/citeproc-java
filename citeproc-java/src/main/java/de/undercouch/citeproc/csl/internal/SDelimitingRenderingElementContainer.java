@@ -35,40 +35,36 @@ public class SDelimitingRenderingElementContainer extends SRenderingElementConta
 
     @Override
     public void render(RenderContext ctx) {
-        if (delimiter == null) {
-            super.render(ctx);
-        } else {
-            boolean emitted = false;
-            for (SRenderingElement e : elements) {
-                // save current number of called and empty variables
-                int variablesCalled = ctx.getNumberOfCalledVariables();
-                int variablesEmpty = ctx.getNumberOfEmptyVariables();
-                int variablesDiff = variablesCalled - variablesEmpty;
+        boolean emitted = false;
+        for (SRenderingElement e : elements) {
+            // save current number of called and empty variables
+            int variablesCalled = ctx.getNumberOfCalledVariables();
+            int variablesEmpty = ctx.getNumberOfEmptyVariables();
+            int variablesDiff = variablesCalled - variablesEmpty;
 
-                // render the element in a separate context
-                RenderContext child = new RenderContext(ctx);
-                e.render(child);
+            // render the element in a separate context
+            RenderContext child = new RenderContext(ctx);
+            e.render(child);
 
-                // count new number of called and empty variables
-                boolean shouldBeFiltered = false;
-                if (filterElementsWithEmptyVariables) {
-                    int newVariablesCalled = ctx.getNumberOfCalledVariables();
-                    int newVariablesEmpty = ctx.getNumberOfEmptyVariables();
-                    int newVariablesDiff = newVariablesCalled - newVariablesEmpty;
-                    if (newVariablesCalled > variablesCalled && newVariablesDiff == variablesDiff) {
-                        // all called variables were empty
-                        // do not render this element
-                        shouldBeFiltered = true;
-                    }
+            // count new number of called and empty variables
+            boolean shouldBeFiltered = false;
+            if (filterElementsWithEmptyVariables) {
+                int newVariablesCalled = ctx.getNumberOfCalledVariables();
+                int newVariablesEmpty = ctx.getNumberOfEmptyVariables();
+                int newVariablesDiff = newVariablesCalled - newVariablesEmpty;
+                if (newVariablesCalled > variablesCalled && newVariablesDiff == variablesDiff) {
+                    // all called variables were empty
+                    // do not render this element
+                    shouldBeFiltered = true;
                 }
+            }
 
-                if (!shouldBeFiltered && !child.getResult().isEmpty()) {
-                    if (emitted) {
-                        ctx.emit(delimiter);
-                    }
-                    ctx.emit(child.getResult());
-                    emitted = true;
+            if (!shouldBeFiltered && !child.getResult().isEmpty()) {
+                if (emitted && delimiter != null) {
+                    ctx.emit(delimiter);
                 }
+                ctx.emit(child.getResult());
+                emitted = true;
             }
         }
     }
