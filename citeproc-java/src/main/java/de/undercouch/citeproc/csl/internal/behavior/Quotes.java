@@ -25,15 +25,20 @@ public class Quotes implements Behavior {
     @Override
     public void accept(Consumer<RenderContext> renderFunction, RenderContext ctx) {
         if (quotes) {
-            String openQuote = ctx.getTerm("open-quote");
-            ctx.emit(openQuote, Token.Type.OPEN_QUOTE);
-        }
+            RenderContext tmp = new RenderContext(ctx);
+            renderFunction.accept(tmp);
 
-        renderFunction.accept(ctx);
+            if (!tmp.getResult().isEmpty()) {
+                String openQuote = ctx.getTerm("open-quote");
+                ctx.emit(openQuote, Token.Type.OPEN_QUOTE);
 
-        if (quotes) {
-            String closeQuote = ctx.getTerm("close-quote");
-            ctx.emit(closeQuote, Token.Type.CLOSE_QUOTE);
+                ctx.emit(tmp.getResult());
+
+                String closeQuote = ctx.getTerm("close-quote");
+                ctx.emit(closeQuote, Token.Type.CLOSE_QUOTE);
+            }
+        } else {
+            renderFunction.accept(ctx);
         }
     }
 }
