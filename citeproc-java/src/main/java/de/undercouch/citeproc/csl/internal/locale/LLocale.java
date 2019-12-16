@@ -33,9 +33,10 @@ public class LLocale {
     public LLocale(Node localeRoot) {
         String strLang = NodeHelper.getAttrValue(localeRoot, "xml:lang");
         if (strLang == null) {
-            throw new IllegalStateException("Missing locale code");
+            lang = null;
+        } else {
+            lang = Locale.forLanguageTag(strLang);
         }
-        lang = Locale.forLanguageTag(strLang);
 
         terms = new HashMap<>();
         Node termsNode = NodeHelper.findDirectChild(localeRoot, "terms");
