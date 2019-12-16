@@ -40,7 +40,9 @@ public class SStyle {
                     break;
                 case "macro":
                     SMacro m = new SMacro(c);
-                    macros.put(m.getName(), m);
+                    if (m.getName() != null && !m.getName().isEmpty()) {
+                        macros.put(m.getName(), m);
+                    }
                     break;
             }
         }

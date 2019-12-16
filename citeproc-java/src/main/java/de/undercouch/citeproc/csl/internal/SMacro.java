@@ -17,9 +17,6 @@ public class SMacro extends SRenderingElementContainer {
     public SMacro(Node node) {
         super(node);
         name = NodeHelper.getAttrValue(node, "name");
-        if (name == null || name.isEmpty()) {
-            throw new IllegalStateException("Macro has no name");
-        }
     }
 
     public String getName() {

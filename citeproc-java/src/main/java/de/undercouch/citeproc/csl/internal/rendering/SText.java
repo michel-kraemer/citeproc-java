@@ -64,9 +64,6 @@ public class SText implements SRenderingElement {
             ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(f)));
         } else if (value != null) {
             ctx.emit(value);
-        } else {
-            throw new IllegalStateException("Text element does not select a " +
-                    "variable, term, value, or macro");
         }
     }
 }

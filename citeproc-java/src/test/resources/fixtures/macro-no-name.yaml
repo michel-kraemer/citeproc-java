@@ -1,0 +1,32 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <macro>
+      <text variable="title"/>
+    </macro>
+    <macro name="">
+      <text variable="title"/>
+    </macro>
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name initialize-with=". "/>
+        </names>
+        <text variable="title"/>
+        <text macro="" quotes="true"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+
+result: >
+  G. Name. My title
+  
