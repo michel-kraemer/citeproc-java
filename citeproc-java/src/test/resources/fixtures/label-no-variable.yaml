@@ -15,6 +15,5 @@ items:
   - id: item1
     page: 10-20
 
-result: >
+result: |
   10–20
-

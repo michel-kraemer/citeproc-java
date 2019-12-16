@@ -5,15 +5,15 @@ style:
   <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
     <bibliography>
       <layout>
-        <label variable=""/>
-        <text variable="page"/>
+        <label variable="edition" suffix=" "/>
+        <text variable="edition"/>
       </layout>
     </bibliography>
   </style>
 
 items:
   - id: item1
-    page: 10-20
+    edition: 3
 
 result: |
-  10–20
+  edition 3

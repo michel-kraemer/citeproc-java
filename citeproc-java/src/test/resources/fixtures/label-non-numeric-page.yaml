@@ -5,7 +5,7 @@ style:
   <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
     <bibliography>
       <layout>
-        <label variable=""/>
+        <label variable="page" form="long" suffix=" "/>
         <text variable="page"/>
       </layout>
     </bibliography>
@@ -13,7 +13,7 @@ style:
 
 items:
   - id: item1
-    page: 10-20
+    page: A page
 
 result: |
-  10–20
+  page A page

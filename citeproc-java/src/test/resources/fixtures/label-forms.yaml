@@ -1,0 +1,31 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <group delimiter=", ">
+          <group>
+            <label variable="page" form="long" suffix=" "/>
+            <text variable="page"/>
+          </group>
+          <group>
+            <label variable="page" form="short" suffix=" "/>
+            <text variable="page"/>
+          </group>
+          <group>
+            <label variable="page" suffix=" "/>
+            <text variable="page"/>
+          </group>
+        </group>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    page: 10-20
+
+result: |
+  pages 10–20, pp. 10–20, pages 10–20

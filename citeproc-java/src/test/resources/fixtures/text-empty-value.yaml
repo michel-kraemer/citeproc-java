@@ -17,6 +17,5 @@ items:
   - id: item1
     title: My title
 
-result: >
+result: |
   My titleMy title
-  

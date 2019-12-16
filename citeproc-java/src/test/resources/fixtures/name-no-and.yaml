@@ -25,6 +25,5 @@ items:
         family: One
     title: My title
 
-result: >
+result: |
   G. Name, A. One. My title
-  
