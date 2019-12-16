@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal.rendering;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
@@ -10,6 +11,7 @@ import org.w3c.dom.Node;
  */
 public class SNames implements SRenderingElement {
     private final SName name;
+    private final Affixes affixes;
 
     /**
      * Creates the names element from an XML node
@@ -27,10 +29,12 @@ public class SNames implements SRenderingElement {
                     "a name element");
         }
         this.name = new SName(nameNode, variable);
+
+        affixes = new Affixes(node);
     }
 
     @Override
     public void render(RenderContext ctx) {
-        name.render(ctx);
+        affixes.wrap(name::render).accept(ctx);
     }
 }
