@@ -923,9 +923,13 @@ public class CSL implements Closeable {
                 RenderContext ctx = new RenderContext(style, locale, itemClone);
                 style.getBibliography().render(ctx);
 
+                if (!ctx.getResult().isEmpty()) {
+                    ctx.emit("\n");
+                }
+
                 entries[i] = ctx.getResult().getTokens().stream()
                         .map(Token::getText)
-                        .collect(Collectors.joining()) + "\n";
+                        .collect(Collectors.joining());
             }
             return new Bibliography(entries);
         } else {

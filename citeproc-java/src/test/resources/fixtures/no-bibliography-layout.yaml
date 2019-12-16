@@ -1,0 +1,13 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+
+result: ""
