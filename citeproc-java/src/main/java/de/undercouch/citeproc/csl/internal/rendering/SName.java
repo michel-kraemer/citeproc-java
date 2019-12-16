@@ -55,8 +55,7 @@ public class SName implements SElement {
         } else if ("symbol".equals(this.and)) {
             and = "&";
         } else {
-            throw new IllegalArgumentException("Unknown value for `and' " +
-                    "attribute: " + this.and);
+            and = null;
         }
 
         StringBuilder builder = new StringBuilder();
@@ -88,10 +87,14 @@ public class SName implements SElement {
     }
 
     private void appendAnd(StringBuilder builder, String and) {
-        if (!Character.isWhitespace(builder.charAt(builder.length() - 1))) {
-            builder.append(" ");
+        if (and == null) {
+            builder.append(", ");
+        } else {
+            if (!Character.isWhitespace(builder.charAt(builder.length() - 1))) {
+                builder.append(" ");
+            }
+            builder.append(and).append(" ");
         }
-        builder.append(and).append(" ");
     }
 
     private String render(CSLName name) {
