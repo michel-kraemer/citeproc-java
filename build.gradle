@@ -44,4 +44,10 @@ subprojects {
         options.compilerArgs << '-Xlint:unchecked'
         options.deprecation = true
     }
+
+    test {
+        if (project.hasProperty('excludeTests')) {
+            exclude project.excludeTests
+        }
+    }
 }

@@ -12,8 +12,6 @@ dependencies {
     compile 'org.antlr:antlr4:4.7.2'
     compile 'org.apache.directory.studio:org.apache.commons.io:2.4'
     compile 'org.eclipse.tycho:org.eclipse.jdt.core:3.14.0.v20171206-0802'
-    compile 'org.fusesource.jansi:jansi:1.18'
     compile 'org.eclipse.platform:org.eclipse.text:3.9.0'
     compile 'org.eclipse.platform:org.eclipse.core.resources:3.13.500'
-    compile 'org.python:jython-standalone:2.7.1'
 }

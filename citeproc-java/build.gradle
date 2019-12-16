@@ -22,8 +22,6 @@ ext.citeprocJsUrlBase = "https://raw.githubusercontent.com/Juris-M/citeproc-js/$
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
 ext.citeprocZip = ext.citeprocJsSHA + '.zip'
 ext.citeprocZipUrl = 'https://github.com/Juris-M/citeproc-js/archive/' + ext.citeprocZip
-ext.citeprocTestSuiteZip = 'd72a1ebb959dc67e8b1c6dbfc2e6a8be934ecb68.zip'
-ext.citeprocTestSuiteUrl = 'https://github.com/citation-style-language/test-suite/archive/' + ext.citeprocTestSuiteZip
 
 ext.graalVMVersion = "19.2.1"
 
@@ -96,61 +94,6 @@ task generateSources(dependsOn: downloadCiteprocJs) {
 
 task cleanGeneratedSources(type: Delete) {
     delete 'src-gen'
-}
-
-task downloadTestSuite(type: Download) {
-    src citeprocTestSuiteUrl
-    dest new File(buildDir, "test-suite/${citeprocTestSuiteZip}")
-    compress false
-    overwrite false
-}
-
-task downloadCiteprocZip(type: Download) {
-    acceptAnyCertificate true
-    src citeprocZipUrl
-    dest new File(buildDir, "test-suite/${citeprocZip}")
-    overwrite false
-}
-
-task extractCiteprocZip(type: Copy, dependsOn: downloadCiteprocZip) {
-    from(zipTree(file(downloadCiteprocZip.dest))) {
-        // exclude tests for non-standard features
-        exclude '**/fixtures/local/*'
-    }
-    into new File(buildDir, "test-suite/extracted/")
-    eachFile { fcp ->
-        // strip off first directory
-        fcp.relativePath = new RelativePath(!fcp.file.isDirectory(),
-                fcp.relativePath.segments[1..-1] as String[])
-    }
-    includeEmptyDirs = false
-}
-
-task extractTestSuite(type: Copy, dependsOn: [ downloadTestSuite, extractCiteprocZip ]) {
-    from zipTree(file(downloadTestSuite.dest))
-    into new File(buildDir, "test-suite/extracted/fixtures/std")
-    eachFile { fcp ->
-        // strip off first directory
-        fcp.relativePath = new RelativePath(!fcp.file.isDirectory(),
-                fcp.relativePath.segments[1..-1] as String[])
-    }
-    includeEmptyDirs = false
-
-    // patch processor.py. This is necessary until the following issue is fixed:
-    // https://github.com/citation-style-language/test-suite/pull/10
-    doLast {
-        ant.patch(patchfile: new File(projectDir, "processor.py.patch"),
-            originalfile: new File(buildDir, "test-suite/extracted/fixtures/std/processor.py"))
-    }
-}
-
-task runTestSuite(dependsOn: [ extractTestSuite, testClasses ]) {
-    doLast {
-        def tr = new CSLTestSuite(project, new File(buildDir, 'test-suite/extracted'))
-        tr.compile()
-        tr.fix()
-        tr.run()
-    }
 }
 
 // include generated sources

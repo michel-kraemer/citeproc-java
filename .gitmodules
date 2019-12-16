@@ -1,0 +1,3 @@
+[submodule "citeproc-java/src/test/resources/test-suite"]
+	path = citeproc-java/src/test/resources/test-suite
+	url = https://github.com/citation-style-language/test-suite.git

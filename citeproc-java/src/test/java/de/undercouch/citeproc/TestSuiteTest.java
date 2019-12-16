@@ -5,23 +5,24 @@ import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CitationIDIndexPair;
+import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.json.JsonLexer;
 import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
 import de.undercouch.citeproc.script.ScriptRunner;
 import de.undercouch.citeproc.script.ScriptRunnerException;
-import de.undercouch.citeproc.script.ScriptRunnerFactory;
-import de.undercouch.citeproc.script.ScriptRunnerFactory.RunnerType;
 import org.apache.commons.lang3.StringUtils;
-import org.fusesource.jansi.Ansi;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,147 +30,61 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
 
 /**
- * Runs the CSL test suite (<a href="https://github.com/citation-style-language/test-suite">https://github.com/citation-style-language/test-suite</a>)
+ * Runs all tests from the CSL test suite (<a href="https://github.com/citation-style-language/test-suite">https://github.com/citation-style-language/test-suite</a>)
  * @author Michel Kraemer
  */
-public class TestSuiteRunner {
+@RunWith(Parameterized.class)
+public class TestSuiteTest {
+    private static final String HUMANS_DIR = "/test-suite/processor-tests/humans";
+    private static final String elementRegex = "(?sm)^(.*>>=[^\\n]*%1$s[^\\n]+)(.*)(\\n<<=.*%1$s.*)";
+
     /**
-     * Main method of the test runner
-     * @param args the first argument can either be a compiled test file (.json)
-     * to run or a directory containing compiled test files
+     * The current test to run
      */
-    public static void main(String[] args) {
-        TestSuiteRunner runner = new TestSuiteRunner();
-        runner.runTests(new File(args[0]), RunnerType.AUTO);
+    private File testFile;
+
+    /**
+     * Get all the human-readable test files
+     */
+    @Parameters(name = "{0}")
+    public static Iterable<String> data() {
+        URL humansUrl = CSL.class.getResource(HUMANS_DIR);
+        File humansDir = new File(humansUrl.getPath());
+
+        // noinspection ConstantConditions
+        return Arrays.stream(humansDir.listFiles((dir, name) -> name.endsWith(".txt")))
+                .map(File::getName)
+                .collect(Collectors.toList());
     }
 
     /**
-     * Runs tests
-     * @param f either a compiled test file (.json) to run or a directory
-     * containing compiled test files
-     * @param runnerType the type of the script runner that will be used
-     * to execute all JavaScript code
+     * Create a new test
+     * @param name the name of the test file
      */
-    public void runTests(File f, RunnerType runnerType) {
-        ScriptRunnerFactory.setRunnerType(runnerType);
-        {
-            ScriptRunner sr = ScriptRunnerFactory.createRunner();
-            System.out.println("Using script runner: " + sr.getName() +
-                    " " + sr.getVersion());
-        }
-
-        // find test files
-        File[] testFiles;
-        if (f.isDirectory()) {
-            testFiles = f.listFiles((dir, name) -> name.endsWith(".json"));
-        } else {
-            testFiles = new File[] { f };
-        }
-
-        long start = System.currentTimeMillis();
-        int count = testFiles.length;
-        int success = 0;
-
-        ExecutorService executor = Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors());
-
-        // submit a job for each test file
-        List<Future<Boolean>> fus = new ArrayList<>();
-        for (File fi : testFiles) {
-            fus.add(executor.submit(new TestCallable(fi)));
-        }
-
-        // receive results
-        try {
-            for (Future<Boolean> fu : fus) {
-                if (fu.get()) {
-                    ++success;
-                }
-            }
-        } catch (Exception e) {
-            // should never happen
-            throw new RuntimeException(e);
-        }
-
-        executor.shutdown();
-
-        // output total time
-        long end = System.currentTimeMillis();
-        double time = (end - start) / 1000.0;
-        System.out.println("Successfully executed " + success + " of " + count + " tests.");
-        System.out.println(String.format(Locale.ENGLISH, "Total time: %.3f secs", time));
-
-        if (success < count) {
-            int failed = count - success;
-            if (failed == 1) {
-                throw new RuntimeException("1 test failed.");
-            } else {
-                throw new RuntimeException(failed + " tests failed.");
-            }
-        }
+    public TestSuiteTest(String name) {
+        URL humansUrl = CSL.class.getResource(HUMANS_DIR);
+        File humansDir = new File(humansUrl.getPath());
+        testFile = new File(humansDir, name);
     }
 
     /**
-     * A callable that runs a single test file
+     * Run a test from the test suite
+     * @throws IOException if an I/O error occurred
      */
-    private class TestCallable implements Callable<Boolean> {
-        private File file;
-
-        public TestCallable(File file) {
-            this.file = file;
-        }
-
-        @Override
-        public Boolean call() {
-            Exception ex;
-            try {
-                runTest(file);
-                ex = null;
-            } catch (IllegalArgumentException | IllegalStateException | IOException e) {
-                ex = e;
-            }
-
-            synchronized (TestSuiteRunner.this) {
-                // output name
-                String name = file.getName().substring(0, file.getName().length() - 5);
-                System.out.print(name);
-                for (int i = 0; i < (79 - name.length() - 9); ++i) {
-                    System.out.print(" ");
-                }
-
-                // output result
-                if (ex == null) {
-                    System.out.println("[" + Ansi.ansi().fg(Ansi.Color.GREEN)
-                            .a("SUCCESS").reset() + "]");
-                    return Boolean.TRUE;
-                } else {
-                    System.out.println("[" + Ansi.ansi().fg(Ansi.Color.RED)
-                            .a("FAILURE").reset() + "]");
-                    System.err.println(ex.getMessage());
-                    return Boolean.FALSE;
-                }
-            }
-        }
-    }
-
-    /**
-     * Runs a single test file
-     * @param f the test file to run
-     * @throws IOException if the file could not be loaded
-     */
+    @Test
     @SuppressWarnings("unchecked")
-    private static void runTest(File f) throws IOException {
+    public void run() throws IOException {
         // load file
-        Map<String, Object> conf = readFile(f);
+        Map<String, Object> conf = readFile(testFile);
 
         // get configuration
         String mode = (String)conf.get("mode");
@@ -368,29 +283,68 @@ public class TestSuiteRunner {
         }
 
         // compare result
-        if (!result.equals(citationResult.toString())) {
-            throw new IllegalStateException("expected: <" + result +
-                    "> but was <" + citationResult + ">");
-        }
+        assertEquals(result, citationResult.toString());
     }
 
     /**
-     * Reads a compiled test file (.json)
+     * Reads a test file
      * @param f the test file
      * @return the configuration read from the file
      * @throws IOException if the file could not be read
      */
     private static Map<String, Object> readFile(File f) throws IOException {
-        try (FileInputStream fis = new FileInputStream(f)) {
-            JsonLexer jsonLexer = new JsonLexer(new InputStreamReader(fis,
-                    StandardCharsets.UTF_8));
-            JsonParser jsonParser = new JsonParser(jsonLexer);
-            Map<String, Object> m = jsonParser.parseObject();
+        String text;
+        try (FileInputStream is = new FileInputStream(f)) {
+            text = CSLUtils.readStreamToString(is, "UTF-8");
+        }
 
-            // remove items whose value is 'false'
-            m.entrySet().removeIf(e -> e.getValue() instanceof Boolean && !(Boolean)e.getValue());
+        Map<String, Object> result = new HashMap<>();
+        extract(text, "MODE", true, false, false, result);
+        extract(text, "CSL", true, false, false, result);
+        extract(text, "RESULT", true, false, false, result);
+        extract(text, "INPUT", true, true, false, result);
+        extract(text, "CITATION-ITEMS", false, true, false, result);
+        extract(text, "CITATIONS", false, true, false, result);
+        extract(text, "BIBENTRIES", false, true, false, result);
+        extract(text, "BIBSECTION", false, true, false, result);
+        extract(text, "ABBREVIATIONS", false, false, true, result);
 
-            return m;
+        return result;
+    }
+
+    /**
+     * Extract an element from a human-readable test file
+     * @param text the test file contents
+     * @param tag the name of the element to extract
+     * @param required {@code true} if the element is required
+     * @param jsonArray {@code true} if the element contains a JSON array
+     * @param jsonObject {@code true} if the element contains a JSON object
+     * @param result the parsed element
+     * @throws IOException if the element could not be parsed
+     */
+    private static void extract(String text, String tag, boolean required,
+            boolean jsonArray, boolean jsonObject, Map<String, Object> result) throws IOException {
+        Pattern pattern = Pattern.compile(String.format(elementRegex, tag));
+        Matcher matcher = pattern.matcher(text);
+
+        if (matcher.matches()) {
+            String s = matcher.group(2).trim();
+            Object v = s;
+
+            if (jsonArray) {
+                JsonLexer jsonLexer = new JsonLexer(new StringReader(s));
+                JsonParser jsonParser = new JsonParser(jsonLexer);
+                v = jsonParser.parseArray();
+            } else if (jsonObject) {
+                JsonLexer jsonLexer = new JsonLexer(new StringReader(s));
+                JsonParser jsonParser = new JsonParser(jsonLexer);
+                v = jsonParser.parseObject();
+            }
+
+            String name = tag.toLowerCase().replace('-', '_');
+            result.put(name, v);
+        } else if (required) {
+            throw new IllegalStateException("Missing required element: " + tag);
         }
     }
 
