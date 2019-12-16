@@ -1,0 +1,20 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <label/>
+        <text variable="page"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    page: 10-20
+
+result: >
+  10–20
+

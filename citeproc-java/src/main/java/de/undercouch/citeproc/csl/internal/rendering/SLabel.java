@@ -30,9 +30,6 @@ public class SLabel implements SRenderingElement {
      */
     public SLabel(Node node) {
         variable = NodeHelper.getAttrValue(node, "variable");
-        if (variable == null || variable.isEmpty()) {
-            throw new IllegalStateException("Label element does not select a variable");
-        }
 
         String form = NodeHelper.getAttrValue(node, "form");
         if (form == null) {
@@ -51,6 +48,10 @@ public class SLabel implements SRenderingElement {
     }
 
     private void renderInternal(RenderContext ctx) {
+        if (variable == null || variable.isEmpty()) {
+            return;
+        }
+
         String value = ctx.getVariable(variable);
         if (value == null) {
             return;
