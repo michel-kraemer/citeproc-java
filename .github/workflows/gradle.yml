@@ -14,6 +14,12 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: "./gradlew build -PexcludeTests='**/TestSuiteTest.class'"
+    - name: Create test reports
+      run: ./gradlew jacocoTestReport
+    - name: Upload code coverage report
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: bash <(curl -s https://codecov.io/bash)
 
   runTestSuite:
     runs-on: ubuntu-latest
