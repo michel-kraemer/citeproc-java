@@ -761,6 +761,7 @@ public class CSL implements Closeable {
      */
     public void registerCitationItems(String... ids) {
         if (experimentalMode) {
+            registeredItems.clear();
             for (String id : ids) {
                 CSLItemData item = itemDataProvider.retrieveItem(id);
                 registeredItems.add(item);

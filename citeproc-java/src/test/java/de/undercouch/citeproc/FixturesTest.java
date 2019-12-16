@@ -92,9 +92,8 @@ public class FixturesTest {
         citeproc.setOutputFormat("text");
 
         // register citation items
-        for (CSLItemData item : items) {
-            citeproc.registerCitationItems(item.getId());
-        }
+        citeproc.registerCitationItems(Arrays.stream(items)
+                .map(CSLItemData::getId).toArray(String[]::new));
 
         // make bibliography
         Bibliography bibl = citeproc.makeBibliography();
