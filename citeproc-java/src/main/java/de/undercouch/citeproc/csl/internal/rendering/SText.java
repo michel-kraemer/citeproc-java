@@ -44,7 +44,7 @@ public class SText implements SRenderingElement {
 
     private void renderInternal(RenderContext ctx) {
         if (variable != null && !variable.isEmpty()) {
-            String v = ctx.getVariable(variable);
+            String v = ctx.getStringVariable(variable);
             if (v != null) {
                 if (variable.equals("page")) {
                     String delimiter = ctx.getTerm("page-range-delimiter");

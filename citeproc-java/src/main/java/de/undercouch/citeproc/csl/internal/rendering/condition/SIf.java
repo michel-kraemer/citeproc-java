@@ -1,21 +1,22 @@
 package de.undercouch.citeproc.csl.internal.rendering.condition;
 
+import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
-
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * A conditional element in a style file
  * @author Michel Kraemer
  */
 public class SIf extends SCondition {
+    private static int ALL = 0;
+    private static int ANY = 1;
+    private static int NONE = 2;
+
     private final String[] types;
     private final String[] variables;
-    private final String match;
+    private final int match;
 
     /**
      * Create the conditional element from an XML node
@@ -32,54 +33,67 @@ public class SIf extends SCondition {
             types = null;
         }
 
-        if (types == null) {
-            // get the variables to check
-            String variable = NodeHelper.getAttrValue(node, "variable");
-            if (variable != null) {
-                variables = variable.split("\\s+");
-            } else {
-                variables = null;
-            }
+        // get the variables to check
+        String variable = NodeHelper.getAttrValue(node, "variable");
+        if (variable != null) {
+            variables = variable.split("\\s+");
         } else {
             variables = null;
         }
 
         // get the match mode
-        match = NodeHelper.getAttrValue(node, "match");
-        if (match != null && !"none".equals(match) && !"any".equals(match) &&
-                !"all".equals(match)) {
+        String match = NodeHelper.getAttrValue(node, "match");
+        if (match == null || match.equals("all")) {
+            this.match = ALL;
+        } else if (match.equals("any")) {
+            this.match = ANY;
+        } else if (match.equals("none")) {
+            this.match = NONE;
+        } else {
             throw new IllegalStateException("Unknown match mode: " + match);
         }
     }
 
     @Override
     public boolean matches(RenderContext ctx) {
-        boolean result = false;
+        if (types == null && variables == null) {
+            return false;
+        }
 
-        if (types != null) {
-            // check of the citation item matches the given types
-            String type = ctx.getItemData().getType().toString();
-            Stream<String> s = Arrays.stream(types);
-            if ("none".equals(match)) {
-                result = s.noneMatch(type::equals);
-            } else if ("any".equals(match)) {
-                result = s.anyMatch(type::equals);
-            } else {
-                result = s.allMatch(type::equals);
-            }
-        } else if (variables != null) {
-            // check the values of the given variables
-            Stream<String> s = Arrays.stream(variables)
-                    .map(ctx::getVariable);
-            if ("none".equals(match)) {
-                result = s.noneMatch(Objects::nonNull);
-            } else if ("any".equals(match)) {
-                result = s.anyMatch(Objects::nonNull);
-            } else {
-                result = s.allMatch(Objects::nonNull);
+        CSLType cslType = ctx.getItemData().getType();
+        if (types != null && cslType != null) {
+            // check if the citation item matches the given types
+            String type = cslType.toString();
+            for (String s : types) {
+                boolean r = type.equals(s);
+                if (match == ALL && !r) {
+                    return false;
+                }
+                if (match == ANY && r) {
+                    return true;
+                }
+                if (match == NONE && r) {
+                    return false;
+                }
             }
         }
 
-        return result;
+        if (variables != null) {
+            // check the values of the given variables
+            for (String v : variables) {
+                Object o = ctx.getVariable(v);
+                if (match == ALL && o == null) {
+                    return false;
+                }
+                if (match == ANY && o != null) {
+                    return true;
+                }
+                if (match == NONE && o != null) {
+                    return false;
+                }
+            }
+        }
+
+        return match != ANY;
     }
 }

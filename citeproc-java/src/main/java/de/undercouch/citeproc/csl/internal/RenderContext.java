@@ -111,12 +111,32 @@ public class RenderContext {
     }
 
     /**
-     * Get the value of the variable with the given name
+     * Get the value of a string, date, or name variable
      * @param name the variable's name
      * @return the variable's value or {@code null} if the value is not set
      * @throws IllegalArgumentException if the variable is unknown
      */
-    public String getVariable(String name) {
+    public Object getVariable(String name) {
+        Object result = getStringVariable(name);
+        if (result != null) {
+            return result;
+        }
+
+        result = getDateVariable(name);
+        if (result != null) {
+            return result;
+        }
+
+        return getNameVariable(name);
+    }
+
+    /**
+     * Get the value of the string variable with the given name
+     * @param name the variable's name
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the variable is unknown
+     */
+    public String getStringVariable(String name) {
         String result;
         switch (name) {
             case "abstract":

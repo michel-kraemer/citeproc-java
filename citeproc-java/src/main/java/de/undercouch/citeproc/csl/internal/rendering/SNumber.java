@@ -39,7 +39,7 @@ public class SNumber implements SRenderingElement {
     }
 
     private void renderInternal(RenderContext ctx) {
-        String value = ctx.getVariable(variable);
+        String value = ctx.getStringVariable(variable);
         if (value != null) {
             if (!NumberHelper.isNumeric(value)) {
                 ctx.emit(value);

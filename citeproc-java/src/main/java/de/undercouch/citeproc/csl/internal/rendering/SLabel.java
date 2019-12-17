@@ -52,7 +52,7 @@ public class SLabel implements SRenderingElement {
             return;
         }
 
-        String value = ctx.getVariable(variable);
+        String value = ctx.getStringVariable(variable);
         if (value == null) {
             return;
         }
