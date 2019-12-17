@@ -19,17 +19,7 @@ public class SNames implements SRenderingElement {
      */
     public SNames(Node node) {
         String variable = NodeHelper.getAttrValue(node, "variable");
-        if (variable == null || variable.isEmpty()) {
-            throw new IllegalStateException("Names element does not select a variable");
-        }
-
-        Node nameNode = NodeHelper.findDirectChild(node, "name");
-        if (nameNode == null) {
-            throw new IllegalStateException("Names element does not contain " +
-                    "a name element");
-        }
-        this.name = new SName(nameNode, variable);
-
+        name = new SName(NodeHelper.findDirectChild(node, "name"), variable);
         affixes = new Affixes(node);
     }
 

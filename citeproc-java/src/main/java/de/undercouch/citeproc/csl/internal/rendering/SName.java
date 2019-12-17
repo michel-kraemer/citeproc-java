@@ -22,30 +22,42 @@ public class SName implements SElement {
 
     /**
      * Create the name element from an XML node
-     * @param node the XML node
-     * @param variable the variable that holds the name
+     * @param node the XML node (may be {@code null})
+     * @param variable the variable that holds the name (may be {@code null})
      */
     public SName(Node node, String variable) {
         this.variable = variable;
-        and = NodeHelper.getAttrValue(node, "and");
 
-        String delimiter = NodeHelper.getAttrValue(node, "delimiter");
+        String delimiter;
+        String delimiterPrecedesLast;
+        String sortSeparator;
+        if (node != null) {
+            and = NodeHelper.getAttrValue(node, "and");
+            initializeWith = NodeHelper.getAttrValue(node, "initialize-with");
+            nameAsSortOrder = NodeHelper.getAttrValue(node, "name-as-sort-order");
+            delimiter = NodeHelper.getAttrValue(node, "delimiter");
+            delimiterPrecedesLast = NodeHelper.getAttrValue(node,
+                    "delimiter-precedes-last");
+            sortSeparator = NodeHelper.getAttrValue(node, "sort-separator");
+        } else {
+            and = null;
+            initializeWith = null;
+            nameAsSortOrder = null;
+            delimiter = null;
+            delimiterPrecedesLast = null;
+            sortSeparator = null;
+        }
+
         if (delimiter == null) {
             delimiter = ", ";
         }
         this.delimiter = delimiter;
 
-        String delimiterPrecedesLast = NodeHelper.getAttrValue(node,
-                "delimiter-precedes-last");
         if (delimiterPrecedesLast == null) {
             delimiterPrecedesLast = "contextual";
         }
         this.delimiterPrecedesLast = delimiterPrecedesLast;
 
-        initializeWith = NodeHelper.getAttrValue(node, "initialize-with");
-        nameAsSortOrder = NodeHelper.getAttrValue(node, "name-as-sort-order");
-
-        String sortSeparator = NodeHelper.getAttrValue(node, "sort-separator");
         if (sortSeparator == null) {
             sortSeparator = ", ";
         }
@@ -54,7 +66,10 @@ public class SName implements SElement {
 
     @Override
     public void render(RenderContext ctx) {
-        CSLName[] names = ctx.getNameVariable(variable);
+        CSLName[] names = null;
+        if (variable != null) {
+            names = ctx.getNameVariable(variable);
+        }
         if (names == null) {
             return;
         }
