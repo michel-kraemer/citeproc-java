@@ -279,7 +279,8 @@ public class RenderContext {
                 result = itemData.getYearSuffix();
                 break;
             default:
-                throw new IllegalArgumentException("Unknown variable: " + name);
+                result = null;
+                break;
         }
 
         variablesCalled.incrementAndGet();
@@ -317,7 +318,8 @@ public class RenderContext {
                 result = itemData.getSubmitted();
                 break;
             default:
-                throw new IllegalArgumentException("Unknown date variable: " + name);
+                result = null;
+                break;
         }
 
         variablesCalled.incrementAndGet();
@@ -370,7 +372,8 @@ public class RenderContext {
                 result = itemData.getTranslator();
                 break;
             default:
-                throw new IllegalArgumentException("Unknown name variable: " + name);
+                result = null;
+                break;
         }
 
         variablesCalled.incrementAndGet();
