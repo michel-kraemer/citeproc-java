@@ -10,8 +10,8 @@ style:
     </locale>
     <bibliography>
       <layout>
-        <names variable="author" suffix=". ">
-          <name initialize-with=". "/>
+        <names variable="author" suffix=" ">
+          <name initialize-with=". " delimiter="; " and="text" delimiter-precedes-last="after-inverted-name" name-as-sort-order="first"/>
         </names>
         <text variable="title"/>
       </layout>
@@ -28,4 +28,4 @@ items:
     title: My title
 
 result: |
-  G. Name, A. One. My title
+  Name, G.; AND A. One My title

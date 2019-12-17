@@ -3,15 +3,10 @@ modes:
 
 style:
   <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
-    <locale xml:lang="en">
-      <terms>
-        <term name="and">AND</term>
-      </terms>
-    </locale>
     <bibliography>
       <layout>
-        <names variable="author" suffix=". ">
-          <name initialize-with=". "/>
+        <names variable="author">
+          <name/>
         </names>
         <text variable="title"/>
       </layout>
@@ -28,4 +23,4 @@ items:
     title: My title
 
 result: |
-  G. Name, A. One. My title
+  Given Name, Another OneMy title

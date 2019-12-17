@@ -4,6 +4,7 @@ import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SElement;
 import de.undercouch.citeproc.helper.NodeHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 
 /**
@@ -16,6 +17,8 @@ public class SName implements SElement {
     private final String delimiter;
     private final String delimiterPrecedesLast;
     private final String initializeWith;
+    private final String nameAsSortOrder;
+    private final String sortSeparator;
 
     /**
      * Create the name element from an XML node
@@ -40,27 +43,37 @@ public class SName implements SElement {
         this.delimiterPrecedesLast = delimiterPrecedesLast;
 
         initializeWith = NodeHelper.getAttrValue(node, "initialize-with");
+        nameAsSortOrder = NodeHelper.getAttrValue(node, "name-as-sort-order");
+
+        String sortSeparator = NodeHelper.getAttrValue(node, "sort-separator");
+        if (sortSeparator == null) {
+            sortSeparator = ", ";
+        }
+        this.sortSeparator = sortSeparator;
     }
 
     @Override
     public void render(RenderContext ctx) {
         CSLName[] names = ctx.getNameVariable(variable);
         if (names == null) {
-            throw new IllegalStateException("Selected names are empty");
+            return;
         }
 
         String and;
         if ("text".equals(this.and)) {
-            and = ctx.getTerm("and");
+            and = " " + ctx.getTerm("and") + " ";
         } else if ("symbol".equals(this.and)) {
-            and = "&";
+            and = " & ";
         } else {
-            and = null;
+            and = delimiter;
         }
 
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < names.length; ++i) {
-            builder.append(render(names[i]));
+            boolean nameAsSort = "all".equals(nameAsSortOrder) ||
+                    (i == 0 && "first".equals(nameAsSortOrder));
+            builder.append(render(names[i], nameAsSort));
+
             if (i < names.length - 1) {
                 if (i == names.length - 2) {
                     switch (delimiterPrecedesLast) {
@@ -72,6 +85,15 @@ public class SName implements SElement {
 
                         case "always":
                             builder.append(delimiter);
+                            break;
+
+                        case "after-inverted-name":
+                            // IMHO, according to the standard, we should
+                            // check for nameAsSort == true here, but
+                            // citeproc.js seems to behave differently
+                            if (i == 0) {
+                                builder.append(delimiter);
+                            }
                             break;
 
                         default:
@@ -87,20 +109,19 @@ public class SName implements SElement {
     }
 
     private void appendAnd(StringBuilder builder, String and) {
-        if (and == null) {
-            builder.append(", ");
+        if (Character.isWhitespace(builder.charAt(builder.length() - 1)) &&
+                Character.isWhitespace(and.charAt(0))) {
+            builder.append(and, 1, and.length());
         } else {
-            if (!Character.isWhitespace(builder.charAt(builder.length() - 1))) {
-                builder.append(" ");
-            }
-            builder.append(and).append(" ");
+            builder.append(and);
         }
     }
 
-    private String render(CSLName name) {
+    private String render(CSLName name, boolean nameAsSort) {
         StringBuilder result = new StringBuilder();
 
         String given = name.getGiven();
+        StringBuilder givenBuffer = new StringBuilder();
         if (initializeWith != null) {
             // produce initials for each given name and append
             // 'initializeWith' to each of them
@@ -110,14 +131,23 @@ public class SName implements SElement {
                 if (Character.isWhitespace(c) || c == '.') {
                     found = true;
                 } else if (found) {
-                    result.append(c).append(initializeWith);
+                    givenBuffer.append(c).append(initializeWith);
                     found = false;
                 }
             }
         } else {
-            result.append(given);
+            givenBuffer.append(given);
         }
 
-        return result.append(name.getFamily()).toString();
+        given = givenBuffer.toString();
+        given = StringUtils.stripEnd(given, null);
+
+        if (nameAsSort) {
+            result.append(name.getFamily()).append(sortSeparator).append(given);
+        } else {
+            result.append(given).append(" ").append(name.getFamily());
+        }
+
+        return result.toString();
     }
 }

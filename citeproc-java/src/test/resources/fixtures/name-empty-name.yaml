@@ -13,6 +13,12 @@ style:
         <names variable="author" suffix=". ">
           <name initialize-with=". "/>
         </names>
+        <names variable="editor" prefix="(" suffix=") ">
+          <name initialize-with=". "/>
+        </names>
+        <names variable="interviewer" prefix="[" suffix="] ">
+          <name initialize-with=". "/>
+        </names>
         <text variable="title"/>
       </layout>
     </bibliography>
@@ -23,9 +29,10 @@ items:
     author:
       - given: Given
         family: Name
+    editor:
       - given: Another
         family: One
     title: My title
 
 result: |
-  G. Name, A. One. My title
+  G. Name. (A. One) My title

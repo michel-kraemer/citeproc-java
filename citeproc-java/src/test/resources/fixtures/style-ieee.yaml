@@ -1,0 +1,24 @@
+modes:
+  - bibliography
+
+style:
+  ieee
+
+items:
+  - id: "Johnson:1973:PLB"
+    type: report
+    title: The Programming Language B
+    author:
+      - given: S. C.
+        family: Johnson
+      - given: B. W.
+        family: Kernighan
+    number: 8
+    publisher: Bell Laboratories
+    publisherPlace: Murray Hill, NJ, USA
+    issued:
+      date-parts:
+        - [1973]
+
+result: |
+  [1]S. C. Johnson and B. W. Kernighan, “The Programming Language B,” Bell Laboratories, 8, 1973.
