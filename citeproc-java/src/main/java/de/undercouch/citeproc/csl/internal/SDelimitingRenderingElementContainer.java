@@ -61,7 +61,7 @@ public class SDelimitingRenderingElementContainer extends SRenderingElementConta
 
             if (!shouldBeFiltered && !child.getResult().isEmpty()) {
                 if (emitted && delimiter != null) {
-                    ctx.emit(delimiter);
+                    ctx.emit(delimiter, Token.Type.DELIMITER);
                 }
                 ctx.emit(child.getResult());
                 emitted = true;

@@ -187,4 +187,46 @@ public class StringHelper {
         }
         return new String(r);
     }
+
+    /**
+     * <p>Calculates how many characters overlap between {@code a} and {@code b},
+     * i.e. how many characters at the end of {@code a} are equal to the ones
+     * at the beginning of {@code b}.</p>
+     *
+     * <p>Examples:</p>
+     * <pre>
+     * overlap("abcd", "cdef")     = 2
+     * overlap("abcd", "xyz")      = 0
+     * overlap("a", "a")           = 1
+     * overlap("ab", "b")          = 1
+     * overlap("abcd", "bcdefg")   = 3
+     * overlap("", "a")            = 0
+     * overlap("a", "")            = 0
+     * </pre>
+     *
+     * @param a the first string
+     * @param b the second string
+     * @return the number of overlapping characters
+     */
+    public static int overlap(CharSequence a, CharSequence b) {
+        if (a == null || b == null || a.length() == 0 || b.length() == 0) {
+            return 0;
+        }
+
+        int start = Math.max(0, a.length() - b.length());
+        for (int i = start; i < a.length(); ++i) {
+            int j = 0;
+            for (; j < b.length() && i + j < a.length(); ++j) {
+                if (a.charAt(i + j) != b.charAt(j)) {
+                    break;
+                }
+            }
+
+            if (i + j == a.length()) {
+                return j;
+            }
+        }
+
+        return 0;
+    }
 }

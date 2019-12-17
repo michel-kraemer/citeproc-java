@@ -32,7 +32,12 @@ public class Token {
         /**
          * A token that represents a suffix
          */
-        SUFFIX
+        SUFFIX,
+
+        /**
+         * A token that represents a delimiter
+         */
+        DELIMITER
     }
 
     private final String text;

@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal;
 
 import de.undercouch.citeproc.helper.NodeHelper;
+import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 
@@ -38,17 +39,37 @@ public class SBibliography implements SElement {
         // swap punctuation and closing quotation marks if necessary
         List<Token> tokens = tmp.getResult().getTokens();
         if (ctx.getLocale().getStyleOptions().isPunctuationInQuote()) {
-            for (int i = 0; i < tokens.size(); ++i) {
-                Token t = tokens.get(i);
-                if (t.getType() == Token.Type.CLOSE_QUOTE && i < tokens.size() - 1 &&
-                        StringUtils.startsWithAny(tokens.get(i + 1).getText(), ",", ".")) {
-                    Token nextToken = tokens.get(i + 1);
-                    String nextText = nextToken.getText();
-                    String puncutation = nextText.substring(0, 1);
+            for (int i = 0; i < tokens.size() - 1; ++i) {
+                Token t0 = tokens.get(i);
+                Token t1 = tokens.get(i + 1);
+                if (t0.getType() == Token.Type.CLOSE_QUOTE &&
+                        StringUtils.startsWithAny(t1.getText(), ",", ".")) {
+                    String nextText = t1.getText();
+                    String punctuation = nextText.substring(0, 1);
                     String rest = nextText.substring(1);
-                    tokens.add(i, new Token(puncutation, Token.Type.TEXT));
+                    tokens.add(i, new Token(punctuation, Token.Type.TEXT));
                     ++i;
-                    tokens.set(i + 1, new Token(rest, nextToken.getType()));
+                    tokens.set(i + 1, new Token(rest, t1.getType()));
+                }
+            }
+        }
+
+        // remove extraneous prefixes, suffixes, and delimiters
+        for (int i = 1; i < tokens.size(); ++i) {
+            Token t0 = tokens.get(i - 1);
+            Token t1 = tokens.get(i);
+            if (t1.getType() == Token.Type.PREFIX ||
+                    t1.getType() == Token.Type.SUFFIX ||
+                    t1.getType() == Token.Type.DELIMITER) {
+                int overlap = StringHelper.overlap(t0.getText(), t1.getText());
+                if (overlap > 0) {
+                    String rest = t1.getText().substring(overlap);
+                    if (rest.isEmpty()) {
+                        tokens.remove(i);
+                        i--;
+                    } else {
+                        tokens.set(i, new Token(rest, t1.getType()));
+                    }
                 }
             }
         }

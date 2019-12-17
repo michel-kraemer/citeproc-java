@@ -51,4 +51,29 @@ public class StringHelperTest {
         String r = StringHelper.escapeJava(original);
         assertEquals(expected, r);
     }
+
+    /**
+     * Tests {@link StringHelper#overlap(CharSequence, CharSequence)}
+     */
+    @Test
+    public void overlap() {
+        assertEquals(2, StringHelper.overlap("abcd", "cdef"));
+        assertEquals(0, StringHelper.overlap("abcd", "xyz"));
+        assertEquals(1, StringHelper.overlap("a", "a"));
+        assertEquals(1, StringHelper.overlap("ab", "b"));
+        assertEquals(2, StringHelper.overlap("abab", "ab"));
+        assertEquals(4, StringHelper.overlap("ababab", "abab"));
+        assertEquals(4, StringHelper.overlap("cdabab", "abab"));
+        assertEquals(0, StringHelper.overlap("ababcd", "abab"));
+        assertEquals(4, StringHelper.overlap("abab", "abab"));
+        assertEquals(3, StringHelper.overlap("abcd", "bcdefg"));
+        assertEquals(3, StringHelper.overlap("aaaaa", "aaa"));
+        assertEquals(0, StringHelper.overlap("aaaaab", "aaa"));
+        assertEquals(0, StringHelper.overlap("", "a"));
+        assertEquals(0, StringHelper.overlap("a", ""));
+        assertEquals(0, StringHelper.overlap("", ""));
+        assertEquals(0, StringHelper.overlap("a", null));
+        assertEquals(0, StringHelper.overlap(null, "a"));
+        assertEquals(0, StringHelper.overlap(null, null));
+    }
 }
