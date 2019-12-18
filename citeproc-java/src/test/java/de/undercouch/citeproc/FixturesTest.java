@@ -1,7 +1,11 @@
 package de.undercouch.citeproc;
 
+import de.undercouch.citeproc.bibtex.BibTeXConverter;
+import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.output.Bibliography;
+import org.jbibtex.BibTeXDatabase;
+import org.jbibtex.ParseException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -10,12 +14,15 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -63,6 +70,23 @@ public class FixturesTest {
         this.experimentalMode = experimentalMode;
     }
 
+    private static ItemDataProvider loadBibliographyFile(String filename) throws IOException {
+        BibTeXDatabase db;
+        try (InputStream is = FixturesTest.class.getResourceAsStream(filename)) {
+            InputStream tis = is;
+            if (filename.endsWith(".gz")) {
+                tis = new GZIPInputStream(is);
+            }
+            db = new BibTeXConverter().loadDatabase(tis);
+        } catch (ParseException e) {
+            throw new IOException(e);
+        }
+
+        BibTeXItemDataProvider result = new BibTeXItemDataProvider();
+        result.addDatabase(db);
+        return result;
+    }
+
     /**
      * Run a test from the test suite
      * @throws IOException if an I/O error occurred
@@ -79,21 +103,31 @@ public class FixturesTest {
         String style = (String)data.get("style");
         String expectedResult = (String)data.get("result");
 
-        // convert item data
-        List<Map<String, Object>> rawItems = (List<Map<String, Object>>)data.get("items");
-        CSLItemData[] items = new CSLItemData[rawItems.size()];
-        for (int i = 0; i < items.length; ++i) {
-            items[i] = CSLItemData.fromJson(rawItems.get(i));
+        ItemDataProvider itemDataProvider;
+        String bibliographyFile = (String)data.get("bibliographyFile");
+        if (bibliographyFile != null) {
+            itemDataProvider = loadBibliographyFile(bibliographyFile);
+        } else {
+            // convert item data
+            List<Map<String, Object>> rawItems = (List<Map<String, Object>>)data.get("items");
+            CSLItemData[] items = new CSLItemData[rawItems.size()];
+            for (int i = 0; i < items.length; ++i) {
+                items[i] = CSLItemData.fromJson(rawItems.get(i));
+            }
+            itemDataProvider = new ListItemDataProvider(items);
+        }
+
+        List<String> itemIds = (List<String>)data.get("itemIds");
+        if (itemIds == null) {
+            itemIds = new ArrayList<>(Arrays.asList(itemDataProvider.getIds()));
         }
 
         // create CSL processor
-        ListItemDataProvider itemDataProvider = new ListItemDataProvider(items);
         CSL citeproc = new CSL(itemDataProvider, style, experimentalMode);
         citeproc.setOutputFormat("text");
 
         // register citation items
-        citeproc.registerCitationItems(Arrays.stream(items)
-                .map(CSLItemData::getId).toArray(String[]::new));
+        citeproc.registerCitationItems(itemIds.toArray(new String[0]));
 
         // make bibliography
         Bibliography bibl = citeproc.makeBibliography();

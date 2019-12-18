@@ -39,7 +39,7 @@ public class SName implements SElement {
         String etAlUseFirst;
         if (node != null) {
             and = NodeHelper.getAttrValue(node, "and");
-            initializeWith = NodeHelper.getAttrValue(node, "initialize-with");
+            initializeWith = StringUtils.strip(NodeHelper.getAttrValue(node, "initialize-with"));
             nameAsSortOrder = NodeHelper.getAttrValue(node, "name-as-sort-order");
             delimiter = NodeHelper.getAttrValue(node, "delimiter");
             delimiterPrecedesEtAl = NodeHelper.getAttrValue(node,
@@ -227,26 +227,31 @@ public class SName implements SElement {
             // produce initials for each given name and append
             // 'initializeWith' to each of them
             boolean found = true;
+            boolean hyphen = false;
             for (int i = 0; i < given.length(); ++i) {
                 char c = given.charAt(i);
-                if (Character.isWhitespace(c) || c == '.') {
+                if (c == '-') {
+                    found = true;
+                    hyphen = true;
+                } else if (Character.isWhitespace(c) || c == '.') {
                     found = true;
                 } else if (found) {
+                    if (givenBuffer.length() > 0) {
+                        givenBuffer.append(hyphen ? '-' : ' ');
+                    }
                     givenBuffer.append(c).append(initializeWith);
                     found = false;
+                    hyphen = false;
                 }
             }
         } else {
             givenBuffer.append(given);
         }
 
-        given = givenBuffer.toString();
-        given = StringUtils.stripEnd(given, null);
-
         if (nameAsSort) {
-            result.append(name.getFamily()).append(sortSeparator).append(given);
+            result.append(name.getFamily()).append(sortSeparator).append(givenBuffer);
         } else {
-            result.append(given).append(" ").append(name.getFamily());
+            result.append(givenBuffer).append(" ").append(name.getFamily());
         }
 
         return result.toString();
