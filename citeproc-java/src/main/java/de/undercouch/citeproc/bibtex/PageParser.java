@@ -26,6 +26,12 @@ public class PageParser {
         InternalPageParser parser = new InternalPageParser(tokens);
         parser.removeErrorListeners(); // do not output errors to console
         PagesContext ctx = parser.pages();
-        return new PageRange(ctx.literal != null ? ctx.literal : pages, ctx.pageFrom, ctx.numberOfPages);
+        if (ctx.literal == null || ctx.literal.isEmpty() ||
+                ctx.exception != null || parser.getNumberOfSyntaxErrors() > 0) {
+            // unparsable fall back to literal string
+            return new PageRange(pages, null, null, false);
+        }
+        return new PageRange(ctx.literal, ctx.pageFrom, ctx.numberOfPages,
+                ctx.multiplePages);
     }
 }

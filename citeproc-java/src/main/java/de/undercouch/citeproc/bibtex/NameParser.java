@@ -31,7 +31,8 @@ public class NameParser {
         InternalNameParser parser = new InternalNameParser(tokens);
         parser.removeErrorListeners(); // do not output errors to console
         NamesContext ctx = parser.names();
-        if (ctx.result.isEmpty() || ctx.exception != null) {
+        if (ctx.result.isEmpty() || ctx.exception != null ||
+                parser.getNumberOfSyntaxErrors() > 0) {
             // unparsable fall back to literal string
             return new CSLName[] { new CSLNameBuilder().literal(names).build() };
         }

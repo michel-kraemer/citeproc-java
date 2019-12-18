@@ -33,7 +33,8 @@ pages
   locals [
     String literal,
     Integer numberOfPages,
-    String pageFrom
+    String pageFrom,
+    boolean multiplePages = false
   ]
   : r1=range {
       $numberOfPages = addPages($numberOfPages, $r1.numberOfPages);
@@ -42,9 +43,10 @@ pages
         $literal = $r1.literal;
       else
         $literal = $r1.text;
+      $multiplePages |= $r1.multiplePages;
     }
     (
-      SPACE? COMMA SPACE? r2=range {
+      z1=SPACE* z2=COMMA z3=SPACE* r2=range {
         $numberOfPages = addPages($numberOfPages, $r2.numberOfPages);
         $pageFrom = makePageFrom($pageFrom, $r2.pageFrom);
         $literal += ",";
@@ -52,6 +54,7 @@ pages
           $literal += $r2.literal;
         else
           $literal += $r2.text;
+        $multiplePages = true;
       }
     )*
   ;
@@ -60,7 +63,8 @@ range
   returns [
     String literal,
     String pageFrom,
-    Integer numberOfPages
+    Integer numberOfPages,
+    boolean multiplePages = false
   ]
   locals [
     String pageTo = null
@@ -79,10 +83,10 @@ range
     }
   }
   : PAGE { $pageFrom = $pageTo = $PAGE.text; }
-  | p1=PAGE SPACE? DASH SPACE? p2=PAGE { $pageFrom = $p1.text; $pageTo = $p2.text; }
+  | p1=PAGE SPACE* DASH+ SPACE* p2=PAGE { $pageFrom = $p1.text; $pageTo = $p2.text; $multiplePages = true; }
   ;
 
-SPACE : ' '+ ;
+SPACE : ' ' ;
 COMMA : ',' ;
-DASH : [-\u2013]+ ;
+DASH : [-\u2013] ;
 PAGE : [0-9a-zA-Z?:\u00C0-\u2012\u2014-\uFFFF]+ ;

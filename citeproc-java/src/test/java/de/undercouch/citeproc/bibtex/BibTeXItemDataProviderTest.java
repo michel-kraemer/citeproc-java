@@ -186,7 +186,7 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
             Bibliography b = citeproc.makeBibliography();
             assertEquals(1, b.getEntries().length);
             assertEquals("Sterling, T. L. (Ed.). (2001). Beowulf Cluster Computing with Linux "
-                    + "(p. xxxiii,496). Cambridge, MA, USA: MIT Press.\n", b.getEntries()[0]);
+                    + "(p. xxxiii + 496). Cambridge, MA, USA: MIT Press.\n", b.getEntries()[0]);
         }
 
         // compare with another item from the unix database

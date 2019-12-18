@@ -8,17 +8,23 @@ public class PageRange {
     private final String literal;
     private final String pageFirst;
     private final Integer numberOfPages;
+    private final boolean multiplePages;
 
     /**
      * Constructs a range of pages
      * @param literal the string from which this range has been created
      * @param pageFirst the first page in the range (can be {@code null})
      * @param numberOfPages the number of pages in this range (can be {@code null})
+     * @param multiplePages {@code true} if this object represents multiple
+     * pages (may be {@code true} even if the actual {@code numberOfPages}
+     * could not be determined)
      */
-    public PageRange(String literal, String pageFirst, Integer numberOfPages) {
+    public PageRange(String literal, String pageFirst, Integer numberOfPages,
+            boolean multiplePages) {
         this.literal = literal;
         this.pageFirst = pageFirst;
         this.numberOfPages = numberOfPages;
+        this.multiplePages = multiplePages;
     }
     /**
      * @return the string from which this range has been created
@@ -39,5 +45,14 @@ public class PageRange {
      */
     public Integer getNumberOfPages() {
         return numberOfPages;
+    }
+
+    /**
+     * @return {@code true} if this object represents multiple pages (may be
+     * {@code true} even if the actual number of pages could not be determined,
+     * i.e. if {@link #getNumberOfPages()} returns {@code null})
+     */
+    public boolean isMultiplePages() {
+        return multiplePages;
     }
 }
