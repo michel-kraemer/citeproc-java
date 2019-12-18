@@ -1,0 +1,35 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <locale xml:lang="en">
+      <terms>
+        <term name="et-al">, </term>
+      </terms>
+    </locale>
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name et-al-min="3" et-al-use-first="2"/>
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+      - given: Another
+        family: One
+      - given: Third
+        family: Name
+      - given: Fourth
+        family: Name
+    title: My title
+
+result: |
+  Given Name, Another One, , . My title
