@@ -91,15 +91,18 @@ public class SName implements SElement {
 
             if (i < names.length - 1) {
                 if (i == names.length - 2) {
+                    boolean delimiterAppended = false;
                     switch (delimiterPrecedesLast) {
                         case "contextual":
                             if (names.length > 2) {
                                 builder.append(delimiter);
+                                delimiterAppended = true;
                             }
                             break;
 
                         case "always":
                             builder.append(delimiter);
+                            delimiterAppended = true;
                             break;
 
                         case "after-inverted-name":
@@ -108,13 +111,16 @@ public class SName implements SElement {
                             // citeproc.js seems to behave differently
                             if (i == 0) {
                                 builder.append(delimiter);
+                                delimiterAppended = true;
                             }
                             break;
 
                         default:
                             break;
                     }
-                    appendAnd(builder, and);
+                    if (!delimiterAppended || !and.equals(delimiter)) {
+                        appendAnd(builder, and);
+                    }
                 } else {
                     builder.append(delimiter);
                 }
