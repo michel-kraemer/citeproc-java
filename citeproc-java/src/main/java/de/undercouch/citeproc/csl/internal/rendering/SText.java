@@ -51,6 +51,8 @@ public class SText implements SRenderingElement {
                     v = v.replace("-", delimiter);
                 } else if (variable.equals("number")) {
                     v = v.replace("-", "\u2013");
+                } else {
+                    v = ctx.smartQuotes(v);
                 }
                 ctx.emit(v);
             }
@@ -63,7 +65,7 @@ public class SText implements SRenderingElement {
             }
             ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(f)));
         } else if (value != null) {
-            ctx.emit(value);
+            ctx.emit(ctx.smartQuotes(value));
         }
     }
 }

@@ -5,6 +5,7 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
+import de.undercouch.citeproc.helper.SmartQuotes;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -480,6 +481,17 @@ public class RenderContext {
      */
     public int getNumberOfEmptyVariables() {
         return variablesEmpty.get();
+    }
+
+    /**
+     * Replace straight quotation marks and apostrophes in the given value
+     * by their typographically correct counterparts.
+     * @param v the value
+     * @return the processed value
+     */
+    public String smartQuotes(String v) {
+        SmartQuotes sq = new SmartQuotes();
+        return sq.apply(v);
     }
 
     /**
