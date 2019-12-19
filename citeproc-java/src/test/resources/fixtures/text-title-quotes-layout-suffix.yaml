@@ -1,0 +1,24 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout suffix=".">
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " />
+        </names>
+        <text variable="title" quotes="true"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item2
+    author:
+      - given: Another
+        family: Name
+    title: My title with dot.
+
+result: |
+  A. Name. “My title with dot.”

@@ -47,7 +47,7 @@ public class SBibliography implements SElement {
                     String nextText = t1.getText();
                     String punctuation = nextText.substring(0, 1);
                     String rest = nextText.substring(1);
-                    tokens.add(i, new Token(punctuation, Token.Type.TEXT));
+                    tokens.add(i, new Token(punctuation, t1.getType()));
                     ++i;
                     tokens.set(i + 1, new Token(rest, t1.getType()));
                 }
