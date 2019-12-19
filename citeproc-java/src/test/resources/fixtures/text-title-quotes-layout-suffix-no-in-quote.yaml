@@ -1,0 +1,33 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <locale xml:lang="en">
+      <style-options punctuation-in-quote="false"/>
+    </locale>
+    <bibliography>
+      <layout suffix=".">
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " />
+        </names>
+        <text variable="title" quotes="true"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title.
+  - id: item2
+    author:
+      - given: Another
+        family: Name
+    title: Is this my title?
+
+result: |
+  G. Name. “My title.”
+  A. Name. “Is this my title?”

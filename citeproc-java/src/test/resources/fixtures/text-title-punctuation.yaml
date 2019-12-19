@@ -1,0 +1,42 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout suffix=".">
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " />
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+  - id: item2
+    author:
+      - given: Another
+        family: Name
+    title: My title with dot.
+  - id: item3
+    author:
+      - given: Third
+        family: Name
+    title: Is it my title?
+  - id: item4
+    author:
+      - given: Arthur
+        family: Author
+    title: That is my title!
+
+result: |
+  G. Name. My title.
+  A. Name. My title with dot.
+  T. Name. Is it my title?
+  A. Author. That is my title!

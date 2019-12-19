@@ -5,13 +5,38 @@ import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A bibliography element in a style file
  * @author Michel Kraemer
  */
 public class SBibliography implements SElement {
+    private final static Map<String, String> MERGE_PUNCTUATION_MAP;
+    static {
+        Map<String, String> mpm = new HashMap<>();
+
+        mpm.put("!.", "!");
+        mpm.put("!:", "!");
+
+        mpm.put("?.", "?");
+        mpm.put("?:", "?");
+
+        mpm.put(":!", "!");
+        mpm.put(":?", "?");
+        mpm.put(":.", ":");
+
+        mpm.put(";!", "!");
+        mpm.put(";?", "?");
+        mpm.put(";:", ";");
+        mpm.put(";.", ";");
+
+        MERGE_PUNCTUATION_MAP = Collections.unmodifiableMap(mpm);
+    }
+
     private final SLayout layout;
 
     /**
@@ -56,8 +81,14 @@ public class SBibliography implements SElement {
 
         // remove extraneous prefixes, suffixes, and delimiters
         for (int i = 1; i < tokens.size(); ++i) {
-            Token t0 = tokens.get(i - 1);
+            int j = findPreviousNonQuote(tokens, i);
+            if (j < 0) {
+                continue;
+            }
+
+            Token t0 = tokens.get(j);
             Token t1 = tokens.get(i);
+
             if (t1.getType() == Token.Type.PREFIX ||
                     t1.getType() == Token.Type.SUFFIX ||
                     t1.getType() == Token.Type.DELIMITER) {
@@ -74,6 +105,61 @@ public class SBibliography implements SElement {
             }
         }
 
+        // merge punctuation
+        for (int i = 1; i < tokens.size(); ++i) {
+            int j = findPreviousNonQuote(tokens, i);
+            if (j < 0) {
+                continue;
+            }
+
+            Token t0 = tokens.get(j);
+            Token t1 = tokens.get(i);
+
+            if (!t0.getText().isEmpty() && !t1.getText().isEmpty() &&
+                    (t1.getType() == Token.Type.PREFIX ||
+                            t1.getType() == Token.Type.SUFFIX ||
+                            t1.getType() == Token.Type.DELIMITER)) {
+                // check if we need to merge the last character of t0 with
+                // the first one of t1
+                String lookup = t0.getText().substring(t0.getText().length() - 1) +
+                        t1.getText().substring(0, 1);
+                String replacement = MERGE_PUNCTUATION_MAP.get(lookup);
+
+                if (replacement != null) {
+                    // replace last character in t0
+                    String nt0 = t0.getText().substring(0, t0.getText().length() - 1) +
+                            replacement;
+                    tokens.set(j, new Token(nt0, t0.getType()));
+
+                    // remove first character from t1 and remove t1 if it's empty
+                    String rest = t1.getText().substring(1);
+                    if (rest.isEmpty()) {
+                        tokens.remove(i);
+                        i--;
+                    } else {
+                        tokens.set(i, new Token(rest, t1.getType()));
+                    }
+                }
+            }
+        }
+
         ctx.emit(tmp.getResult());
+    }
+
+    /**
+     * Search the list of tokens from {@code i - 1} down to {@code 0} and find
+     * the first one that is not a closing quotation mark
+     * @param tokens the list of tokens
+     * @param i the index of the token where the search should start
+     * @return the first token that is not a closing quotation mark
+     */
+    private static int findPreviousNonQuote(List<Token> tokens, int i) {
+        for (int j = i - 1; j >= 0; --j) {
+            Token t = tokens.get(j);
+            if (t.getType() != Token.Type.CLOSE_QUOTE) {
+                return j;
+            }
+        }
+        return -1;
     }
 }
