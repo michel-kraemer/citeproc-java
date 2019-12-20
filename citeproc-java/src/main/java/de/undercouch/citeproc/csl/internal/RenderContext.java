@@ -490,7 +490,8 @@ public class RenderContext {
      * @return the processed value
      */
     public String smartQuotes(String v) {
-        SmartQuotes sq = new SmartQuotes();
+        SmartQuotes sq = new SmartQuotes(getTerm("open-inner-quote"), getTerm("close-inner-quote"),
+                getTerm("open-quote"), getTerm("close-quote"), locale.getLang());
         return sq.apply(v);
     }
 

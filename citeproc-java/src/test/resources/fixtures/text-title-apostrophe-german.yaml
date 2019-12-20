@@ -1,0 +1,34 @@
+modes:
+  - bibliography
+
+experimentalMode: only
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <locale>
+      <terms>
+        <term name="open-quote">„</term>
+        <term name="close-quote">“</term>
+        <term name="open-inner-quote">‚</term>
+        <term name="close-inner-quote">‘</term>
+      </terms>
+    </locale>
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " />
+        </names>
+        <text variable="title" quotes="true"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: Er hat's 'geschaft'!
+
+result: |
+  G. Name. „Er hat’s ‚geschaft‘!“

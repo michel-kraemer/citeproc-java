@@ -47,6 +47,14 @@ Docear is released under the GPLv2 but its code
 in projects licensed under Apache License 2.0. The mapping is released here
 under the Apache License 2.0 by permission of Joeran Beel, Docear.
 
+### Smart quotes
+
+The algorithm that produces typographically correct quotation marks and
+apostrophes is based on [smartquotes.js](https://smartquotes.js.org/) written
+by Kelly Martin and released under the MIT license. The code has been
+translated to Java and improved to support a couple of more edge cases as
+well as multiple languages.
+
 License
 -------
 

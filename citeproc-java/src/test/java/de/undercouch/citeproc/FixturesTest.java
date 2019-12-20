@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
 @RunWith(Parameterized.class)
 public class FixturesTest {
@@ -102,6 +103,9 @@ public class FixturesTest {
 
         String style = (String)data.get("style");
         String expectedResult = (String)data.get("result");
+
+        String experimentalModeEnabled = (String)data.get("experimentalMode");
+        assumeFalse("only".equals(experimentalModeEnabled) && !experimentalMode);
 
         ItemDataProvider itemDataProvider;
         String bibliographyFile = (String)data.get("bibliographyFile");

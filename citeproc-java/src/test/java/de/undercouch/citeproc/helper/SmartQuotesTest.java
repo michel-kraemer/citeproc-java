@@ -2,6 +2,8 @@ package de.undercouch.citeproc.helper;
 
 import org.junit.Test;
 
+import java.util.Locale;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -82,5 +84,40 @@ public class SmartQuotesTest {
         assertEquals("\u201Cärgerlich\u201D", sq.apply("\"ärgerlich\""));
 
         assertEquals("\u201CHä\u201D", sq.apply("\"Hä\""));
+    }
+
+    /**
+     * Similar to {@link #apply()} but with German quotation marks
+     */
+    @Test
+    public void german() {
+        SmartQuotes sq = new SmartQuotes("\u201a", "\u2018", "\u201e", "\u201c", Locale.GERMAN);
+
+        assertEquals("\u201etest\u201c", sq.apply("\"test\""));
+        assertEquals("Der\u2014 \u201eTest\u201c", sq.apply("Der\u2014 \"Test\""));
+        assertEquals("\u201atest\u2018", sq.apply("'test'"));
+        assertEquals("Er kann\u2019s", sq.apply("Er kann's"));
+        assertEquals("Marshiness von \u2018Ammercloth\u2019s",
+                sq.apply("Marshiness von 'Ammercloth's"));
+        assertEquals("\u201995", sq.apply("'95"));
+        assertEquals("\u2034", sq.apply("'''"));
+        assertEquals("\u2033", sq.apply("''"));
+        assertEquals("\u201eBesser als ein 6\u20325\u2033 Wal.\u201c",
+                sq.apply("\"Besser als ein 6'5\" Wal.\""));
+        assertEquals("\u201eIch hab\u2019s auf \u201a#1\u2018 gesetzt!\u201c - Der 12\u2033 Schaumstofffinger von \u201993",
+                sq.apply("\"Ich hab's auf '#1' gesetzt!\" - Der 12\" Schaumstofffinger von '93"));
+        assertEquals("\u201eSag \u201awas?\u2018\u201c sagt der Mitarbeiter der Mill\u2019s Pet Barn.",
+                sq.apply("\"Sag 'was?'\" sagt der Mitarbeiter der Mill's Pet Barn."));
+        assertEquals("\u201eQuote?\u201c: Beschreibung",
+                sq.apply("\"Quote?\": Beschreibung"));
+        assertEquals("\u201aQuo Te?\u2018: Beschreibung",
+                sq.apply("'Quo Te?': Beschreibung"));
+        assertEquals("\u201eDe Poesjes van Kevin?\u201c: Irgendwas, irgendwas",
+                sq.apply("\"De Poesjes van Kevin?\": Irgendwas, irgendwas"));
+        assertEquals("Und dann platze es aus ihr heraus: \u201eIch dachte, du sagtest: \u201aIch mag keine 80er-Musik\u2018?\u201c",
+                sq.apply("Und dann platze es aus ihr heraus: \"Ich dachte, du sagtest: 'Ich mag keine 80er-Musik'?\""));
+
+        assertEquals("\u201985 war ein gutes Jahr. Die ganzen 80er waren so.",
+                sq.apply("'85 war ein gutes Jahr. Die ganzen 80er waren so."));
     }
 }

@@ -1,5 +1,6 @@
 package de.undercouch.citeproc.helper;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -17,40 +18,90 @@ public class SmartQuotes {
     private static final String WORD = "[" + LETTER + "_" + NUMBER + "]";
     private static final String NO_WORD = "[^" + LETTER + "_" + NUMBER + "]";
 
-    private final String[][] replacements;
+    private static final String LEFT_SINGLE_QUOTE = "\u2018";
+    private static final String RIGHT_SINGLE_QUOTE = "\u2019";
+    private static final String LEFT_DOUBLE_QUOTE = "\u201c";
+    private static final String RIGHT_DOUBLE_QUOTE = "\u201d";
+    private static final String PRIME = "\u2032";
+    private static final String DOUBLE_PRIME = "\u2033";
+    private static final String TRIPLE_PRIME = "\u2034";
+
+    private final Pattern[] patterns;
+    private final String[] replacements;
 
     /**
      * Creates the smart-quotes parser
      */
     public SmartQuotes() {
-        this.replacements = new String[][] {
+        this(LEFT_SINGLE_QUOTE, RIGHT_SINGLE_QUOTE,
+                LEFT_DOUBLE_QUOTE, RIGHT_DOUBLE_QUOTE, Locale.ENGLISH);
+    }
+
+    /**
+     * Creates the smart-quotes parser with custom symbols
+     * @param leftSingleQuote custom left single quotation mark
+     * @param rightSingleQuote custom right singe quotation mark
+     * @param leftDoubleQuote custom left double quotation mark
+     * @param rightDoubleQuote custom right double quotation mark
+     * @param locale a locale object used to apply special rules and corner cases
+     */
+    public SmartQuotes(String leftSingleQuote, String rightSingleQuote,
+            String leftDoubleQuote, String rightDoubleQuote, Locale locale) {
+        this(leftSingleQuote, rightSingleQuote, leftDoubleQuote, rightDoubleQuote,
+                RIGHT_SINGLE_QUOTE, PRIME, DOUBLE_PRIME, TRIPLE_PRIME, locale);
+    }
+
+    /**
+     * Creates the smart-quotes parser with custom symbols
+     * @param leftSingleQuote custom left single quotation mark
+     * @param rightSingleQuote custom right singe quotation mark
+     * @param leftDoubleQuote custom left double quotation mark
+     * @param rightDoubleQuote custom right double quotation mark
+     * @param apostrophe custom apostrophe
+     * @param prime custom prime
+     * @param doublePrime custom double prime
+     * @param triplePrime custom triple prime
+     * @param locale a locale object used to apply special rules and corner cases
+     */
+    @SuppressWarnings({"RegExpUnexpectedAnchor", "Annotator"})
+    public SmartQuotes(String leftSingleQuote, String rightSingleQuote,
+            String leftDoubleQuote, String rightDoubleQuote, String apostrophe,
+            String prime, String doublePrime, String triplePrime, Locale locale) {
+        String[][] replacements = new String[][] {
                 // whitelist (works for English only, bummer)
-                new String[] { "'(em|cause|twas|tis|til)([^a-z])", "\u2019$1$2"},
+                new String[] { "'(em|cause|twas|tis|til)([^a-z])", (locale != null && locale.getLanguage().equalsIgnoreCase("en")) ? apostrophe + "$1$2" : "$0" },
                 // triple prime
-                new String[] { "'''", "\u2034" },
+                new String[] { "'''", triplePrime },
                 // beginning "
-                new String[] { "(" + NO_WORD + "|^)\"(\u2018|'|" + WORD + ")", "$1\u201c$2" },
+                new String[] { "(" + NO_WORD + "|^)\"(" + leftSingleQuote + "|'|" + WORD + ")", "$1" + leftDoubleQuote + "$2" },
                 // ending "
-                new String[] { "(\u201c[^\"]*)\"([^\"]*$|[^\u201c\"]*\u201c)", "$1\u201d$2" },
+                new String[] { "(" + leftDoubleQuote + "[^\"]*)\"([^\"]*$|[^" + leftDoubleQuote + "\"]*" + leftDoubleQuote + ")", "$1" + rightDoubleQuote + "$2" },
                 // remaining " at end of word
-                new String[] { "(" + NO_NUMBER + ")\"", "$1\u201d" },
+                new String[] { "(" + NO_NUMBER + ")\"", "$1" + rightDoubleQuote },
                 // double prime as two single quotes
-                new String[] { "''", "\u2033" },
+                new String[] { "''", doublePrime },
                 // beginning '
-                new String[] { "(" + NO_WORD + "|^)'(\\S)", "$1\u2018$2" },
+                new String[] { "(" + NO_WORD + "|^)'(\\S)", "$1" + leftSingleQuote + "$2" },
                 // conjunction's possession
-                new String[] { "(" + LETTER + "|" + NUMBER + ")'(" + LETTER + ")", "$1\u2019$2" },
+                new String[] { "(" + LETTER + "|" + NUMBER + ")'(" + LETTER + ")", "$1" + apostrophe + "$2" },
                 // abbrev. years like '93
-                new String[] { "(\u2018)([0-9]{2}[^\u2019]*)(\u2018(" + NO_NUMBER + "|$)|$|\u2019" + LETTER + ")", "\u2019$2$3" },
+                new String[] { "(" + leftSingleQuote + ")([0-9]{2}[^" + rightSingleQuote + apostrophe + "]*)(" + leftSingleQuote + "(" + NO_NUMBER + "|$)|$|" + rightSingleQuote + apostrophe + LETTER + ")", apostrophe + "$2$3" },
                 // ending '
-                new String[] { "((\u2018[^']*)|" + LETTER + ")'(" + NO_NUMBER + "|$)", "$1\u2019$3" },
+                new String[] { "((" + leftSingleQuote + "[^']*)|" + LETTER + ")'(" + NO_NUMBER + "|$)", "$1" + rightSingleQuote + "$3" },
                 // backwards apostrophe
-                new String[] { "(\\B|^)\u2018(?=([^\u2018\u2019]*\u2019\\b)*([^\u2018\u2019]*\\B" + NO_WORD + "[\u2018\u2019]\\b|[^\u2018\u2019]*$))", "$1\u2019" },
+                new String[] { "(\\B|^)" + leftSingleQuote + "(?=([^" + leftSingleQuote + rightSingleQuote + apostrophe + "]*[" + rightSingleQuote + apostrophe + "]\\b)*([^" + leftSingleQuote + rightSingleQuote + apostrophe + "]*\\B" + NO_WORD + "[" + leftSingleQuote + rightSingleQuote + apostrophe + "]\\b|[^" + leftSingleQuote + rightSingleQuote + apostrophe + "]*$))", "$1" + rightSingleQuote },
                 // double prime
-                new String[] { "\"", "\u2033" },
+                new String[] { "\"", doublePrime },
                 // prime
-                new String[] { "'", "\u2032" }
+                new String[] { "'", prime }
         };
+
+        this.patterns = new Pattern[replacements.length];
+        this.replacements = new String[replacements.length];
+        for (int i = 0; i < replacements.length; ++i) {
+            this.patterns[i] = Pattern.compile(replacements[i][0]);
+            this.replacements[i] = replacements[i][1];
+        }
     }
 
     /**
@@ -60,9 +111,8 @@ public class SmartQuotes {
      * @return the processed string
      */
     public String apply(String str) {
-        for (String[] replacement : replacements) {
-            Pattern p = Pattern.compile(replacement[0], Pattern.CASE_INSENSITIVE);
-            str = p.matcher(str).replaceAll(replacement[1]);
+        for (int i = 0; i < patterns.length; ++i) {
+            str = patterns[i].matcher(str).replaceAll(replacements[i]);
         }
         return str;
     }
