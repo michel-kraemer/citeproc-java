@@ -21,7 +21,7 @@ public class SmartQuotes {
                 // triple prime
                 new String[] { "'''", "\u2034" },
                 // beginning "
-                new String[] { "(\\W|^)\"(\\w)", "$1\u201c$2" },
+                new String[] { "(\\W|^)\"(\u2018|'|\\w)", "$1\u201c$2" },
                 // ending "
                 new String[] { "(\u201c[^\"]*)\"([^\"]*$|[^\u201c\"]*\u201c)", "$1\u201d$2" },
                 // remaining " at end of word

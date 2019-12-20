@@ -42,5 +42,13 @@ public class SmartQuotesTest {
                 sq.apply("\"De Poesjes van Kevin?\": Something, something"));
         assertEquals("And then she blurted, \u201cI thought you said, \u2018I don\u2019t like \u201980s music\u2019?\u201d",
                 sq.apply("And then she blurted, \"I thought you said, 'I don't like '80s music'?\""));
+
+        // further tests
+        assertEquals("That\u2019s and it\u2019s and couldn\u2019t.",
+                sq.apply("That's and it's and couldn't."));
+        assertEquals("\u201C\u2018That\u2019s so cool,\u2019 he said.\u201D",
+                sq.apply("\"'That's so cool,' he said.\""));
+        assertEquals("\u201C\u2018That\u2019s so \u201Ccool\u201D,\u2019 he said.\u201D",
+                sq.apply("\"'That's so \"cool\",' he said.\""));
     }
 }
