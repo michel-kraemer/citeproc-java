@@ -65,4 +65,22 @@ public class SmartQuotesTest {
         assertEquals("\u201985 was a good year. The entire \u201980s were",
                 sq.apply("'85 was a good year. The entire '80s were"));
     }
+
+    /**
+     * Characters with accents as well as umlauts
+     */
+    @Test
+    public void accented() {
+        SmartQuotes sq = new SmartQuotes();
+
+        assertEquals("\u201CÁguila\u201D", sq.apply("\"Águila\""));
+        assertEquals("\u201Cáguila\u201D", sq.apply("\"águila\""));
+        assertEquals("\u201CAguila\u201D", sq.apply("\"Aguila\""));
+        assertEquals("\u201Caguila\u201D", sq.apply("\"aguila\""));
+
+        assertEquals("\u201CÄquator\u201D", sq.apply("\"Äquator\""));
+        assertEquals("\u201Cärgerlich\u201D", sq.apply("\"ärgerlich\""));
+
+        assertEquals("\u201CHä\u201D", sq.apply("\"Hä\""));
+    }
 }

@@ -11,9 +11,11 @@ import java.util.regex.Pattern;
  * @author Michel Kraemer
  */
 public class SmartQuotes {
-    private static final String VULGAR_FRACTIONS = "\u00bc\u00bd\u00be\u2150-\u215e";
-    private static final String NUMBER = "[0-9" + VULGAR_FRACTIONS + "]";
-    private static final String NO_NUMBER = "[^0-9" + VULGAR_FRACTIONS + "]";
+    private static final String NUMBER = "\\p{N}";
+    private static final String NO_NUMBER = "[^" + NUMBER + "]";
+    private static final String LETTER = "\\p{L}";
+    private static final String WORD = "[" + LETTER + "_" + NUMBER + "]";
+    private static final String NO_WORD = "[^" + LETTER + "_" + NUMBER + "]";
 
     private final String[][] replacements;
 
@@ -27,7 +29,7 @@ public class SmartQuotes {
                 // triple prime
                 new String[] { "'''", "\u2034" },
                 // beginning "
-                new String[] { "(\\W|^)\"(\u2018|'|\\w)", "$1\u201c$2" },
+                new String[] { "(" + NO_WORD + "|^)\"(\u2018|'|" + WORD + ")", "$1\u201c$2" },
                 // ending "
                 new String[] { "(\u201c[^\"]*)\"([^\"]*$|[^\u201c\"]*\u201c)", "$1\u201d$2" },
                 // remaining " at end of word
@@ -35,15 +37,15 @@ public class SmartQuotes {
                 // double prime as two single quotes
                 new String[] { "''", "\u2033" },
                 // beginning '
-                new String[] { "(\\W|^)'(\\S)", "$1\u2018$2" },
+                new String[] { "(" + NO_WORD + "|^)'(\\S)", "$1\u2018$2" },
                 // conjunction's possession
-                new String[] { "([a-z]|" + NUMBER + ")'([a-z])", "$1\u2019$2" },
+                new String[] { "(" + LETTER + "|" + NUMBER + ")'(" + LETTER + ")", "$1\u2019$2" },
                 // abbrev. years like '93
-                new String[] { "(\u2018)([0-9]{2}[^\u2019]*)(\u2018(" + NO_NUMBER + "|$)|$|\u2019[a-z])", "\u2019$2$3" },
+                new String[] { "(\u2018)([0-9]{2}[^\u2019]*)(\u2018(" + NO_NUMBER + "|$)|$|\u2019" + LETTER + ")", "\u2019$2$3" },
                 // ending '
-                new String[] { "((\u2018[^']*)|[a-z])'(" + NO_NUMBER + "|$)", "$1\u2019$3" },
+                new String[] { "((\u2018[^']*)|" + LETTER + ")'(" + NO_NUMBER + "|$)", "$1\u2019$3" },
                 // backwards apostrophe
-                new String[] { "(\\B|^)\u2018(?=([^\u2018\u2019]*\u2019\\b)*([^\u2018\u2019]*\\B\\W[\u2018\u2019]\\b|[^\u2018\u2019]*$))", "$1\u2019" },
+                new String[] { "(\\B|^)\u2018(?=([^\u2018\u2019]*\u2019\\b)*([^\u2018\u2019]*\\B" + NO_WORD + "[\u2018\u2019]\\b|[^\u2018\u2019]*$))", "$1\u2019" },
                 // double prime
                 new String[] { "\"", "\u2033" },
                 // prime
