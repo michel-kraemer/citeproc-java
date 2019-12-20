@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
  */
 public class SmartQuotes {
     private static final String VULGAR_FRACTIONS = "\u00bc\u00bd\u00be\u2150-\u215e";
+    private static final String NUMBER = "[0-9" + VULGAR_FRACTIONS + "]";
     private static final String NO_NUMBER = "[^0-9" + VULGAR_FRACTIONS + "]";
 
     private final String[][] replacements;
@@ -34,7 +35,7 @@ public class SmartQuotes {
                 // beginning '
                 new String[] { "(\\W|^)'(\\S)", "$1\u2018$2" },
                 // conjunction's possession
-                new String[] { "([a-z])'([a-z])", "$1\u2019$2" },
+                new String[] { "([a-z]|" + NUMBER + ")'([a-z])", "$1\u2019$2" },
                 // abbrev. years like '93
                 new String[] { "(\u2018)([0-9]{2}[^\u2019]*)(\u2018(" + NO_NUMBER + "|$)|$|\u2019[a-z])", "\u2019$2$3" },
                 // ending '

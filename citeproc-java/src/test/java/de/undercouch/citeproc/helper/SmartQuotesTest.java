@@ -54,5 +54,7 @@ public class SmartQuotesTest {
         // tests from https://medium.design/quotation-marks-c8993b54417c
         assertEquals("12½\u2033 record, 5\u203210⅝\u2033 height",
                 sq.apply("12½\" record, 5'10⅝\" height"));
+        assertEquals("iPad 3\u2019s battery life",
+                sq.apply("iPad 3's battery life"));
     }
 }
