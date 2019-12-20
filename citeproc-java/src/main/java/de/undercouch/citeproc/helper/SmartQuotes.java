@@ -11,6 +11,9 @@ import java.util.regex.Pattern;
  * @author Michel Kraemer
  */
 public class SmartQuotes {
+    private static final String VULGAR_FRACTIONS = "\u00bc\u00bd\u00be\u2150-\u215e";
+    private static final String NO_NUMBER = "[^0-9" + VULGAR_FRACTIONS + "]";
+
     private final String[][] replacements;
 
     /**
@@ -25,7 +28,7 @@ public class SmartQuotes {
                 // ending "
                 new String[] { "(\u201c[^\"]*)\"([^\"]*$|[^\u201c\"]*\u201c)", "$1\u201d$2" },
                 // remaining " at end of word
-                new String[] { "([^0-9])\"", "$1\u201d" },
+                new String[] { "(" + NO_NUMBER + ")\"", "$1\u201d" },
                 // double prime as two single quotes
                 new String[] { "''", "\u2033" },
                 // beginning '
@@ -33,9 +36,9 @@ public class SmartQuotes {
                 // conjunction's possession
                 new String[] { "([a-z])'([a-z])", "$1\u2019$2" },
                 // abbrev. years like '93
-                new String[] { "(\u2018)([0-9]{2}[^\u2019]*)(\u2018([^0-9]|$)|$|\u2019[a-z])", "\u2019$2$3" },
+                new String[] { "(\u2018)([0-9]{2}[^\u2019]*)(\u2018(" + NO_NUMBER + "|$)|$|\u2019[a-z])", "\u2019$2$3" },
                 // ending '
-                new String[] { "((\u2018[^']*)|[a-z])'([^0-9]|$)", "$1\u2019$3" },
+                new String[] { "((\u2018[^']*)|[a-z])'(" + NO_NUMBER + "|$)", "$1\u2019$3" },
                 // backwards apostrophe
                 new String[] { "(\\B|^)\u2018(?=([^\u2018\u2019]*\u2019\\b)*([^\u2018\u2019]*\\B\\W[\u2018\u2019]\\b|[^\u2018\u2019]*$))", "$1\u2019" },
                 // double prime

@@ -50,5 +50,9 @@ public class SmartQuotesTest {
                 sq.apply("\"'That's so cool,' he said.\""));
         assertEquals("\u201C\u2018That\u2019s so \u201Ccool\u201D,\u2019 he said.\u201D",
                 sq.apply("\"'That's so \"cool\",' he said.\""));
+
+        // tests from https://medium.design/quotation-marks-c8993b54417c
+        assertEquals("12½\u2033 record, 5\u203210⅝\u2033 height",
+                sq.apply("12½\" record, 5'10⅝\" height"));
     }
 }
