@@ -22,6 +22,8 @@ public class SmartQuotes {
      */
     public SmartQuotes() {
         this.replacements = new String[][] {
+                // whitelist (works for English only, bummer)
+                new String[] { "'(em|cause|twas|tis)([^a-z])", "\u2019$1$2"},
                 // triple prime
                 new String[] { "'''", "\u2034" },
                 // beginning "

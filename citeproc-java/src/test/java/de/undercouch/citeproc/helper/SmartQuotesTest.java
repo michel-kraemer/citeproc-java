@@ -56,5 +56,13 @@ public class SmartQuotesTest {
                 sq.apply("12½\" record, 5'10⅝\" height"));
         assertEquals("iPad 3\u2019s battery life",
                 sq.apply("iPad 3's battery life"));
+        assertEquals("Book \u2019em, Danno. Rock\u2019n\u2019roll. \u2019Cause \u2019twas the season.",
+                sq.apply("Book 'em, Danno. Rock'n'roll. 'Cause 'twas the season."));
+        assertEquals("This is \u2018empathy\u2019.",
+                sq.apply("This is 'empathy'."));
+        assertEquals("Book \u2019em",
+                sq.apply("Book 'em"));
+        assertEquals("\u201985 was a good year. The entire \u201980s were",
+                sq.apply("'85 was a good year. The entire '80s were"));
     }
 }
