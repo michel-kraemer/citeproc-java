@@ -1,0 +1,40 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <macro name="author">
+      <names variable="author" suffix=". ">
+        <name name-as-sort-order="all" initialize-with=". " delimiter="; "/>
+      </names>
+    </macro>
+    <bibliography>
+      <sort>
+        <key macro="author"/>
+      </sort>
+      <layout>
+        <text macro="author"/>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Zoo
+      - given: Another
+        family: One
+    title: My other title
+  - id: item2
+    author:
+      - given: Given
+        family: Name
+      - given: Another
+        family: One
+    title: My title
+
+result: |
+  Name, G.; One, A. My title
+  Zoo, G.; One, A. My other title

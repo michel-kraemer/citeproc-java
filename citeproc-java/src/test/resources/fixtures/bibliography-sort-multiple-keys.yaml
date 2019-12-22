@@ -1,0 +1,35 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <sort>
+        <key variable="note"/>
+        <key variable="title"/>
+        <key variable="abstract"/>
+      </sort>
+      <layout>
+        <text variable="title"/>
+        <text variable="abstract" prefix=" (" suffix=")"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    title: My title
+    abstract: This is another abstract
+  - id: item2
+    title: My title
+  - id: item3
+    title: My other title
+  - id: item4
+    title: My title
+    abstract: This is an abstract
+
+result: |
+  My other title
+  My title (This is an abstract)
+  My title (This is another abstract)
+  My title

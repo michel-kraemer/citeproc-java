@@ -42,6 +42,11 @@ public class SKey implements SRenderingElement {
     public void render(RenderContext ctx) {
         if (macro != null) {
             ctx.getMacro(macro).render(ctx);
+        } else if (variable != null) {
+            String v = ctx.getStringVariable(variable);
+            if (v != null && !v.isEmpty()) {
+                ctx.emit(v);
+            }
         }
     }
 }

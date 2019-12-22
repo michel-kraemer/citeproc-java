@@ -1,0 +1,24 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <sort>
+        <key/>
+      </sort>
+      <layout>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    title: My title
+  - id: item2
+    title: My other title
+
+result: |
+  My title
+  My other title

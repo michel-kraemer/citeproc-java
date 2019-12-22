@@ -42,14 +42,24 @@ public class SSort {
     public Comparator<CSLItemData> comparator(SStyle style, LLocale locale) {
         Collator collator = Collator.getInstance(locale.getLang());
         return (a, b) -> {
-            RenderContext ctxa = new RenderContext(style, locale, a);
-            RenderContext ctxb = new RenderContext(style, locale, b);
             for (SKey key : keys) {
+                RenderContext ctxa = new RenderContext(style, locale, a);
+                RenderContext ctxb = new RenderContext(style, locale, b);
+
                 key.render(ctxa);
                 key.render(ctxb);
 
-                int c = collator.compare(ctxa.getResult().toString(),
-                        ctxb.getResult().toString());
+                String sa = ctxa.getResult().toString();
+                String sb = ctxb.getResult().toString();
+
+                // empty elements should be put at the end of the list
+                if (sa.isEmpty() && !sb.isEmpty()) {
+                    return 1;
+                } else if (!sa.isEmpty() && sb.isEmpty()) {
+                    return -1;
+                }
+
+                int c = collator.compare(sa, sb);
                 if (c != 0) {
                     return c * key.getSort();
                 }
