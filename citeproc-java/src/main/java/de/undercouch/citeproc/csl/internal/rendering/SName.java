@@ -94,6 +94,14 @@ public class SName implements SElement {
         }
     }
 
+    /**
+     * Get the name variable this element selects
+     * @return the name variable
+     */
+    public String getVariable() {
+        return variable;
+    }
+
     @Override
     public void render(RenderContext ctx) {
         CSLName[] names = null;

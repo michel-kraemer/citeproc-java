@@ -7,6 +7,7 @@ import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.SmartQuotes;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +47,13 @@ public class RenderContext {
     private final Set<VariableListener> variableListeners;
 
     /**
+     * A set of variables that should not be rendered any more for the rest of
+     * the output (i.e. where the context should pretend the variable's value
+     * is {@code null}).
+     */
+    private final Set<String> suppressedVariables;
+
+    /**
      * Creates a new render context
      * @param style the style used to render citation items and bibliographies
      * @param locale localization data
@@ -56,6 +64,7 @@ public class RenderContext {
         this.locale = locale;
         this.itemData = itemData;
         this.variableListeners = new LinkedHashSet<>();
+        this.suppressedVariables = new HashSet<>();
     }
 
     /**
@@ -70,6 +79,7 @@ public class RenderContext {
         this.locale = parent.locale;
         this.itemData = parent.itemData;
         this.variableListeners = parent.variableListeners;
+        this.suppressedVariables = parent.suppressedVariables;
     }
 
     /**
@@ -121,169 +131,173 @@ public class RenderContext {
      */
     public String getStringVariable(String name) {
         String result;
-        switch (name) {
-            case "abstract":
-                result = itemData.getAbstrct();
-                break;
-            case "annote":
-                result = itemData.getAnnote();
-                break;
-            case "archive":
-                result = itemData.getArchive();
-                break;
-            case "archive_location":
-                result = itemData.getArchiveLocation();
-                break;
-            case "archive-place":
-                result = itemData.getArchivePlace();
-                break;
-            case "authority":
-                result = itemData.getAuthority();
-                break;
-            case "call-number":
-                result = itemData.getCallNumber();
-                break;
-            case "chapter-number":
-                result = itemData.getChapterNumber();
-                break;
-            case "citation-label":
-                result = itemData.getCitationLabel();
-                break;
-            case "citation-number":
-                result = itemData.getCitationNumber();
-                break;
-            case "collection-number":
-                result = itemData.getCollectionNumber();
-                break;
-            case "collection-title":
-                result = itemData.getCollectionTitle();
-                break;
-            case "container-title":
-                result = itemData.getContainerTitle();
-                break;
-            case "container-title-short":
-                result = itemData.getContainerTitleShort();
-                break;
-            case "dimensions":
-                result = itemData.getDimensions();
-                break;
-            case "DOI":
-                result = itemData.getDOI();
-                break;
-            case "edition":
-                result = itemData.getEdition();
-                break;
-            case "event":
-                result = itemData.getEvent();
-                break;
-            case "event-place":
-                result = itemData.getEventPlace();
-                break;
-            case "first-reference-note-number":
-                result = itemData.getFirstReferenceNoteNumber();
-                break;
-            case "genre":
-                result = itemData.getGenre();
-                break;
-            case "ISBN":
-                result = itemData.getISBN();
-                break;
-            case "ISSN":
-                result = itemData.getISSN();
-                break;
-            case "issue":
-                result = itemData.getIssue();
-                break;
-            case "jurisdiction":
-                result = itemData.getJurisdiction();
-                break;
-            case "keyword":
-                result = itemData.getKeyword();
-                break;
-            case "locator":
-                result = itemData.getLocator();
-                break;
-            case "medium":
-                result = itemData.getMedium();
-                break;
-            case "note":
-                result = itemData.getNote();
-                break;
-            case "number":
-                result = itemData.getNumber();
-                break;
-            case "number-of-pages":
-                result = itemData.getNumberOfPages();
-                break;
-            case "number-of-volumes":
-                result = itemData.getNumberOfVolumes();
-                break;
-            case "original-publisher":
-                result = itemData.getOriginalPublisher();
-                break;
-            case "original-publisher-place":
-                result = itemData.getOriginalPublisherPlace();
-                break;
-            case "original-title":
-                result = itemData.getOriginalTitle();
-                break;
-            case "page":
-                result = itemData.getPage();
-                break;
-            case "page-first":
-                result = itemData.getPageFirst();
-                break;
-            case "PMCID":
-                result = itemData.getPMCID();
-                break;
-            case "PMID":
-                result = itemData.getPMID();
-                break;
-            case "publisher":
-                result = itemData.getPublisher();
-                break;
-            case "publisher-place":
-                result = itemData.getPublisherPlace();
-                break;
-            case "references":
-                result = itemData.getReferences();
-                break;
-            case "reviewed-title":
-                result = itemData.getReviewedTitle();
-                break;
-            case "scale":
-                result = itemData.getScale();
-                break;
-            case "section":
-                result = itemData.getSection();
-                break;
-            case "source":
-                result = itemData.getSource();
-                break;
-            case "status":
-                result = itemData.getStatus();
-                break;
-            case "title":
-                result = itemData.getTitle();
-                break;
-            case "title-short":
-                result = itemData.getTitleShort();
-                break;
-            case "URL":
-                result = itemData.getURL();
-                break;
-            case "version":
-                result = itemData.getVersion();
-                break;
-            case "volume":
-                result = itemData.getVolume();
-                break;
-            case "year-suffix":
-                result = itemData.getYearSuffix();
-                break;
-            default:
-                result = null;
-                break;
+        if (!suppressedVariables.contains(name)) {
+            switch (name) {
+                case "abstract":
+                    result = itemData.getAbstrct();
+                    break;
+                case "annote":
+                    result = itemData.getAnnote();
+                    break;
+                case "archive":
+                    result = itemData.getArchive();
+                    break;
+                case "archive_location":
+                    result = itemData.getArchiveLocation();
+                    break;
+                case "archive-place":
+                    result = itemData.getArchivePlace();
+                    break;
+                case "authority":
+                    result = itemData.getAuthority();
+                    break;
+                case "call-number":
+                    result = itemData.getCallNumber();
+                    break;
+                case "chapter-number":
+                    result = itemData.getChapterNumber();
+                    break;
+                case "citation-label":
+                    result = itemData.getCitationLabel();
+                    break;
+                case "citation-number":
+                    result = itemData.getCitationNumber();
+                    break;
+                case "collection-number":
+                    result = itemData.getCollectionNumber();
+                    break;
+                case "collection-title":
+                    result = itemData.getCollectionTitle();
+                    break;
+                case "container-title":
+                    result = itemData.getContainerTitle();
+                    break;
+                case "container-title-short":
+                    result = itemData.getContainerTitleShort();
+                    break;
+                case "dimensions":
+                    result = itemData.getDimensions();
+                    break;
+                case "DOI":
+                    result = itemData.getDOI();
+                    break;
+                case "edition":
+                    result = itemData.getEdition();
+                    break;
+                case "event":
+                    result = itemData.getEvent();
+                    break;
+                case "event-place":
+                    result = itemData.getEventPlace();
+                    break;
+                case "first-reference-note-number":
+                    result = itemData.getFirstReferenceNoteNumber();
+                    break;
+                case "genre":
+                    result = itemData.getGenre();
+                    break;
+                case "ISBN":
+                    result = itemData.getISBN();
+                    break;
+                case "ISSN":
+                    result = itemData.getISSN();
+                    break;
+                case "issue":
+                    result = itemData.getIssue();
+                    break;
+                case "jurisdiction":
+                    result = itemData.getJurisdiction();
+                    break;
+                case "keyword":
+                    result = itemData.getKeyword();
+                    break;
+                case "locator":
+                    result = itemData.getLocator();
+                    break;
+                case "medium":
+                    result = itemData.getMedium();
+                    break;
+                case "note":
+                    result = itemData.getNote();
+                    break;
+                case "number":
+                    result = itemData.getNumber();
+                    break;
+                case "number-of-pages":
+                    result = itemData.getNumberOfPages();
+                    break;
+                case "number-of-volumes":
+                    result = itemData.getNumberOfVolumes();
+                    break;
+                case "original-publisher":
+                    result = itemData.getOriginalPublisher();
+                    break;
+                case "original-publisher-place":
+                    result = itemData.getOriginalPublisherPlace();
+                    break;
+                case "original-title":
+                    result = itemData.getOriginalTitle();
+                    break;
+                case "page":
+                    result = itemData.getPage();
+                    break;
+                case "page-first":
+                    result = itemData.getPageFirst();
+                    break;
+                case "PMCID":
+                    result = itemData.getPMCID();
+                    break;
+                case "PMID":
+                    result = itemData.getPMID();
+                    break;
+                case "publisher":
+                    result = itemData.getPublisher();
+                    break;
+                case "publisher-place":
+                    result = itemData.getPublisherPlace();
+                    break;
+                case "references":
+                    result = itemData.getReferences();
+                    break;
+                case "reviewed-title":
+                    result = itemData.getReviewedTitle();
+                    break;
+                case "scale":
+                    result = itemData.getScale();
+                    break;
+                case "section":
+                    result = itemData.getSection();
+                    break;
+                case "source":
+                    result = itemData.getSource();
+                    break;
+                case "status":
+                    result = itemData.getStatus();
+                    break;
+                case "title":
+                    result = itemData.getTitle();
+                    break;
+                case "title-short":
+                    result = itemData.getTitleShort();
+                    break;
+                case "URL":
+                    result = itemData.getURL();
+                    break;
+                case "version":
+                    result = itemData.getVersion();
+                    break;
+                case "volume":
+                    result = itemData.getVolume();
+                    break;
+                case "year-suffix":
+                    result = itemData.getYearSuffix();
+                    break;
+                default:
+                    result = null;
+                    break;
+            }
+        } else {
+            result = null;
         }
 
         for (VariableListener l : variableListeners) {
@@ -301,28 +315,32 @@ public class RenderContext {
      */
     public CSLDate getDateVariable(String name) {
         CSLDate result;
-        switch (name) {
-            case "accessed":
-                result = itemData.getAccessed();
-                break;
-            case "container":
-                result = itemData.getContainer();
-                break;
-            case "event-date":
-                result = itemData.getEventDate();
-                break;
-            case "issued":
-                result = itemData.getIssued();
-                break;
-            case "original-date":
-                result = itemData.getOriginalDate();
-                break;
-            case "submitted":
-                result = itemData.getSubmitted();
-                break;
-            default:
-                result = null;
-                break;
+        if (!suppressedVariables.contains(name)) {
+            switch (name) {
+                case "accessed":
+                    result = itemData.getAccessed();
+                    break;
+                case "container":
+                    result = itemData.getContainer();
+                    break;
+                case "event-date":
+                    result = itemData.getEventDate();
+                    break;
+                case "issued":
+                    result = itemData.getIssued();
+                    break;
+                case "original-date":
+                    result = itemData.getOriginalDate();
+                    break;
+                case "submitted":
+                    result = itemData.getSubmitted();
+                    break;
+                default:
+                    result = null;
+                    break;
+            }
+        } else {
+            result = null;
         }
 
         for (VariableListener l : variableListeners) {
@@ -334,49 +352,53 @@ public class RenderContext {
 
     public CSLName[] getNameVariable(String name) {
         CSLName[] result;
-        switch (name) {
-            case "author":
-                result = itemData.getAuthor();
-                break;
-            case "collection-editor":
-                result = itemData.getCollectionEditor();
-                break;
-            case "composer":
-                result = itemData.getComposer();
-                break;
-            case "container-author":
-                result = itemData.getContainerAuthor();
-                break;
-            case "director":
-                result = itemData.getDirector();
-                break;
-            case "editor":
-                result = itemData.getEditor();
-                break;
-            case "editorial-director":
-                result = itemData.getEditorialDirector();
-                break;
-            case "illustrator":
-                result = itemData.getIllustrator();
-                break;
-            case "interviewer":
-                result = itemData.getInterviewer();
-                break;
-            case "original-author":
-                result = itemData.getOriginalAuthor();
-                break;
-            case "recipient":
-                result = itemData.getRecipient();
-                break;
-            case "reviewed-author":
-                result = itemData.getReviewedAuthor();
-                break;
-            case "translator":
-                result = itemData.getTranslator();
-                break;
-            default:
-                result = null;
-                break;
+        if (!suppressedVariables.contains(name)) {
+            switch (name) {
+                case "author":
+                    result = itemData.getAuthor();
+                    break;
+                case "collection-editor":
+                    result = itemData.getCollectionEditor();
+                    break;
+                case "composer":
+                    result = itemData.getComposer();
+                    break;
+                case "container-author":
+                    result = itemData.getContainerAuthor();
+                    break;
+                case "director":
+                    result = itemData.getDirector();
+                    break;
+                case "editor":
+                    result = itemData.getEditor();
+                    break;
+                case "editorial-director":
+                    result = itemData.getEditorialDirector();
+                    break;
+                case "illustrator":
+                    result = itemData.getIllustrator();
+                    break;
+                case "interviewer":
+                    result = itemData.getInterviewer();
+                    break;
+                case "original-author":
+                    result = itemData.getOriginalAuthor();
+                    break;
+                case "recipient":
+                    result = itemData.getRecipient();
+                    break;
+                case "reviewed-author":
+                    result = itemData.getReviewedAuthor();
+                    break;
+                case "translator":
+                    result = itemData.getTranslator();
+                    break;
+                default:
+                    result = null;
+                    break;
+            }
+        } else {
+            result = null;
         }
 
         for (VariableListener l : variableListeners) {
@@ -384,6 +406,16 @@ public class RenderContext {
         }
 
         return result;
+    }
+
+    /**
+     * Add a variable to the set of suppressed variables. Suppressed variables
+     * should not be rendered any more for the rest of the output. The context
+     * will pretend the variable's value is {@code null}).
+     * @param name the variable's name
+     */
+    public void suppressVariable(String name) {
+        suppressedVariables.add(name);
     }
 
     /**

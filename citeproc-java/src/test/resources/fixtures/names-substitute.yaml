@@ -1,0 +1,54 @@
+modes:
+  - bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author" suffix="YYYY">
+          <name et-al-min="2" et-al-use-first="1"/>
+          <substitute>
+            <names variable="editor" suffix="XXXX"/>
+            <text variable="note"/>
+            <text value="UNKNOWN AUTHOR AND TITLE" suffix="ZZZZ"/>
+          </substitute>
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+      - given: Another
+        family: One
+      - given: Third
+        family: Name
+      - given: Fourth
+        family: Name
+    title: My title
+  - id: item2
+    editor:
+      - given: First
+        family: Editor
+      - given: Another
+        family: Editor
+      - given: Third
+        family: Editor
+      - given: Fourth
+        family: Editor
+    title: List of editors
+  - id: item3
+    note: This is a note
+    title: Item without author or editor
+  - id: item4
+    title: Another item without author or editor
+
+result: |
+  Given Name et al.YYYYMy title
+  First Editor et al.YYYYList of editors
+  This is a noteItem without author or editor
+  UNKNOWN AUTHOR AND TITLEZZZZAnother item without author or editor
