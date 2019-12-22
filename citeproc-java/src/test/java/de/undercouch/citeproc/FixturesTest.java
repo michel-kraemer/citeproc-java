@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,6 +32,7 @@ import static org.junit.Assume.assumeFalse;
 @RunWith(Parameterized.class)
 public class FixturesTest {
     private static final String FIXTURES_DIR = "/fixtures";
+    private static final Map<String, ItemDataProvider> bibliographyFileCache = new HashMap<>();
 
     /**
      * The current test to run
@@ -72,19 +75,25 @@ public class FixturesTest {
     }
 
     private static ItemDataProvider loadBibliographyFile(String filename) throws IOException {
-        BibTeXDatabase db;
-        try (InputStream is = FixturesTest.class.getResourceAsStream(filename)) {
-            InputStream tis = is;
-            if (filename.endsWith(".gz")) {
-                tis = new GZIPInputStream(is);
+        ItemDataProvider result = bibliographyFileCache.get(filename);
+        if (result == null) {
+            BibTeXDatabase db;
+            try (InputStream is = FixturesTest.class.getResourceAsStream(filename);
+                 BufferedInputStream bis = new BufferedInputStream(is)) {
+                InputStream tis = bis;
+                if (filename.endsWith(".gz")) {
+                    tis = new GZIPInputStream(bis);
+                }
+                db = new BibTeXConverter().loadDatabase(tis);
+            } catch (ParseException e) {
+                throw new IOException(e);
             }
-            db = new BibTeXConverter().loadDatabase(tis);
-        } catch (ParseException e) {
-            throw new IOException(e);
-        }
 
-        BibTeXItemDataProvider result = new BibTeXItemDataProvider();
-        result.addDatabase(db);
+            BibTeXItemDataProvider r = new BibTeXItemDataProvider();
+            r.addDatabase(db);
+            result = r;
+            bibliographyFileCache.put(filename, result);
+        }
         return result;
     }
 
