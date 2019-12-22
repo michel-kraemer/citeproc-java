@@ -7,8 +7,9 @@ import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.SmartQuotes;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
 
 /**
  * Contains information necessary to render citations and bibliographies. This
@@ -39,17 +40,10 @@ public class RenderContext {
     private final TokenBuffer result = new TokenBuffer();
 
     /**
-     * The number of times a variable was fetched from the context. This
-     * variable is an {@link AtomicInteger} so we can pass it down to child
-     * contexts to allow them to update the value.
+     * A set of listeners to call whenever a variable value is fetched from
+     * the context
      */
-    private final AtomicInteger variablesCalled;
-
-    /**
-     * The number of times an empty variable was fetched from the context. This
-     * value is always lower than or equal to {@link #variablesCalled}
-     */
-    private final AtomicInteger variablesEmpty;
+    private final Set<VariableListener> variableListeners;
 
     /**
      * Creates a new render context
@@ -61,8 +55,7 @@ public class RenderContext {
         this.style = style;
         this.locale = locale;
         this.itemData = itemData;
-        this.variablesCalled = new AtomicInteger(0);
-        this.variablesEmpty = new AtomicInteger(0);
+        this.variableListeners = new LinkedHashSet<>();
     }
 
     /**
@@ -76,8 +69,7 @@ public class RenderContext {
         this.style = parent.style;
         this.locale = parent.locale;
         this.itemData = parent.itemData;
-        this.variablesCalled = parent.variablesCalled;
-        this.variablesEmpty = parent.variablesEmpty;
+        this.variableListeners = parent.variableListeners;
     }
 
     /**
@@ -294,10 +286,10 @@ public class RenderContext {
                 break;
         }
 
-        variablesCalled.incrementAndGet();
-        if (result == null || result.isEmpty()) {
-            variablesEmpty.incrementAndGet();
+        for (VariableListener l : variableListeners) {
+            l.onFetchStringVariable(name, result);
         }
+
         return result;
     }
 
@@ -333,10 +325,10 @@ public class RenderContext {
                 break;
         }
 
-        variablesCalled.incrementAndGet();
-        if (result == null) {
-            variablesEmpty.incrementAndGet();
+        for (VariableListener l : variableListeners) {
+            l.onFetchDateVariable(name, result);
         }
+
         return result;
     }
 
@@ -387,10 +379,10 @@ public class RenderContext {
                 break;
         }
 
-        variablesCalled.incrementAndGet();
-        if (result == null) {
-            variablesEmpty.incrementAndGet();
+        for (VariableListener l : variableListeners) {
+            l.onFetchNameVariable(name, result);
         }
+
         return result;
     }
 
@@ -456,21 +448,19 @@ public class RenderContext {
     }
 
     /**
-     * Get the number of times a variable was fetched from the context
-     * @return the number
+     * Adds a variable listener to this context
+     * @param listener the variable listener to register
      */
-    public int getNumberOfCalledVariables() {
-        return variablesCalled.get();
+    public void addVariableListener(VariableListener listener) {
+        variableListeners.add(listener);
     }
 
     /**
-     * Get the number of times an empty variable was fetched from the context.
-     * This value is always lower than or equal to the one returned by
-     * {@link #getNumberOfCalledVariables()}.
-     * @return the number
+     * Removes a variable listener from this context
+     * @param listener the variable listener to remove
      */
-    public int getNumberOfEmptyVariables() {
-        return variablesEmpty.get();
+    public void removeVariableListener(VariableListener listener) {
+        variableListeners.remove(listener);
     }
 
     /**

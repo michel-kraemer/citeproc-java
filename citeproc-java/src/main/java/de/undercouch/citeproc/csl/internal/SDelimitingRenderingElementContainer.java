@@ -37,22 +37,17 @@ public class SDelimitingRenderingElementContainer extends SRenderingElementConta
     public void render(RenderContext ctx) {
         boolean emitted = false;
         for (SRenderingElement e : elements) {
-            // save current number of called and empty variables
-            int variablesCalled = ctx.getNumberOfCalledVariables();
-            int variablesEmpty = ctx.getNumberOfEmptyVariables();
-            int variablesDiff = variablesCalled - variablesEmpty;
-
             // render the element in a separate context
             RenderContext child = new RenderContext(ctx);
+            CountingVariableListener vl = new CountingVariableListener();
+            child.addVariableListener(vl);
             e.render(child);
+            child.removeVariableListener(vl);
 
             // count new number of called and empty variables
             boolean shouldBeFiltered = false;
             if (filterElementsWithEmptyVariables) {
-                int newVariablesCalled = ctx.getNumberOfCalledVariables();
-                int newVariablesEmpty = ctx.getNumberOfEmptyVariables();
-                int newVariablesDiff = newVariablesCalled - newVariablesEmpty;
-                if (newVariablesCalled > variablesCalled && newVariablesDiff == variablesDiff) {
+                if (vl.getCalled() > 0 && vl.getCalled() == vl.getEmpty()) {
                     // all called variables were empty
                     // do not render this element
                     shouldBeFiltered = true;
