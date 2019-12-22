@@ -367,17 +367,6 @@ public class CSL implements Closeable {
                 throw new IOException("Could not create document builder", e);
             }
 
-            // load locale
-            String strLocale = localeProvider.retrieveLocale(lang);
-            Document localeDocument;
-            try {
-                localeDocument = builder.parse(new InputSource(
-                        new StringReader(strLocale)));
-            } catch (SAXException e) {
-                throw new IOException("Could not parse locale", e);
-            }
-            this.locale = new LLocale(localeDocument);
-
             // load style
             Document styleDocument;
             try {
@@ -387,6 +376,29 @@ public class CSL implements Closeable {
                 throw new IOException("Could not parse style", e);
             }
             this.style = new SStyle(styleDocument);
+
+            // load locale
+            String strLocale = localeProvider.retrieveLocale(lang);
+            Document localeDocument;
+            try {
+                localeDocument = builder.parse(new InputSource(
+                        new StringReader(strLocale)));
+            } catch (SAXException e) {
+                throw new IOException("Could not parse locale", e);
+            }
+            LLocale locale = new LLocale(localeDocument);
+
+            if (this.style.getLocale() != null &&
+                    (this.style.getLocale().getLang() == null ||
+                            (this.style.getLocale().getLang().getLanguage().equals(locale.getLang().getLanguage()) &&
+                                    (this.style.getLocale().getLang().getCountry().isEmpty() ||
+                                            this.style.getLocale().getLang().getCountry().equals(locale.getLang().getCountry()))))) {
+                // additional localization data in the style file overrides or
+                // augments the data from the locale file
+                this.locale = locale.merge(this.style.getLocale());
+            } else {
+                this.locale = locale;
+            }
         } else {
             this.style = null;
             this.locale = null;

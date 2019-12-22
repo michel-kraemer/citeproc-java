@@ -58,16 +58,6 @@ public class RenderContext {
      * @param itemData the citation item to render
      */
     public RenderContext(SStyle style, LLocale locale, CSLItemData itemData) {
-        if (style.getLocale() != null &&
-                (style.getLocale().getLang() == null ||
-                        (style.getLocale().getLang().getLanguage().equals(locale.getLang().getLanguage()) &&
-                                (style.getLocale().getLang().getCountry().isEmpty() ||
-                                        style.getLocale().getLang().getCountry().equals(locale.getLang().getCountry()))))) {
-            // additional localization data in the style file overrides or
-            // augments the given localization data
-            locale = locale.merge(style.getLocale());
-        }
-
         this.style = style;
         this.locale = locale;
         this.itemData = itemData;
