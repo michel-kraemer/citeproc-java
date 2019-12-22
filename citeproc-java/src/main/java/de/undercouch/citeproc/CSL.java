@@ -7,7 +7,6 @@ import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CitationIDIndexPair;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SStyle;
-import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
@@ -45,7 +44,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -928,10 +926,9 @@ public class CSL implements Closeable {
                     ctx.emit("\n");
                 }
 
-                entries[i] = ctx.getResult().getTokens().stream()
-                        .map(Token::getText)
-                        .collect(Collectors.joining());
+                entries[i] = ctx.getResult().toString();
             }
+
             return new Bibliography(entries);
         } else {
             return makeBibliographyLegacy(mode, selection, quash);

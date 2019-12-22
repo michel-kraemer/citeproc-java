@@ -2,6 +2,7 @@ package de.undercouch.citeproc.csl.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A buffer of rendered tokens
@@ -54,5 +55,10 @@ public class TokenBuffer {
      */
     public boolean isEmpty() {
         return tokens.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return tokens.stream().map(Token::toString).collect(Collectors.joining());
     }
 }
