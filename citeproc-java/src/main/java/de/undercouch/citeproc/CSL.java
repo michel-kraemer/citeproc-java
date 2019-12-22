@@ -35,6 +35,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -925,8 +926,23 @@ public class CSL implements Closeable {
             CSLItemData[] selection, CSLItemData[] quash) {
         if (experimentalMode) {
             String[] entries = new String[registeredItems.size()];
+
+            // make an array of all items
+            CSLItemData[] sortedItems = new CSLItemData[registeredItems.size()];
             for (int i = 0; i < registeredItems.size(); ++i) {
                 CSLItemData item = registeredItems.get(i);
+                sortedItems[i] = item;
+            }
+
+            // sort array of items
+            if (style.getBibliography().getSort() != null) {
+                Arrays.sort(sortedItems, style.getBibliography().getSort()
+                        .comparator(style, locale));
+            }
+
+            // render items
+            for (int i = 0; i < sortedItems.length; ++i) {
+                CSLItemData item = sortedItems[i];
                 CSLItemData itemClone = new CSLItemDataBuilder(item)
                         .citationNumber(String.valueOf(i + 1))
                         .build();
