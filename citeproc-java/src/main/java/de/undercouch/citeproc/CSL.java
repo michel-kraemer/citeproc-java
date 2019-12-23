@@ -181,6 +181,11 @@ public class CSL implements Closeable {
     private final List<CSLItemData> registeredItems = new ArrayList<>();
 
     /**
+     * {@code true} if the citation items should not be sorted
+     */
+    private boolean unsorted = false;
+
+    /**
      * Constructs a new citation processor
      * @param itemDataProvider an object that provides citation item data
      * @param style the citation style to use. May either be a serialized
@@ -739,6 +744,13 @@ public class CSL implements Closeable {
      * @param convert true if URLs and DOIs should be converted to links
      */
     public void setConvertLinks(boolean convert) {
+        if (experimentalMode) {
+            if (convert) {
+                throw new IllegalArgumentException("Experimental mode is not " +
+                        "able to convert links yet.");
+            }
+        }
+
         try {
             runner.callMethod("setConvertLinks", engine, convert);
         } catch (ScriptRunnerException e) {
@@ -753,6 +765,11 @@ public class CSL implements Closeable {
      * @param name the name of the abbreviation list to enable
      */
     public void setAbbreviations(String name) {
+        if (experimentalMode) {
+            throw new IllegalArgumentException("Experimental mode does not " +
+                    "support abbreviations yet.");
+        }
+
         try {
             runner.callMethod(engine, "setAbbreviations", name);
         } catch (ScriptRunnerException e) {
@@ -772,6 +789,7 @@ public class CSL implements Closeable {
      */
     public void registerCitationItems(String... ids) {
         if (experimentalMode) {
+            unsorted = false;
             registeredItems.clear();
             for (String id : ids) {
                 CSLItemData item = itemDataProvider.retrieveItem(id);
@@ -798,10 +816,15 @@ public class CSL implements Closeable {
      * citation item data that does not exist
      */
     public void registerCitationItems(String[] ids, boolean unsorted) {
-        try {
-            runner.callMethod(engine, "updateItems", ids, unsorted);
-        } catch (ScriptRunnerException e) {
-            throw new IllegalArgumentException("Could not update items", e);
+        if (experimentalMode) {
+            registerCitationItems(ids);
+            this.unsorted = unsorted;
+        } else {
+            try {
+                runner.callMethod(engine, "updateItems", ids, unsorted);
+            } catch (ScriptRunnerException e) {
+                throw new IllegalArgumentException("Could not update items", e);
+            }
         }
     }
 
@@ -935,7 +958,7 @@ public class CSL implements Closeable {
             }
 
             // sort array of items
-            if (style.getBibliography().getSort() != null) {
+            if (!unsorted && style.getBibliography().getSort() != null) {
                 Arrays.sort(sortedItems, style.getBibliography().getSort()
                         .comparator(style, locale));
             }

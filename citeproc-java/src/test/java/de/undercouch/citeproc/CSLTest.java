@@ -473,8 +473,10 @@ public class CSLTest {
      * @throws Exception if something goes wrong
      */
     @Test
-    public void registerUnsorted() throws Exception {
-        try (CSL citeproc = new CSL(new ListItemDataProvider(items), "chicago-note-bibliography")) {
+    @Parameters({"false", "true"})
+    public void registerUnsorted(boolean experimentalMode) throws Exception {
+        try (CSL citeproc = new CSL(new ListItemDataProvider(items),
+                "chicago-note-bibliography", experimentalMode)) {
             citeproc.setOutputFormat("text");
 
             String[] ids = new String[] { items[0].getId(), items[1].getId(), items[3].getId() };
