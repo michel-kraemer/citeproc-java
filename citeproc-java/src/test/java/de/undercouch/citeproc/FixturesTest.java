@@ -18,7 +18,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -111,7 +110,7 @@ public class FixturesTest {
             data = yaml.loadAs(is, Map.class);
         }
 
-        List<String> modes = (List<String>)data.get("modes");
+        String mode = (String)data.get("mode");
         String style = (String)data.get("style");
         String expectedResult = (String)data.get("result");
 
@@ -132,9 +131,12 @@ public class FixturesTest {
             itemDataProvider = new ListItemDataProvider(items);
         }
 
-        List<String> itemIds = (List<String>)data.get("itemIds");
-        if (itemIds == null) {
-            itemIds = new ArrayList<>(Arrays.asList(itemDataProvider.getIds()));
+        List<String> itemIdsList = (List<String>)data.get("itemIds");
+        String[] itemIds;
+        if (itemIdsList == null) {
+            itemIds = itemDataProvider.getIds();
+        } else {
+            itemIds = itemIdsList.toArray(new String[0]);
         }
 
         // create CSL processor
@@ -142,20 +144,19 @@ public class FixturesTest {
         citeproc.setOutputFormat("text");
 
         // register citation items
-        String[] itemIdsArr = itemIds.toArray(new String[0]);
-        citeproc.registerCitationItems(itemIdsArr);
+        citeproc.registerCitationItems(itemIds);
 
-        String actualResult = null;
-        for (String mode : modes) {
-            if ("bibliography".equals(mode)) {
-                Bibliography bibl = citeproc.makeBibliography();
-                actualResult = bibl.makeString();
-            } else {
-                List<Citation> citations = citeproc.makeCitation(itemIdsArr);
-                actualResult = citations.stream()
-                        .map(Citation::getText)
-                        .collect(Collectors.joining("\n"));
-            }
+        String actualResult;
+        if ("bibliography".equals(mode)) {
+            Bibliography bibl = citeproc.makeBibliography();
+            actualResult = bibl.makeString();
+        } else if ("citation".equals(mode)) {
+            List<Citation> citations = citeproc.makeCitation(itemIds);
+            actualResult = citations.stream()
+                    .map(Citation::getText)
+                    .collect(Collectors.joining("\n"));
+        } else {
+            throw new IllegalStateException("Unknown mode: " + mode);
         }
 
         // compare result

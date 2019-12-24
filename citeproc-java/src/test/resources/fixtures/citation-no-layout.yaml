@@ -1,5 +1,4 @@
-modes:
-  - citation
+mode: citation
 
 experimentalMode: only
 

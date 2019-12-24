@@ -1,5 +1,4 @@
-modes:
-  - bibliography
+mode: bibliography
 
 experimentalMode: only
 

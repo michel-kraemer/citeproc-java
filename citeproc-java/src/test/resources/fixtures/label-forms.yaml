@@ -1,5 +1,4 @@
-modes:
-  - bibliography
+mode: bibliography
 
 style:
   <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
