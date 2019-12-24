@@ -4,6 +4,7 @@ import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.output.Bibliography;
+import de.undercouch.citeproc.output.Citation;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.ParseException;
 import org.junit.Test;
@@ -110,6 +111,7 @@ public class FixturesTest {
             data = yaml.loadAs(is, Map.class);
         }
 
+        List<String> modes = (List<String>)data.get("modes");
         String style = (String)data.get("style");
         String expectedResult = (String)data.get("result");
 
@@ -140,13 +142,23 @@ public class FixturesTest {
         citeproc.setOutputFormat("text");
 
         // register citation items
-        citeproc.registerCitationItems(itemIds.toArray(new String[0]));
+        String[] itemIdsArr = itemIds.toArray(new String[0]);
+        citeproc.registerCitationItems(itemIdsArr);
 
-        // make bibliography
-        Bibliography bibl = citeproc.makeBibliography();
+        String actualResult = null;
+        for (String mode : modes) {
+            if ("bibliography".equals(mode)) {
+                Bibliography bibl = citeproc.makeBibliography();
+                actualResult = bibl.makeString();
+            } else {
+                List<Citation> citations = citeproc.makeCitation(itemIdsArr);
+                actualResult = citations.stream()
+                        .map(Citation::getText)
+                        .collect(Collectors.joining("\n"));
+            }
+        }
 
         // compare result
-        String actualResult = bibl.makeString();
         assertEquals(expectedResult, actualResult);
     }
 }

@@ -15,6 +15,7 @@ import java.util.Map;
  */
 public class SStyle {
     private final LLocale locale;
+    private final SCitation citation;
     private final SBibliography bibliography;
     private final Map<String, SMacro> macros = new HashMap<>();
 
@@ -24,6 +25,7 @@ public class SStyle {
      */
     public SStyle(Document styleDocument) {
         LLocale locale = null;
+        SCitation citation = null;
         SBibliography bibl = null;
 
         Element styleRoot = styleDocument.getDocumentElement();
@@ -34,6 +36,9 @@ public class SStyle {
             switch (nodeName) {
                 case "locale":
                     locale = new LLocale(c);
+                    break;
+                case "citation":
+                    citation = new SCitation(c);
                     break;
                 case "bibliography":
                     bibl = new SBibliography(c);
@@ -48,6 +53,7 @@ public class SStyle {
         }
 
         this.locale = locale;
+        this.citation = citation;
         this.bibliography = bibl;
     }
 
@@ -59,6 +65,15 @@ public class SStyle {
      */
     public LLocale getLocale() {
         return locale;
+    }
+
+    /**
+     * Get the citation element defined in the style file
+     * @return the citation element or {@code null} if the style file does not
+     * have one
+     */
+    public SCitation getCitation() {
+        return citation;
     }
 
     /**

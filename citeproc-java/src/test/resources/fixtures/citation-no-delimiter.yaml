@@ -1,0 +1,19 @@
+modes:
+  - citation
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation>
+      <layout>
+        <text variable="citation-number"/>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    title: My title
+  - id: item2
+    title: Another title
+
+result: "12"

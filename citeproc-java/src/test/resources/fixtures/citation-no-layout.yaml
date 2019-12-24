@@ -1,10 +1,12 @@
 modes:
-  - bibliography
+  - citation
+
+experimentalMode: only
 
 style:
   <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
-    <bibliography>
-    </bibliography>
+    <citation>
+    </citation>
   </style>
 
 items:

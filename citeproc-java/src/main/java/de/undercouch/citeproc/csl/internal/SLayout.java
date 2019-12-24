@@ -8,7 +8,7 @@ import org.w3c.dom.Node;
  * @author Michel Kraemer
  */
 public class SLayout extends SRenderingElementContainer {
-    private final Affixes affixes;
+    protected final Affixes affixes;
 
     /**
      * Construct the layout element from an XML node
@@ -21,6 +21,6 @@ public class SLayout extends SRenderingElementContainer {
 
     @Override
     public void render(RenderContext ctx) {
-        affixes.accept(super::render, ctx);
+        affixes.wrap(super::render).accept(ctx);
     }
 }

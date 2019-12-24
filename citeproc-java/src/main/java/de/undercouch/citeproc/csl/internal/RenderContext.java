@@ -75,9 +75,21 @@ public class RenderContext {
      * @param parent the parent context
      */
     public RenderContext(RenderContext parent) {
+        this(parent, parent.itemData);
+    }
+
+    /**
+     * Creates a new render context that has the same attributes as the given
+     * parent context but with an empty token buffer and a different citation
+     * item. Changes to any of the properties (except for the token buffer)
+     * will reflect in the parent context.
+     * @param parent the parent context
+     * @param itemData the citation item to render
+     */
+    public RenderContext(RenderContext parent, CSLItemData itemData) {
         this.style = parent.style;
         this.locale = parent.locale;
-        this.itemData = parent.itemData;
+        this.itemData = itemData;
         this.variableListeners = parent.variableListeners;
         this.suppressedVariables = parent.suppressedVariables;
     }

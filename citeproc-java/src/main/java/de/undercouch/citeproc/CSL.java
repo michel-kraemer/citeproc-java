@@ -2,10 +2,12 @@ package de.undercouch.citeproc;
 
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
+import de.undercouch.citeproc.csl.CSLCitationItemBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CitationIDIndexPair;
 import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.SCitation;
 import de.undercouch.citeproc.csl.internal.SStyle;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.helper.CSLUtils;
@@ -37,8 +39,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -178,12 +183,17 @@ public class CSL implements Closeable {
     /**
      * Citation items registered through {@link #registerCitationItems(String...)}
      */
-    private final List<CSLItemData> registeredItems = new ArrayList<>();
+    private final Map<String, CSLItemData> registeredItems = new LinkedHashMap<>();
 
     /**
      * {@code true} if the citation items should not be sorted
      */
     private boolean unsorted = false;
+
+    /**
+     * A list of generated citations sorted by their index
+     */
+    private final List<Citation> generatedCitations = new ArrayList<>();
 
     /**
      * Constructs a new citation processor
@@ -791,9 +801,13 @@ public class CSL implements Closeable {
         if (experimentalMode) {
             unsorted = false;
             registeredItems.clear();
-            for (String id : ids) {
+            for (int i = 0; i < ids.length; i++) {
+                String id = ids[i];
                 CSLItemData item = itemDataProvider.retrieveItem(id);
-                registeredItems.add(item);
+                CSLItemData itemClone = new CSLItemDataBuilder(item)
+                        .citationNumber(String.valueOf(i + 1))
+                        .build();
+                registeredItems.put(id, itemClone);
             }
         } else {
             try {
@@ -878,6 +892,57 @@ public class CSL implements Closeable {
     public List<Citation> makeCitation(CSLCitation citation,
             List<CitationIDIndexPair> citationsPre,
             List<CitationIDIndexPair> citationsPost) {
+        if (experimentalMode) {
+            // retrieve all items
+            int len = citation.getCitationItems().length;
+            CSLCitationItem[] sortedItems = new CSLCitationItem[len];
+            CSLCitationItem[] items = citation.getCitationItems();
+            for (int i = 0; i < len; i++) {
+                CSLCitationItem item = items[i];
+
+                CSLItemData itemData = registeredItems.get(item.getId());
+                if (itemData == null) {
+                    itemData = itemDataProvider.retrieveItem(item.getId());
+                    itemData = new CSLItemDataBuilder(itemData)
+                            .citationNumber(String.valueOf(registeredItems.size() + 1))
+                            .build();
+                    registeredItems.put(item.getId(), itemData);
+                }
+
+                sortedItems[i] = new CSLCitationItemBuilder(item)
+                        .itemData(itemData)
+                        .build();
+            }
+
+            // sort array of items
+            if (!unsorted && style.getCitation().getSort() != null) {
+                Comparator<CSLItemData> itemComparator =
+                        style.getCitation().getSort().comparator(style, locale);
+                Arrays.sort(sortedItems, (a, b) -> itemComparator.compare(
+                        a.getItemData(), b.getItemData()));
+            }
+
+            // render items
+            SCitation sc = style.getCitation();
+            sc.setCitationItems(sortedItems);
+
+            RenderContext ctx = new RenderContext(style, locale, null);
+            sc.render(ctx);
+
+            // generate citation
+            String text = ctx.getResult().toString();
+            Citation result = new Citation(generatedCitations.size(), text);
+            generatedCitations.add(result);
+
+            return Collections.singletonList(result);
+        } else {
+            return makeCitationLegacy(citation, citationsPre, citationsPost);
+        }
+    }
+
+    private List<Citation> makeCitationLegacy(CSLCitation citation,
+            List<CitationIDIndexPair> citationsPre,
+            List<CitationIDIndexPair> citationsPost) {
         List<?> r;
         try {
             if (citationsPre == null && citationsPost == null) {
@@ -952,9 +1017,10 @@ public class CSL implements Closeable {
 
             // make an array of all items
             CSLItemData[] sortedItems = new CSLItemData[registeredItems.size()];
-            for (int i = 0; i < registeredItems.size(); ++i) {
-                CSLItemData item = registeredItems.get(i);
-                sortedItems[i] = item;
+            int i = 0;
+            for (Map.Entry<String, CSLItemData> e : registeredItems.entrySet()) {
+                CSLItemData item = e.getValue();
+                sortedItems[i++] = item;
             }
 
             // sort array of items
@@ -964,20 +1030,17 @@ public class CSL implements Closeable {
             }
 
             // render items
-            for (int i = 0; i < sortedItems.length; ++i) {
-                CSLItemData item = sortedItems[i];
-                CSLItemData itemClone = new CSLItemDataBuilder(item)
-                        .citationNumber(String.valueOf(i + 1))
-                        .build();
+            for (int j = 0; j < sortedItems.length; ++j) {
+                CSLItemData item = sortedItems[j];
 
-                RenderContext ctx = new RenderContext(style, locale, itemClone);
+                RenderContext ctx = new RenderContext(style, locale, item);
                 style.getBibliography().render(ctx);
 
                 if (!ctx.getResult().isEmpty()) {
                     ctx.emit("\n");
                 }
 
-                entries[i] = ctx.getResult().toString();
+                entries[j] = ctx.getResult().toString();
             }
 
             return new Bibliography(entries);
@@ -1139,10 +1202,17 @@ public class CSL implements Closeable {
      * Resets the processor's state
      */
     public void reset() {
-        try {
-            runner.callMethod(engine, "restoreProcessorState");
-        } catch (ScriptRunnerException e) {
-            throw new IllegalArgumentException("Could not reset processor state", e);
+        if (experimentalMode) {
+            outputFormat = "html";
+            registeredItems.clear();
+            unsorted = false;
+            generatedCitations.clear();
+        } else {
+            try {
+                runner.callMethod(engine, "restoreProcessorState");
+            } catch (ScriptRunnerException e) {
+                throw new IllegalArgumentException("Could not reset processor state", e);
+            }
         }
     }
 
