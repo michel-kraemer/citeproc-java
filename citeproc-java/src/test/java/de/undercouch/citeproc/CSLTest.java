@@ -203,8 +203,10 @@ public class CSLTest {
      * @throws Exception if something else goes wrong
      */
     @Test(expected = IllegalArgumentException.class)
-    public void missingItem() throws Exception {
-        try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee")) {
+    @Parameters({"false", "true"})
+    public void missingItem(boolean experimentalMode) throws Exception {
+        try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee",
+                experimentalMode)) {
             citeproc.makeCitation("foobar");
         }
     }

@@ -906,6 +906,10 @@ public class CSL implements Closeable {
                 CSLItemData itemData = registeredItems.get(item.getId());
                 if (itemData == null) {
                     itemData = itemDataProvider.retrieveItem(item.getId());
+                    if (itemData == null) {
+                        throw new IllegalArgumentException("Missing citation " +
+                                "item with ID: " + item.getId());
+                    }
                     itemData = new CSLItemDataBuilder(itemData)
                             .citationNumber(String.valueOf(registeredItems.size() + 1))
                             .build();
