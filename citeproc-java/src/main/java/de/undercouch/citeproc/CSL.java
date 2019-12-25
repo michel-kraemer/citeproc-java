@@ -47,9 +47,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -999,10 +1002,11 @@ public class CSL implements Closeable {
     }
 
     /**
-     * Generates a bibliography for the registered citations. Depending
+     * <p>Generates a bibliography for the registered citations. Depending
      * on the selection mode selects, includes, or excludes bibliography
      * items whose fields and field values match the fields and field values
-     * from the given example item data objects.
+     * from the given example item data objects.</p>
+     * <p>Note: This method will be deprecated in the next release.</p>
      * @param mode the selection mode
      * @param selection the example item data objects that contain
      * the fields and field values to match
@@ -1013,40 +1017,118 @@ public class CSL implements Closeable {
     public Bibliography makeBibliography(SelectionMode mode,
             CSLItemData[] selection, CSLItemData[] quash) {
         if (experimentalMode) {
-            String[] entries = new String[registeredItems.size()];
+            return makeBibliography(item -> {
+                boolean include = true;
 
-            // make an array of all items
-            CSLItemData[] sortedItems = new CSLItemData[registeredItems.size()];
-            int i = 0;
-            for (Map.Entry<String, CSLItemData> e : registeredItems.entrySet()) {
-                CSLItemData item = e.getValue();
-                sortedItems[i++] = item;
-            }
+                if (selection != null) {
+                    switch (mode) {
+                        case INCLUDE:
+                            include = false;
+                            for (CSLItemData s : selection) {
+                                if (itemDataEqualsAny(item, s)) {
+                                    include = true;
+                                    break;
+                                }
+                            }
+                            break;
 
-            // sort array of items
-            if (!unsorted && style.getBibliography().getSort() != null) {
-                Arrays.sort(sortedItems, style.getBibliography().getSort()
-                        .comparator(style, locale));
-            }
+                        case EXCLUDE:
+                            for (CSLItemData s : selection) {
+                                if (itemDataEqualsAny(item, s)) {
+                                    include = false;
+                                    break;
+                                }
+                            }
+                            break;
 
-            // render items
-            for (int j = 0; j < sortedItems.length; ++j) {
-                CSLItemData item = sortedItems[j];
-
-                RenderContext ctx = new RenderContext(style, locale, item);
-                style.getBibliography().render(ctx);
-
-                if (!ctx.getResult().isEmpty()) {
-                    ctx.emit("\n");
+                        case SELECT:
+                            for (CSLItemData s : selection) {
+                                if (!itemDataEqualsAny(item, s)) {
+                                    include = false;
+                                    break;
+                                }
+                            }
+                            break;
+                    }
                 }
 
-                entries[j] = ctx.getResult().toString();
-            }
+                if (include && quash != null) {
+                    boolean match = true;
+                    for (CSLItemData s : quash) {
+                        if (!itemDataEqualsAny(item, s)) {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match) {
+                        include = false;
+                    }
+                }
 
-            return new Bibliography(entries);
+                return include;
+            });
         } else {
             return makeBibliographyLegacy(mode, selection, quash);
         }
+    }
+
+    /**
+     * Generates a bibliography for registered citations
+     * @param filter a function to apply to each registered citation item to
+     * determine if it should be included in the bibliography or not (may
+     * be {@code null} if all items should be included)
+     * @return the bibliography
+     */
+    public Bibliography makeBibliography(Predicate<CSLItemData> filter) {
+        if (!experimentalMode) {
+            if (filter == null) {
+                return makeBibliographyLegacy(null, null, null);
+            }
+            throw new IllegalStateException("Making a bibliography with a " +
+                    "filter is not supported in legacy mode. Use " +
+                    "CSL.makeBibliography(SelectionMode, CSLItemData[], CSLItemData[])" +
+                    "instead.");
+        }
+
+        Collection<CSLItemData> filteredItems;
+        if (filter != null) {
+            filteredItems = registeredItems.values().stream()
+                    .filter(filter)
+                    .collect(Collectors.toList());
+        } else {
+            filteredItems = registeredItems.values();
+        }
+
+        String[] entries = new String[filteredItems.size()];
+
+        // make an array of all items
+        CSLItemData[] sortedItems = new CSLItemData[filteredItems.size()];
+        int i = 0;
+        for (CSLItemData item : filteredItems) {
+            sortedItems[i++] = item;
+        }
+
+        // sort array of items
+        if (!unsorted && style.getBibliography().getSort() != null) {
+            Arrays.sort(sortedItems, style.getBibliography().getSort()
+                    .comparator(style, locale));
+        }
+
+        // render items
+        for (int j = 0; j < sortedItems.length; ++j) {
+            CSLItemData item = sortedItems[j];
+
+            RenderContext ctx = new RenderContext(style, locale, item);
+            style.getBibliography().render(ctx);
+
+            if (!ctx.getResult().isEmpty()) {
+                ctx.emit("\n");
+            }
+
+            entries[j] = ctx.getResult().toString();
+        }
+
+        return new Bibliography(entries);
     }
 
     private Bibliography makeBibliographyLegacy(SelectionMode mode,
@@ -1311,5 +1393,255 @@ public class CSL implements Closeable {
      */
     public static void removeThreadLocals() {
         sharedRunner.remove();
+    }
+
+    /**
+     * Test if any of the attributes of {@code b} match the ones of {@code a}.
+     * Note: This method will be deprecated in the next release
+     * @param a the first object
+     * @param b the object to match against
+     * @return {@code true} if the match succeeds
+     */
+    private static boolean itemDataEqualsAny(CSLItemData a, CSLItemData b) {
+        if (a == b) {
+            return true;
+        }
+        if (b == null) {
+            return false;
+        }
+
+        if (b.getId() != null && Objects.equals(a.getId(), b.getId())) {
+            return true;
+        }
+        if (b.getType() != null && Objects.equals(a.getType(), b.getType())) {
+            return true;
+        }
+        if (b.getCategories() != null && Arrays.equals(a.getCategories(), b.getCategories())) {
+            return true;
+        }
+        if (b.getLanguage() != null && Objects.equals(a.getLanguage(), b.getLanguage())) {
+            return true;
+        }
+        if (b.getJournalAbbreviation() != null && Objects.equals(a.getJournalAbbreviation(), b.getJournalAbbreviation())) {
+            return true;
+        }
+        if (b.getShortTitle() != null && Objects.equals(a.getShortTitle(), b.getShortTitle())) {
+            return true;
+        }
+        if (b.getAuthor() != null && Arrays.equals(a.getAuthor(), b.getAuthor())) {
+            return true;
+        }
+        if (b.getCollectionEditor() != null && Arrays.equals(a.getCollectionEditor(), b.getCollectionEditor())) {
+            return true;
+        }
+        if (b.getComposer() != null && Arrays.equals(a.getComposer(), b.getComposer())) {
+            return true;
+        }
+        if (b.getContainerAuthor() != null && Arrays.equals(a.getContainerAuthor(), b.getContainerAuthor())) {
+            return true;
+        }
+        if (b.getDirector() != null && Arrays.equals(a.getDirector(), b.getDirector())) {
+            return true;
+        }
+        if (b.getEditor() != null && Arrays.equals(a.getEditor(), b.getEditor())) {
+            return true;
+        }
+        if (b.getEditorialDirector() != null && Arrays.equals(a.getEditorialDirector(), b.getEditorialDirector())) {
+            return true;
+        }
+        if (b.getInterviewer() != null && Arrays.equals(a.getInterviewer(), b.getInterviewer())) {
+            return true;
+        }
+        if (b.getIllustrator() != null && Arrays.equals(a.getIllustrator(), b.getIllustrator())) {
+            return true;
+        }
+        if (b.getOriginalAuthor() != null && Arrays.equals(a.getOriginalAuthor(), b.getOriginalAuthor())) {
+            return true;
+        }
+        if (b.getRecipient() != null && Arrays.equals(a.getRecipient(), b.getRecipient())) {
+            return true;
+        }
+        if (b.getReviewedAuthor() != null && Arrays.equals(a.getReviewedAuthor(), b.getReviewedAuthor())) {
+            return true;
+        }
+        if (b.getTranslator() != null && Arrays.equals(a.getTranslator(), b.getTranslator())) {
+            return true;
+        }
+        if (b.getAccessed() != null && Objects.equals(a.getAccessed(), b.getAccessed())) {
+            return true;
+        }
+        if (b.getContainer() != null && Objects.equals(a.getContainer(), b.getContainer())) {
+            return true;
+        }
+        if (b.getEventDate() != null && Objects.equals(a.getEventDate(), b.getEventDate())) {
+            return true;
+        }
+        if (b.getIssued() != null && Objects.equals(a.getIssued(), b.getIssued())) {
+            return true;
+        }
+        if (b.getOriginalDate() != null && Objects.equals(a.getOriginalDate(), b.getOriginalDate())) {
+            return true;
+        }
+        if (b.getSubmitted() != null && Objects.equals(a.getSubmitted(), b.getSubmitted())) {
+            return true;
+        }
+        if (b.getAbstrct() != null && Objects.equals(a.getAbstrct(), b.getAbstrct())) {
+            return true;
+        }
+        if (b.getAnnote() != null && Objects.equals(a.getAnnote(), b.getAnnote())) {
+            return true;
+        }
+        if (b.getArchive() != null && Objects.equals(a.getArchive(), b.getArchive())) {
+            return true;
+        }
+        if (b.getArchiveLocation() != null && Objects.equals(a.getArchiveLocation(), b.getArchiveLocation())) {
+            return true;
+        }
+        if (b.getArchivePlace() != null && Objects.equals(a.getArchivePlace(), b.getArchivePlace())) {
+            return true;
+        }
+        if (b.getAuthority() != null && Objects.equals(a.getAuthority(), b.getAuthority())) {
+            return true;
+        }
+        if (b.getCallNumber() != null && Objects.equals(a.getCallNumber(), b.getCallNumber())) {
+            return true;
+        }
+        if (b.getChapterNumber() != null && Objects.equals(a.getChapterNumber(), b.getChapterNumber())) {
+            return true;
+        }
+        if (b.getCitationNumber() != null && Objects.equals(a.getCitationNumber(), b.getCitationNumber())) {
+            return true;
+        }
+        if (b.getCitationLabel() != null && Objects.equals(a.getCitationLabel(), b.getCitationLabel())) {
+            return true;
+        }
+        if (b.getCollectionNumber() != null && Objects.equals(a.getCollectionNumber(), b.getCollectionNumber())) {
+            return true;
+        }
+        if (b.getCollectionTitle() != null && Objects.equals(a.getCollectionTitle(), b.getCollectionTitle())) {
+            return true;
+        }
+        if (b.getContainerTitle() != null && Objects.equals(a.getContainerTitle(), b.getContainerTitle())) {
+            return true;
+        }
+        if (b.getContainerTitleShort() != null && Objects.equals(a.getContainerTitleShort(), b.getContainerTitleShort())) {
+            return true;
+        }
+        if (b.getDimensions() != null && Objects.equals(a.getDimensions(), b.getDimensions())) {
+            return true;
+        }
+        if (b.getDOI() != null && Objects.equals(a.getDOI(), b.getDOI())) {
+            return true;
+        }
+        if (b.getEdition() != null && Objects.equals(a.getEdition(), b.getEdition())) {
+            return true;
+        }
+        if (b.getEvent() != null && Objects.equals(a.getEvent(), b.getEvent())) {
+            return true;
+        }
+        if (b.getEventPlace() != null && Objects.equals(a.getEventPlace(), b.getEventPlace())) {
+            return true;
+        }
+        if (b.getFirstReferenceNoteNumber() != null && Objects.equals(a.getFirstReferenceNoteNumber(), b.getFirstReferenceNoteNumber())) {
+            return true;
+        }
+        if (b.getGenre() != null && Objects.equals(a.getGenre(), b.getGenre())) {
+            return true;
+        }
+        if (b.getISBN() != null && Objects.equals(a.getISBN(), b.getISBN())) {
+            return true;
+        }
+        if (b.getISSN() != null && Objects.equals(a.getISSN(), b.getISSN())) {
+            return true;
+        }
+        if (b.getIssue() != null && Objects.equals(a.getIssue(), b.getIssue())) {
+            return true;
+        }
+        if (b.getJurisdiction() != null && Objects.equals(a.getJurisdiction(), b.getJurisdiction())) {
+            return true;
+        }
+        if (b.getKeyword() != null && Objects.equals(a.getKeyword(), b.getKeyword())) {
+            return true;
+        }
+        if (b.getLocator() != null && Objects.equals(a.getLocator(), b.getLocator())) {
+            return true;
+        }
+        if (b.getMedium() != null && Objects.equals(a.getMedium(), b.getMedium())) {
+            return true;
+        }
+        if (b.getNote() != null && Objects.equals(a.getNote(), b.getNote())) {
+            return true;
+        }
+        if (b.getNumber() != null && Objects.equals(a.getNumber(), b.getNumber())) {
+            return true;
+        }
+        if (b.getNumberOfPages() != null && Objects.equals(a.getNumberOfPages(), b.getNumberOfPages())) {
+            return true;
+        }
+        if (b.getNumberOfVolumes() != null && Objects.equals(a.getNumberOfVolumes(), b.getNumberOfVolumes())) {
+            return true;
+        }
+        if (b.getOriginalPublisher() != null && Objects.equals(a.getOriginalPublisher(), b.getOriginalPublisher())) {
+            return true;
+        }
+        if (b.getOriginalPublisherPlace() != null && Objects.equals(a.getOriginalPublisherPlace(), b.getOriginalPublisherPlace())) {
+            return true;
+        }
+        if (b.getOriginalTitle() != null && Objects.equals(a.getOriginalTitle(), b.getOriginalTitle())) {
+            return true;
+        }
+        if (b.getPage() != null && Objects.equals(a.getPage(), b.getPage())) {
+            return true;
+        }
+        if (b.getPageFirst() != null && Objects.equals(a.getPageFirst(), b.getPageFirst())) {
+            return true;
+        }
+        if (b.getPMCID() != null && Objects.equals(a.getPMCID(), b.getPMCID())) {
+            return true;
+        }
+        if (b.getPMID() != null && Objects.equals(a.getPMID(), b.getPMID())) {
+            return true;
+        }
+        if (b.getPublisher() != null && Objects.equals(a.getPublisher(), b.getPublisher())) {
+            return true;
+        }
+        if (b.getPublisherPlace() != null && Objects.equals(a.getPublisherPlace(), b.getPublisherPlace())) {
+            return true;
+        }
+        if (b.getReferences() != null && Objects.equals(a.getReferences(), b.getReferences())) {
+            return true;
+        }
+        if (b.getReviewedTitle() != null && Objects.equals(a.getReviewedTitle(), b.getReviewedTitle())) {
+            return true;
+        }
+        if (b.getScale() != null && Objects.equals(a.getScale(), b.getScale())) {
+            return true;
+        }
+        if (b.getSection() != null && Objects.equals(a.getSection(), b.getSection())) {
+            return true;
+        }
+        if (b.getSource() != null && Objects.equals(a.getSource(), b.getSource())) {
+            return true;
+        }
+        if (b.getStatus() != null && Objects.equals(a.getStatus(), b.getStatus())) {
+            return true;
+        }
+        if (b.getTitle() != null && Objects.equals(a.getTitle(), b.getTitle())) {
+            return true;
+        }
+        if (b.getTitleShort() != null && Objects.equals(a.getTitleShort(), b.getTitleShort())) {
+            return true;
+        }
+        if (b.getURL() != null && Objects.equals(a.getURL(), b.getURL())) {
+            return true;
+        }
+        if (b.getVersion() != null && Objects.equals(a.getVersion(), b.getVersion())) {
+            return true;
+        }
+        if (b.getVolume() != null && Objects.equals(a.getVolume(), b.getVolume())) {
+            return true;
+        }
+
+        return b.getYearSuffix() != null && Objects.equals(a.getYearSuffix(), b.getYearSuffix());
     }
 }

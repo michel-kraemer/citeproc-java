@@ -153,8 +153,10 @@ public class CSLTest {
      * @throws Exception if anything goes wrong
      */
     @Test
-    public void bibliographySelection() throws Exception {
-        try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee")) {
+    @Parameters({"false", "true"})
+    public void bibliographySelection(boolean experimentalMode) throws Exception {
+        try (CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee",
+                experimentalMode)) {
             citeproc.setOutputFormat("text");
 
             List<Citation> a = citeproc.makeCitation(items[0].getId());
