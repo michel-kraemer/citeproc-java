@@ -896,6 +896,12 @@ public class CSL implements Closeable {
             List<CitationIDIndexPair> citationsPre,
             List<CitationIDIndexPair> citationsPost) {
         if (experimentalMode) {
+            if (citationsPre != null || citationsPost != null) {
+                throw new IllegalArgumentException("Experimental mode does " +
+                        "not support preceding or succeeding citations. This " +
+                        "method will likely be removed in a future release.");
+            }
+
             // retrieve all items
             int len = citation.getCitationItems().length;
             CSLCitationItem[] sortedItems = new CSLCitationItem[len];
