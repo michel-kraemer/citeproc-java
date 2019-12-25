@@ -928,6 +928,11 @@ public class CSL implements Closeable {
             }
 
             // sort array of items
+            boolean unsorted = false;
+            if (citation.getProperties() != null &&
+                    citation.getProperties().getUnsorted() != null) {
+                unsorted = citation.getProperties().getUnsorted();
+            }
             if (!unsorted && style.getCitation().getSort() != null) {
                 Comparator<CSLItemData> itemComparator =
                         style.getCitation().getSort().comparator(style, locale);
