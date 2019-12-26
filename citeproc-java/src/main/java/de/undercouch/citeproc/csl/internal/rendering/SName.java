@@ -169,8 +169,13 @@ public class SName implements SElement {
             }
         }
 
+        // shortcut: render number of names
         if (form == FORM_COUNT) {
-            ctx.emit(String.valueOf(names.length));
+            int count = names.length;
+            if (max > -1 && max < count) {
+                count = max;
+            }
+            ctx.emit(String.valueOf(count));
             return;
         }
 
