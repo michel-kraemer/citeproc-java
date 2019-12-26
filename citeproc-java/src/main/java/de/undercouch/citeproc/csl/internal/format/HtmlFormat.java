@@ -21,11 +21,12 @@ public class HtmlFormat extends BaseFormat {
 
     @Override
     protected String doFormatBibliographyEntry(TokenBuffer buffer, RenderContext ctx) {
-        return buffer.toString();
+        return "  <div class=\"csl-entry\">" + buffer.toString() + "</div>\n";
     }
 
     @Override
     public Bibliography makeBibliography(String[] entries) {
-        return new Bibliography(entries);
+        return new Bibliography(entries, "<div class=\"csl-bib-body\">\n", "</div>",
+                null, null, null, null, null, null, null);
     }
 }

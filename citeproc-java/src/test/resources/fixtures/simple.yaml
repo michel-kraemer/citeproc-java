@@ -19,5 +19,10 @@ items:
         family: Name
     title: My title
 
-result: |
-  G. Name. My title
+result:
+  text: |
+    G. Name. My title
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">G. Name. My title</div>
+    </div>
