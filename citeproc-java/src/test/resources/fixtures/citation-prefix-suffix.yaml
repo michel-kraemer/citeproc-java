@@ -1,0 +1,41 @@
+mode: citation
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation>
+      <layout prefix="(" suffix=")" delimiter=", ">
+        <text variable="citation-number"/>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - family: Given
+        given: Name
+    type: book
+    title: My title
+  - id: item2
+    author:
+      - family: Another
+        given: One
+    type: book
+    title: Another title
+
+citations:
+  - citationItems:
+    - id: item1
+    - id: item1
+    - id: item2
+      prefix: ", and "
+  - citationItems:
+    - id: item1
+    - id: item1
+      suffix: " or,"
+    - id: item2
+      suffix: " end"
+
+result: |-
+  (1, 1, and 2)
+  (1, 1 or, 2 end)

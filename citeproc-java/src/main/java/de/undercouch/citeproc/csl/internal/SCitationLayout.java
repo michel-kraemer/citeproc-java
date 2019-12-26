@@ -47,7 +47,15 @@ public class SCitationLayout extends SRenderingElementContainer {
                 tmp.emit(delimiter, Token.Type.DELIMITER);
             }
 
+            if (item.getPrefix() != null) {
+                tmp.emit(item.getPrefix(), Token.Type.PREFIX);
+            }
+
             tmp.emit(innerTmp.getResult());
+
+            if (item.getSuffix() != null) {
+                tmp.emit(item.getSuffix(), Token.Type.SUFFIX);
+            }
         }
         ctx.emit(tmp.getResult());
     }
