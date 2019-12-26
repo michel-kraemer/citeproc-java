@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal;
 
 import de.undercouch.citeproc.csl.CSLCitationItem;
+import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
@@ -8,9 +9,10 @@ import org.w3c.dom.Node;
  * A layout element inside a citation element in a style file
  * @author Michel Kraemer
  */
-public class SCitationLayout extends SLayout {
-    private CSLCitationItem[] citationItems;
+public class SCitationLayout extends SRenderingElementContainer {
+    protected final Affixes affixes;
     private final String delimiter;
+    private CSLCitationItem[] citationItems;
 
     /**
      * Construct the layout element from an XML node
@@ -18,6 +20,7 @@ public class SCitationLayout extends SLayout {
      */
     public SCitationLayout(Node node) {
         super(node);
+        affixes = new Affixes(node);
         delimiter = NodeHelper.getAttrValue(node, "delimiter");
     }
 
@@ -35,10 +38,6 @@ public class SCitationLayout extends SLayout {
     }
 
     private void renderInternal(RenderContext ctx) {
-        if (citationItems == null) {
-            return;
-        }
-
         RenderContext tmp = new RenderContext(ctx);
         for (CSLCitationItem item : citationItems) {
             RenderContext innerTmp = new RenderContext(ctx, item.getItemData());

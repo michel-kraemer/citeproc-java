@@ -8,7 +8,7 @@ import org.w3c.dom.Node;
  * @author Michel Kraemer
  */
 public class SLayout extends SRenderingElementContainer {
-    protected final Affixes affixes;
+    private final Affixes affixes;
 
     /**
      * Construct the layout element from an XML node
