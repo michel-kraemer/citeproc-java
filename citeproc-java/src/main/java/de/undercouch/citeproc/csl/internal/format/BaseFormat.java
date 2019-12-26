@@ -70,13 +70,25 @@ abstract public class BaseFormat implements Format {
                 continue;
             }
 
-            Token t0 = tokens.get(j);
             Token t1 = tokens.get(i);
-
             if (t1.getType() == Token.Type.PREFIX ||
                     t1.getType() == Token.Type.SUFFIX ||
                     t1.getType() == Token.Type.DELIMITER) {
-                int overlap = StringHelper.overlap(t0.getText(), t1.getText());
+                // collect as much preceding text as necessary
+                Token t0 = tokens.get(j);
+                String t0str = t0.getText();
+                if (t0str.length() < t1.getText().length()) {
+                    StringBuilder pre = new StringBuilder(t0str);
+                    while (pre.length() < t1.getText().length() && j > 0) {
+                        --j;
+                        t0 = tokens.get(j);
+                        pre.insert(0, t0.getText());
+                    }
+                    t0str = pre.toString();
+                }
+
+                // remove overlap from t1
+                int overlap = StringHelper.overlap(t0str, t1.getText());
                 if (overlap > 0) {
                     String rest = t1.getText().substring(overlap);
                     if (rest.isEmpty()) {
