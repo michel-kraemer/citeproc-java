@@ -9,6 +9,9 @@ import de.undercouch.citeproc.csl.CitationIDIndexPair;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SCitation;
 import de.undercouch.citeproc.csl.internal.SStyle;
+import de.undercouch.citeproc.csl.internal.format.Format;
+import de.undercouch.citeproc.csl.internal.format.HtmlFormat;
+import de.undercouch.citeproc.csl.internal.format.TextFormat;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.helper.CSLUtils;
 import de.undercouch.citeproc.helper.json.JsonBuilder;
@@ -161,7 +164,12 @@ public class CSL implements Closeable {
      * The output format
      * @see #setOutputFormat(String)
      */
-    private String outputFormat = "html";
+    private String outputFormatName = "html";
+
+    /**
+     * The output format
+     */
+    private Format outputFormat = new HtmlFormat();
 
     /**
      * {@code true} if the new experimental pure Java CSL processor should be used
@@ -731,9 +739,14 @@ public class CSL implements Closeable {
      */
     public void setOutputFormat(String format) {
         if (experimentalMode) {
-            if (!"text".equals(format)) {
+            if ("text".equals(format)) {
+                outputFormat = new TextFormat();
+            } else if ("html".equals(format)) {
+                outputFormat = new HtmlFormat();
+            } else {
                 throw new IllegalArgumentException("Experimental mode " +
-                        "only supports text output format at the moment.");
+                        "only supports `text' and `html' output formats " +
+                        "at the moment.");
             }
             return;
         }
@@ -744,7 +757,7 @@ public class CSL implements Closeable {
 
         try {
             runner.callMethod(engine, "setOutputFormat", format);
-            outputFormat = format;
+            outputFormatName = format;
         } catch (ScriptRunnerException e) {
             throw new IllegalArgumentException("Could not set output format", e);
         }
@@ -948,7 +961,7 @@ public class CSL implements Closeable {
             sc.render(ctx);
 
             // generate citation
-            String text = ctx.getResult().toString();
+            String text = outputFormat.formatCitation(ctx);
             Citation result = new Citation(generatedCitations.size(), text);
             generatedCitations.add(result);
 
@@ -1136,14 +1149,10 @@ public class CSL implements Closeable {
             RenderContext ctx = new RenderContext(style, locale, item);
             style.getBibliography().render(ctx);
 
-            if (!ctx.getResult().isEmpty()) {
-                ctx.emit("\n");
-            }
-
-            entries[j] = ctx.getResult().toString();
+            entries[j] = outputFormat.formatBibliographyEntry(ctx);
         }
 
-        return new Bibliography(entries);
+        return outputFormat.makeBibliography(entries);
     }
 
     private Bibliography makeBibliographyLegacy(SelectionMode mode,
@@ -1207,7 +1216,7 @@ public class CSL implements Closeable {
         String bibEnd = getFromMap(fpm, "bibend", "");
 
         // special treatment for some output formats
-        if (outputFormat.equals("fo")) {
+        if (outputFormatName.equals("fo")) {
             // make reasonable margin for an average character width
             String em = Math.max(2.5, maxOffset * 0.6) + "em";
             for (int i = 0; i < entries.length; ++i) {
@@ -1300,7 +1309,8 @@ public class CSL implements Closeable {
      */
     public void reset() {
         if (experimentalMode) {
-            outputFormat = "html";
+            outputFormatName = "html";
+            outputFormat = new HtmlFormat();
             registeredItems.clear();
             unsorted = false;
             generatedCitations.clear();
@@ -1379,9 +1389,7 @@ public class CSL implements Closeable {
             boolean experimentalMode, CSLItemData... items) throws IOException {
         ItemDataProvider provider = new ListItemDataProvider(items);
         try (CSL csl = new CSL(provider, style, experimentalMode)) {
-            if (!experimentalMode) {
-                csl.setOutputFormat(outputFormat);
-            }
+            csl.setOutputFormat(outputFormat);
 
             String[] ids = new String[items.length];
             for (int i = 0; i < items.length; ++i) {
