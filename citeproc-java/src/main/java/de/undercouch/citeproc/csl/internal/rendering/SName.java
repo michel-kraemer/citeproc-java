@@ -12,11 +12,27 @@ import org.w3c.dom.Node;
  * @author Michel Kraemer
  */
 public class SName implements SElement {
+    /**
+     * The long form with given and family name
+     */
+    public final static int FORM_LONG = 0;
+
+    /**
+     * The short form with family name and non-dropping particles only
+     */
+    public final static int FORM_SHORT = 1;
+
+    /**
+     * A form that only returns the number of names that would be rendered
+     */
+    public final static int FORM_COUNT = 2;
+
     private final String variable;
     private final String and;
     private final String delimiter;
     private final String delimiterPrecedesEtAl;
     private final String delimiterPrecedesLast;
+    private final int form;
     private final String initializeWith;
     private final String nameAsSortOrder;
     private final String sortSeparator;
@@ -34,6 +50,7 @@ public class SName implements SElement {
         String delimiter;
         String delimiterPrecedesEtAl;
         String delimiterPrecedesLast;
+        String form;
         String sortSeparator;
         String etAlMin;
         String etAlUseFirst;
@@ -46,6 +63,7 @@ public class SName implements SElement {
                     "delimiter-precedes-et-al");
             delimiterPrecedesLast = NodeHelper.getAttrValue(node,
                     "delimiter-precedes-last");
+            form = NodeHelper.getAttrValue(node, "form");
             sortSeparator = NodeHelper.getAttrValue(node, "sort-separator");
             etAlMin = NodeHelper.getAttrValue(node, "et-al-min");
             etAlUseFirst = NodeHelper.getAttrValue(node, "et-al-use-first");
@@ -56,6 +74,7 @@ public class SName implements SElement {
             delimiter = null;
             delimiterPrecedesEtAl = null;
             delimiterPrecedesLast = null;
+            form = null;
             sortSeparator = null;
             etAlMin = null;
             etAlUseFirst = null;
@@ -75,6 +94,14 @@ public class SName implements SElement {
             delimiterPrecedesLast = "contextual";
         }
         this.delimiterPrecedesLast = delimiterPrecedesLast;
+
+        if ("count".equals(form)) {
+            this.form = FORM_COUNT;
+        } else if ("short".equals(form)) {
+            this.form = FORM_SHORT;
+        } else {
+            this.form = FORM_LONG;
+        }
 
         if (sortSeparator == null) {
             sortSeparator = ", ";
@@ -100,6 +127,17 @@ public class SName implements SElement {
      */
     public String getVariable() {
         return variable;
+    }
+
+    /**
+     * Get the form of the name to render
+     * @see #FORM_LONG
+     * @see #FORM_SHORT
+     * @see #FORM_COUNT
+     * @return the form
+     */
+    public int getForm() {
+        return form;
     }
 
     @Override
@@ -129,6 +167,11 @@ public class SName implements SElement {
                 // do not render any name
                 return;
             }
+        }
+
+        if (form == FORM_COUNT) {
+            ctx.emit(String.valueOf(names.length));
+            return;
         }
 
         StringBuilder builder = new StringBuilder();
@@ -227,6 +270,10 @@ public class SName implements SElement {
      * @return the rendered name
      */
     private String render(CSLName name, boolean nameAsSort) {
+        if (form == FORM_SHORT) {
+            return name.getFamily();
+        }
+
         StringBuilder result = new StringBuilder();
 
         String given = name.getGiven();

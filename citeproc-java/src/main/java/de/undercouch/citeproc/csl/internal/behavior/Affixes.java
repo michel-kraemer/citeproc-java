@@ -16,6 +16,14 @@ public class Affixes implements Behavior {
     private final String suffix;
 
     /**
+     * Default constructor without prefix and suffix
+     */
+    public Affixes() {
+        prefix = null;
+        suffix = null;
+    }
+
+    /**
      * Extract prefix and suffix from an XML node
      * @param node the XML node
      */

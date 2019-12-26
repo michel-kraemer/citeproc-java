@@ -31,7 +31,11 @@ public class SNames implements SRenderingElement {
      */
     public SNames(Node node, String variable, boolean parseSubstitute) {
         name = new SName(NodeHelper.findDirectChild(node, "name"), variable);
-        affixes = new Affixes(node);
+        if (name.getForm() == SName.FORM_COUNT) {
+            affixes = new Affixes();
+        } else {
+            affixes = new Affixes(node);
+        }
 
         if (parseSubstitute) {
             Node substituteNode = NodeHelper.findDirectChild(node, "substitute");

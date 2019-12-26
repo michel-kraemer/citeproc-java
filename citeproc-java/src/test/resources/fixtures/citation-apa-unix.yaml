@@ -1,0 +1,19 @@
+mode: citation
+
+style:
+  apa
+
+bibliographyFile: /unix.bib.gz
+
+itemIds:
+  - Nye:1992:XTI           # Book
+  - Gine:2003:DMC          # Article
+  - Nisley:2003:ESRb       # Article
+  - Weidner:1997:GPE       # MastersThesis
+  - McKusick:1997:UKIa     # Manual
+  - comp-lang-awk:1997:CLA # Misc
+  - Ghemawat:2003:GFS      # InProceedings
+  - Thomas:2004:LLF        # TechReport
+
+result:
+  (comp.lang.awk, 1997; Ghemawat, Gobioff, & Leung, 2003; Giné, Solsona, Hernández, & Luque, 2003; McKusick, 1997; Nisley, 2003; Nye & O’Reilly, 1992; Thomas, Okada, Markstein, & Li, 2004; Weidner, 1997)
