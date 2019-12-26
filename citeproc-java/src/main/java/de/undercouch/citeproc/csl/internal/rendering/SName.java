@@ -270,10 +270,28 @@ public class SName implements SElement {
      * @return the rendered name
      */
     private String render(CSLName name, boolean nameAsSort) {
-        if (form == FORM_SHORT) {
-            return name.getFamily();
+        // render family name with non-dropping particle
+        String family = name.getFamily();
+        if (name.getNonDroppingParticle() != null) {
+            family = name.getNonDroppingParticle().trim() + " " + family;
         }
 
+        // render short form
+        if (form == FORM_SHORT) {
+            return family;
+        }
+
+        // prepend dropping particle for long form
+        if (name.getDroppingParticle() != null) {
+            family = name.getDroppingParticle().trim() + " " + family;
+        }
+
+        // append suffix for long form
+        if (name.getSuffix() != null) {
+            family = StringUtils.stripEnd(family, null) + " " + name.getSuffix().trim();
+        }
+
+        // render long form
         StringBuilder result = new StringBuilder();
 
         String given = name.getGiven();
@@ -304,9 +322,9 @@ public class SName implements SElement {
         }
 
         if (nameAsSort) {
-            result.append(name.getFamily()).append(sortSeparator).append(givenBuffer);
+            result.append(family).append(sortSeparator).append(givenBuffer);
         } else {
-            result.append(givenBuffer).append(" ").append(name.getFamily());
+            result.append(givenBuffer).append(" ").append(family);
         }
 
         return result.toString();

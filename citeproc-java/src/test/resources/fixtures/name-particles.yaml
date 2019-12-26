@@ -1,0 +1,33 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name form="long"/>
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        non-dropping-particle: de
+        family: Name
+      - given: The
+        dropping-particle: van
+        non-dropping-particle: de
+        family: Third
+        suffix: III
+      - given: Another
+        dropping-particle: van
+        family: One
+        suffix: Jr.
+    title: My title
+
+result: |
+  Given de Name, The van de Third III, Another van One Jr. My title
