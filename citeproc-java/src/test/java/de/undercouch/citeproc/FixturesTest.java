@@ -2,6 +2,7 @@ package de.undercouch.citeproc;
 
 import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
+import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
@@ -18,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -151,13 +153,22 @@ public class FixturesTest {
         String experimentalModeEnabled = (String)data.get("experimentalMode");
         assumeFalse("only".equals(experimentalModeEnabled) && !experimentalMode);
 
-        ItemDataProvider itemDataProvider;
+        // get bibliography file
+        ItemDataProvider itemDataProvider = null;
         String bibliographyFile = (String)data.get("bibliographyFile");
         if (bibliographyFile != null) {
             itemDataProvider = loadBibliographyFile(bibliographyFile);
-        } else {
-            // convert item data
-            List<Map<String, Object>> rawItems = (List<Map<String, Object>>)data.get("items");
+        }
+
+        // get item data
+        List<Map<String, Object>> rawItems = (List<Map<String, Object>>)data.get("items");
+        if (rawItems != null && bibliographyFile != null) {
+            throw new IllegalStateException("Found both `bibliographyFile' " +
+                    "and `items'. Define only one of them.");
+        }
+
+        // convert item data
+        if (rawItems != null) {
             CSLItemData[] items = new CSLItemData[rawItems.size()];
             for (int i = 0; i < items.length; ++i) {
                 items[i] = CSLItemData.fromJson(rawItems.get(i));
@@ -165,12 +176,38 @@ public class FixturesTest {
             itemDataProvider = new ListItemDataProvider(items);
         }
 
+        if (itemDataProvider == null) {
+            throw new IllegalStateException("Either `bibliographyFile' or " +
+                    "`items' must be specified.");
+        }
+
+        // get the item IDs to test against
         List<String> itemIdsList = (List<String>)data.get("itemIds");
         String[] itemIds;
         if (itemIdsList == null) {
             itemIds = itemDataProvider.getIds();
         } else {
             itemIds = itemIdsList.toArray(new String[0]);
+        }
+
+        // get the raw citations
+        List<Map<String, Object>> rawCitations = (List<Map<String, Object>>)data.get("citations");
+        if (rawCitations != null && !"citation".equals(mode)) {
+            throw new IllegalStateException("`citations' can only be defined " +
+                    "if `mode' equals `citation'.");
+        }
+        if (rawCitations != null && itemIdsList != null) {
+            throw new IllegalStateException("Found both `itemIds' and " +
+                    "`citations'. Define only one of them.");
+        }
+
+        // converts citations
+        List<CSLCitation> citations = null;
+        if (rawCitations != null) {
+            citations = new ArrayList<>();
+            for (Map<String, Object> raw : rawCitations) {
+                citations.add(CSLCitation.fromJson(raw));
+            }
         }
 
         // create CSL processor
@@ -185,8 +222,15 @@ public class FixturesTest {
             Bibliography bibl = citeproc.makeBibliography();
             actualResult = bibl.makeString();
         } else if ("citation".equals(mode)) {
-            List<Citation> citations = citeproc.makeCitation(itemIds);
-            actualResult = citations.stream()
+            List<Citation> generatedCitations = new ArrayList<>();
+            if (citations != null) {
+                for (CSLCitation c : citations) {
+                    generatedCitations.addAll(citeproc.makeCitation(c));
+                }
+            } else {
+                generatedCitations.addAll(citeproc.makeCitation(itemIds));
+            }
+            actualResult = generatedCitations.stream()
                     .map(Citation::getText)
                     .collect(Collectors.joining("\n"));
         } else {
