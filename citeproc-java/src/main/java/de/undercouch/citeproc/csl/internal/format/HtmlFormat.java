@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal.format;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.output.Bibliography;
 
 /**
@@ -14,13 +15,13 @@ public class HtmlFormat extends BaseFormat {
     }
 
     @Override
-    public String formatCitation(RenderContext ctx) {
-        return ctx.getResult().toString();
+    protected String doFormatCitation(TokenBuffer buffer, RenderContext ctx) {
+        return buffer.toString();
     }
 
     @Override
-    public String formatBibliographyEntry(RenderContext ctx) {
-        return ctx.getResult().toString();
+    protected String doFormatBibliographyEntry(TokenBuffer buffer, RenderContext ctx) {
+        return buffer.toString();
     }
 
     @Override

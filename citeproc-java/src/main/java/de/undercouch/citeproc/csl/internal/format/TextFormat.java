@@ -16,15 +16,12 @@ public class TextFormat extends BaseFormat {
     }
 
     @Override
-    public String formatCitation(RenderContext ctx) {
-        return ctx.getResult().toString();
+    protected String doFormatCitation(TokenBuffer buffer, RenderContext ctx) {
+        return buffer.toString();
     }
 
     @Override
-    public String formatBibliographyEntry(RenderContext ctx) {
-        TokenBuffer buffer = new TokenBuffer();
-        buffer.append(ctx.getResult());
-
+    protected String doFormatBibliographyEntry(TokenBuffer buffer, RenderContext ctx) {
         if (!buffer.isEmpty()) {
             buffer.append("\n", Token.Type.TEXT);
         }
