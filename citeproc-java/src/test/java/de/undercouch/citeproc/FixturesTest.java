@@ -35,29 +35,66 @@ public class FixturesTest {
     private static final Map<String, ItemDataProvider> bibliographyFileCache = new HashMap<>();
 
     /**
-     * The current test to run
-     */
-    private File testFile;
-
-    /**
      * {@code true} if the test should be run in experimental mode
      */
     private boolean experimentalMode;
 
     /**
+     * The output format to generate
+     */
+    private String outputFormat;
+
+    /**
+     * The expected rendered result
+     */
+    private String expectedResult;
+
+    /**
+     * The test data
+     */
+    private Map<String, Object> data;
+
+    /**
      * Get all test files
      */
-    @Parameterized.Parameters(name = "{0}, {1}")
+    @Parameterized.Parameters(name = "{0}, {1}, {2}")
+    @SuppressWarnings("unchecked")
     public static Iterable<Object[]> data() {
         URL fixturesUrl = CSL.class.getResource(FIXTURES_DIR);
         File fixturesDir = new File(fixturesUrl.getPath());
 
         // noinspection ConstantConditions
         return Arrays.stream(fixturesDir.listFiles((dir, name) -> name.endsWith(".yaml")))
-                .flatMap(f -> Stream.of(
-                        new Object[] { f.getName(), true },
-                        new Object[] { f.getName(), false }
-                ))
+                .flatMap(f -> {
+                    Map<String, Object> data;
+                    Yaml yaml = new Yaml();
+                    try (FileInputStream is = new FileInputStream(f)) {
+                        data = yaml.loadAs(is, Map.class);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Object expectedResultObj = data.get("result");
+                    if (expectedResultObj instanceof String) {
+                        String str = (String)expectedResultObj;
+                        Map<String, String> map = new HashMap<>();
+                        map.put("text", str);
+                        expectedResultObj = map;
+                    }
+                    Map<String, String> expectedResults = (Map<String, String>)expectedResultObj;
+
+                    return Stream.of(true, false).flatMap(experimentalMode ->
+                            expectedResults.entrySet().stream().map(expectedResult ->
+                                    new Object[] {
+                                            f.getName().substring(0, f.getName().length() - 5),
+                                            experimentalMode,
+                                            expectedResult.getKey(),
+                                            expectedResult.getValue(),
+                                            data
+                                    }
+                            )
+                    );
+                })
                 .collect(Collectors.toList());
     }
 
@@ -66,12 +103,16 @@ public class FixturesTest {
      * @param name the name of the test file
      * @param experimentalMode {@code true} if the test should be run in
      * experimental mode
+     * @param outputFormat the output format to generate
+     * @param expectedResult the expected rendered result
+     * @param data the test data
      */
-    public FixturesTest(String name, boolean experimentalMode) {
-        URL fixturesUrl = CSL.class.getResource(FIXTURES_DIR);
-        File fixturesDir = new File(fixturesUrl.getPath());
-        testFile = new File(fixturesDir, name);
+    public FixturesTest(@SuppressWarnings("unused") String name, boolean experimentalMode,
+            String outputFormat, String expectedResult, Map<String, Object> data) {
         this.experimentalMode = experimentalMode;
+        this.outputFormat = outputFormat;
+        this.expectedResult = expectedResult;
+        this.data = data;
     }
 
     private static ItemDataProvider loadBibliographyFile(String filename) throws IOException {
@@ -104,15 +145,8 @@ public class FixturesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void run() throws IOException {
-        Map<String, Object> data;
-        Yaml yaml = new Yaml();
-        try (FileInputStream is = new FileInputStream(testFile)) {
-            data = yaml.loadAs(is, Map.class);
-        }
-
         String mode = (String)data.get("mode");
         String style = (String)data.get("style");
-        String expectedResult = (String)data.get("result");
 
         String experimentalModeEnabled = (String)data.get("experimentalMode");
         assumeFalse("only".equals(experimentalModeEnabled) && !experimentalMode);
@@ -141,7 +175,7 @@ public class FixturesTest {
 
         // create CSL processor
         CSL citeproc = new CSL(itemDataProvider, style, experimentalMode);
-        citeproc.setOutputFormat("text");
+        citeproc.setOutputFormat(outputFormat);
 
         // register citation items
         citeproc.registerCitationItems(itemIds);
