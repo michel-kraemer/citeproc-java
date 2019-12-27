@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SElement;
+import de.undercouch.citeproc.csl.internal.behavior.Formatting;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
@@ -38,6 +39,7 @@ public class SName implements SElement {
     private final String sortSeparator;
     private final Integer etAlMin;
     private final Integer etAlUseFirst;
+    private final Formatting formatting;
 
     /**
      * Create the name element from an XML node
@@ -58,6 +60,7 @@ public class SName implements SElement {
             and = NodeHelper.getAttrValue(node, "and");
             initializeWith = StringUtils.strip(NodeHelper.getAttrValue(node, "initialize-with"));
             nameAsSortOrder = NodeHelper.getAttrValue(node, "name-as-sort-order");
+            formatting = Formatting.of(node);
             delimiter = NodeHelper.getAttrValue(node, "delimiter");
             delimiterPrecedesEtAl = NodeHelper.getAttrValue(node,
                     "delimiter-precedes-et-al");
@@ -71,6 +74,7 @@ public class SName implements SElement {
             and = null;
             initializeWith = null;
             nameAsSortOrder = null;
+            formatting = null;
             delimiter = null;
             delimiterPrecedesEtAl = null;
             delimiterPrecedesLast = null;
@@ -175,7 +179,7 @@ public class SName implements SElement {
             if (max > -1 && max < count) {
                 count = max;
             }
-            ctx.emit(String.valueOf(count));
+            ctx.emit(String.valueOf(count), formatting);
             return;
         }
 
@@ -207,7 +211,7 @@ public class SName implements SElement {
                 }
             }
         }
-        ctx.emit(builder.toString());
+        ctx.emit(builder.toString(), formatting);
     }
 
     /**

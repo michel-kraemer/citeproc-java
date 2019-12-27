@@ -50,6 +50,8 @@ public class TextCase implements Behavior {
         } else if ("capitalize-all".equals(textCase)) {
             s = WordUtils.capitalize(s);
         }
-        return new Token(s, t.getType());
+        return new Token.Builder(t)
+                .text(s)
+                .build();
     }
 }

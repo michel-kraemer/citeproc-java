@@ -33,4 +33,10 @@ public class TextFormat extends BaseFormat {
     public Bibliography makeBibliography(String[] entries) {
         return new Bibliography(entries);
     }
+
+    @Override
+    protected String format(TokenBuffer buffer) {
+        // shortcut
+        return buffer.toString();
+    }
 }

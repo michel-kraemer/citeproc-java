@@ -1,7 +1,9 @@
 package de.undercouch.citeproc.csl.internal.rendering;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.SMacro;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.Formatting;
 import de.undercouch.citeproc.csl.internal.behavior.Quotes;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
@@ -21,6 +23,7 @@ public class SText implements SRenderingElement {
     private final Affixes affixes;
     private final Quotes quotes;
     private final TextCase textCase;
+    private final Formatting formatting;
 
     /**
      * Creates the text element from an XML node
@@ -35,6 +38,7 @@ public class SText implements SRenderingElement {
         affixes = new Affixes(node);
         quotes = new Quotes(node);
         textCase = new TextCase(node);
+        formatting = Formatting.of(node);
     }
 
     @Override
@@ -54,18 +58,25 @@ public class SText implements SRenderingElement {
                 } else {
                     v = ctx.smartQuotes(v);
                 }
-                ctx.emit(v);
+                ctx.emit(v, formatting);
             }
         } else if (macro != null && !macro.isEmpty()) {
-            ctx.getMacro(macro).render(ctx);
+            SMacro sm = ctx.getMacro(macro);
+            if (formatting == null) {
+                sm.render(ctx);
+            } else {
+                RenderContext tmp = new RenderContext(ctx);
+                sm.render(tmp);
+                ctx.emit(tmp.getResult(), formatting);
+            }
         } else if (term != null && !term.isEmpty()) {
             String f = form;
             if (f == null) {
                 f = "long";
             }
-            ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(f)));
+            ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(f)), formatting);
         } else if (value != null) {
-            ctx.emit(ctx.smartQuotes(value));
+            ctx.emit(ctx.smartQuotes(value), formatting);
         }
     }
 }

@@ -1,0 +1,42 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <macro name="title">
+      <text value="This should be italic" font-weight="bold" font-style="oblique" suffix=" "/>
+      <text variable="title" font-style="italic"/>
+    </macro>
+    <bibliography>
+      <layout suffix=".">
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " text-decoration="underline"/>
+          <substitute>
+            <names variable="editor"/>
+          </substitute>
+        </names>
+        <text variable="title" quotes="true" font-style="oblique" font-weight="bold"/>
+        <text term="and" vertical-align="sup" prefix=" " suffix=" "/>
+        <text value="ORDER" font-style="italic" text-decoration="underline" font-weight="bold" vertical-align="sub" font-variant="small-caps" suffix=" "/>
+        <text macro="title" font-style="italic" font-weight="light" />
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: That's my title!
+  - id: item2
+    editor:
+      - given: Another
+        family: One
+    title: Another title
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><span style="text-decoration:underline;">G. Name</span>. “<b><em>That’s my title!</em></b>” <sup>and</sup> <sub><span style="text-decoration:underline;"><b><span style="font-variant:small-caps;"><i>ORDER</i></span></b></span></sub> <i><b><em>This should be italic</em></b> <i>That’s my title!</i></i></div>
+      <div class="csl-entry"><span style="text-decoration:underline;">A. One</span>. “<b><em>Another title</em></b>” <sup>and</sup> <sub><span style="text-decoration:underline;"><b><span style="font-variant:small-caps;"><i>ORDER</i></span></b></span></sub> <i><b><em>This should be italic</em></b> <i>Another title</i></i>.</div>
+    </div>

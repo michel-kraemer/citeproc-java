@@ -43,6 +43,8 @@ public class StripPeriods implements Behavior {
      */
     private Token transform(Token t) {
         String s = StringUtils.remove(t.getText(), '.');
-        return new Token(s, t.getType());
+        return new Token.Builder(t)
+                .text(s)
+                .build();
     }
 }

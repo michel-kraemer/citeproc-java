@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal;
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLName;
+import de.undercouch.citeproc.csl.internal.behavior.Formatting;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.SmartQuotes;
@@ -529,6 +530,16 @@ public class RenderContext {
     }
 
     /**
+     * Emit a text token with the given formatting attributes
+     * @param text the text token
+     * @param formatting the token's formatting attributes
+     * @return this render context
+     */
+    public RenderContext emit(String text, Formatting formatting) {
+        return emit(text, Token.Type.TEXT, formatting);
+    }
+
+    /**
      * Emit a token of a given type
      * @param text the token's text
      * @param type the token's type
@@ -536,6 +547,18 @@ public class RenderContext {
      */
     public RenderContext emit(String text, Token.Type type) {
         result.append(text, type);
+        return this;
+    }
+
+    /**
+     * Emit a token of a given type and formatting attributes
+     * @param text the token's text
+     * @param type the token's type
+     * @param formatting the token's formatting attributes
+     * @return this render context
+     */
+    public RenderContext emit(String text, Token.Type type, Formatting formatting) {
+        result.append(text, type, formatting);
         return this;
     }
 
@@ -556,6 +579,22 @@ public class RenderContext {
      */
     public RenderContext emit(TokenBuffer buffer) {
         result.append(buffer);
+        return this;
+    }
+
+    /**
+     * Emit all tokens from the given token buffer and append the given
+     * formatting attributes to all of them
+     * @param buffer the token buffer
+     * @param formatting the formatting attributes to append
+     * @return this render context
+     */
+    public RenderContext emit(TokenBuffer buffer, Formatting formatting) {
+        buffer.getTokens().stream()
+                .map(t -> new Token.Builder(t)
+                        .appendFormatting(formatting)
+                        .build())
+                .forEach(result::append);
         return this;
     }
 
