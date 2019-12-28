@@ -40,6 +40,8 @@ public class HtmlFormat extends BaseFormat {
     @Override
     protected String openFontStyle(Formatting.FontStyle fontStyle) {
         switch (fontStyle) {
+            case NORMAL:
+                return "<span style=\"font-style: normal\">";
             case ITALIC:
                 return "<i>";
             case OBLIQUE:
@@ -52,6 +54,8 @@ public class HtmlFormat extends BaseFormat {
     @Override
     protected String closeFontStyle(Formatting.FontStyle fontStyle) {
         switch (fontStyle) {
+            case NORMAL:
+                return "</span>";
             case ITALIC:
                 return "</i>";
             case OBLIQUE:

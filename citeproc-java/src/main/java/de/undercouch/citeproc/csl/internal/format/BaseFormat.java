@@ -7,8 +7,10 @@ import de.undercouch.citeproc.csl.internal.behavior.Formatting;
 import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -222,7 +224,7 @@ abstract public class BaseFormat implements Format {
         StringBuilder result = new StringBuilder();
 
         // a stack of formatting attributes currently in effect
-        List<Formatting> currentFormatting = new ArrayList<>();
+        Deque<Formatting> currentFormatting = new ArrayDeque<>();
 
         for (Token t : buffer.getTokens()) {
             // get formatting attributes of current token
@@ -253,7 +255,7 @@ abstract public class BaseFormat implements Format {
                 for (int i = tokenFormatting.size() - 1; i >= 0; --i) {
                     Formatting f = tokenFormatting.get(i);
                     if (!currentFormatting.contains(f)) {
-                        currentFormatting.add(f);
+                        currentFormatting.push(f);
                         String str = openFormatting(f);
                         if (str != null) {
                             result.append(str);
