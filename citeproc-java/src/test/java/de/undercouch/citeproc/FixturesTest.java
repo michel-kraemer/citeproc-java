@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeFalse;
 
 @RunWith(Parameterized.class)
 public class FixturesTest {
@@ -85,7 +84,17 @@ public class FixturesTest {
                     }
                     Map<String, String> expectedResults = (Map<String, String>)expectedResultObj;
 
-                    return Stream.of(true, false).flatMap(experimentalMode ->
+                    String strExperimentalMode = (String)data.get("experimentalMode");
+                    boolean experimentalOnly = "only".equals(strExperimentalMode);
+
+                    Stream<Boolean> s;
+                    if (experimentalOnly) {
+                        s = Stream.of(true);
+                    } else {
+                        s = Stream.of(true, false);
+                    }
+
+                    return s.flatMap(experimentalMode ->
                             expectedResults.entrySet().stream().map(expectedResult ->
                                     new Object[] {
                                             f.getName().substring(0, f.getName().length() - 5),
@@ -149,9 +158,6 @@ public class FixturesTest {
     public void run() throws IOException {
         String mode = (String)data.get("mode");
         String style = (String)data.get("style");
-
-        String experimentalModeEnabled = (String)data.get("experimentalMode");
-        assumeFalse("only".equals(experimentalModeEnabled) && !experimentalMode);
 
         // get bibliography file
         ItemDataProvider itemDataProvider = null;
