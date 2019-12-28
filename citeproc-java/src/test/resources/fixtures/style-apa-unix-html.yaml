@@ -1,0 +1,31 @@
+mode: bibliography
+
+experimentalMode: only
+
+style:
+  apa
+
+bibliographyFile: /unix.bib.gz
+
+itemIds:
+  - Nye:1992:XTI           # Book
+  - Gine:2003:DMC          # Article
+  - Nisley:2003:ESRb       # Article
+  - Weidner:1997:GPE       # MastersThesis
+  - McKusick:1997:UKIa     # Manual
+  - comp-lang-awk:1997:CLA # Misc
+  - Ghemawat:2003:GFS      # InProceedings
+  - Thomas:2004:LLF        # TechReport
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><i>comp.lang.awk</i>. (1997). Retrieved from news:comp.lang.awk</div>
+      <div class="csl-entry">Ghemawat, S., Gobioff, H., &amp; Leung, S.-T. (2003). <i>The Google File System</i>. 29&ndash;43. https://doi.org/http://doi.acm.org/10.1145/945445.945450</div>
+      <div class="csl-entry">Gin&eacute;, F., Solsona, F., Hern&aacute;ndez, P., &amp; Luque, E. (2003). Dealing with Memory Constraints in a Non-Dedicated Linux Cluster. <i>The International Journal of High Performance Computing Applications</i>, <i>17</i>(1), 39&ndash;48.</div>
+      <div class="csl-entry">McKusick, M. K. (1997). <i>UNIX kernel internals: September 22-26, 1997, Engineering 819.235</i> (p. various). Los Angeles, University Extension, Dept. of Engineering, Information Systems, and Technical Management, Short Course Program: University of California.</div>
+      <div class="csl-entry">Nisley, E. (2003). Embedded Space: Real-Time Linux. <i>Dr. Dobb&rsquo;s Journal of Software Tools</i>, <i>28</i>(4), 79&ndash;81. Retrieved from http://www.ddj.com/documents/s=7827/ddj0304j/</div>
+      <div class="csl-entry">Nye, A., &amp; O&rsquo;Reilly, T. (1992). <i>X Toolkit Intrinsics Programming Manual: Motif Edition</i> (Second, Vol. 4M, p. 674). 981 Chestnut Street, Newton, MA 02164, USA: O&rsquo;Reilly &amp; Associates, Inc.</div>
+      <div class="csl-entry">Thomas, J. W., Okada, J. P., Markstein, P., &amp; Li, R.-C. (2004). <i>The Libm Library and Floating-Point Arithmetic in HP-UX for Itanium-Based Systems: Updated for HP-UX 11i v2</i> (p. 26) [Technical report]. Retrieved from Hewlett&ndash;Packard Corporation website: http://h21007.www2.hp.com/dspp/ddl/ddl_Download_File_TRX/1,1249,942,00.pdf</div>
+      <div class="csl-entry">Weidner, J. R. (1997). A general purpose extended attribute service as a file system layer: with an example client that implements POSIX.6 access control lists (M.S.; p. 32). UCLA Computer Science Dept., Los Angeles, CA.</div>
+    </div>

@@ -1,5 +1,7 @@
 mode: bibliography
 
+experimentalMode: only
+
 style:
   <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
     <macro name="title">
@@ -37,6 +39,6 @@ items:
 result:
   html: |-
     <div class="csl-bib-body">
-      <div class="csl-entry"><span style="text-decoration:underline;">G. Name</span>. “<b><em>That’s my title!</em></b>” <sup>and</sup> <sub><span style="text-decoration:underline;"><b><span style="font-variant:small-caps;"><i>ORDER</i></span></b></span></sub> <i><b><em>This should be italic</em></b> <i>That’s my title!</i></i></div>
-      <div class="csl-entry"><span style="text-decoration:underline;">A. One</span>. “<b><em>Another title</em></b>” <sup>and</sup> <sub><span style="text-decoration:underline;"><b><span style="font-variant:small-caps;"><i>ORDER</i></span></b></span></sub> <i><b><em>This should be italic</em></b> <i>Another title</i></i>.</div>
+      <div class="csl-entry"><span style="text-decoration: underline">G. Name</span>. &ldquo;<b><em>That&rsquo;s my title!</em></b>&rdquo; <sup>and</sup> <sub><span style="text-decoration: underline"><b><span style="font-variant: small-caps"><i>ORDER</i></span></b></span></sub> <i><b><em>This should be italic</em></b> <i>That&rsquo;s my title!</i></i></div>
+      <div class="csl-entry"><span style="text-decoration: underline">A. One</span>. &ldquo;<b><em>Another title</em></b>&rdquo; <sup>and</sup> <sub><span style="text-decoration: underline"><b><span style="font-variant: small-caps"><i>ORDER</i></span></b></span></sub> <i><b><em>This should be italic</em></b> <i>Another title</i></i>.</div>
     </div>

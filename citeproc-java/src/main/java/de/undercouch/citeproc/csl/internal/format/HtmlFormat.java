@@ -4,6 +4,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.csl.internal.behavior.Formatting;
 import de.undercouch.citeproc.output.Bibliography;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * The HTML output format
@@ -29,6 +30,11 @@ public class HtmlFormat extends BaseFormat {
     public Bibliography makeBibliography(String[] entries) {
         return new Bibliography(entries, "<div class=\"csl-bib-body\">\n", "</div>",
                 null, null, null, null, null, null, null);
+    }
+
+    @Override
+    protected String escape(String str) {
+        return StringEscapeUtils.escapeHtml4(str);
     }
 
     @Override
@@ -58,7 +64,7 @@ public class HtmlFormat extends BaseFormat {
     @Override
     protected String openFontVariant(Formatting.FontVariant fontVariant) {
         if (fontVariant == Formatting.FontVariant.SMALL_CAPS) {
-            return "<span style=\"font-variant:small-caps;\">";
+            return "<span style=\"font-variant: small-caps\">";
         }
         return null;
     }
@@ -90,7 +96,7 @@ public class HtmlFormat extends BaseFormat {
     @Override
     protected String openTextDecoration(Formatting.TextDecoration textDecoration) {
         if (textDecoration == Formatting.TextDecoration.UNDERLINE) {
-            return "<span style=\"text-decoration:underline;\">";
+            return "<span style=\"text-decoration: underline\">";
         }
         return null;
     }

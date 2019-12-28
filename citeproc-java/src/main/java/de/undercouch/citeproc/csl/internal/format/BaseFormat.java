@@ -205,6 +205,15 @@ abstract public class BaseFormat implements Format {
     protected abstract String doFormatBibliographyEntry(TokenBuffer buffer, RenderContext ctx);
 
     /**
+     * Escape any formatting instructions specific to the output format
+     * @param str the string to escape (may be {@code null})
+     * @return the escaped string
+     */
+    protected String escape(String str) {
+        return str;
+    }
+
+    /**
      * Format a given token buffer
      * @param buffer the buffer to format
      * @return the formatted string
@@ -253,8 +262,8 @@ abstract public class BaseFormat implements Format {
                 }
             }
 
-            // now append the token's text
-            result.append(t.getText());
+            // now escape the token's text and append it to the result
+            result.append(escape(t.getText()));
         }
 
         // close all remaining formatting attributes
