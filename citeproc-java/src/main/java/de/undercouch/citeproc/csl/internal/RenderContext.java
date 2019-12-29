@@ -3,7 +3,6 @@ package de.undercouch.citeproc.csl.internal;
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLName;
-import de.undercouch.citeproc.csl.internal.behavior.Formatting;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.SmartQuotes;
@@ -530,13 +529,14 @@ public class RenderContext {
     }
 
     /**
-     * Emit a text token with the given formatting attributes
+     * Emit a text token and attach the given formatting attributes to it
+     * (unless they are {code 0})
      * @param text the text token
-     * @param formatting the token's formatting attributes
+     * @param formattingAttributes the token's formatting attributes
      * @return this render context
      */
-    public RenderContext emit(String text, Formatting formatting) {
-        return emit(text, Token.Type.TEXT, formatting);
+    public RenderContext emit(String text, int formattingAttributes) {
+        return emit(text, Token.Type.TEXT, formattingAttributes);
     }
 
     /**
@@ -551,14 +551,19 @@ public class RenderContext {
     }
 
     /**
-     * Emit a token of a given type and formatting attributes
+     * Emit a token of a given type and attach the specified formatting
+     * attributes to it (unless they are {code 0})
      * @param text the token's text
      * @param type the token's type
-     * @param formatting the token's formatting attributes
+     * @param formattingAttributes the token's formatting attributes
      * @return this render context
      */
-    public RenderContext emit(String text, Token.Type type, Formatting formatting) {
-        result.append(text, type, formatting);
+    public RenderContext emit(String text, Token.Type type, int formattingAttributes) {
+        if (formattingAttributes == 0) {
+            result.append(text, type);
+        } else {
+            result.append(text, type, formattingAttributes);
+        }
         return this;
     }
 
@@ -584,17 +589,21 @@ public class RenderContext {
 
     /**
      * Emit all tokens from the given token buffer and append the given
-     * formatting attributes to all of them
+     * formatting attributes to all of them (unless they are {code 0})
      * @param buffer the token buffer
-     * @param formatting the formatting attributes to append
+     * @param formattingAttributes the formatting attributes to append
      * @return this render context
      */
-    public RenderContext emit(TokenBuffer buffer, Formatting formatting) {
-        buffer.getTokens().stream()
-                .map(t -> new Token.Builder(t)
-                        .appendFormatting(formatting)
-                        .build())
-                .forEach(result::append);
+    public RenderContext emit(TokenBuffer buffer, int formattingAttributes) {
+        if (formattingAttributes == 0) {
+            result.append(buffer);
+        } else {
+            buffer.getTokens().stream()
+                    .map(t -> new Token.Builder(t)
+                            .appendFormattingAttributes(formattingAttributes)
+                            .build())
+                    .forEach(result::append);
+        }
         return this;
     }
 

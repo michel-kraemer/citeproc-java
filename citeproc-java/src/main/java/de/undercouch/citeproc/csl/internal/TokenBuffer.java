@@ -1,7 +1,5 @@
 package de.undercouch.citeproc.csl.internal;
 
-import de.undercouch.citeproc.csl.internal.behavior.Formatting;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,14 +38,14 @@ public class TokenBuffer {
      * Append a token with a given type and formatting attributes to the buffer
      * @param text the token's text
      * @param type the token's type
-     * @param formatting the token's formatting attributes
+     * @param formattingAttributes the token's formatting attributes
      * @return this token buffer
      */
-    public TokenBuffer append(String text, Token.Type type, Formatting formatting) {
+    public TokenBuffer append(String text, Token.Type type, int formattingAttributes) {
         return append(new Token.Builder()
                 .text(text)
                 .type(type)
-                .appendFormatting(formatting)
+                .appendFormattingAttributes(formattingAttributes)
                 .build());
     }
 

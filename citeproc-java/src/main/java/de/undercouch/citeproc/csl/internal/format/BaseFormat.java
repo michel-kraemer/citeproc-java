@@ -3,12 +3,12 @@ package de.undercouch.citeproc.csl.internal.format;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
-import de.undercouch.citeproc.csl.internal.behavior.Formatting;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
+import de.undercouch.citeproc.helper.IntBuffer;
 import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -224,19 +224,20 @@ abstract public class BaseFormat implements Format {
         StringBuilder result = new StringBuilder();
 
         // a stack of formatting attributes currently in effect
-        Deque<Formatting> currentFormatting = new ArrayDeque<>();
+        Deque<Integer> currentFormattingAttributes = new ArrayDeque<>();
 
         for (Token t : buffer.getTokens()) {
             // get formatting attributes of current token
-            List<Formatting> tokenFormatting = t.getFormatting();
+            IntBuffer tokenFormattingAttributes = t.getFormattingAttributes();
 
             // Close and remove current formatting attributes that are not
-            // part of 'tokenFormatting'. Close them in the order they have
-            // been opened.
-            Iterator<Formatting> iterator = currentFormatting.iterator();
+            // part of 'tokenFormattingAttributes'. Close them in the order
+            // they have been opened.
+            Iterator<Integer> iterator = currentFormattingAttributes.iterator();
             while (iterator.hasNext()) {
-                Formatting cf = iterator.next();
-                if (tokenFormatting == null || !tokenFormatting.contains(cf)) {
+                int cf = iterator.next();
+                if (tokenFormattingAttributes == null ||
+                        tokenFormattingAttributes.indexOf(cf) < 0) {
                     iterator.remove();
                     String str = closeFormatting(cf);
                     if (str != null) {
@@ -245,17 +246,17 @@ abstract public class BaseFormat implements Format {
                 }
             }
 
-            // Open formatting attributes from 'tokenFormatting' if they are
-            // not already open. Append them to 'currentFormatting' to keep
-            // the correct order.
-            if (tokenFormatting != null) {
-                // iterate through 'tokenFormatting' from back to front because
-                // attributes that have been added later have a lower
-                // priority (i.e. preceding attributes may overwrite)
-                for (int i = tokenFormatting.size() - 1; i >= 0; --i) {
-                    Formatting f = tokenFormatting.get(i);
-                    if (!currentFormatting.contains(f)) {
-                        currentFormatting.push(f);
+            // Open formatting attributes from 'tokenFormattingAttributes' if
+            // they are not already open. Push them to
+            // 'currentFormattingAttributes' to keep the correct order.
+            if (tokenFormattingAttributes != null) {
+                // iterate through 'tokenFormattingAttributes' from back to
+                // front because attributes that have been added later have a
+                // lower priority (i.e. preceding attributes may overwrite)
+                for (int i = tokenFormattingAttributes.length() - 1; i >= 0; --i) {
+                    int f = tokenFormattingAttributes.get(i);
+                    if (!currentFormattingAttributes.contains(f)) {
+                        currentFormattingAttributes.push(f);
                         String str = openFormatting(f);
                         if (str != null) {
                             result.append(str);
@@ -269,7 +270,7 @@ abstract public class BaseFormat implements Format {
         }
 
         // close all remaining formatting attributes
-        for (Formatting cf : currentFormatting) {
+        for (int cf : currentFormattingAttributes) {
             String str = closeFormatting(cf);
             if (str != null) {
                 result.append(str);
@@ -282,88 +283,120 @@ abstract public class BaseFormat implements Format {
     /**
      * Generate text that enables the given formatting attributes in the
      * output format
-     * @param formatting the formatting attributes to enable
+     * @param formattingAttributes the formatting attributes to enable
      * @return the generated text or {@code null}
      */
-    protected String openFormatting(Formatting formatting) {
+    protected String openFormatting(int formattingAttributes) {
+        if (formattingAttributes == 0) {
+            return null;
+        }
+
         StringBuilder result = new StringBuilder();
-        if (formatting.getVerticalAlign() != null) {
-            String str = openVerticalAlign(formatting.getVerticalAlign());
+
+        int va = FormattingAttributes.getVerticalAlign(formattingAttributes);
+        if (va != 0) {
+            String str = openVerticalAlign(va);
             if (str != null) {
                 result.append(str);
             }
         }
-        if (formatting.getTextDecoration() != null) {
-            String str = openTextDecoration(formatting.getTextDecoration());
+
+        int td = FormattingAttributes.getTextDecoration(formattingAttributes);
+        if (td != 0) {
+            String str = openTextDecoration(td);
             if (str != null) {
                 result.append(str);
             }
         }
-        if (formatting.getFontWeight() != null) {
-            String str = openFontWeight(formatting.getFontWeight());
+
+        int fw = FormattingAttributes.getFontWeight(formattingAttributes);
+        if (fw != 0) {
+            String str = openFontWeight(fw);
             if (str != null) {
                 result.append(str);
             }
         }
-        if (formatting.getFontVariant() != null) {
-            String str = openFontVariant(formatting.getFontVariant());
+
+        int fv = FormattingAttributes.getFontVariant(formattingAttributes);
+        if (fv != 0) {
+            String str = openFontVariant(fv);
             if (str != null) {
                 result.append(str);
             }
         }
-        if (formatting.getFontStyle() != null) {
-            String str = openFontStyle(formatting.getFontStyle());
+
+        int fs = FormattingAttributes.getFontStyle(formattingAttributes);
+        if (fs != 0) {
+            String str = openFontStyle(fs);
             if (str != null) {
                 result.append(str);
             }
         }
+
         if (result.length() == 0) {
             return null;
         }
+
         return result.toString();
     }
 
     /**
      * Generate text that disables the given formatting attributes in the
      * output format
-     * @param formatting the formatting attributes to disable
+     * @param formattingAttributes the formatting attributes to disable
      * @return the generated text or {@code null}
      */
-    protected String closeFormatting(Formatting formatting) {
+    protected String closeFormatting(int formattingAttributes) {
+        if (formattingAttributes == 0) {
+            return null;
+        }
+
         StringBuilder result = new StringBuilder();
-        if (formatting.getFontStyle() != null) {
-            String str = closeFontStyle(formatting.getFontStyle());
+
+        int fs = FormattingAttributes.getFontStyle(formattingAttributes);
+        if (fs != 0) {
+            String str = closeFontStyle(fs);
             if (str != null) {
                 result.append(str);
             }
         }
-        if (formatting.getFontVariant() != null) {
-            String str = closeFontVariant(formatting.getFontVariant());
+
+        int fv = FormattingAttributes.getFontVariant(formattingAttributes);
+        if (fv != 0) {
+            String str = closeFontVariant(fv);
             if (str != null) {
                 result.append(str);
             }
         }
-        if (formatting.getFontWeight() != null) {
-            String str = closeFontWeight(formatting.getFontWeight());
+
+        int fw = FormattingAttributes.getFontWeight(formattingAttributes);
+        if (fw != 0) {
+            String str = closeFontWeight(fw);
             if (str != null) {
                 result.append(str);
             }
         }
-        if (formatting.getTextDecoration() != null) {
-            String str = closeTextDecoration(formatting.getTextDecoration());
+
+        int td = FormattingAttributes.getTextDecoration(formattingAttributes);
+        if (td != 0) {
+            String str = closeTextDecoration(td);
             if (str != null) {
                 result.append(str);
             }
         }
-        if (formatting.getVerticalAlign() != null) {
-            String str = closeVerticalAlign(formatting.getVerticalAlign());
+
+        int va = FormattingAttributes.getVerticalAlign(formattingAttributes);
+        if (va != 0) {
+            String str = closeVerticalAlign(va);
             if (str != null) {
                 result.append(str);
             }
         }
+
         if (result.length() == 0) {
             return null;
         }
+
         return result.toString();
     }
 
@@ -372,7 +405,7 @@ abstract public class BaseFormat implements Format {
      * @param fontStyle the font style to enable
      * @return the generated text or {@code null}
      */
-    protected String openFontStyle(Formatting.FontStyle fontStyle) {
+    protected String openFontStyle(int fontStyle) {
         return null;
     }
 
@@ -381,7 +414,7 @@ abstract public class BaseFormat implements Format {
      * @param fontStyle the font style to disable
      * @return the generated text or {@code null}
      */
-    protected String closeFontStyle(Formatting.FontStyle fontStyle) {
+    protected String closeFontStyle(int fontStyle) {
         return null;
     }
 
@@ -390,7 +423,7 @@ abstract public class BaseFormat implements Format {
      * @param fontVariant the font variant to enable
      * @return the generated text or {@code null}
      */
-    protected String openFontVariant(Formatting.FontVariant fontVariant) {
+    protected String openFontVariant(int fontVariant) {
         return null;
     }
 
@@ -399,7 +432,7 @@ abstract public class BaseFormat implements Format {
      * @param fontVariant the font variant to disable
      * @return the generated text or {@code null}
      */
-    protected String closeFontVariant(Formatting.FontVariant fontVariant) {
+    protected String closeFontVariant(int fontVariant) {
         return null;
     }
 
@@ -408,7 +441,7 @@ abstract public class BaseFormat implements Format {
      * @param fontWeight the font weight to enable
      * @return the generated text or {@code null}
      */
-    protected String openFontWeight(Formatting.FontWeight fontWeight) {
+    protected String openFontWeight(int fontWeight) {
         return null;
     }
 
@@ -417,7 +450,7 @@ abstract public class BaseFormat implements Format {
      * @param fontWeight the font weight to disable
      * @return the generated text or {@code null}
      */
-    protected String closeFontWeight(Formatting.FontWeight fontWeight) {
+    protected String closeFontWeight(int fontWeight) {
         return null;
     }
 
@@ -426,7 +459,7 @@ abstract public class BaseFormat implements Format {
      * @param textDecoration the text decoration to enable
      * @return the generated text or {@code null}
      */
-    protected String openTextDecoration(Formatting.TextDecoration textDecoration) {
+    protected String openTextDecoration(int textDecoration) {
         return null;
     }
 
@@ -435,7 +468,7 @@ abstract public class BaseFormat implements Format {
      * @param textDecoration the text decoration to disable
      * @return the generated text or {@code null}
      */
-    protected String closeTextDecoration(Formatting.TextDecoration textDecoration) {
+    protected String closeTextDecoration(int textDecoration) {
         return null;
     }
 
@@ -444,7 +477,7 @@ abstract public class BaseFormat implements Format {
      * @param verticalAlign the vertical alignment to enable
      * @return the generated text or {@code null}
      */
-    protected String openVerticalAlign(Formatting.VerticalAlign verticalAlign) {
+    protected String openVerticalAlign(int verticalAlign) {
         return null;
     }
 
@@ -453,7 +486,7 @@ abstract public class BaseFormat implements Format {
      * @param verticalAlign the vertical alignment to disable
      * @return the generated text or {@code null}
      */
-    protected String closeVerticalAlign(Formatting.VerticalAlign verticalAlign) {
+    protected String closeVerticalAlign(int verticalAlign) {
         return null;
     }
 }

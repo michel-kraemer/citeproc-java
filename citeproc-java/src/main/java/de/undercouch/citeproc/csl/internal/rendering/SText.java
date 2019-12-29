@@ -3,7 +3,7 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SMacro;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
-import de.undercouch.citeproc.csl.internal.behavior.Formatting;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.Quotes;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
@@ -23,7 +23,7 @@ public class SText implements SRenderingElement {
     private final Affixes affixes;
     private final Quotes quotes;
     private final TextCase textCase;
-    private final Formatting formatting;
+    private final int formattingAttributes;
 
     /**
      * Creates the text element from an XML node
@@ -38,7 +38,7 @@ public class SText implements SRenderingElement {
         affixes = new Affixes(node);
         quotes = new Quotes(node);
         textCase = new TextCase(node);
-        formatting = Formatting.of(node);
+        formattingAttributes = FormattingAttributes.of(node);
     }
 
     @Override
@@ -58,25 +58,25 @@ public class SText implements SRenderingElement {
                 } else {
                     v = ctx.smartQuotes(v);
                 }
-                ctx.emit(v, formatting);
+                ctx.emit(v, formattingAttributes);
             }
         } else if (macro != null && !macro.isEmpty()) {
             SMacro sm = ctx.getMacro(macro);
-            if (formatting == null) {
+            if (formattingAttributes == 0) {
                 sm.render(ctx);
             } else {
                 RenderContext tmp = new RenderContext(ctx);
                 sm.render(tmp);
-                ctx.emit(tmp.getResult(), formatting);
+                ctx.emit(tmp.getResult(), formattingAttributes);
             }
         } else if (term != null && !term.isEmpty()) {
             String f = form;
             if (f == null) {
                 f = "long";
             }
-            ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(f)), formatting);
+            ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(f)), formattingAttributes);
         } else if (value != null) {
-            ctx.emit(ctx.smartQuotes(value), formatting);
+            ctx.emit(ctx.smartQuotes(value), formattingAttributes);
         }
     }
 }

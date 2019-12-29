@@ -1,10 +1,6 @@
 package de.undercouch.citeproc.csl.internal;
 
-import de.undercouch.citeproc.csl.internal.behavior.Formatting;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import de.undercouch.citeproc.helper.IntBuffer;
 
 /**
  * A rendered token
@@ -48,18 +44,19 @@ public class Token {
 
     private final String text;
     private final Type type;
-    private final List<Formatting> formatting;
+    private final IntBuffer formattingAttributes;
 
     /**
      * Construct a new token
      * @param text the token's text
      * @param type the token's type
-     * @param formatting the token's formatting attributes (may be {@code null})
+     * @param formattingAttributes the token's formatting attributes (may be
+     * {@code null})
      */
-    private Token(String text, Type type, List<Formatting> formatting) {
+    private Token(String text, Type type, IntBuffer formattingAttributes) {
         this.text = text;
         this.type = type;
-        this.formatting = formatting;
+        this.formattingAttributes = formattingAttributes;
     }
 
     /**
@@ -79,14 +76,11 @@ public class Token {
     }
 
     /**
-     * Get an unmodifiable list of the token's formatting attributes
+     * Get the token's formatting attributes
      * @return the formatting attributes (may be {@code null})
      */
-    public List<Formatting> getFormatting() {
-        if (formatting == null) {
-            return null;
-        }
-        return Collections.unmodifiableList(formatting);
+    public IntBuffer getFormattingAttributes() {
+        return formattingAttributes;
     }
 
     @Override
@@ -100,9 +94,7 @@ public class Token {
     public static class Builder {
         private String text;
         private Type type;
-        private List<Formatting> formatting;
-        private boolean formattingModifiable = false;
-        private boolean built = false;
+        private IntBuffer formattingAttributes;
 
         /**
          * Default constructor
@@ -112,17 +104,17 @@ public class Token {
         }
 
         /**
-         * Creates a builder that copies the attributes of the given token
+         * Create a builder that copies the attributes of the given token
          * @param token the token to copy
          */
         public Builder(Token token) {
             this.text = token.text;
             this.type = token.type;
-            this.formatting = token.formatting;
+            this.formattingAttributes = token.formattingAttributes;
         }
 
         /**
-         * Sets the token's text
+         * Set the token's text
          * @param text the text
          * @return this builder
          */
@@ -132,7 +124,7 @@ public class Token {
         }
 
         /**
-         * Sets the token's type
+         * Set the token's type
          * @param type the type
          * @return this builder
          */
@@ -142,46 +134,28 @@ public class Token {
         }
 
         /**
-         * Sets the token's formatting attributes
-         * @param formatting the formatting attributes
+         * Set the token's formatting attributes
+         * @param formattingAttributes the formatting attributes
          * @return this builder
          */
-        public Builder formatting(List<Formatting> formatting) {
-            if (formatting == null) {
-                this.formatting = null;
-                formattingModifiable = false;
-            } else if (formatting.size() == 1) {
-                this.formatting = Collections.singletonList(formatting.get(0));
-                formattingModifiable = false;
-            } else {
-                this.formatting = new ArrayList<>(formatting);
-                formattingModifiable = true;
-            }
+        public Builder formattingAttributes(IntBuffer formattingAttributes) {
+            this.formattingAttributes = formattingAttributes;
             return this;
         }
 
         /**
-         * Appends formatting attributes
-         * @param formatting the formatting attributes to append to the token
+         * Append formatting attributes
+         * @param formattingAttributes the formatting attributes to append to
+         * the token
          * @return this builder
          */
-        public Builder appendFormatting(Formatting formatting) {
-            if (formatting == null) {
-                return this;
-            }
-
-            if (!formattingModifiable) {
-                if (this.formatting == null) {
-                    this.formatting = Collections.singletonList(formatting);
-                } else {
-                    this.formatting = new ArrayList<>(this.formatting);
-                    this.formatting.add(formatting);
-                    formattingModifiable = true;
-                }
+        public Builder appendFormattingAttributes(int formattingAttributes) {
+            if (this.formattingAttributes == null) {
+                this.formattingAttributes = new IntBuffer(formattingAttributes);
             } else {
-                this.formatting.add(formatting);
+                this.formattingAttributes = this.formattingAttributes.append(
+                        formattingAttributes);
             }
-
             return this;
         }
 
@@ -190,12 +164,7 @@ public class Token {
          * @return the token
          */
         public Token build() {
-            if (built) {
-                throw new IllegalStateException("A token builder may only " +
-                        "be used once.");
-            }
-            built = true;
-            return new Token(text, type, formatting);
+            return new Token(text, type, formattingAttributes);
         }
     }
 }
