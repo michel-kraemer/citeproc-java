@@ -4,17 +4,17 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
-import de.undercouch.citeproc.helper.IntBuffer;
 import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayDeque;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+
+import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.NORMAL;
+import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.UNDEFINED;
 
 /**
  * A base class for output formats
@@ -223,181 +223,68 @@ abstract public class BaseFormat implements Format {
     protected String format(TokenBuffer buffer) {
         StringBuilder result = new StringBuilder();
 
-        // a stack of formatting attributes currently in effect
-        Deque<Integer> currentFormattingAttributes = new ArrayDeque<>();
+        int cfs = UNDEFINED;
+        int cfv = UNDEFINED;
+        int cfw = UNDEFINED;
+        int ctd = UNDEFINED;
+        int cva = UNDEFINED;
 
         for (Token t : buffer.getTokens()) {
-            // get formatting attributes of current token
-            IntBuffer tokenFormattingAttributes = t.getFormattingAttributes();
+            int tokenFormattingAttributes = t.getFormattingAttributes();
+            int tfs = FormattingAttributes.getFontStyle(tokenFormattingAttributes);
+            int tfv = FormattingAttributes.getFontVariant(tokenFormattingAttributes);
+            int tfw = FormattingAttributes.getFontWeight(tokenFormattingAttributes);
+            int ttd = FormattingAttributes.getTextDecoration(tokenFormattingAttributes);
+            int tva = FormattingAttributes.getVerticalAlign(tokenFormattingAttributes);
 
-            // Close and remove current formatting attributes that are not
-            // part of 'tokenFormattingAttributes'. Close them in the order
-            // they have been opened.
-            Iterator<Integer> iterator = currentFormattingAttributes.iterator();
-            while (iterator.hasNext()) {
-                int cf = iterator.next();
-                if (tokenFormattingAttributes == null ||
-                        tokenFormattingAttributes.indexOf(cf) < 0) {
-                    iterator.remove();
-                    String str = closeFormatting(cf);
-                    if (str != null) {
-                        result.append(str);
-                    }
-                }
-            }
+            compareFormattingAttribute(cfs, tfs, this::closeFontStyle, result);
+            compareFormattingAttribute(cfv, tfv, this::closeFontVariant, result);
+            compareFormattingAttribute(cfw, tfw, this::closeFontWeight, result);
+            compareFormattingAttribute(ctd, ttd, this::closeTextDecoration, result);
+            compareFormattingAttribute(cva, tva, this::closeVerticalAlign, result);
 
-            // Open formatting attributes from 'tokenFormattingAttributes' if
-            // they are not already open. Push them to
-            // 'currentFormattingAttributes' to keep the correct order.
-            if (tokenFormattingAttributes != null) {
-                // iterate through 'tokenFormattingAttributes' from back to
-                // front because attributes that have been added later have a
-                // lower priority (i.e. preceding attributes may overwrite)
-                for (int i = tokenFormattingAttributes.length() - 1; i >= 0; --i) {
-                    int f = tokenFormattingAttributes.get(i);
-                    if (!currentFormattingAttributes.contains(f)) {
-                        currentFormattingAttributes.push(f);
-                        String str = openFormatting(f);
-                        if (str != null) {
-                            result.append(str);
-                        }
-                    }
-                }
-            }
+            compareFormattingAttribute(tva, cva, this::openVerticalAlign, result);
+            compareFormattingAttribute(ttd, ctd, this::openTextDecoration, result);
+            compareFormattingAttribute(tfw, cfw, this::openFontWeight, result);
+            compareFormattingAttribute(tfv, cfv, this::openFontVariant, result);
+            compareFormattingAttribute(tfs, cfs, this::openFontStyle, result);
 
-            // now escape the token's text and append it to the result
+            cfs = tfs;
+            cfv = tfv;
+            cfw = tfw;
+            ctd = ttd;
+            cva = tva;
+
             result.append(escape(t.getText()));
         }
 
-        // close all remaining formatting attributes
-        for (int cf : currentFormattingAttributes) {
-            String str = closeFormatting(cf);
-            if (str != null) {
-                result.append(str);
-            }
-        }
+        // close remaining formatting attributes
+        compareFormattingAttribute(cfs, 0, this::closeFontStyle, result);
+        compareFormattingAttribute(cfv, 0, this::closeFontVariant, result);
+        compareFormattingAttribute(cfw, 0, this::closeFontWeight, result);
+        compareFormattingAttribute(ctd, 0, this::closeTextDecoration, result);
+        compareFormattingAttribute(cva, 0, this::closeVerticalAlign, result);
 
         return result.toString();
     }
 
     /**
-     * Generate text that enables the given formatting attributes in the
-     * output format
-     * @param formattingAttributes the formatting attributes to enable
-     * @return the generated text or {@code null}
+     * Compare two formatting attributes with each other and, if necessary,
+     * call the specified function with the second attribute and append the
+     * result to the given {@link StringBuilder}.
+     * @param a the first formatting attribute
+     * @param b the second formatting attribute
+     * @param f the function to call
+     * @param result the {@link StringBuilder} to append the result to
      */
-    protected String openFormatting(int formattingAttributes) {
-        if (formattingAttributes == 0) {
-            return null;
-        }
-
-        StringBuilder result = new StringBuilder();
-
-        int va = FormattingAttributes.getVerticalAlign(formattingAttributes);
-        if (va != 0) {
-            String str = openVerticalAlign(va);
+    protected void compareFormattingAttribute(int a, int b,
+            Function<Integer, String> f, StringBuilder result) {
+        if (a != b && a != UNDEFINED && !(a == NORMAL && b == UNDEFINED)) {
+            String str = f.apply(a);
             if (str != null) {
                 result.append(str);
             }
         }
-
-        int td = FormattingAttributes.getTextDecoration(formattingAttributes);
-        if (td != 0) {
-            String str = openTextDecoration(td);
-            if (str != null) {
-                result.append(str);
-            }
-        }
-
-        int fw = FormattingAttributes.getFontWeight(formattingAttributes);
-        if (fw != 0) {
-            String str = openFontWeight(fw);
-            if (str != null) {
-                result.append(str);
-            }
-        }
-
-        int fv = FormattingAttributes.getFontVariant(formattingAttributes);
-        if (fv != 0) {
-            String str = openFontVariant(fv);
-            if (str != null) {
-                result.append(str);
-            }
-        }
-
-        int fs = FormattingAttributes.getFontStyle(formattingAttributes);
-        if (fs != 0) {
-            String str = openFontStyle(fs);
-            if (str != null) {
-                result.append(str);
-            }
-        }
-
-        if (result.length() == 0) {
-            return null;
-        }
-
-        return result.toString();
-    }
-
-    /**
-     * Generate text that disables the given formatting attributes in the
-     * output format
-     * @param formattingAttributes the formatting attributes to disable
-     * @return the generated text or {@code null}
-     */
-    protected String closeFormatting(int formattingAttributes) {
-        if (formattingAttributes == 0) {
-            return null;
-        }
-
-        StringBuilder result = new StringBuilder();
-
-        int fs = FormattingAttributes.getFontStyle(formattingAttributes);
-        if (fs != 0) {
-            String str = closeFontStyle(fs);
-            if (str != null) {
-                result.append(str);
-            }
-        }
-
-        int fv = FormattingAttributes.getFontVariant(formattingAttributes);
-        if (fv != 0) {
-            String str = closeFontVariant(fv);
-            if (str != null) {
-                result.append(str);
-            }
-        }
-
-        int fw = FormattingAttributes.getFontWeight(formattingAttributes);
-        if (fw != 0) {
-            String str = closeFontWeight(fw);
-            if (str != null) {
-                result.append(str);
-            }
-        }
-
-        int td = FormattingAttributes.getTextDecoration(formattingAttributes);
-        if (td != 0) {
-            String str = closeTextDecoration(td);
-            if (str != null) {
-                result.append(str);
-            }
-        }
-
-        int va = FormattingAttributes.getVerticalAlign(formattingAttributes);
-        if (va != 0) {
-            String str = closeVerticalAlign(va);
-            if (str != null) {
-                result.append(str);
-            }
-        }
-
-        if (result.length() == 0) {
-            return null;
-        }
-
-        return result.toString();
     }
 
     /**

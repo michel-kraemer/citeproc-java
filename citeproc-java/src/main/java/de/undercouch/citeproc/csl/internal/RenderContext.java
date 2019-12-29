@@ -559,11 +559,7 @@ public class RenderContext {
      * @return this render context
      */
     public RenderContext emit(String text, Token.Type type, int formattingAttributes) {
-        if (formattingAttributes == 0) {
-            result.append(text, type);
-        } else {
-            result.append(text, type, formattingAttributes);
-        }
+        result.append(text, type, formattingAttributes);
         return this;
     }
 
@@ -600,7 +596,7 @@ public class RenderContext {
         } else {
             buffer.getTokens().stream()
                     .map(t -> new Token.Builder(t)
-                            .appendFormattingAttributes(formattingAttributes)
+                            .mergeFormattingAttributes(formattingAttributes)
                             .build())
                     .forEach(result::append);
         }

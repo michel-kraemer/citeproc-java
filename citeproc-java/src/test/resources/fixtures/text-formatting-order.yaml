@@ -5,16 +5,16 @@ experimentalMode: only
 style:
   <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
     <macro name="title2">
-      <text variable="title" font-style="normal"/>
+      <text variable="title" font-style="italic"/>
     </macro>
     <macro name="title3">
-      <text macro="title2" font-style="oblique"/>
+      <text macro="title2" text-decoration="underline"/>
     </macro>
     <bibliography>
       <layout suffix=".">
-        <text macro="title3" font-style="italic" />
+        <text macro="title3" vertical-align="sup" />
         <text value="&#10;"/>
-        <text macro="title2" font-style="italic" />
+        <text macro="title2" vertical-align="sub" />
       </layout>
     </bibliography>
   </style>
@@ -29,6 +29,6 @@ items:
 result:
   html: |-
     <div class="csl-bib-body">
-      <div class="csl-entry"><i><em><span style="font-style: normal">That is my title!</span></em></i>
-    <i><span style="font-style: normal">That is my title!</span></i></div>
+      <div class="csl-entry"><sup><span style="text-decoration: underline"><span style="font-style: italic">That is my title!</span></span></sup>
+    <sub><span style="font-style: italic">That is my title!</span></sub></div>
     </div>

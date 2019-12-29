@@ -1,0 +1,81 @@
+mode: bibliography
+
+experimentalMode: only
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <macro name="title">
+      <text value="This should be italic" font-weight="bold" font-style="oblique" suffix=" "/>
+      <text variable="title" font-style="italic"/>
+    </macro>
+    <macro name="title2">
+      <text variable="title" font-style="normal"/>
+    </macro>
+    <macro name="title3">
+      <text macro="title2" font-style="normal"/>
+    </macro>
+    <macro name="title4">
+      <text variable="title" font-style="italic"/>
+    </macro>
+    <macro name="title5">
+      <text variable="title" text-decoration="underline"/>
+    </macro>
+    <macro name="title6">
+      <text macro="title5" font-style="italic"/>
+    </macro>
+    <macro name="title7">
+      <text macro="title4" font-style="oblique"/>
+    </macro>
+    <macro name="title8">
+      <text variable="title" font-style="normal"/>
+    </macro>
+    <bibliography>
+      <layout suffix=".">
+        <text macro="title" font-style="italic" font-weight="light" />
+        <text value="&#10;"/>
+        <text macro="title2" />
+        <text value="&#10;"/>
+        <text macro="title3" font-style="italic" />
+        <text value="&#10;"/>
+        <text macro="title2" font-style="italic" />
+        <text value="&#10;"/>
+        <text macro="title2" font-style="normal" />
+        <text value="&#10;"/>
+        <text macro="title4" font-style="italic" />
+        <text value="&#10;"/>
+        <text macro="title5" text-decoration="underline" />
+        <text value="&#10;"/>
+        <text macro="title6" text-decoration="underline" />
+        <text value="&#10;"/>
+        <text macro="title7" font-style="italic" />
+        <text value="&#10;"/>
+        <text macro="title8" font-style="italic" />
+        <text value="&#10;"/>
+        <text variable="title" font-style="italic"/>
+        <text variable="title" font-style="italic"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: That is my title!
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><span style="font-weight: bold"><span style="font-style: oblique">This should be italic</span></span><span style="font-weight: 100"><span style="font-style: italic"> That is my title!</span></span>
+    That is my title!
+    That is my title!
+    That is my title!
+    That is my title!
+    <span style="font-style: italic">That is my title!</span>
+    <span style="text-decoration: underline">That is my title!</span>
+    <span style="text-decoration: underline"><span style="font-style: italic">That is my title!</span></span>
+    <span style="font-style: italic">That is my title!</span>
+    That is my title!
+    <span style="font-style: italic">That is my title!That is my title!</span></div>
+    </div>

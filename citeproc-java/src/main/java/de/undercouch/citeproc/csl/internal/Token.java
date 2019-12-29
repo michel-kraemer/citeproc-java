@@ -1,6 +1,6 @@
 package de.undercouch.citeproc.csl.internal;
 
-import de.undercouch.citeproc.helper.IntBuffer;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 
 /**
  * A rendered token
@@ -44,16 +44,15 @@ public class Token {
 
     private final String text;
     private final Type type;
-    private final IntBuffer formattingAttributes;
+    private final int formattingAttributes;
 
     /**
      * Construct a new token
      * @param text the token's text
      * @param type the token's type
-     * @param formattingAttributes the token's formatting attributes (may be
-     * {@code null})
+     * @param formattingAttributes the token's formatting attributes
      */
-    private Token(String text, Type type, IntBuffer formattingAttributes) {
+    private Token(String text, Type type, int formattingAttributes) {
         this.text = text;
         this.type = type;
         this.formattingAttributes = formattingAttributes;
@@ -77,9 +76,9 @@ public class Token {
 
     /**
      * Get the token's formatting attributes
-     * @return the formatting attributes (may be {@code null})
+     * @return the formatting attributes
      */
-    public IntBuffer getFormattingAttributes() {
+    public int getFormattingAttributes() {
         return formattingAttributes;
     }
 
@@ -94,7 +93,7 @@ public class Token {
     public static class Builder {
         private String text;
         private Type type;
-        private IntBuffer formattingAttributes;
+        private int formattingAttributes;
 
         /**
          * Default constructor
@@ -134,28 +133,16 @@ public class Token {
         }
 
         /**
-         * Set the token's formatting attributes
-         * @param formattingAttributes the formatting attributes
+         * Merge formatting attributes with the current set of formatting
+         * attributes. An attribute from the given set only will only be merged
+         * if the respective current attribute is undefined.
+         * @param formattingAttributes the formatting attributes to merge with
+         * the current set of formatting attributes
          * @return this builder
          */
-        public Builder formattingAttributes(IntBuffer formattingAttributes) {
-            this.formattingAttributes = formattingAttributes;
-            return this;
-        }
-
-        /**
-         * Append formatting attributes
-         * @param formattingAttributes the formatting attributes to append to
-         * the token
-         * @return this builder
-         */
-        public Builder appendFormattingAttributes(int formattingAttributes) {
-            if (this.formattingAttributes == null) {
-                this.formattingAttributes = new IntBuffer(formattingAttributes);
-            } else {
-                this.formattingAttributes = this.formattingAttributes.append(
-                        formattingAttributes);
-            }
+        public Builder mergeFormattingAttributes(int formattingAttributes) {
+            this.formattingAttributes = FormattingAttributes.merge(
+                    formattingAttributes, this.formattingAttributes);
             return this;
         }
 

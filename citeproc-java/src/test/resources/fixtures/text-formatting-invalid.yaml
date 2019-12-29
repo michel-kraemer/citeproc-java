@@ -1,0 +1,25 @@
+mode: bibliography
+
+experimentalMode: only
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout suffix=".">
+        <text variable="title" font-style="FOO" text-decoration="BAR" font-weight="INVALID" vertical-align="WHATEVER" font-variant="IDONTCARE"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: That's my title!
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">That&rsquo;s my title!</div>
+    </div>

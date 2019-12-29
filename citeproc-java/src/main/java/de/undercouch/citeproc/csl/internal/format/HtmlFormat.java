@@ -6,13 +6,7 @@ import de.undercouch.citeproc.output.Bibliography;
 import org.apache.commons.text.StringEscapeUtils;
 
 import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FS_ITALIC;
-import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FS_NORMAL;
-import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FS_OBLIQUE;
-import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FV_SMALLCAPS;
 import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FW_BOLD;
-import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.TD_UNDERLINE;
-import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.VA_BASELINE;
-import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.VA_SUB;
 import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.VA_SUP;
 
 /**
@@ -48,105 +42,67 @@ public class HtmlFormat extends BaseFormat {
 
     @Override
     protected String openFontStyle(int fontStyle) {
-        switch (fontStyle) {
-            case FS_NORMAL:
-                return "<span style=\"font-style: normal\">";
-            case FS_ITALIC:
-                return "<i>";
-            case FS_OBLIQUE:
-                return "<em>";
-            default:
-                return null;
+        if (fontStyle == FS_ITALIC) {
+            return "<span style=\"font-style: italic\">";
+        } else {
+            return "<span style=\"font-style: oblique\">";
         }
     }
 
     @Override
     protected String closeFontStyle(int fontStyle) {
-        switch (fontStyle) {
-            case FS_NORMAL:
-                return "</span>";
-            case FS_ITALIC:
-                return "</i>";
-            case FS_OBLIQUE:
-                return "</em>";
-            default:
-                return null;
-        }
+        return "</span>";
     }
 
     @Override
     protected String openFontVariant(int fontVariant) {
-        if (fontVariant == FV_SMALLCAPS) {
-            return "<span style=\"font-variant: small-caps\">";
-        }
-        return null;
+        return "<span style=\"font-variant: small-caps\">";
     }
 
     @Override
     protected String closeFontVariant(int fontVariant) {
-        if (fontVariant == FV_SMALLCAPS) {
-            return "</span>";
-        }
-        return null;
+        return "</span>";
     }
 
     @Override
     protected String openFontWeight(int fontWeight) {
         if (fontWeight == FW_BOLD) {
-            return "<b>";
+            return "<span style=\"font-weight: bold\">";
+        } else {
+            return "<span style=\"font-weight: 100\">";
         }
-        return null;
     }
 
     @Override
     protected String closeFontWeight(int fontWeight) {
-        if (fontWeight == FW_BOLD) {
-            return "</b>";
-        }
-        return null;
+        return "</span>";
     }
 
     @Override
     protected String openTextDecoration(int textDecoration) {
-        if (textDecoration == TD_UNDERLINE) {
-            return "<span style=\"text-decoration: underline\">";
-        }
-        return null;
+        return "<span style=\"text-decoration: underline\">";
     }
 
     @Override
     protected String closeTextDecoration(int textDecoration) {
-        if (textDecoration == TD_UNDERLINE) {
-            return "</span>";
-        }
-        return null;
+        return "</span>";
     }
 
     @Override
     protected String openVerticalAlign(int verticalAlign) {
-        switch (verticalAlign) {
-            case VA_BASELINE:
-                return "<span style=\"vertical-align: baseline\">";
-            case VA_SUP:
-                return "<sup>";
-            case VA_SUB:
-                return "<sub>";
-            default:
-                return null;
+        if (verticalAlign == VA_SUP) {
+            return "<sup>";
+        } else {
+            return "<sub>";
         }
     }
 
     @Override
     protected String closeVerticalAlign(int verticalAlign) {
-        switch (verticalAlign) {
-            case VA_BASELINE:
-                return "</span>";
-            case VA_SUP:
-                return "</sup>";
-            case VA_SUB:
-                return "</sub>";
-            default:
-                return null;
+        if (verticalAlign == VA_SUP) {
+            return "</sup>";
+        } else {
+            return "</sub>";
         }
     }
 }

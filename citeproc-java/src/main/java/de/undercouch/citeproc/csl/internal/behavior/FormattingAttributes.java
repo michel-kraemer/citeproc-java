@@ -53,36 +53,39 @@ public class FormattingAttributes {
     private static final int TD_SHIFT = 6;
     private static final int VA_SHIFT = 8;
 
+    public static final int UNDEFINED = 0;
+    public static final int NORMAL = 1;
+
     /**
      * Font style values
      */
-    public static final int FS_NORMAL = 1;
+    public static final int FS_NORMAL = NORMAL;
     public static final int FS_ITALIC = 2;
     public static final int FS_OBLIQUE = 3;
 
     /**
      * Font variant values
      */
-    public static final int FV_NORMAL = 1;
+    public static final int FV_NORMAL = NORMAL;
     public static final int FV_SMALLCAPS = 2;
 
     /**
      * Font weight values
      */
-    public static final int FW_NORMAL = 1;
+    public static final int FW_NORMAL = NORMAL;
     public static final int FW_BOLD = 2;
     public static final int FW_LIGHT = 3;
 
     /**
      * Text decoration values
      */
-    public static final int TD_NONE = 1;
+    public static final int TD_NONE = NORMAL;
     public static final int TD_UNDERLINE = 2;
 
     /**
      * Vertical alignment values
      */
-    public static final int VA_BASELINE = 1;
+    public static final int VA_BASELINE = NORMAL;
     public static final int VA_SUP = 2;
     public static final int VA_SUB = 3;
 
@@ -234,5 +237,23 @@ public class FormattingAttributes {
      */
     public static int getVerticalAlign(int attributes) {
         return attributes >> VA_SHIFT & 3;
+    }
+
+    /**
+     * Merge two sets of formatting attributes
+     * @param a the set to merge into
+     * @param b the set to merge (overwrites attributes from {@code a} unless
+     * they are not undefined)
+     * @return the merged formatting attributes
+     */
+    public static int merge(int a, int b) {
+        for (int i = FS_SHIFT; i <= VA_SHIFT; ++i) {
+            int mask = 3 << i;
+            int t = b & mask;
+            if (t != 0) {
+                a = a & ~mask | t;
+            }
+        }
+        return a;
     }
 }

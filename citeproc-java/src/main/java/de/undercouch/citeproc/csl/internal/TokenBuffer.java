@@ -45,7 +45,7 @@ public class TokenBuffer {
         return append(new Token.Builder()
                 .text(text)
                 .type(type)
-                .appendFormattingAttributes(formattingAttributes)
+                .mergeFormattingAttributes(formattingAttributes)
                 .build());
     }
 
