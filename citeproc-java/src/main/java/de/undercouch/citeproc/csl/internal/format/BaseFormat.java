@@ -245,7 +245,8 @@ abstract public class BaseFormat implements Format {
      * @return the link
      */
     protected String formatURL(String str) {
-        return doFormatLink(str, str);
+        String escapedStr = escape(str);
+        return doFormatLink(escapedStr, escapedStr);
     }
 
     /**
@@ -268,7 +269,7 @@ abstract public class BaseFormat implements Format {
      */
     protected String formatDOI(String str) {
         String uri = addDOIPrefix(str);
-        return doFormatLink(str, uri);
+        return doFormatLink(escape(str), escape(uri));
     }
 
     /**

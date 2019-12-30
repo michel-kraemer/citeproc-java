@@ -1,0 +1,34 @@
+mode: bibliography
+
+experimentalMode: only
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " />
+        </names>
+        <text variable="title" suffix=". "/>
+        <text variable="URL" suffix=". "/>
+        <text variable="DOI"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+    URL: "http://example.com\"><a href=\""
+    DOI: "EXAMPLE?query=true&str=\"hello\""
+
+result:
+  text: |
+    G. Name. My title. http://example.com"><a href=". EXAMPLE?query=true&str="hello"
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">G. Name. My title. <a href="http://example.com&quot;&gt;&lt;a href=&quot;">http://example.com&quot;&gt;&lt;a href=&quot;</a>. <a href="https://doi.org/EXAMPLE?query=true&amp;str=&quot;hello&quot;">EXAMPLE?query=true&amp;str=&quot;hello&quot;</a></div>
+    </div>
