@@ -219,6 +219,7 @@ public class FixturesTest {
         // create CSL processor
         CSL citeproc = new CSL(itemDataProvider, style, experimentalMode);
         citeproc.setOutputFormat(outputFormat);
+        citeproc.setConvertLinks(true);
 
         // register citation items
         citeproc.registerCitationItems(itemIds);

@@ -17,7 +17,7 @@ itemIds:
 
 result: |
   comp.lang.awk. (1997). Retrieved from news:comp.lang.awk
-  Ghemawat, S., Gobioff, H., & Leung, S.-T. (2003). The Google File System. 29–43. https://doi.org/http://doi.acm.org/10.1145/945445.945450
+  Ghemawat, S., Gobioff, H., & Leung, S.-T. (2003). The Google File System. 29–43. http://doi.acm.org/10.1145/945445.945450
   Giné, F., Solsona, F., Hernández, P., & Luque, E. (2003). Dealing with Memory Constraints in a Non-Dedicated Linux Cluster. The International Journal of High Performance Computing Applications, 17(1), 39–48.
   McKusick, M. K. (1997). UNIX kernel internals: September 22-26, 1997, Engineering 819.235 (p. various). Los Angeles, University Extension, Dept. of Engineering, Information Systems, and Technical Management, Short Course Program: University of California.
   Nisley, E. (2003). Embedded Space: Real-Time Linux. Dr. Dobb’s Journal of Software Tools, 28(4), 79–81. Retrieved from http://www.ddj.com/documents/s=7827/ddj0304j/

@@ -43,6 +43,8 @@ abstract public class BaseFormat implements Format {
         MERGE_PUNCTUATION_MAP = Collections.unmodifiableMap(mpm);
     }
 
+    protected boolean convertLinks = false;
+
     /**
      * Performs post-processing on the given buffer. Alters the buffer's
      * contents. Be sure to make a copy of the buffer before calling this method.
@@ -153,6 +155,32 @@ abstract public class BaseFormat implements Format {
                 }
             }
         }
+
+        // filter DOI prefix
+        if (convertLinks) {
+            for (int i = 1; i < tokens.size(); ++i) {
+                Token t0 = tokens.get(i - 1);
+                Token t1 = tokens.get(i);
+                if (t1.getType() == Token.Type.DOI &&
+                        t0.getType() == Token.Type.PREFIX &&
+                        t0.getText().matches("^https?://doi.org/?$")) {
+                    // add doi.org if necessary
+                    String url = addDOIPrefix(t1.getText());
+                    if (!url.equals(t1.getText())) {
+                        tokens.set(i, new Token.Builder(t1)
+                                .text(url)
+                                .build());
+                    }
+
+                    // Remove unnecessary prefix
+                    tokens.remove(i - 1);
+
+                    // no need to decrease i because even if the next t1 would
+                    // be a DOI, t0 could not be a PREFIX
+                    // --i;
+                }
+            }
+        }
     }
 
     /**
@@ -170,6 +198,11 @@ abstract public class BaseFormat implements Format {
             }
         }
         return -1;
+    }
+
+    @Override
+    public void setConvertLinks(boolean convert) {
+        convertLinks = convert;
     }
 
     @Override
@@ -205,6 +238,46 @@ abstract public class BaseFormat implements Format {
      * @return the formatted bibliography entry
      */
     protected abstract String doFormatBibliographyEntry(TokenBuffer buffer, RenderContext ctx);
+
+    /**
+     * Convert a URL to a link
+     * @param str the URL
+     * @return the link
+     */
+    protected String formatURL(String str) {
+        return doFormatLink(str, str);
+    }
+
+    /**
+     * Prepends 'https://doi.org/' to the given string if it is not an absolute
+     * URL yet.
+     * @param str the string
+     * @return the string with the prefix
+     */
+    protected String addDOIPrefix(String str) {
+        if (!str.matches("^https?://.*$")) {
+            str = "https://doi.org/" + str;
+        }
+        return str;
+    }
+
+    /**
+     * Convert a DOI to a link
+     * @param str the DOI
+     * @return the link
+     */
+    protected String formatDOI(String str) {
+        String uri = addDOIPrefix(str);
+        return doFormatLink(str, uri);
+    }
+
+    /**
+     * Convert the given string to a link
+     * @param text the string to convert
+     * @param uri the URI the link should point to
+     * @return the link
+     */
+    protected abstract String doFormatLink(String text, String uri);
 
     /**
      * Escape any formatting instructions specific to the output format
@@ -255,7 +328,20 @@ abstract public class BaseFormat implements Format {
             ctd = ttd;
             cva = tva;
 
-            result.append(escape(t.getText()));
+            if (convertLinks && (t.getType() == Token.Type.URL ||
+                    t.getType() == Token.Type.DOI)) {
+                // convert URLs and DOIs to links
+                String link;
+                if (t.getType() == Token.Type.URL) {
+                    link = formatURL(t.getText());
+                } else {
+                    link = formatDOI(t.getText());
+                }
+                result.append(link);
+            } else {
+                // render escaped token
+                result.append(escape(t.getText()));
+            }
         }
 
         // close remaining formatting attributes

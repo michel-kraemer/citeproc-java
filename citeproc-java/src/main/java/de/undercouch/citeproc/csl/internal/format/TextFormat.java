@@ -19,7 +19,7 @@ public class TextFormat extends BaseFormat {
 
     @Override
     protected String doFormatCitation(TokenBuffer buffer, RenderContext ctx) {
-        return buffer.toString();
+        return format(buffer);
     }
 
     @Override
@@ -28,7 +28,12 @@ public class TextFormat extends BaseFormat {
             buffer.append("\n", Token.Type.TEXT);
         }
 
-        return buffer.toString();
+        return format(buffer);
+    }
+
+    @Override
+    protected String doFormatLink(String text, String uri) {
+        return text;
     }
 
     @Override
@@ -37,11 +42,5 @@ public class TextFormat extends BaseFormat {
         SecondFieldAlign sfa = bibliographyElement.getSecondFieldAlign();
         return new Bibliography(entries, null, null, null, null, null, null,
                 null, null, sfa);
-    }
-
-    @Override
-    protected String format(TokenBuffer buffer) {
-        // shortcut
-        return buffer.toString();
     }
 }

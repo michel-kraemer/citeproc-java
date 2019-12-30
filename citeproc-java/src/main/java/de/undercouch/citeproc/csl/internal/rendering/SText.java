@@ -2,6 +2,7 @@ package de.undercouch.citeproc.csl.internal.rendering;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SMacro;
+import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.Quotes;
@@ -50,15 +51,26 @@ public class SText implements SRenderingElement {
         if (variable != null && !variable.isEmpty()) {
             String v = ctx.getStringVariable(variable);
             if (v != null) {
-                if (variable.equals("page")) {
-                    String delimiter = ctx.getTerm("page-range-delimiter");
-                    v = v.replace("-", delimiter);
-                } else if (variable.equals("number")) {
-                    v = v.replace("-", "\u2013");
-                } else {
-                    v = ctx.smartQuotes(v);
+                Token.Type type = Token.Type.TEXT;
+                switch (variable) {
+                    case "page":
+                        String delimiter = ctx.getTerm("page-range-delimiter");
+                        v = v.replace("-", delimiter);
+                        break;
+                    case "number":
+                        v = v.replace("-", "\u2013");
+                        break;
+                    case "DOI":
+                        type = Token.Type.DOI;
+                        break;
+                    case "URL":
+                        type = Token.Type.URL;
+                        break;
+                    default:
+                        v = ctx.smartQuotes(v);
+                        break;
                 }
-                ctx.emit(v, formattingAttributes);
+                ctx.emit(v, type, formattingAttributes);
             }
         } else if (macro != null && !macro.isEmpty()) {
             SMacro sm = ctx.getMacro(macro);

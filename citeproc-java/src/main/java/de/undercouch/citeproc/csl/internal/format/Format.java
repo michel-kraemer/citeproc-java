@@ -17,6 +17,12 @@ public interface Format {
     String getName();
 
     /**
+     * Specifies if URLs and DOIs should be converted to to links
+     * @param convert true if URLs and DOIs should be converted to links
+     */
+    void setConvertLinks(boolean convert);
+
+    /**
      * Format a citation
      * @param ctx the render context containing the citation to format
      * @return the formatted citation

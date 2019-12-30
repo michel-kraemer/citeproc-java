@@ -1,0 +1,68 @@
+mode: bibliography
+
+experimentalMode: only
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " />
+        </names>
+        <text variable="title" suffix=". "/>
+        <text variable="URL" suffix=". "/>
+        <text variable="DOI"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+    URL: http://example.com
+    DOI: EXAMPLE
+  - id: item2
+    author:
+      - given: Another
+        family: Name
+    title: Another title
+    URL: www.example.com
+    DOI: https://doi.org/EXAMPLE2
+  - id: item3
+    author:
+      - given: Third
+        family: Name
+    title: Third title
+    URL: example.com
+    DOI: http://doi.org/EXAMPLE3
+  - id: item4
+    author:
+      - given: Fourth
+        family: Name
+    title: Fourth title
+    DOI: https://example.com/EXAMPLE4
+  - id: item5
+    author:
+      - given: Fifth
+        family: Name
+    title: Fifth title
+    DOI: http://example.com/EXAMPLE5
+
+result:
+  text: |
+    G. Name. My title. http://example.com. EXAMPLE
+    A. Name. Another title. www.example.com. https://doi.org/EXAMPLE2
+    T. Name. Third title. example.com. http://doi.org/EXAMPLE3
+    F. Name. Fourth title. https://example.com/EXAMPLE4
+    F. Name. Fifth title. http://example.com/EXAMPLE5
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">G. Name. My title. <a href="http://example.com">http://example.com</a>. <a href="https://doi.org/EXAMPLE">EXAMPLE</a></div>
+      <div class="csl-entry">A. Name. Another title. <a href="www.example.com">www.example.com</a>. <a href="https://doi.org/EXAMPLE2">https://doi.org/EXAMPLE2</a></div>
+      <div class="csl-entry">T. Name. Third title. <a href="example.com">example.com</a>. <a href="http://doi.org/EXAMPLE3">http://doi.org/EXAMPLE3</a></div>
+      <div class="csl-entry">F. Name. Fourth title. <a href="https://example.com/EXAMPLE4">https://example.com/EXAMPLE4</a></div>
+      <div class="csl-entry">F. Name. Fifth title. <a href="http://example.com/EXAMPLE5">http://example.com/EXAMPLE5</a></div>
+    </div>

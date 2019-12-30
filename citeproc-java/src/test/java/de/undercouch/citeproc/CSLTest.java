@@ -215,7 +215,8 @@ public class CSLTest {
      * @throws Exception if something goes wrong
      */
     @Test
-    public void links() throws Exception {
+    @Parameters({"false", "true"})
+    public void links(boolean experimentalMode) throws Exception {
         CSLItemData item = new CSLItemDataBuilder()
                 .id("citeproc-java")
                 .type(CSLType.WEBPAGE)
@@ -226,7 +227,37 @@ public class CSLTest {
                 .accessed(2013, 9, 11)
                 .build();
 
-        try (CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee")) {
+        String expectedAuthorTitle;
+        if (experimentalMode) {
+            expectedAuthorTitle = "M. Kr&auml;mer, &ldquo;citeproc-java: " +
+                    "A Citation Style Language (CSL) processor for Java,&rdquo;";
+        } else {
+            expectedAuthorTitle = "M. Kr\u00E4mer, \u201cciteproc-java: " +
+                    "A Citation Style Language (CSL) processor for Java,\u201d";
+        }
+
+        try (CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee",
+                experimentalMode)) {
+            citeproc.setOutputFormat("html");
+
+            List<Citation> a = citeproc.makeCitation("citeproc-java");
+            assertEquals(0, a.get(0).getIndex());
+            assertEquals("[1]", a.get(0).getText());
+
+            Bibliography b = citeproc.makeBibliography();
+            assertEquals(1, b.getEntries().length);
+
+            assertEquals("  <div class=\"csl-entry\">\n"
+                    + "    <div class=\"csl-left-margin\">[1]</div><div class=\"csl-right-inline\">"
+                    + expectedAuthorTitle
+                    + " 09-Sep-2013. [Online]. Available: "
+                    + "http://michel-kraemer.github.io/citeproc-java/. "
+                    + "[Accessed: 11-Sep-2013].</div>\n"
+                    + "  </div>\n", b.getEntries()[0]);
+        }
+
+        try (CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee",
+                experimentalMode)) {
             citeproc.setOutputFormat("html");
             citeproc.setConvertLinks(true);
 
@@ -236,9 +267,10 @@ public class CSLTest {
 
             Bibliography b = citeproc.makeBibliography();
             assertEquals(1, b.getEntries().length);
+
             assertEquals("  <div class=\"csl-entry\">\n"
                     + "    <div class=\"csl-left-margin\">[1]</div><div class=\"csl-right-inline\">"
-                    + "M. Kr\u00E4mer, \u201cciteproc-java: A Citation Style Language (CSL) processor for Java,\u201d"
+                    + expectedAuthorTitle
                     + " 09-Sep-2013. [Online]. Available: "
                     + "<a href=\"http://michel-kraemer.github.io/citeproc-java/\">http://michel-kraemer.github.io/citeproc-java/</a>. "
                     + "[Accessed: 11-Sep-2013].</div>\n"

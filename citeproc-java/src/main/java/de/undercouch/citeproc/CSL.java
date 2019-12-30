@@ -172,6 +172,13 @@ public class CSL implements Closeable {
     private Format outputFormat = new HtmlFormat();
 
     /**
+     * {@code true} if the processor should convert URLs and DOIs in the output
+     * to links.
+     * @see #setConvertLinks(boolean)
+     */
+    private boolean convertLinks = false;
+
+    /**
      * {@code true} if the new experimental pure Java CSL processor should be used
      */
     private final boolean experimentalMode;
@@ -748,6 +755,7 @@ public class CSL implements Closeable {
                         "only supports `text' and `html' output formats " +
                         "at the moment.");
             }
+            outputFormat.setConvertLinks(convertLinks);
             return;
         }
 
@@ -771,16 +779,14 @@ public class CSL implements Closeable {
      */
     public void setConvertLinks(boolean convert) {
         if (experimentalMode) {
-            if (convert) {
-                throw new IllegalArgumentException("Experimental mode is not " +
-                        "able to convert links yet.");
+            convertLinks = convert;
+            outputFormat.setConvertLinks(convert);
+        } else {
+            try {
+                runner.callMethod("setConvertLinks", engine, convert);
+            } catch (ScriptRunnerException e) {
+                throw new IllegalArgumentException("Could not set option", e);
             }
-        }
-
-        try {
-            runner.callMethod("setConvertLinks", engine, convert);
-        } catch (ScriptRunnerException e) {
-            throw new IllegalArgumentException("Could not set option", e);
         }
     }
 
@@ -1311,6 +1317,7 @@ public class CSL implements Closeable {
         if (experimentalMode) {
             outputFormatName = "html";
             outputFormat = new HtmlFormat();
+            convertLinks = false;
             registeredItems.clear();
             unsorted = false;
             generatedCitations.clear();

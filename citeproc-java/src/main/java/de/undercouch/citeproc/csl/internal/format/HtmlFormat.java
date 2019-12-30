@@ -51,6 +51,11 @@ public class HtmlFormat extends BaseFormat {
     }
 
     @Override
+    protected String doFormatLink(String text, String uri) {
+        return "<a href=\"" + uri + "\">" + text + "</a>";
+    }
+
+    @Override
     public Bibliography makeBibliography(String[] entries,
             SBibliography bibliographyElement) {
         SecondFieldAlign sfa = bibliographyElement.getSecondFieldAlign();

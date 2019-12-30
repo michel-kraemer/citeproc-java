@@ -39,7 +39,17 @@ public class Token {
         /**
          * A token that represents a delimiter
          */
-        DELIMITER
+        DELIMITER,
+
+        /**
+         * A token that represents a URL
+         */
+        URL,
+
+        /**
+         * A token that represents a DOI
+         */
+        DOI
     }
 
     private final String text;
