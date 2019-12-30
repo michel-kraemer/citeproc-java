@@ -1,8 +1,10 @@
 package de.undercouch.citeproc.csl.internal.format;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.SBibliography;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.output.Bibliography;
+import de.undercouch.citeproc.output.SecondFieldAlign;
 import org.apache.commons.text.StringEscapeUtils;
 
 import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FS_ITALIC;
@@ -26,13 +28,34 @@ public class HtmlFormat extends BaseFormat {
 
     @Override
     protected String doFormatBibliographyEntry(TokenBuffer buffer, RenderContext ctx) {
-        return "  <div class=\"csl-entry\">" + format(buffer) + "</div>\n";
+        String result;
+
+        SecondFieldAlign sfa = ctx.getStyle().getBibliography().getSecondFieldAlign();
+        if (sfa != SecondFieldAlign.FALSE) {
+            // find tokens that are part of the first field
+            int i = 0;
+            while (buffer.getTokens().get(i).isFirstField()) {
+                ++i;
+            }
+            TokenBuffer firstBuffer = buffer.copy(0, i);
+            TokenBuffer restBuffer = buffer.copy(i, buffer.getTokens().size());
+
+            // render first field and rest independently
+            result = "\n    <div class=\"csl-left-margin\">" + format(firstBuffer) +
+                    "</div><div class=\"csl-right-inline\">" + format(restBuffer) + "</div>\n  ";
+        } else {
+            result = format(buffer);
+        }
+
+        return "  <div class=\"csl-entry\">" + result + "</div>\n";
     }
 
     @Override
-    public Bibliography makeBibliography(String[] entries) {
+    public Bibliography makeBibliography(String[] entries,
+            SBibliography bibliographyElement) {
+        SecondFieldAlign sfa = bibliographyElement.getSecondFieldAlign();
         return new Bibliography(entries, "<div class=\"csl-bib-body\">\n", "</div>",
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, sfa);
     }
 
     @Override

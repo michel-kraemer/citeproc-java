@@ -45,17 +45,22 @@ public class Token {
     private final String text;
     private final Type type;
     private final int formattingAttributes;
+    private final boolean firstField;
 
     /**
      * Construct a new token
      * @param text the token's text
      * @param type the token's type
      * @param formattingAttributes the token's formatting attributes
+     * @param firstField {@code true} if the token is part of the first
+     * rendered field in a bibliography entry
      */
-    private Token(String text, Type type, int formattingAttributes) {
+    private Token(String text, Type type, int formattingAttributes,
+            boolean firstField) {
         this.text = text;
         this.type = type;
         this.formattingAttributes = formattingAttributes;
+        this.firstField = firstField;
     }
 
     /**
@@ -82,6 +87,15 @@ public class Token {
         return formattingAttributes;
     }
 
+    /**
+     * Return {@code true} if the token is part of the first rendered field in
+     * a bibliography entry
+     * @return {@code true} if the token is part of the first field
+     */
+    public boolean isFirstField() {
+        return firstField;
+    }
+
     @Override
     public String toString() {
         return text;
@@ -94,6 +108,7 @@ public class Token {
         private String text;
         private Type type;
         private int formattingAttributes;
+        private boolean firstField;
 
         /**
          * Default constructor
@@ -110,6 +125,7 @@ public class Token {
             this.text = token.text;
             this.type = token.type;
             this.formattingAttributes = token.formattingAttributes;
+            this.firstField = token.firstField;
         }
 
         /**
@@ -147,11 +163,22 @@ public class Token {
         }
 
         /**
+         * Specify that the token is part of the first rendered field in a
+         * bibliography entry
+         * @param firstField {@code true} if the token is part of the first field
+         * @return this builder
+         */
+        public Builder firstField(boolean firstField) {
+            this.firstField = firstField;
+            return this;
+        }
+
+        /**
          * Build the token
          * @return the token
          */
         public Token build() {
-            return new Token(text, type, formattingAttributes);
+            return new Token(text, type, formattingAttributes, firstField);
         }
     }
 }

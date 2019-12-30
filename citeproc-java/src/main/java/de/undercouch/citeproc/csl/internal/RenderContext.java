@@ -95,6 +95,14 @@ public class RenderContext {
     }
 
     /**
+     * Get the style used to render citation items and bibliographies
+     * @return the style
+     */
+    public SStyle getStyle() {
+        return style;
+    }
+
+    /**
      * Get the localization data
      * @return the localization data
      */

@@ -9,7 +9,22 @@ import java.util.stream.Collectors;
  * @author Michel Kraemer
  */
 public class TokenBuffer {
-    private final List<Token> tokens = new ArrayList<>();
+    private final List<Token> tokens;
+
+    /**
+     * Create an empty token buffer
+     */
+    public TokenBuffer() {
+        tokens = new ArrayList<>();
+    }
+
+    /**
+     * Create a token buffer with the given list of tokens
+     * @param tokens the token list
+     */
+    private TokenBuffer(List<Token> tokens) {
+        this.tokens = tokens;
+    }
 
     /**
      * Append a token to the buffer
@@ -73,6 +88,17 @@ public class TokenBuffer {
      */
     public boolean isEmpty() {
         return tokens.isEmpty();
+    }
+
+    /**
+     * Create a new token buffer that contains a portion of this one between
+     * the specified {@code fromIndex} and {@code toIndex} (exclusive).
+     * @param fromIndex the index of the first element (inclusive)
+     * @param toIndex the index of the last element (exclusive)
+     * @return the new token buffer
+     */
+    public TokenBuffer copy(int fromIndex, int toIndex) {
+        return new TokenBuffer(tokens.subList(fromIndex, toIndex));
     }
 
     @Override

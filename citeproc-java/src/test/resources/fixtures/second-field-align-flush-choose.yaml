@@ -1,0 +1,38 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography second-field-align="flush">
+      <layout>
+        <choose>
+          <if type="book">
+            <group>
+              <text value="["/>
+              <text variable="citation-number"/>
+              <text value="]"/>
+            </group>
+          </if>
+        </choose>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    type: book
+    title: My title
+  - id: item2
+    type: book
+    title: My other title
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">
+        <div class="csl-left-margin">[1]</div><div class="csl-right-inline">My title</div>
+      </div>
+      <div class="csl-entry">
+        <div class="csl-left-margin">[2]</div><div class="csl-right-inline">My other title</div>
+      </div>
+    </div>

@@ -1152,7 +1152,7 @@ public class CSL implements Closeable {
             entries[j] = outputFormat.formatBibliographyEntry(ctx);
         }
 
-        return outputFormat.makeBibliography(entries);
+        return outputFormat.makeBibliography(entries, style.getBibliography());
     }
 
     private Bibliography makeBibliographyLegacy(SelectionMode mode,

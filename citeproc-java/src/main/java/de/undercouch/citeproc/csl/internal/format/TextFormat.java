@@ -1,9 +1,11 @@
 package de.undercouch.citeproc.csl.internal.format;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.SBibliography;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.output.Bibliography;
+import de.undercouch.citeproc.output.SecondFieldAlign;
 
 /**
  * The text output format
@@ -30,8 +32,11 @@ public class TextFormat extends BaseFormat {
     }
 
     @Override
-    public Bibliography makeBibliography(String[] entries) {
-        return new Bibliography(entries);
+    public Bibliography makeBibliography(String[] entries,
+            SBibliography bibliographyElement) {
+        SecondFieldAlign sfa = bibliographyElement.getSecondFieldAlign();
+        return new Bibliography(entries, null, null, null, null, null, null,
+                null, null, sfa);
     }
 
     @Override

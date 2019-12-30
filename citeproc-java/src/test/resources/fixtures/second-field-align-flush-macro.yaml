@@ -1,0 +1,33 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <macro name="number">
+      <text value="["/>
+      <text variable="citation-number"/>
+      <text value="]"/>
+    </macro>
+    <bibliography second-field-align="flush">
+      <layout>
+        <text macro="number"/>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    title: My title
+  - id: item2
+    title: My other title
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">
+        <div class="csl-left-margin">[1]</div><div class="csl-right-inline">My title</div>
+      </div>
+      <div class="csl-entry">
+        <div class="csl-left-margin">[2]</div><div class="csl-right-inline">My other title</div>
+      </div>
+    </div>

@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal;
 
 import de.undercouch.citeproc.helper.NodeHelper;
+import de.undercouch.citeproc.output.SecondFieldAlign;
 import org.w3c.dom.Node;
 
 /**
@@ -10,6 +11,7 @@ import org.w3c.dom.Node;
 public class SBibliography implements SElement {
     private final SSort sort;
     private final SLayout layout;
+    private final SecondFieldAlign secondFieldAlign;
 
     /**
      * Construct the bibliography element from an XML node
@@ -29,6 +31,15 @@ public class SBibliography implements SElement {
         } else {
             layout = new SLayout(layoutNode);
         }
+
+        String strSecondFieldAlign = NodeHelper.getAttrValue(node, "second-field-align");
+        if ("flush".equals(strSecondFieldAlign)) {
+            secondFieldAlign = SecondFieldAlign.FLUSH;
+        } else if ("margin".equals(strSecondFieldAlign)) {
+            secondFieldAlign = SecondFieldAlign.MARGIN;
+        } else {
+            secondFieldAlign = SecondFieldAlign.FALSE;
+        }
     }
 
     /**
@@ -38,6 +49,15 @@ public class SBibliography implements SElement {
      */
     public SSort getSort() {
         return sort;
+    }
+
+    /**
+     * Get the property that specifies whether subsequent lines of
+     * bibliographies should be aligned along the second field
+     * @return the second-field-align property (never {@code null})
+     */
+    public SecondFieldAlign getSecondFieldAlign() {
+        return secondFieldAlign;
     }
 
     @Override

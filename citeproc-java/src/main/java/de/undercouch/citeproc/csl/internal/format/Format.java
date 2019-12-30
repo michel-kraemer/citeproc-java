@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal.format;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.SBibliography;
 import de.undercouch.citeproc.output.Bibliography;
 
 /**
@@ -33,7 +34,8 @@ public interface Format {
      * Create a {@link Bibliography} object with the given entries and
      * default parameters specified by this format
      * @param entries the entries
+     * @param bibliographyElement the bibliography element from the style file
      * @return the {@link Bibliography} object
      */
-    Bibliography makeBibliography(String[] entries);
+    Bibliography makeBibliography(String[] entries, SBibliography bibliographyElement);
 }
