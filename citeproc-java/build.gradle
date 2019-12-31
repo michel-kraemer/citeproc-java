@@ -59,6 +59,7 @@ dependencies {
         compileOnly getV8Dependency()
     }
 
+    testCompile 'commons-io:commons-io:2.6'
     testCompile 'org.fusesource.jansi:jansi:1.18'
     testCompile 'org.citationstyles:styles:2.0.0'
     testCompile 'org.citationstyles:locales:2.0.0'

@@ -6,6 +6,7 @@ import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
+import org.apache.commons.io.FileUtils;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.ParseException;
 import org.junit.Test;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,8 +64,7 @@ public class FixturesTest {
         URL fixturesUrl = CSL.class.getResource(FIXTURES_DIR);
         File fixturesDir = new File(fixturesUrl.getPath());
 
-        // noinspection ConstantConditions
-        return Arrays.stream(fixturesDir.listFiles((dir, name) -> name.endsWith(".yaml")))
+        return FileUtils.listFiles(fixturesDir, new String[] {"yaml"}, true).stream()
                 .flatMap(f -> {
                     Map<String, Object> data;
                     Yaml yaml = new Yaml();
