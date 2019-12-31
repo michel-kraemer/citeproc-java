@@ -56,6 +56,25 @@ public class FixturesTest {
     private Map<String, Object> data;
 
     /**
+     * Get a map of expected results from test fixture data
+     * @param data the data
+     * @param propertyName the name of the property holding the expected results
+     * @return the expected results
+     */
+    @SuppressWarnings("unchecked")
+    private static Map<String, String> readExpectedResults(Map<String, Object> data,
+            String propertyName) {
+        Object expectedResultObj = data.get(propertyName);
+        if (expectedResultObj instanceof String) {
+            String str = (String)expectedResultObj;
+            Map<String, String> map = new HashMap<>();
+            map.put("text", str);
+            expectedResultObj = map;
+        }
+        return (Map<String, String>)expectedResultObj;
+    }
+
+    /**
      * Get all test files
      */
     @Parameterized.Parameters(name = "{0}, {1}, {2}")
@@ -74,14 +93,13 @@ public class FixturesTest {
                         throw new RuntimeException(e);
                     }
 
-                    Object expectedResultObj = data.get("result");
-                    if (expectedResultObj instanceof String) {
-                        String str = (String)expectedResultObj;
-                        Map<String, String> map = new HashMap<>();
-                        map.put("text", str);
-                        expectedResultObj = map;
+                    Map<String, String> expectedResults = readExpectedResults(data, "result");
+                    Map<String, String> expectedResultsLegacy;
+                    if (data.containsKey("resultLegacy")) {
+                        expectedResultsLegacy = readExpectedResults(data, "resultLegacy");
+                    } else {
+                        expectedResultsLegacy = expectedResults;
                     }
-                    Map<String, String> expectedResults = (Map<String, String>)expectedResultObj;
 
                     String strExperimentalMode = (String)data.get("experimentalMode");
                     boolean experimentalOnly = "only".equals(strExperimentalMode);
@@ -93,8 +111,12 @@ public class FixturesTest {
                         s = Stream.of(true, false);
                     }
 
-                    return s.flatMap(experimentalMode ->
-                            expectedResults.entrySet().stream().map(expectedResult ->
+                    return s.flatMap(experimentalMode -> {
+                            Map<String, String> er = expectedResults;
+                            if (!experimentalMode) {
+                                er = expectedResultsLegacy;
+                            }
+                            return er.entrySet().stream().map(expectedResult ->
                                     new Object[] {
                                             f.getName().substring(0, f.getName().length() - 5),
                                             experimentalMode,
@@ -102,8 +124,8 @@ public class FixturesTest {
                                             expectedResult.getValue(),
                                             data
                                     }
-                            )
-                    );
+                            );
+                    });
                 })
                 .collect(Collectors.toList());
     }

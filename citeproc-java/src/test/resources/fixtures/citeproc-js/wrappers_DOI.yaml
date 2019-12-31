@@ -1,0 +1,35 @@
+mode: citation
+
+style:
+  <style 
+        xmlns="http://purl.org/net/xbiblio/csl"
+        class="note"
+        version="1.0">
+    <info>
+      <id />
+      <title />
+      <updated>2009-08-10T04:49:00+09:00</updated>
+    </info>
+    <citation>
+      <layout>
+        <group delimiter=" " prefix="(" suffix=")">
+          <text variable="title"/>
+          <text font-style="italic" variable="DOI"/>
+        </group>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: ITEM-1
+    title: His Anonymous Life
+    DOI: 10.1111/j.1747-4469.1976.tb00951.x
+    type: book
+
+result:
+  html: |-
+    (His Anonymous Life <span style="font-style: italic"><a href="https://doi.org/10.1111/j.1747-4469.1976.tb00951.x">10.1111/j.1747-4469.1976.tb00951.x</a></span>)
+
+resultLegacy:
+  html: |-
+    (His Anonymous Life <i><a href="https://doi.org/10.1111/j.1747-4469.1976.tb00951.x">10.1111/j.1747-4469.1976.tb00951.x</a></i>)
