@@ -941,6 +941,13 @@ public class CSL implements Closeable {
                     registeredItems.put(item.getId(), itemData);
                 }
 
+                // overwrite locator
+                if (item.getLocator() != null) {
+                    itemData = new CSLItemDataBuilder(itemData)
+                            .locator(item.getLocator())
+                            .build();
+                }
+
                 sortedItems[i] = new CSLCitationItemBuilder(item)
                         .itemData(itemData)
                         .build();
