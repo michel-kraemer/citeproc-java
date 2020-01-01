@@ -1,0 +1,153 @@
+mode: citation
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation>
+      <layout delimiter="&#x0A;">
+        <text variable="title" prefix="prefix,"/>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    title: title
+
+citations:
+  - citationItems:
+      - id: item1
+      - id: item1
+        prefix: citation
+        suffix: ", suffix"
+      - id: item1
+        prefix: citation,
+        suffix: suffix
+      - id: item1
+        prefix: "citation?"
+        suffix: "? suffix"
+      - id: item1
+        prefix: "citation¿"
+        suffix: "¿suffix"
+      - id: item1
+        prefix: "citation="
+        suffix: "=suffix"
+      - id: item1
+        prefix: "citation)"
+        suffix: ")suffix"
+      - id: item1
+        prefix: "citation("
+        suffix: "(suffix"
+      - id: item1
+        prefix: "citation]"
+        suffix: "]suffix"
+      - id: item1
+        prefix: "citation["
+        suffix: "[suffix"
+      - id: item1
+        prefix: "citation}"
+        suffix: "}suffix"
+      - id: item1
+        prefix: "citation{"
+        suffix: "{suffix"
+      - id: item1
+        prefix: "citation-"
+        suffix: "-suffix"
+      - id: item1
+        prefix: "citation*"
+        suffix: "*suffix"
+      - id: item1
+        prefix: "citation#"
+        suffix: "#suffix"
+      - id: item1
+        prefix: "citation%"
+        suffix: "%suffix"
+      - id: item1
+        prefix: "citation/"
+        suffix: "/suffix"
+      - id: item1
+        prefix: "citation<"
+        suffix: "<suffix"
+      - id: item1
+        prefix: "citation>"
+        suffix: ">suffix"
+      - id: item1
+        prefix: "citationä"
+        suffix: "äsuffix"
+      - id: item1
+        prefix: "citation &"
+        suffix: "& suffix"
+      - id: item1
+        prefix: "citation&"
+        suffix: "&suffix"
+      - id: item1
+        prefix: "citation:"
+        suffix: ". suffix"
+      - id: item1
+        prefix: "citation!"
+        suffix: "; suffix"
+      - id: item1
+        prefix: "citation "
+        suffix: " suffix"
+      - id: item1
+        prefix: "\"citation?\""
+        suffix: "\"? suffix\""
+      - id: item1
+        prefix: "citation?”"
+        suffix: "“? suffix"
+      - id: item1
+        prefix: "citation”"
+        suffix: "“suffix"
+      - id: item1
+        prefix: "\"citation-\""
+        suffix: "\"-suffix\""
+      - id: item1
+        prefix: "\"citation\""
+        suffix: "\"suffix\""
+      - id: item1
+        prefix: "citationε"
+        suffix: "εsuffix"
+      - id: item1
+        prefix: "citationя"
+        suffix: "яsuffix"
+      - id: item1
+        prefix: "citation⠟"
+        suffix: "⠟suffix"
+      - id: item1
+        prefix: ""
+        suffix: ""
+
+result: |-
+  prefix,title
+  citation prefix,title, suffix
+  citation, prefix,title suffix
+  citation? prefix,title? suffix
+  citation¿prefix,title¿suffix
+  citation=prefix,title=suffix
+  citation) prefix,title)suffix
+  citation(prefix,title (suffix
+  citation] prefix,title]suffix
+  citation[prefix,title [suffix
+  citation}prefix,title}suffix
+  citation{prefix,title{suffix
+  citation-prefix,title-suffix
+  citation*prefix,title*suffix
+  citation#prefix,title#suffix
+  citation%prefix,title%suffix
+  citation/prefix,title/suffix
+  citation<prefix,title<suffix
+  citation>prefix,title>suffix
+  citationä prefix,title äsuffix
+  citation & prefix,title & suffix
+  citation& prefix,title &suffix
+  citation: prefix,title. suffix
+  citation! prefix,title; suffix
+  citation prefix,title suffix
+  “citation?” prefix,title“? suffix”
+  citation?” prefix,title“? suffix
+  citation” prefix,title“suffix
+  “citation-”prefix,title“-suffix”
+  “citation” prefix,title“suffix”
+  citationε prefix,title εsuffix
+  citationя prefix,title яsuffix
+  citation⠟prefix,title⠟suffix
+  prefix,title

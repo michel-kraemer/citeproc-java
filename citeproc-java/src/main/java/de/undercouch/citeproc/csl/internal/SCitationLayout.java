@@ -3,13 +3,21 @@ package de.undercouch.citeproc.csl.internal;
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.helper.NodeHelper;
+import org.apache.commons.lang3.CharSet;
 import org.w3c.dom.Node;
+
+import java.util.regex.Pattern;
 
 /**
  * A layout element inside a citation element in a style file
  * @author Michel Kraemer
  */
 public class SCitationLayout extends SRenderingElementContainer {
+    private static final CharSet PUNCTUATION_END = CharSet.getInstance(":.,;!?)]&");
+    private static final CharSet PUNCTUATION_START = CharSet.getInstance("([&");
+    private static final Pattern TRIM_END = Pattern.compile("\\p{Space}+$");
+    private static final Pattern IGNORE_END = Pattern.compile("[\\p{Space}\\p{Pf}\"']+$");
+
     protected final Affixes affixes;
     private final String delimiter;
     private CSLCitationItem[] citationItems;
@@ -48,15 +56,55 @@ public class SCitationLayout extends SRenderingElementContainer {
             }
 
             if (item.getPrefix() != null) {
-                tmp.emit(item.getPrefix(), Token.Type.PREFIX);
+                String prefix = item.getPrefix();
+                if (needsAppendSpace(prefix)) {
+                    prefix = TRIM_END.matcher(prefix).replaceAll("") + " ";
+                }
+                tmp.emit(prefix, Token.Type.PREFIX);
             }
 
             tmp.emit(innerTmp.getResult());
 
             if (item.getSuffix() != null) {
-                tmp.emit(item.getSuffix(), Token.Type.SUFFIX);
+                String suffix = item.getSuffix();
+                if (needsPrependSpace(suffix)) {
+                    suffix = " " + suffix;
+                }
+                tmp.emit(suffix, Token.Type.SUFFIX);
             }
         }
         ctx.emit(tmp.getResult());
+    }
+
+    /**
+     * Check if we need to append a space character to the given prefix
+     * @param prefix the prefix
+     * @return {@code true} if we need to append a space character
+     */
+    private static boolean needsAppendSpace(String prefix) {
+        if (prefix.isEmpty()) {
+            return false;
+        }
+
+        // ignore some characters at the end
+        prefix = IGNORE_END.matcher(prefix).replaceAll("");
+
+        // now check last character
+        char c = prefix.charAt(prefix.length() - 1);
+        return Character.isLetterOrDigit(c) || PUNCTUATION_END.contains(c);
+    }
+
+    /**
+     * Check if we need to prepend a space character to the given suffix
+     * @param suffix the suffix
+     * @return {@code true} if we need to prepend a space character
+     */
+    private static boolean needsPrependSpace(String suffix) {
+        if (suffix.isEmpty()) {
+            return false;
+        }
+
+        char c = suffix.charAt(0);
+        return Character.isLetterOrDigit(c) || PUNCTUATION_START.contains(c);
     }
 }

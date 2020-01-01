@@ -1,7 +1,5 @@
 mode: citation
 
-experimentalMode: only
-
 style:
   <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
     <citation>
@@ -41,4 +39,8 @@ citations:
 
 result: |-
   (1, 1 or, and 2)
+  (1, 1 or, 2 end)
+
+resultLegacy: |-
+  (1, 1 or, , and 2)
   (1, 1 or, 2 end)
