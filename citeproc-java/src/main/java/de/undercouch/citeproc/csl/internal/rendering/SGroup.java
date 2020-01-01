@@ -41,15 +41,10 @@ public class SGroup extends SRenderingElementContainer implements SRenderingElem
             e.render(child);
             child.removeVariableListener(vl);
 
-            // count new number of called and empty variables
-            boolean shouldBeFiltered = false;
-            if (vl.getCalled() > 0 && vl.getCalled() == vl.getEmpty()) {
-                // all called variables were empty
-                // do not render this element
-                shouldBeFiltered = true;
-            }
+            // do not render this element if all called variables where empty
+            boolean allEmpty = vl.getCalled() > 0 && vl.getCalled() == vl.getEmpty();
 
-            if (!shouldBeFiltered && !child.getResult().isEmpty()) {
+            if (!allEmpty && !child.getResult().isEmpty()) {
                 if (emitted && delimiter != null) {
                     ctx.emit(delimiter, Token.Type.DELIMITER);
                 }
