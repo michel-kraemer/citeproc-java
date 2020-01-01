@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SMacro;
 import de.undercouch.citeproc.csl.internal.Token;
+import de.undercouch.citeproc.csl.internal.VariableForm;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.Quotes;
@@ -34,12 +35,17 @@ public class SText implements SRenderingElement {
         variable = NodeHelper.getAttrValue(node, "variable");
         macro = NodeHelper.getAttrValue(node, "macro");
         term = NodeHelper.getAttrValue(node, "term");
-        form = NodeHelper.getAttrValue(node, "form");
         value = NodeHelper.getAttrValue(node, "value");
         affixes = new Affixes(node);
         quotes = new Quotes(node);
         textCase = new TextCase(node);
         formattingAttributes = FormattingAttributes.of(node);
+
+        String form = NodeHelper.getAttrValue(node, "form");
+        if (form == null) {
+            form = "long";
+        }
+        this.form = form;
     }
 
     @Override
@@ -49,7 +55,7 @@ public class SText implements SRenderingElement {
 
     private void renderInternal(RenderContext ctx) {
         if (variable != null && !variable.isEmpty()) {
-            String v = ctx.getStringVariable(variable);
+            String v = ctx.getStringVariable(variable, VariableForm.fromString(form));
             if (v != null) {
                 Token.Type type = Token.Type.TEXT;
                 switch (variable) {
@@ -82,11 +88,7 @@ public class SText implements SRenderingElement {
                 ctx.emit(tmp.getResult(), formattingAttributes);
             }
         } else if (term != null && !term.isEmpty()) {
-            String f = form;
-            if (f == null) {
-                f = "long";
-            }
-            ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(f)), formattingAttributes);
+            ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(form)), formattingAttributes);
         } else if (value != null) {
             ctx.emit(ctx.smartQuotes(value), formattingAttributes);
         }

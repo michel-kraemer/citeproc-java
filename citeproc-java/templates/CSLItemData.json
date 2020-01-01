@@ -156,6 +156,10 @@
         },
         {
             "type": "String",
+            "name": "collection-title-short"
+        },
+        {
+            "type": "String",
             "name": "container-title"
         },
         {

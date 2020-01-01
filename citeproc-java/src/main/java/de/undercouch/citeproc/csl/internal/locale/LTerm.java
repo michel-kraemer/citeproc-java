@@ -46,7 +46,7 @@ public class LTerm {
         SYMBOL;
 
         /**
-         * Parse the term from from a string
+         * Parse the term form from a string
          * @param str the string to parse
          * @return the term form
          * @throws IllegalArgumentException if the string contains an unknown form

@@ -1,3 +1,6 @@
+# Second use case added to cover a bug report by Derek Sifford:
+# https://github.com/Juris-M/citeproc-js/issues/101
+
 mode: citation
 
 style:

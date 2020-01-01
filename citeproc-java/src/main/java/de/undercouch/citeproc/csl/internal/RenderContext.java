@@ -150,7 +150,18 @@ public class RenderContext {
      * @throws IllegalArgumentException if the variable is unknown
      */
     public String getStringVariable(String name) {
-        String result;
+        return getStringVariable(name, VariableForm.LONG);
+    }
+
+    /**
+     * Get the value of the string variable with the given name
+     * @param name the variable's name
+     * @param form the variable form to get
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the variable is unknown
+     */
+    public String getStringVariable(String name, VariableForm form) {
+        String result = null;
         if (!suppressedVariables.contains(name)) {
             switch (name) {
                 case "abstract":
@@ -187,10 +198,23 @@ public class RenderContext {
                     result = itemData.getCollectionNumber();
                     break;
                 case "collection-title":
-                    result = itemData.getCollectionTitle();
+                    if (form == VariableForm.SHORT) {
+                        result = itemData.getCollectionTitleShort();
+                    }
+                    if (result == null) {
+                        result = itemData.getCollectionTitle();
+                    }
+                    break;
+                case "collection-title-short":
+                    result = itemData.getCollectionTitleShort();
                     break;
                 case "container-title":
-                    result = itemData.getContainerTitle();
+                    if (form == VariableForm.SHORT) {
+                        result = itemData.getContainerTitleShort();
+                    }
+                    if (result == null) {
+                        result = itemData.getContainerTitle();
+                    }
                     break;
                 case "container-title-short":
                     result = itemData.getContainerTitleShort();
@@ -295,7 +319,12 @@ public class RenderContext {
                     result = itemData.getStatus();
                     break;
                 case "title":
-                    result = itemData.getTitle();
+                    if (form == VariableForm.SHORT) {
+                        result = itemData.getTitleShort();
+                    }
+                    if (result == null) {
+                        result = itemData.getTitle();
+                    }
                     break;
                 case "title-short":
                     result = itemData.getTitleShort();
@@ -313,11 +342,8 @@ public class RenderContext {
                     result = itemData.getYearSuffix();
                     break;
                 default:
-                    result = null;
                     break;
             }
-        } else {
-            result = null;
         }
 
         for (VariableListener l : variableListeners) {
