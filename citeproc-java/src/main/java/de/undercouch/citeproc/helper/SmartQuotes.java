@@ -90,8 +90,10 @@ public class SmartQuotes {
                 new String[] { "((" + leftSingleQuote + "[^']*)|" + LETTER + ")'(" + NO_NUMBER + "|$)", "$1" + rightSingleQuote + "$3" },
                 // backwards apostrophe
                 new String[] { "(\\B|^)" + leftSingleQuote + "(?=([^" + leftSingleQuote + rightSingleQuote + apostrophe + "]*[" + rightSingleQuote + apostrophe + "]\\b)*([^" + leftSingleQuote + rightSingleQuote + apostrophe + "]*\\B" + NO_WORD + "[" + leftSingleQuote + rightSingleQuote + apostrophe + "]\\b|[^" + leftSingleQuote + rightSingleQuote + apostrophe + "]*$))", "$1" + rightSingleQuote },
-                // double prime
-                new String[] { "\"", doublePrime },
+                // double prime (not first character)
+                new String[] { "(.)\"", "$1" + doublePrime },
+                // left double quote at the beginning of string
+                new String[] { "^\"", leftDoubleQuote },
                 // prime
                 new String[] { "'", prime }
         };

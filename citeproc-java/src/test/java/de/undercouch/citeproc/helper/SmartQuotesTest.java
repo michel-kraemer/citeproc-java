@@ -120,4 +120,16 @@ public class SmartQuotesTest {
         assertEquals("\u201985 war ein gutes Jahr. Die ganzen 80er waren so.",
                 sq.apply("'85 war ein gutes Jahr. Die ganzen 80er waren so."));
     }
+
+    /**
+     * Test that opening quotation mark at the beginning of the string is
+     * converted correctly, even if it does not follow a letter or a number.
+     */
+    @Test
+    public void openQuoteNoPrime() {
+        SmartQuotes sq = new SmartQuotes();
+        assertEquals("\u201cTest", sq.apply("\"Test"));
+        assertEquals("\u201c-Test", sq.apply("\"-Test"));
+        assertEquals("\u2033-Test", sq.apply("\u2033-Test"));
+    }
 }
