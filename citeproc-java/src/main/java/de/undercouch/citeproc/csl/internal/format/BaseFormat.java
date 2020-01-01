@@ -4,6 +4,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
+import de.undercouch.citeproc.helper.SmartQuotes;
 import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,8 +53,25 @@ abstract public class BaseFormat implements Format {
      * @param ctx the render context in which the buffer was created
      */
     protected void postProcess(TokenBuffer buffer, RenderContext ctx) {
-        // swap punctuation and closing quotation marks if necessary
         List<Token> tokens = buffer.getTokens();
+
+        // convert straight quotation marks to curly ones
+        SmartQuotes sq = new SmartQuotes(ctx.getTerm("open-inner-quote"),
+                ctx.getTerm("close-inner-quote"), ctx. getTerm("open-quote"),
+                ctx.getTerm("close-quote"), ctx.getLocale().getLang());
+        for (int i = 0; i < tokens.size(); ++i) {
+            Token t = tokens.get(i);
+            if (t.getType() == Token.Type.TEXT ||
+                    t.getType() == Token.Type.PREFIX ||
+                    t.getType() == Token.Type.SUFFIX ||
+                    t.getType() == Token.Type.DELIMITER) {
+                tokens.set(i, new Token.Builder(t)
+                        .text(sq.apply(t.getText()))
+                        .build());
+            }
+        }
+
+        // swap punctuation and closing quotation marks if necessary
         if (ctx.getLocale().getStyleOptions().isPunctuationInQuote()) {
             for (int i = 0; i < tokens.size() - 1; ++i) {
                 Token t0 = tokens.get(i);

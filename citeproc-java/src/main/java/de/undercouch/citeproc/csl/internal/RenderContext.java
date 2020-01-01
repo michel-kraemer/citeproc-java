@@ -542,18 +542,6 @@ public class RenderContext {
     }
 
     /**
-     * Replace straight quotation marks and apostrophes in the given value
-     * by their typographically correct counterparts.
-     * @param v the value
-     * @return the processed value
-     */
-    public String smartQuotes(String v) {
-        SmartQuotes sq = new SmartQuotes(getTerm("open-inner-quote"), getTerm("close-inner-quote"),
-                getTerm("open-quote"), getTerm("close-quote"), locale.getLang());
-        return sq.apply(v);
-    }
-
-    /**
      * Emit a text token
      * @param text the text token
      * @return this render context

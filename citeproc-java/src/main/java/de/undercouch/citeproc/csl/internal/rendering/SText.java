@@ -73,7 +73,6 @@ public class SText implements SRenderingElement {
                         type = Token.Type.URL;
                         break;
                     default:
-                        v = ctx.smartQuotes(v);
                         break;
                 }
                 ctx.emit(v, type, formattingAttributes);
@@ -90,7 +89,7 @@ public class SText implements SRenderingElement {
         } else if (term != null && !term.isEmpty()) {
             ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(form)), formattingAttributes);
         } else if (value != null) {
-            ctx.emit(ctx.smartQuotes(value), formattingAttributes);
+            ctx.emit(value, formattingAttributes);
         }
     }
 }
