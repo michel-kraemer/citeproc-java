@@ -1,0 +1,84 @@
+# First invocation sets disambiguation by full name for Doe
+# citation.  Second invocation should dial it back to plain
+# initial.
+
+mode: citation
+
+style:
+  <style 
+        xmlns="http://purl.org/net/xbiblio/csl"
+        class="note"
+        version="1.0">
+    <info>
+      <id />
+      <title />
+      <updated>2009-08-10T04:49:00+09:00</updated>
+    </info>
+    <citation 
+           disambiguate-add-givenname="true"
+           givenname-disambiguation-rule="by-cite">
+      <layout delimiter="; " suffix=".">
+        <group delimiter=" ">
+          <names variable="author">
+            <name initialize-with="" />
+          </names>
+          <date variable="issued">
+            <date-part name="year" />
+          </date>
+        </group>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - author:
+      - family: Doe
+        given: John
+    id: ITEM-1
+    issued:
+      date-parts:
+        - [1960]
+    title: Book A
+    type: book
+  - author:
+      - family: Doe
+        given: Jake
+    id: ITEM-2
+    issued:
+      date-parts:
+        - [1960]
+    title: Book B
+    type: book
+  - author:
+      - family: Smith
+        given: John
+    id: ITEM-3
+    issued:
+      date-parts:
+        - [1980]
+    title: Book C
+    type: book
+  - author:
+      - family: Brown
+        given: Robert
+    id: ITEM-4
+    issued:
+      date-parts:
+        - [1990]
+    title: Book D
+    type: book
+  - author:
+      - family: Ichi
+        given: Taro
+    id: ITEM-5
+    issued:
+      date-parts:
+        - [2000]
+    title: Book E
+    type: book
+
+itemIds:
+  - ["ITEM-1", "ITEM-2", "ITEM-3", "ITEM-4", "ITEM-5"]
+  - ["ITEM-1", "ITEM-4", "ITEM-5"]
+
+result: J Doe 1960; R Brown 1990; T Ichi 2000.

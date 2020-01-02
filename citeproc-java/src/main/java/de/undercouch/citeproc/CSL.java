@@ -865,6 +865,34 @@ public class CSL implements Closeable {
     }
 
     /**
+     * Get an unmodifiable collection of all citation items that have been
+     * registered with the processor so far
+     * @return the registered citation items
+     */
+    public Collection<CSLItemData> getRegisteredItems() {
+        if (experimentalMode) {
+            return Collections.unmodifiableCollection(registeredItems.values());
+        } else {
+            List<?> r;
+            try {
+                r = getScriptRunner().callMethod("getRefList", List.class, getEngine());
+            } catch (ScriptRunnerException e) {
+                throw new IllegalArgumentException("Could not get registered citation items", e);
+            }
+
+            List<CSLItemData> result = new ArrayList<>();
+            for (Object o : r) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> m = (Map<String, Object>)o;
+                @SuppressWarnings("unchecked")
+                Map<String, Object> ref = (Map<String, Object>)m.get("ref");
+                result.add(CSLItemData.fromJson(ref));
+            }
+            return result;
+        }
+    }
+
+    /**
      * Generates citation strings that can be inserted into the text. The
      * method calls {@link ItemDataProvider#retrieveItem(String)} for each of the given
      * IDs to request the corresponding citation item. Additionally, it saves

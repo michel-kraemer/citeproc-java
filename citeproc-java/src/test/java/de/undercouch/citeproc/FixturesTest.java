@@ -209,12 +209,25 @@ public class FixturesTest {
         }
 
         // get the item IDs to test against
-        List<String> itemIdsList = (List<String>)data.get("itemIds");
-        String[] itemIds;
-        if (itemIdsList == null) {
-            itemIds = itemDataProvider.getIds();
+        String[][] itemIds;
+        List<Object> itemIdsListObj = (List<Object>)data.get("itemIds");
+        if (itemIdsListObj != null && !itemIdsListObj.isEmpty() &&
+                itemIdsListObj.get(0) instanceof String) {
+            itemIds = new String[1][];
+            itemIds[0] = new String[itemIdsListObj.size()];
+            for (int i = 0; i < itemIdsListObj.size(); i++) {
+                Object o = itemIdsListObj.get(i);
+                itemIds[0][i] = (String)o;
+            }
+        } else if (itemIdsListObj != null) {
+            itemIds = new String[itemIdsListObj.size()][];
+            for (int i = 0; i < itemIdsListObj.size(); i++) {
+                List<String> l = (List<String>)itemIdsListObj.get(i);
+                itemIds[i] = l.toArray(new String[0]);
+            }
         } else {
-            itemIds = itemIdsList.toArray(new String[0]);
+            itemIds = new String[1][];
+            itemIds[0] = itemDataProvider.getIds();
         }
 
         // get the raw citations
@@ -223,7 +236,7 @@ public class FixturesTest {
             throw new IllegalStateException("`citations' can only be defined " +
                     "if `mode' equals `citation'.");
         }
-        if (rawCitations != null && itemIdsList != null) {
+        if (rawCitations != null && itemIdsListObj != null) {
             throw new IllegalStateException("Found both `itemIds' and " +
                     "`citations'. Define only one of them.");
         }
@@ -243,7 +256,9 @@ public class FixturesTest {
         citeproc.setConvertLinks(true);
 
         // register citation items
-        citeproc.registerCitationItems(itemIds);
+        for (String[] ii : itemIds) {
+            citeproc.registerCitationItems(ii);
+        }
 
         String actualResult;
         if ("bibliography".equals(mode)) {
@@ -256,7 +271,10 @@ public class FixturesTest {
                     generatedCitations.addAll(citeproc.makeCitation(c));
                 }
             } else {
-                generatedCitations.addAll(citeproc.makeCitation(itemIds));
+                String[] ii = citeproc.getRegisteredItems().stream()
+                        .map(CSLItemData::getId)
+                        .toArray(String[]::new);
+                generatedCitations.addAll(citeproc.makeCitation(ii));
             }
             actualResult = generatedCitations.stream()
                     .map(Citation::getText)

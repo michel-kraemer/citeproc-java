@@ -78,6 +78,10 @@ function getBaseLocales() {
     return result;
 }
 
+function getRefList(engine) {
+    return engine.registry.reflist;
+}
+
 function getCiteprocJsVersion() {
     return CSL.PROCESSOR_VERSION;
 }
