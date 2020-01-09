@@ -26,7 +26,16 @@ public class SLabel implements SRenderingElement {
      * @param node the XML node
      */
     public SLabel(Node node) {
-        variable = NodeHelper.getAttrValue(node, "variable");
+        this(node, NodeHelper.getAttrValue(node, "variable"));
+    }
+
+    /**
+     * Creates the label element from an XML node but with a different variable
+     * @param node the XML node
+     * @param variable the variable
+     */
+    public SLabel(Node node, String variable) {
+        this.variable = variable;
 
         String form = NodeHelper.getAttrValue(node, "form");
         if (form == null) {
@@ -49,14 +58,14 @@ public class SLabel implements SRenderingElement {
             return;
         }
 
-        String value = ctx.getStringVariable(variable);
+        Object value = ctx.getVariable(variable);
         if (value == null) {
             return;
         }
 
         boolean plural = false;
         if (variable.equals("page")) {
-            PageRange range = PageParser.parse(value);
+            PageRange range = PageParser.parse(String.valueOf(value));
             plural = range.isMultiplePages();
         }
 

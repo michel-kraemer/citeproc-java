@@ -12,6 +12,7 @@ import org.w3c.dom.Node;
 public class SNames implements SRenderingElement {
     private final SName name;
     private final Affixes affixes;
+    private final SLabel label;
     private final SSubstitute substitute;
 
     /**
@@ -37,6 +38,13 @@ public class SNames implements SRenderingElement {
             affixes = new Affixes(node);
         }
 
+        Node labelNode = NodeHelper.findDirectChild(node, "label");
+        if (labelNode != null) {
+            label = new SLabel(labelNode, variable);
+        } else {
+            label = null;
+        }
+
         if (parseSubstitute) {
             Node substituteNode = NodeHelper.findDirectChild(node, "substitute");
             if (substituteNode != null) {
@@ -60,6 +68,10 @@ public class SNames implements SRenderingElement {
     @Override
     public void render(RenderContext ctx) {
         RenderContext tmp = new RenderContext(ctx);
+        if (label != null) {
+            label.render(tmp);
+        }
+
         affixes.wrap(name::render).accept(tmp);
 
         if (tmp.getResult().isEmpty()) {
