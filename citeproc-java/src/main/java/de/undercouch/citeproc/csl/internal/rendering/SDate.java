@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.Token;
+import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.w3c.dom.Node;
@@ -19,6 +20,7 @@ public class SDate implements SRenderingElement {
     private final static String[] NAMES = new String[] { "year", "month", "day" };
     private final String variable;
     private final List<SDatePart> dateParts = new ArrayList<>();
+    private final Affixes affixes;
 
     /**
      * Creates the date element from an XML node
@@ -38,10 +40,16 @@ public class SDate implements SRenderingElement {
                 dateParts.add(new SDatePart(c));
             }
         }
+
+        affixes = new Affixes(node);
     }
 
     @Override
     public void render(RenderContext ctx) {
+        affixes.wrap(this::renderInternal).accept(ctx);
+    }
+
+    private void renderInternal(RenderContext ctx) {
         CSLDate date = ctx.getDateVariable(variable);
         if (date == null) {
             return;
