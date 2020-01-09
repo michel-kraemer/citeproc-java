@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.rendering.condition;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.helper.NodeHelper;
+import de.undercouch.citeproc.helper.NumberHelper;
 import org.w3c.dom.Node;
 
 /**
@@ -16,6 +17,7 @@ public class SIf extends SCondition {
 
     private final String[] types;
     private final String[] variables;
+    private final String[] isNumerics;
     private final int match;
 
     /**
@@ -41,6 +43,14 @@ public class SIf extends SCondition {
             variables = null;
         }
 
+        // get the numeric variables to check
+        String isNumeric = NodeHelper.getAttrValue(node, "is-numeric");
+        if (isNumeric != null) {
+            isNumerics = isNumeric.split("\\s+");
+        } else {
+            isNumerics = null;
+        }
+
         // get the match mode
         String match = NodeHelper.getAttrValue(node, "match");
         if (match == null || match.equals("all")) {
@@ -56,7 +66,7 @@ public class SIf extends SCondition {
 
     @Override
     public boolean matches(RenderContext ctx) {
-        if (types == null && variables == null) {
+        if (types == null && variables == null && isNumerics == null) {
             return false;
         }
 
@@ -89,6 +99,24 @@ public class SIf extends SCondition {
                     return true;
                 }
                 if (match == NONE && o != null) {
+                    return false;
+                }
+            }
+        }
+
+        if (isNumerics != null) {
+            // check if the given variables are numeric
+            for (String v : isNumerics) {
+                Object o = ctx.getVariable(v);
+                boolean numeric = o != null && (o instanceof Number ||
+                        NumberHelper.isNumeric(String.valueOf(o)));
+                if (match == ALL && !numeric) {
+                    return false;
+                }
+                if (match == ANY && numeric) {
+                    return true;
+                }
+                if (match == NONE && numeric) {
                     return false;
                 }
             }
