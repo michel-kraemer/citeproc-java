@@ -500,7 +500,7 @@ public class RenderContext {
      * @param form the form to retrieve
      * @param plural {@code true} if the plural form should be retrieved,
      * {@code false} for the singular form
-     * @return the term's value (never {@code null})
+     * @return the term's value (or {@code null} if the term is unknown)
      */
     public String getTerm(String name, LTerm.Form form, boolean plural) {
         Map<String, LTerm> tm = locale.getTerms().get(form);
@@ -509,7 +509,7 @@ public class RenderContext {
         }
         LTerm t = tm.get(name);
         if (t == null) {
-            throw new IllegalStateException("Unknown term: " + name);
+            return null;
         }
         if (plural) {
             return t.getMultiple();
@@ -568,7 +568,9 @@ public class RenderContext {
      * @return this render context
      */
     public RenderContext emit(String text, Token.Type type) {
-        result.append(text, type);
+        if (text != null) {
+            result.append(text, type);
+        }
         return this;
     }
 
@@ -581,7 +583,9 @@ public class RenderContext {
      * @return this render context
      */
     public RenderContext emit(String text, Token.Type type, int formattingAttributes) {
-        result.append(text, type, formattingAttributes);
+        if (text != null) {
+            result.append(text, type, formattingAttributes);
+        }
         return this;
     }
 
