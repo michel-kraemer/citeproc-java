@@ -1,0 +1,30 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="editor" prefix="[" suffix="] ">
+          <label form="verb-short" suffix=" " />
+          <name/>
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    editor:
+      - given: Given
+        family: Name
+    title: My title
+  - id: item2
+    author:
+      - given: Given
+        family: Name
+    title: Another title
+
+result: |
+  [ed. by Given Name] My title
+  Another title

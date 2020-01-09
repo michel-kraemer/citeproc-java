@@ -68,11 +68,7 @@ public class SNames implements SRenderingElement {
     @Override
     public void render(RenderContext ctx) {
         RenderContext tmp = new RenderContext(ctx);
-        if (label != null) {
-            label.render(tmp);
-        }
-
-        affixes.wrap(name::render).accept(tmp);
+        affixes.wrap(this::renderInternal).accept(tmp);
 
         if (tmp.getResult().isEmpty()) {
             if (substitute != null) {
@@ -81,5 +77,13 @@ public class SNames implements SRenderingElement {
         }
 
         ctx.emit(tmp.getResult());
+    }
+
+    private void renderInternal(RenderContext ctx) {
+        if (label != null) {
+            label.render(ctx);
+        }
+
+        name.render(ctx);
     }
 }
