@@ -1,0 +1,29 @@
+mode: bibliography
+
+style: harvard-cite-them-right
+
+items:
+  - author:
+      - family: Doe
+        given: Jhon
+    container-title: Some title
+    edition: Vintage First edition
+    id: ITEM-1
+    issued:
+      date-parts:
+        - [1992]
+    page: 250-300
+    publisher: Vintage
+    type: chapter
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">Doe, J. (1992) in <span style="font-style: italic">Some title</span>. Vintage First edition. Vintage, pp. 250&ndash;300.</div>
+    </div>
+
+resultLegacy:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">Doe, J. (1992) in <i>Some title</i>. Vintage First edition. Vintage, pp. 250–300.</div>
+    </div>

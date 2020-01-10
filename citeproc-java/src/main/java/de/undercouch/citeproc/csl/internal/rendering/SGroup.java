@@ -32,25 +32,28 @@ public class SGroup extends SRenderingElementContainer implements SRenderingElem
     }
 
     private void renderInternal(RenderContext ctx) {
-        boolean emitted = false;
+        // render elements in a separate context and count called variables
+        RenderContext child = new RenderContext(ctx);
+        CountingVariableListener vl = new CountingVariableListener();
+        child.addVariableListener(vl);
         for (SRenderingElement e : elements) {
-            // render the element in a separate context
-            RenderContext child = new RenderContext(ctx);
-            CountingVariableListener vl = new CountingVariableListener();
-            child.addVariableListener(vl);
-            e.render(child);
-            child.removeVariableListener(vl);
+            RenderContext tmp = new RenderContext(child);
+            e.render(tmp);
 
-            // do not render this element if all called variables where empty
-            boolean allEmpty = vl.getCalled() > 0 && vl.getCalled() == vl.getEmpty();
-
-            if (!allEmpty && !child.getResult().isEmpty()) {
-                if (emitted && delimiter != null) {
-                    ctx.emit(delimiter, Token.Type.DELIMITER);
+            if (!tmp.getResult().isEmpty()) {
+                if (delimiter != null && !child.getResult().isEmpty()) {
+                    child.emit(delimiter, Token.Type.DELIMITER);
                 }
-                ctx.emit(child.getResult());
-                emitted = true;
+                child.emit(tmp.getResult());
             }
+        }
+        child.removeVariableListener(vl);
+
+        // do not render the group if all called variables were empty
+        boolean allEmpty = vl.getCalled() > 0 && vl.getCalled() == vl.getEmpty();
+
+        if (!allEmpty && !child.getResult().isEmpty()) {
+            ctx.emit(child.getResult());
         }
     }
 }
