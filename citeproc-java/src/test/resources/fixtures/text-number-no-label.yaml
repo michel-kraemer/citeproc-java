@@ -1,0 +1,40 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <group delimiter=", ">
+          <group>
+            <text variable="number"/>
+          </group>
+        </group>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    number: 10-20
+  - id: item2
+    number: ch. 42
+  - id: item3
+    number: ch. 42, sec. 2
+  - id: item4
+    number: ch. 42, ch. 100
+  - id: item5
+    number: sec. 42, sec. 100
+
+result: |
+  10–20
+  42
+  42, 2
+  42, 100
+  42, 100
+
+resultLegacy: |
+  10–20
+  42
+  42, sec. 2
+  42, 100
+  42, 100

@@ -216,6 +216,7 @@ class SourceGenerator {
         dst.mkdirs()
         
         renderGrammar('InternalName', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
+        renderGrammar('InternalNumber', new File(dst, 'de/undercouch/citeproc/csl/internal/helper'))
         renderGrammar('InternalPage', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
     }
     

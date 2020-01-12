@@ -8,9 +8,14 @@ import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.Quotes;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
+import de.undercouch.citeproc.csl.internal.helper.NumberElement;
+import de.undercouch.citeproc.csl.internal.helper.NumberParser;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A text element from a style file
@@ -63,9 +68,14 @@ public class SText implements SRenderingElement {
                         String delimiter = ctx.getTerm("page-range-delimiter");
                         v = v.replace("-", delimiter);
                         break;
-                    case "number":
-                        v = v.replace("-", "\u2013");
+                    case "locator":
+                    case "number": {
+                        List<NumberElement> elements = NumberParser.parse(v);
+                        v = elements.stream()
+                                .map(NumberElement::getText)
+                                .collect(Collectors.joining());
                         break;
+                    }
                     case "DOI":
                         type = Token.Type.DOI;
                         break;
