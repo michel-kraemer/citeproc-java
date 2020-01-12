@@ -143,6 +143,11 @@ public class NumberParserTest {
                 new NumberElement("4", CSLLabel.SECTION, false)),
                 NumberParser.parse(" ch. 10,  sec. 4  "));
         assertEquals(Arrays.asList(
+                new NumberElement("10", CSLLabel.CHAPTER, false),
+                new NumberElement(", "),
+                new NumberElement("4", CSLLabel.SECTION, false)),
+                NumberParser.parse("ch. 10 ,sec. 4"));
+        assertEquals(Arrays.asList(
                 new NumberElement("2\u20133", CSLLabel.CHAPTER, true),
                 new NumberElement(", "),
                 new NumberElement("4\u20135", CSLLabel.PAGE, true)),
@@ -162,5 +167,15 @@ public class NumberParserTest {
                 new NumberElement("; "),
                 new NumberElement("4, 5", CSLLabel.PAGE, true)),
                 NumberParser.parse("ch. 2, 3; p. 4, 5"));
+        assertEquals(Arrays.asList(
+                new NumberElement("foo. bar"),
+                new NumberElement(", "),
+                new NumberElement("2\u20133", CSLLabel.SECTION, true)),
+                NumberParser.parse("foo. bar, sec. 2-3"));
+        assertEquals(Arrays.asList(
+                new NumberElement("cp. foo"),
+                new NumberElement(", "),
+                new NumberElement("2\u20133", CSLLabel.SECTION, true)),
+                NumberParser.parse("cp. foo, sec. 2-3"));
     }
 }

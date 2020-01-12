@@ -30,8 +30,11 @@ element
   ]
   : l=label SPACE* r1=range {
     $el = new NumberElement($r1.parsedText, $l.lbl, $r1.plural);
-  } | r2=range {
-    $el = new NumberElement($r2.parsedText, null, $r2.plural);
+  } | r2=range ( SPACE+ ~( SPACE | ';' | ',' | ':' | '-' | '\u2013' | '&' | 'and' ) )+ {
+    // range (essentially anything) followed by anything that does not belong to a range
+    $el = new NumberElement($text);
+  } | r3=range {
+    $el = new NumberElement($r3.parsedText, null, $r3.plural);
   }
   ;
 

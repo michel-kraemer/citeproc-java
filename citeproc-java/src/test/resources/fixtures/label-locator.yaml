@@ -94,6 +94,8 @@ citations:
         locator: foo
       - id: item4
         locator: ch. foo
+      - id: item4
+        locator: cp. foo, sec. 2-3
 
 result: |-
   10
@@ -123,3 +125,4 @@ result: |-
   chaps. 2, 3; pp. 4, 5
   p. foo
   chap. foo
+  p. cp. foo, secs. 2–3
