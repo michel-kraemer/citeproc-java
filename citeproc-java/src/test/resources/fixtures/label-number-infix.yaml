@@ -1,0 +1,24 @@
+mode: citation
+
+style: |
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation>
+      <layout delimiter="&#x0A;">
+        <group>
+          <label variable="number" form="long" suffix=" " />
+          <text value=": "/>
+          <text variable="number" quotes="true" />
+        </group>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    number: ch. 10
+  - id: item2
+    number: ch. 10, sec. 5
+  
+result: |-
+  chapter : “10”
+  chapter : “10, section 5”

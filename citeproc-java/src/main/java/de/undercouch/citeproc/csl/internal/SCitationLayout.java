@@ -48,7 +48,7 @@ public class SCitationLayout extends SRenderingElementContainer {
     private void renderInternal(RenderContext ctx) {
         RenderContext tmp = new RenderContext(ctx);
         for (CSLCitationItem item : citationItems) {
-            RenderContext innerTmp = new RenderContext(ctx, item.getItemData());
+            RenderContext innerTmp = new RenderContext(ctx, item);
             super.render(innerTmp);
 
             if (delimiter != null && !tmp.getResult().isEmpty()) {

@@ -15,13 +15,13 @@ import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A text element from a style file
  * @author Michel Kraemer
  */
 public class SText implements SRenderingElement {
+    private final SLabel prevLabel;
     private final String variable;
     private final String macro;
     private final String term;
@@ -35,8 +35,12 @@ public class SText implements SRenderingElement {
     /**
      * Creates the text element from an XML node
      * @param node the XML node
+     * @param prevLabel the label element that precedes this text element in the
+     * same rendering element container (or {@code null} if there was no label
+     * element)
      */
-    public SText(Node node) {
+    public SText(Node node, SLabel prevLabel) {
+        this.prevLabel = prevLabel;
         variable = NodeHelper.getAttrValue(node, "variable");
         macro = NodeHelper.getAttrValue(node, "macro");
         term = NodeHelper.getAttrValue(node, "term");
@@ -62,30 +66,39 @@ public class SText implements SRenderingElement {
         if (variable != null && !variable.isEmpty()) {
             String v = ctx.getStringVariable(variable, VariableForm.fromString(form));
             if (v != null) {
-                Token.Type type = Token.Type.TEXT;
                 switch (variable) {
                     case "page":
                         String delimiter = ctx.getTerm("page-range-delimiter");
-                        v = v.replace("-", delimiter);
+                        ctx.emit(v.replace("-", delimiter),
+                                Token.Type.TEXT, formattingAttributes);
                         break;
+
                     case "locator":
                     case "number": {
                         List<NumberElement> elements = NumberParser.parse(v);
-                        v = elements.stream()
-                                .map(NumberElement::getText)
-                                .collect(Collectors.joining());
+                        for (int i = 0; i < elements.size(); ++i) {
+                            NumberElement e = elements.get(i);
+                            if (i > 0 && prevLabel != null && e.getLabel() != null) {
+                                prevLabel.render(ctx, i);
+                            }
+                            ctx.emit(e.getText(), Token.Type.TEXT,
+                                    formattingAttributes);
+                        }
                         break;
                     }
+
                     case "DOI":
-                        type = Token.Type.DOI;
+                        ctx.emit(v, Token.Type.DOI, formattingAttributes);
                         break;
+
                     case "URL":
-                        type = Token.Type.URL;
+                        ctx.emit(v, Token.Type.URL, formattingAttributes);
                         break;
+
                     default:
+                        ctx.emit(v, Token.Type.TEXT, formattingAttributes);
                         break;
                 }
-                ctx.emit(v, type, formattingAttributes);
             }
         } else if (macro != null && !macro.isEmpty()) {
             SMacro sm = ctx.getMacro(macro);

@@ -27,6 +27,7 @@ public class SRenderingElementContainer implements SElement {
      */
     public SRenderingElementContainer(Node node) {
         NodeList children = node.getChildNodes();
+        SLabel lastLabel = null;
         for (int i = 0; i < children.getLength(); ++i) {
             Node c = children.item(i);
             String nodeName = c.getNodeName();
@@ -38,13 +39,13 @@ public class SRenderingElementContainer implements SElement {
             } else if ("group".equals(nodeName)) {
                 element = new SGroup(c);
             } else if ("label".equals(nodeName)) {
-                element = new SLabel(c);
+                element = lastLabel = new SLabel(c);
             } else if ("names".equals(nodeName)) {
                 element = new SNames(c);
             } else if ("number".equals(nodeName)) {
                 element = new SNumber(c);
             } else if ("text".equals(nodeName)) {
-                element = new SText(c);
+                element = new SText(c, lastLabel);
             }
             if (element != null) {
                 elements.add(element);

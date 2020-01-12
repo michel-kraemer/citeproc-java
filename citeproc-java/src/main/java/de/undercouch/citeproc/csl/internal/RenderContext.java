@@ -1,11 +1,12 @@
 package de.undercouch.citeproc.csl.internal;
 
+import de.undercouch.citeproc.csl.CSLCitationItem;
+import de.undercouch.citeproc.csl.CSLCitationItemBuilder;
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
-import de.undercouch.citeproc.helper.SmartQuotes;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -31,9 +32,14 @@ public class RenderContext {
     private final LLocale locale;
 
     /**
-     * The citation item to render
+     * The citation item data to render
      */
     private final CSLItemData itemData;
+
+    /**
+     * The citation item to render
+     */
+    private final CSLCitationItem citationItem;
 
     /**
      * A token buffer collecting the rendered text
@@ -63,6 +69,12 @@ public class RenderContext {
         this.style = style;
         this.locale = locale;
         this.itemData = itemData;
+        if (itemData != null) {
+            this.citationItem = new CSLCitationItemBuilder(itemData.getId())
+                    .itemData(itemData).build();
+        } else {
+            this.citationItem = null;
+        }
         this.variableListeners = new LinkedHashSet<>();
         this.suppressedVariables = new HashSet<>();
     }
@@ -75,7 +87,7 @@ public class RenderContext {
      * @param parent the parent context
      */
     public RenderContext(RenderContext parent) {
-        this(parent, parent.itemData);
+        this(parent, parent.itemData, parent.citationItem);
     }
 
     /**
@@ -84,12 +96,27 @@ public class RenderContext {
      * item. Changes to any of the properties (except for the token buffer)
      * will reflect in the parent context.
      * @param parent the parent context
-     * @param itemData the citation item to render
+     * @param citationItem the citation item to render
      */
-    public RenderContext(RenderContext parent, CSLItemData itemData) {
+    public RenderContext(RenderContext parent, CSLCitationItem citationItem) {
+        this(parent, citationItem.getItemData(), citationItem);
+    }
+
+    /**
+     * Creates a new render context that has the same attributes as the given
+     * parent context but with an empty token buffer and a different citation
+     * item. Changes to any of the properties (except for the token buffer)
+     * will reflect in the parent context.
+     * @param parent the parent context
+     * @param itemData the citation item data to render
+     * @param citationItem the citation item to render
+     */
+    private RenderContext(RenderContext parent, CSLItemData itemData,
+            CSLCitationItem citationItem) {
         this.style = parent.style;
         this.locale = parent.locale;
         this.itemData = itemData;
+        this.citationItem = citationItem;
         this.variableListeners = parent.variableListeners;
         this.suppressedVariables = parent.suppressedVariables;
     }
@@ -518,11 +545,19 @@ public class RenderContext {
     }
 
     /**
-     * Get the citation item currently being rendered
-     * @return the citation item
+     * Get the citation item data currently being rendered
+     * @return the citation item data
      */
     public CSLItemData getItemData() {
         return itemData;
+    }
+
+    /**
+     * Get the citation item currently being rendered
+     * @return the citation item
+     */
+    public CSLCitationItem getCitationItem() {
+        return citationItem;
     }
 
     /**

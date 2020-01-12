@@ -2,13 +2,18 @@ package de.undercouch.citeproc.csl.internal.rendering;
 
 import de.undercouch.citeproc.bibtex.PageParser;
 import de.undercouch.citeproc.bibtex.PageRange;
+import de.undercouch.citeproc.csl.CSLLabel;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.StripPeriods;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
+import de.undercouch.citeproc.csl.internal.helper.NumberElement;
+import de.undercouch.citeproc.csl.internal.helper.NumberParser;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /**
  * A label element from a style file
@@ -50,10 +55,21 @@ public class SLabel implements SRenderingElement {
 
     @Override
     public void render(RenderContext ctx) {
-        affixes.wrap(textCase.wrap(stripPeriods.wrap(this::renderInternal))).accept(ctx);
+        render(ctx, 0);
     }
 
-    private void renderInternal(RenderContext ctx) {
+    /**
+     * Renders this label but selects a different number element if
+     * {@link #variable} equals {@code "number"} and has been parsed
+     * @param ctx the context in which to render
+     * @param nNumberElement the index of the number element to select
+     */
+    public void render(RenderContext ctx, int nNumberElement) {
+        affixes.wrap(textCase.wrap(stripPeriods.wrap(ctx2 ->
+                renderInternal(ctx2, nNumberElement)))).accept(ctx);
+    }
+
+    private void renderInternal(RenderContext ctx, int nNumberElement) {
         if (variable == null || variable.isEmpty()) {
             return;
         }
@@ -63,12 +79,35 @@ public class SLabel implements SRenderingElement {
             return;
         }
 
+        String term = variable;
         boolean plural = false;
+        boolean isLocator = false;
         if (variable.equals("page")) {
             PageRange range = PageParser.parse(String.valueOf(value));
             plural = range.isMultiplePages();
+        } else if (variable.equals("number") || (isLocator = variable.equals("locator"))) {
+            List<NumberElement> elements = NumberParser.parse(String.valueOf(value));
+            if (elements.size() > nNumberElement) {
+                NumberElement element = elements.get(nNumberElement);
+                if (element != null) {
+                    if (element.getLabel() != null) {
+                        term = element.getLabel().toString();
+                    } else if (nNumberElement == 0 && isLocator) {
+                        CSLLabel label = null;
+                        if (ctx.getCitationItem() != null) {
+                            label = ctx.getCitationItem().getLabel();
+                        }
+                        if (label != null) {
+                            term = label.toString();
+                        } else {
+                            term = "page";
+                        }
+                    }
+                    plural = element.isPlural();
+                }
+            }
         }
 
-        ctx.emit(ctx.getTerm(variable, LTerm.Form.fromString(form), plural));
+        ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(form), plural));
     }
 }

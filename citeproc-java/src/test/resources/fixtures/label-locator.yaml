@@ -1,0 +1,125 @@
+mode: citation
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation>
+      <layout delimiter="&#x0A;">
+        <group>
+          <choose>
+            <if variable="number">
+              <group>
+                <label variable="number" form="long" suffix=" "/>
+                <text variable="number"/>
+              </group>
+            </if>
+            <else>
+              <group>
+                <label variable="locator" form="short" suffix=" "/>
+                <text variable="locator"/>
+              </group>
+            </else>
+          </choose>
+        </group>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    number: 10
+  - id: item2
+    number: ch. 10
+  - id: item3
+    number: sec. 10
+  - id: item5
+    number: ch. 10, sec. 4
+  - id: item6
+    number: ch. 10, 4
+  - id: item7
+    number: sec. 10a-b
+  - id: item8
+    number: ch. 10-12, sec. 4
+  - id: item9
+    number: 10-12
+  - id: item4
+
+citations:
+  - citationItems:
+      - id: item1
+      - id: item2
+      - id: item3
+      - id: item5
+      - id: item6
+      - id: item7
+      - id: item8
+      - id: item9
+      - id: item9
+        label: section
+      - id: item4
+        locator: 10
+      - id: item4
+        locator: ch. 10
+      - id: item4
+        locator: 10-12
+      - id: item4
+        locator: "10, 12"
+      - id: item4
+        locator: "10 & 12"
+      - id: item4
+        locator: "10 and 12"
+      - id: item4
+        locator: ch. 2-3
+      - id: item4
+        locator: 2-3
+        label: section
+      - id: item4
+        locator: ch. 2-3
+        label: section
+      - id: item4
+        locator: ch. 2-3, pp. 20
+        label: section
+      - id: item4
+        locator: 12a-c
+      - id: item4
+        locator: "foo. 4"
+      - id: item4
+        locator: "p.   4"
+      - id: item4
+        locator: "ch. 2-3, p. 4-5"
+      - id: item4
+        locator: "ch. 2, 3, p. 4, 5"
+      - id: item4
+        locator: "ch. 2, 3; p. 4, 5"
+      - id: item4
+        locator: foo
+      - id: item4
+        locator: ch. foo
+
+result: |-
+  10
+  chapter 10
+  section 10
+  chapter 10, section 4
+  chapters 10, 4
+  section 10a-b
+  chapters 10–12, section 4
+  10–12
+  10–12
+  p. 10
+  chap. 10
+  pp. 10–12
+  pp. 10, 12
+  pp. 10 & 12
+  pp. 10 and 12
+  chaps. 2–3
+  secs. 2–3
+  chaps. 2–3
+  chaps. 2–3, p. 20
+  p. 12a-c
+  p. foo. 4
+  p. 4
+  chaps. 2–3, pp. 4–5
+  chaps. 2, 3, pp. 4, 5
+  chaps. 2, 3; pp. 4, 5
+  p. foo
+  chap. foo
