@@ -21,7 +21,7 @@ numbers
       $elements.add($e2.el);
     }
   )*
-  SPACE* EOF
+  ( SPACE | ',' | ';' )* EOF
   ;
 
 element
@@ -30,8 +30,7 @@ element
   ]
   : l=label SPACE* r1=range {
     $el = new NumberElement($r1.parsedText, $l.lbl, $r1.plural);
-  } | r2=range ( SPACE+ ~( SPACE | ';' | ',' | ':' | '-' | '\u2013' | '&' | 'and' ) )+ {
-    // range (essentially anything) followed by anything that does not belong to a range
+  } | r2=range ( SPACE+ ( label | range) )+ {
     $el = new NumberElement($text);
   } | r3=range {
     $el = new NumberElement($r3.parsedText, null, $r3.plural);
@@ -101,39 +100,52 @@ range
     boolean plural = false,
     String parsedText
   ]
-  : n1=NUMBER SPACE* sep=( ';' | ',' | ':' | '-' | '\u2013' | '&' | 'and' )+ SPACE* n2=NUMBER {
-    $plural = true;
+  : n1=NUMBER {
     $parsedText = $n1.text;
-    switch ($sep.text) {
-      case ";":
-        $parsedText += "; ";
-        break;
-      case ",":
-        $parsedText += ", ";
-        break;
-      case ":":
-        $parsedText += ":";
-        break;
-      case "-":
-      case "\u2013":
-        $parsedText += "\u2013";
-        break;
-      case "&":
-        $parsedText += " & ";
-        break;
-      case "and":
-        $parsedText += " and ";
-        break;
-      default:
-        break;
+  } (
+    ( sep=( ';' | ',' | ':' | '-' | '\u2013' | '&' | 'and' | SPACE ) {
+      $plural |= !Character.isWhitespace($sep.text.charAt(0));
+      boolean lastWhite = Character.isWhitespace($parsedText.charAt($parsedText.length() - 1));
+      switch ($sep.text) {
+        case ";":
+          $parsedText += "; ";
+          break;
+        case ",":
+          $parsedText += ", ";
+          break;
+        case ":":
+          $parsedText += ":";
+          break;
+        case "-":
+        case "\u2013":
+          $parsedText += "\u2013";
+          break;
+        case "&":
+          if (!lastWhite) {
+            $parsedText += " ";
+          }
+          $parsedText += "& ";
+          break;
+        case "and":
+          if (!lastWhite) {
+            $parsedText += " ";
+          }
+          $parsedText += "and ";
+          break;
+        case " ":
+          if (!lastWhite) {
+            $parsedText += " ";
+          }
+          break;
+        default:
+          break;
+      }
+    } )+ n2=NUMBER {
+      $parsedText += $n2.text;
     }
-    $parsedText += $n2.text;
-  }
-  | n1=NUMBER {
-    $parsedText = $n1.text;
-  }
+  )*
   ;
 
 // Numbers such as 1, 2.3, 10a-b, 1.a, I.a, 1.I, I, and IV
 NUMBER : [0-9.]+[a-zA-Z]+[-:][a-zA-Z]+ | [0-9a-zA-Z.]+ ;
-SPACE  : ' ' ;
+SPACE  : [\p{White_Space}] ;
