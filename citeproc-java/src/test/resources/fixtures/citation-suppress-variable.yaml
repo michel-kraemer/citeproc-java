@@ -1,0 +1,89 @@
+mode: citation
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation>
+      <layout delimiter="&#x0A;">
+        <names variable="author" suffix=", ">
+          <name et-al-min="2" et-al-use-first="1"/>
+          <substitute>
+            <names variable="editor" suffix="; "/>
+            <text variable="note"/>
+            <text value="UNKNOWN AUTHOR AND TITLE" suffix="ZZZZ"/>
+          </substitute>
+        </names>
+        <names variable="editor" suffix="; "/>
+        <text variable="title"/>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+      - given: Another
+        family: One
+      - given: Third
+        family: Name
+      - given: Fourth
+        family: Name
+    editor:
+      - given: First
+        family: Editor
+      - given: Another
+        family: Editor
+      - given: Third
+        family: Editor
+      - given: Fourth
+        family: Editor
+    title: My title
+  - id: item2
+    editor:
+      - given: First
+        family: Editor
+      - given: Another
+        family: Editor
+      - given: Third
+        family: Editor
+      - given: Fourth
+        family: Editor
+    title: List of editors
+  - id: item3
+    editor:
+      - given: First
+        family: Editor
+      - given: Another
+        family: Editor
+      - given: Third
+        family: Editor
+      - given: Fourth
+        family: Editor
+    title: Another list of editors
+  - id: item4
+    author:
+      - given: Given
+        family: Name
+      - given: Another
+        family: One
+      - given: Third
+        family: Name
+      - given: Fourth
+        family: Name
+    editor:
+      - given: First
+        family: Editor
+      - given: Another
+        family: Editor
+      - given: Third
+        family: Editor
+      - given: Fourth
+        family: Editor
+    title: Another title
+
+result: |-
+  Given Name et al., First Editor, Another Editor, Third Editor, Fourth Editor; My title
+  First Editor et al., List of editors
+  First Editor et al., Another list of editors
+  Given Name et al., First Editor, Another Editor, Third Editor, Fourth Editor; Another title

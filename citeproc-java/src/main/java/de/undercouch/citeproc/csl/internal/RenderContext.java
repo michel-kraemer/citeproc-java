@@ -671,4 +671,12 @@ public class RenderContext {
     public TokenBuffer getResult() {
         return result;
     }
+
+    /**
+     * Reset the render context so it can be used to render another citation
+     */
+    public void reset() {
+        suppressedVariables.clear();
+        variableListeners.clear();
+    }
 }
