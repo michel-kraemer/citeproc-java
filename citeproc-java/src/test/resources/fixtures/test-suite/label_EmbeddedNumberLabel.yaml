@@ -1,0 +1,55 @@
+mode: citation
+
+style: |
+  <style 
+        xmlns="http://purl.org/net/xbiblio/csl"
+        class="note"
+        version="1.1mlz1">
+    <info>
+      <title>Test fixture</title>
+      <id>http://citationstyles.org/tests/fixture</id>
+      <link href="http://citationstyles.org/tests/fixture" rel="self"/>
+      <link href="http://citationstyles.org/documentation/text" rel="documentation"/>
+      <category citation-format="author-date"/>
+      <updated>2014-04-30T13:19:38+00:00</updated>
+      <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
+    </info>
+    <locale>
+      <terms>
+        <term name="chapter">chapter</term>
+        <term form="short" name="chapter">ch.</term>
+        <term form="symbol" name="chapter">章</term>
+      </terms>
+    </locale>
+    <citation>
+      <layout>
+        <group delimiter=", ">
+          <text variable="title"/>
+          <group delimiter=" ">
+            <choose>
+              <if number="number">
+                <text value="Pub. L. No."/>
+              </if>
+              <else>
+                <label variable="number" form="symbol"/>
+              </else>
+            </choose>
+            <number variable="number"/>
+          </group>
+        </group>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - type: legislation
+    id: ITEM-1
+    title: Some Statute
+    number: ch. 888
+  - type: legislation
+    id: ITEM-2
+    title: Some Other Statute
+    number: "999"
+
+result: |-
+  Some Statute, 章 888Some Other Statute, Pub. L. No. 999
