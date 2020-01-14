@@ -7,11 +7,13 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
+import de.undercouch.citeproc.csl.internal.rendering.SLabel;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Contains information necessary to render citations and bibliographies. This
@@ -60,6 +62,12 @@ public class RenderContext {
     private final Set<String> suppressedVariables;
 
     /**
+     * The last label rendered. This field is an {@link AtomicReference} so
+     * child contexts can alter its value.
+     */
+    private final AtomicReference<SLabel> lastLabelRendered;
+
+    /**
      * Creates a new render context
      * @param style the style used to render citation items and bibliographies
      * @param locale localization data
@@ -77,6 +85,7 @@ public class RenderContext {
         }
         this.variableListeners = new LinkedHashSet<>();
         this.suppressedVariables = new HashSet<>();
+        this.lastLabelRendered = new AtomicReference<>();
     }
 
     /**
@@ -119,6 +128,7 @@ public class RenderContext {
         this.citationItem = citationItem;
         this.variableListeners = parent.variableListeners;
         this.suppressedVariables = parent.suppressedVariables;
+        this.lastLabelRendered = parent.lastLabelRendered;
     }
 
     /**
@@ -577,6 +587,22 @@ public class RenderContext {
     }
 
     /**
+     * Save the last label rendered
+     * @param label the label (may be {@code null})
+     */
+    public void setLastLabelRendered(SLabel label) {
+        lastLabelRendered.set(label);
+    }
+
+    /**
+     * Get the last label rendered
+     * @return the label (may be {@code null})
+     */
+    public SLabel getLastLabelRendered() {
+        return lastLabelRendered.get();
+    }
+
+    /**
      * Emit a text token
      * @param text the text token
      * @return this render context
@@ -678,5 +704,6 @@ public class RenderContext {
     public void reset() {
         suppressedVariables.clear();
         variableListeners.clear();
+        lastLabelRendered.set(null);
     }
 }

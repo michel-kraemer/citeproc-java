@@ -108,6 +108,7 @@ public class SLabel implements SRenderingElement {
             }
         }
 
+        ctx.setLastLabelRendered(this);
         ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(form), plural));
     }
 }

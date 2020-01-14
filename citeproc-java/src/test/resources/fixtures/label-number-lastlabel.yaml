@@ -1,0 +1,48 @@
+mode: citation
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation>
+      <layout delimiter="&#x0A;">
+        <group>
+          <text variable="number"/>
+
+          <label variable="page" form="short" suffix=" "/>
+          <text variable="page"/>
+          <text value="&#x0A;"/>
+        </group>
+        <group>
+          <choose>
+            <if variable="number">
+              <label variable="number" form="long" suffix=" "/>
+            </if>
+            <else>
+              <label variable="number" form="short" suffix=" "/>
+            </else>
+          </choose>
+          <text variable="number"/>
+
+          <text value="&#x0A;"/>
+          <label variable="number" form="short" suffix=" "/>
+          <text variable="number"/>
+        </group>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    number: ch. 10
+  - id: item2
+    number: ch. 10, sec. 2
+
+result: |-
+  10
+  chapter 10
+  chap. 10
+  10, 2
+  chapter 10, section 2
+  chap. 10, sec. 2
+
+# obviously wrong! citeproc-js adds "p. " to the first number and completely mixes up labels
+resultLegacy: "10p. \nchapter 10\nchap. 10\n10, sec. 2p. \nchapter 10, section 2\nchap. 10, section 2"

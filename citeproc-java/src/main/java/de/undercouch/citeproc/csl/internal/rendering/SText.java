@@ -21,7 +21,6 @@ import java.util.List;
  * @author Michel Kraemer
  */
 public class SText implements SRenderingElement {
-    private final SLabel prevLabel;
     private final String variable;
     private final String macro;
     private final String term;
@@ -35,12 +34,8 @@ public class SText implements SRenderingElement {
     /**
      * Creates the text element from an XML node
      * @param node the XML node
-     * @param prevLabel the label element that precedes this text element in the
-     * same rendering element container (or {@code null} if there was no label
-     * element)
      */
-    public SText(Node node, SLabel prevLabel) {
-        this.prevLabel = prevLabel;
+    public SText(Node node) {
         variable = NodeHelper.getAttrValue(node, "variable");
         macro = NodeHelper.getAttrValue(node, "macro");
         term = NodeHelper.getAttrValue(node, "term");
@@ -78,8 +73,9 @@ public class SText implements SRenderingElement {
                         List<NumberElement> elements = NumberParser.parse(v);
                         for (int i = 0; i < elements.size(); ++i) {
                             NumberElement e = elements.get(i);
-                            if (i > 0 && prevLabel != null && e.getLabel() != null) {
-                                prevLabel.render(ctx, i);
+                            SLabel lastLabel = ctx.getLastLabelRendered();
+                            if (i > 0 && lastLabel != null && e.getLabel() != null) {
+                                lastLabel.render(ctx, i);
                             }
                             ctx.emit(e.getText(), Token.Type.TEXT,
                                     formattingAttributes);
