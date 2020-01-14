@@ -2,9 +2,13 @@ package de.undercouch.citeproc.csl.internal.rendering.condition;
 
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.helper.NumberElement;
+import de.undercouch.citeproc.csl.internal.helper.NumberParser;
 import de.undercouch.citeproc.helper.NodeHelper;
 import de.undercouch.citeproc.helper.NumberHelper;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /**
  * A conditional element in a style file
@@ -18,6 +22,7 @@ public class SIf extends SCondition {
     private final String[] types;
     private final String[] variables;
     private final String[] isNumerics;
+    private final String[] numbers;
     private final int match;
 
     /**
@@ -51,6 +56,14 @@ public class SIf extends SCondition {
             isNumerics = null;
         }
 
+        // get the labels to check the number variable against
+        String number = NodeHelper.getAttrValue(node, "number");
+        if (number != null) {
+            numbers = number.split("\\s+");
+        } else {
+            numbers = null;
+        }
+
         // get the match mode
         String match = NodeHelper.getAttrValue(node, "match");
         if (match == null || match.equals("all")) {
@@ -66,7 +79,7 @@ public class SIf extends SCondition {
 
     @Override
     public boolean matches(RenderContext ctx) {
-        if (types == null && variables == null && isNumerics == null) {
+        if (types == null && variables == null && isNumerics == null && numbers == null) {
             return false;
         }
 
@@ -117,6 +130,33 @@ public class SIf extends SCondition {
                     return true;
                 }
                 if (match == NONE && numeric) {
+                    return false;
+                }
+            }
+        }
+
+        if (numbers != null) {
+            // check if the number variable has the given label(s)
+            String v = ctx.getStringVariable("number");
+            String firstLabel = null;
+            if (v != null) {
+                List<NumberElement> elements = NumberParser.parse(v);
+                if (elements.get(0).getLabel() != null) {
+                    firstLabel = elements.get(0).getLabel().toString();
+                }
+            }
+            if (firstLabel == null) {
+                firstLabel = "number";
+            }
+
+            for (String number : numbers) {
+                if (match == ALL && !number.equals(firstLabel)) {
+                    return false;
+                }
+                if (match == ANY && number.equals(firstLabel)) {
+                    return true;
+                }
+                if (match == NONE && number.equals(firstLabel)) {
                     return false;
                 }
             }
