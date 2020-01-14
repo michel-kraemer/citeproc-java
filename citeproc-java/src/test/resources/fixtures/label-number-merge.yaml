@@ -1,0 +1,35 @@
+mode: citation
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation>
+      <layout delimiter="&#x0A;">
+        <group>
+          <label variable="number" form="long" suffix=" " />
+          <text variable="number"/>
+        </group>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    number: ch. 10, ch. 40
+  - id: item2
+    number: sec. 10, sec. 40
+  - id: item3
+    number: ch. 10, sec. 40
+  - id: item4
+    number: ch. 10, ch. 40, sec. 2
+  - id: item5
+    number: ch. 10, sec. 40, ch. 2
+  - id: item6
+    number: ch. 10-11, ch. 12
+
+result: |-
+  chapters 10, 40
+  sections 10, 40
+  chapter 10, section 40
+  chapters 10, 40, section 2
+  chapter 10, section 40, chapter 2
+  chapters 10–11, 12

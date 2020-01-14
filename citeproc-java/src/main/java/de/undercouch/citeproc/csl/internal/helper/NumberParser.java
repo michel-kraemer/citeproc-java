@@ -1,5 +1,6 @@
 package de.undercouch.citeproc.csl.internal.helper;
 
+import de.undercouch.citeproc.csl.CSLLabel;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;

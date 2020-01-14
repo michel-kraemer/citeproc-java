@@ -8,7 +8,14 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Tests for {@link NumberParser}
+ * @author Michel Kraemer
+ */
 public class NumberParserTest {
+    /**
+     * Test if simple numbers can be parsed
+     */
     @Test
     public void simple() {
         assertEquals(Collections.singletonList(
@@ -23,11 +30,11 @@ public class NumberParserTest {
         assertEquals(Collections.singletonList(
                 new NumberElement("foo")),
                 NumberParser.parse("foo"));
-        assertEquals(Collections.singletonList(
-                new NumberElement("foo", CSLLabel.CHAPTER, false)),
-                NumberParser.parse("ch. foo"));
     }
 
+    /**
+     * Test if number ranges can be parsed
+     */
     @Test
     public void range() {
         assertEquals(Collections.singletonList(
@@ -41,6 +48,9 @@ public class NumberParserTest {
                 NumberParser.parse("1,2,3"));
     }
 
+    /**
+     * Test if single numbers with labels can be parsed
+     */
     @Test
     public void label() {
         assertEquals(Collections.singletonList(
@@ -94,8 +104,14 @@ public class NumberParserTest {
         assertEquals(Collections.singletonList(
                 new NumberElement("foo. 4")),
                 NumberParser.parse("foo. 4"));
+        assertEquals(Collections.singletonList(
+                new NumberElement("foo", CSLLabel.CHAPTER, false)),
+                NumberParser.parse("ch. foo"));
     }
 
+    /**
+     * Test if number ranges with labels can be parsed
+     */
     @Test
     public void labelPlural() {
         assertEquals(Collections.singletonList(
@@ -145,69 +161,88 @@ public class NumberParserTest {
                 NumberParser.parse("ch. 1,2, and 3,"));
     }
 
+    /**
+     * Test if complex strings consisting of multiple labels and numbers
+     * can be parsed
+     */
     @Test
     public void multipleLabels() {
         assertEquals(Arrays.asList(
-                new NumberElement("10", CSLLabel.CHAPTER, false),
-                new NumberElement(", "),
+                new NumberElement("10, ", CSLLabel.CHAPTER, false),
                 new NumberElement("4", CSLLabel.SECTION, false)),
                 NumberParser.parse(" ch. 10,  sec. 4  "));
         assertEquals(Arrays.asList(
-                new NumberElement("10", CSLLabel.CHAPTER, false),
-                new NumberElement(", "),
+                new NumberElement("10, ", CSLLabel.CHAPTER, false),
                 new NumberElement("4", CSLLabel.SECTION, false)),
                 NumberParser.parse("ch. 10 ,sec. 4"));
         assertEquals(Arrays.asList(
-                new NumberElement("2\u20133", CSLLabel.CHAPTER, true),
-                new NumberElement(", "),
+                new NumberElement("2\u20133, ", CSLLabel.CHAPTER, true),
                 new NumberElement("4\u20135", CSLLabel.PAGE, true)),
                 NumberParser.parse("ch. 2-3, p. 4-5"));
         assertEquals(Arrays.asList(
-                new NumberElement("2, 3", CSLLabel.CHAPTER, true),
-                new NumberElement(", "),
+                new NumberElement("2, 3, ", CSLLabel.CHAPTER, true),
                 new NumberElement("4, 5", CSLLabel.PAGE, true)),
                 NumberParser.parse("ch. 2, 3, p. 4, 5"));
         assertEquals(Arrays.asList(
-                new NumberElement("2, 3", CSLLabel.CHAPTER, true),
-                new NumberElement(", "),
+                new NumberElement("2, 3, ", CSLLabel.CHAPTER, true),
                 new NumberElement("4, 5", CSLLabel.PAGE, true)),
                 NumberParser.parse("ch. 2,3, p. 4,5"));
         assertEquals(Arrays.asList(
-                new NumberElement("2, 3", CSLLabel.CHAPTER, true),
-                new NumberElement("; "),
+                new NumberElement("2, 3; ", CSLLabel.CHAPTER, true),
                 new NumberElement("4, 5", CSLLabel.PAGE, true)),
                 NumberParser.parse("ch. 2, 3; p. 4, 5"));
         assertEquals(Arrays.asList(
-                new NumberElement("foo. bar"),
-                new NumberElement(", "),
+                new NumberElement("foo. bar, "),
                 new NumberElement("2\u20133", CSLLabel.SECTION, true)),
                 NumberParser.parse("foo. bar, sec. 2-3"));
         assertEquals(Arrays.asList(
-                new NumberElement("cp. foo"),
-                new NumberElement(", "),
+                new NumberElement("cp. foo, "),
                 new NumberElement("2\u20133", CSLLabel.SECTION, true)),
                 NumberParser.parse("cp. foo, sec. 2-3"));
         assertEquals(Arrays.asList(
-                new NumberElement("1, 2, and 3", CSLLabel.CHAPTER, true),
-                new NumberElement(", "),
+                new NumberElement("1, 2, and 3, ", CSLLabel.CHAPTER, true),
                 new NumberElement("foo", CSLLabel.SECTION, false)),
                 NumberParser.parse("ch. 1,2, and 3, sec. foo"));
         assertEquals(Arrays.asList(
-                new NumberElement("1, 2, and 3", CSLLabel.CHAPTER, true),
-                new NumberElement(", "),
+                new NumberElement("1, 2, and 3, ", CSLLabel.CHAPTER, true),
                 new NumberElement("foo bar", CSLLabel.SECTION, false)),
                 NumberParser.parse("ch. 1,2, and 3, sec. foo bar"));
         assertEquals(Arrays.asList(
-                new NumberElement("foo bar zoo", CSLLabel.SECTION, false),
-                new NumberElement(", "),
+                new NumberElement("foo bar zoo, ", CSLLabel.SECTION, false),
                 new NumberElement("dummy dummy", CSLLabel.CHAPTER, false)),
                 NumberParser.parse("sec. foo   bar  zoo , ch. dummy dummy"));
         assertEquals(Arrays.asList(
-                new NumberElement("5 foo", CSLLabel.CHAPTER, false),
-                new NumberElement(", "),
-                new NumberElement("test sec. 1-5"),
-                new NumberElement(", "),
+                new NumberElement("5 foo, test sec. 1-5, ", CSLLabel.CHAPTER, false),
                 new NumberElement("5, 3, 6", CSLLabel.PAGE, true)),
                 NumberParser.parse("ch. 5 foo, test sec. 1-5, p. 5, 3, 6"));
+    }
+
+    /**
+     * Test if subsequent elements with the same label are correctly merged
+     */
+    @Test
+    public void merge() {
+        assertEquals(Collections.singletonList(
+                new NumberElement("10, 40", CSLLabel.CHAPTER, true)),
+                NumberParser.parse("ch. 10, ch. 40"));
+        assertEquals(Collections.singletonList(
+                new NumberElement("10, 40", CSLLabel.SECTION, true)),
+                NumberParser.parse("sec. 10, sec. 40"));
+        assertEquals(Collections.singletonList(
+                new NumberElement("10\u201312, 40", CSLLabel.SECTION, true)),
+                NumberParser.parse("sec. 10-12, sec. 40"));
+        assertEquals(Arrays.asList(
+                new NumberElement("10, ", CSLLabel.CHAPTER, false),
+                new NumberElement("40", CSLLabel.SECTION, false)),
+                NumberParser.parse("ch. 10, sec. 40"));
+        assertEquals(Arrays.asList(
+                new NumberElement("10, 40, ", CSLLabel.CHAPTER, true),
+                new NumberElement("2", CSLLabel.SECTION, false)),
+                NumberParser.parse("ch. 10, ch. 40, sec. 2"));
+        assertEquals(Arrays.asList(
+                new NumberElement("10, ", CSLLabel.CHAPTER, false),
+                new NumberElement("40, ", CSLLabel.SECTION, false),
+                new NumberElement("2", CSLLabel.CHAPTER, false)),
+                NumberParser.parse("ch. 10, sec. 40, ch. 2"));
     }
 }

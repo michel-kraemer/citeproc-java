@@ -4,6 +4,29 @@ grammar InternalNumber;
 package de.undercouch.citeproc.csl.internal.helper;
 
 import de.undercouch.citeproc.csl.CSLLabel;
+import java.util.List;
+}
+
+@members {
+  private void addElement(List<NumberElement> elements, NumberElement e) {
+    if (elements.isEmpty()) {
+      elements.add(e);
+      return;
+    }
+
+    // Merge with previous element if it has the same label. Set 'plural'
+    // flag if necessary.
+    NumberElement lastElement = elements.get(elements.size() - 1);
+    if (e.getLabel() == null || lastElement.getLabel() == e.getLabel()) {
+      boolean plural = lastElement.isPlural() ||
+          (e.getLabel() != null && lastElement.getLabel() != null);
+      lastElement = new NumberElement(lastElement.getText() + e.getText(),
+          lastElement.getLabel(), plural);
+      elements.set(elements.size() - 1, lastElement);
+    } else {
+      elements.add(e);
+    }
+  }
 }
 
 numbers
@@ -11,14 +34,14 @@ numbers
     List<NumberElement> elements = new ArrayList<>()
   ]
   : SPACE* e1=element {
-    $elements.add($e1.el);
+    addElement($elements, $e1.el);
   }
   (
     SPACE* (
-      ',' { $elements.add(new NumberElement(", ")); }
-    | ';' { $elements.add(new NumberElement("; ")); }
+      ',' { addElement($elements, new NumberElement(", ")); }
+    | ';' { addElement($elements, new NumberElement("; ")); }
     )+ SPACE* e2=element {
-      $elements.add($e2.el);
+      addElement($elements, $e2.el);
     }
   )*
   ( SPACE | ',' | ';' )* EOF
