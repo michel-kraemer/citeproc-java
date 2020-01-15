@@ -1,0 +1,47 @@
+mode: citation
+
+style:
+  <style 
+        xmlns="http://purl.org/net/xbiblio/csl"
+        class="note"
+        version="1.0">
+    <info>
+      <id />
+      <title />
+      <updated>2009-08-10T04:49:00+09:00</updated>
+    </info>
+    <macro name="parental-prefix-prefix">
+      <text variable="title"/>
+      <group prefix=". ">
+        <group>
+          <text variable="note" prefix=" "/>
+        </group>
+      </group>
+    </macro>
+    <citation>
+      <layout delimiter="&#x0A;">
+        <choose>
+          <if type="book">
+            <text macro="parental-prefix-prefix"/>
+          </if>
+       </choose>
+        <text value=". ["/>
+        <text variable="locator"/>
+        <text value="]"/>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: ITEM-6
+    title: One
+    note: Two
+    type: book
+
+citations:
+  - citationItems:
+      - id: ITEM-6
+        locator: parental prefix-prefix
+
+result: |-
+  One. Two. [parental prefix-prefix]

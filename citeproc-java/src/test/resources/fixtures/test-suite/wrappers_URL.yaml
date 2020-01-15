@@ -1,9 +1,10 @@
 # Second use case added to cover a bug report by Derek Sifford:
-# https://github.com/Juris-M/citeproc-js/issues/101
+#
+#     https://github.com/Juris-M/citeproc-js/issues/101
 
 mode: citation
 
-style:
+style: |
   <style 
         xmlns="http://purl.org/net/xbiblio/csl"
         class="note"
@@ -42,7 +43,7 @@ items:
     title: His Documented Life
     URL: https://aliem.com
     accessed:
-        raw: 2019/03/28
+      raw: 2019/03/28
     id: ITEM-2
 
 result:

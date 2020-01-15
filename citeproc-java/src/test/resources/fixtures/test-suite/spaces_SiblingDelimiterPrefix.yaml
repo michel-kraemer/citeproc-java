@@ -10,16 +10,17 @@ style:
       <title />
       <updated>2009-08-10T04:49:00+09:00</updated>
     </info>
-    <macro name="parental-delimiter-prefix-prefix">
-      <text variable="volume" suffix=" "/>
-      <text variable="title"/>
-      <text variable="note" prefix=" "/>
+    <macro name="sibling-delimiter-prefix">
+      <group delimiter=" ">
+        <text variable="title" suffix="."/>
+        <text variable="note" prefix=" "/>
+      </group>
     </macro>
     <citation>
       <layout delimiter="&#x0A;">
         <choose>
-          <if type="entry-encyclopedia">
-            <text macro="parental-delimiter-prefix-prefix"/>
+          <if type="article-magazine">
+            <text macro="sibling-delimiter-prefix"/>
           </if>
         </choose>
         <text value=". ["/>
@@ -30,16 +31,15 @@ style:
   </style>
 
 items:
-  - id: ITEM-10
+  - id: ITEM-3
     title: One
     note: Two
-    volume: Zero
-    type: entry-encyclopedia
+    type: article-magazine
 
 citations:
   - citationItems:
-    - id: ITEM-10
-      locator: just a prefix
+      - id: ITEM-3
+        locator: sibling delimiter-prefix
 
 result: |-
-  Zero One Two. [just a prefix]
+  One. Two. [sibling delimiter-prefix]

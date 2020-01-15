@@ -1,0 +1,233 @@
+mode: citation
+
+style: |
+  <style 
+        xmlns="http://purl.org/net/xbiblio/csl"
+        class="note"
+        version="1.0">
+    <info>
+      <id />
+      <title />
+      <updated>2009-08-10T04:49:00+09:00</updated>
+    </info>
+    <macro name="sibling-suffix-prefix">
+      <text variable="title" suffix=". "/>
+      <text variable="note" prefix=" "/>
+    </macro>
+    <macro name="sibling-suffix-delimiter">
+      <group delimiter=" ">
+        <text variable="title" suffix=". "/>
+        <text variable="note"/>
+      </group>
+    </macro>
+    <macro name="sibling-delimiter-prefix">
+      <group delimiter=" ">
+        <text variable="title" suffix="."/>
+        <text variable="note" prefix=" "/>
+      </group>
+    </macro>
+    <macro name="parental-suffix-prefix-downhill">
+      <text variable="title" suffix=". "/>
+      <group>
+        <text variable="note" prefix=" "/>
+      </group>
+    </macro>
+    <macro name="parental-suffix-prefix-uphill">
+      <group>
+        <text variable="title" suffix=". "/>
+      </group>
+      <text variable="note" prefix=" "/>
+    </macro>
+    <macro name="parental-prefix-prefix">
+      <text variable="title"/>
+      <group prefix=". ">
+        <group>
+          <text variable="note" prefix=" "/>
+        </group>
+      </group>
+    </macro>
+    <macro name="parental-suffix-delimiter">
+      <group delimiter=" ">
+        <group>
+          <text variable="title" suffix=". "/>
+        </group>
+        <text variable="note"/>
+      </group>
+    </macro>
+    <macro name="parental-delimiter-prefix">
+      <group delimiter=" ">
+        <text variable="title" suffix="."/>
+        <group>
+          <text variable="note" prefix=" "/>
+        </group>
+      </group>
+    </macro>
+    <macro name="parental-suffix-suffix">
+      <group suffix=" ">
+        <group>
+          <text variable="title" suffix=". "/>
+        </group>
+      </group>
+      <text variable="note"/>
+    </macro>
+    <macro name="parental-delimiter-prefix-prefix">
+      <group delimiter=". ">
+        <text variable="title"/>
+        <group prefix=" ">
+          <group>
+            <text variable="note" prefix=" "/>
+          </group>
+        </group>
+      </group>
+    </macro>
+    <macro name="parental-suffix-suffix-delimiter">
+      <group delimiter=" ">
+        <group suffix=" ">
+          <text variable="title" suffix=". "/>
+        </group>
+        <text variable="note"/>
+      </group>
+    </macro>
+    <macro name="over-the-hill-suffix-prefix">
+      <group>
+        <text variable="title" suffix=". "/>
+      </group>
+      <group>
+        <text variable="note" prefix=" "/>
+      </group>
+    </macro>
+    <citation>
+      <layout delimiter="&#x0A;">
+        <choose>
+          <if type="article">
+            <text macro="sibling-suffix-prefix"/>
+          </if>
+          <else-if type="article-journal">
+            <text macro="sibling-suffix-delimiter"/>
+          </else-if>
+          <else-if type="article-magazine">
+            <text macro="sibling-delimiter-prefix"/>
+          </else-if>
+          <else-if type="article-newspaper">
+            <text macro="parental-suffix-prefix-downhill"/>
+          </else-if>
+          <else-if type="bill">
+            <text macro="parental-suffix-prefix-uphill"/>
+          </else-if>
+          <else-if type="book">
+            <text macro="parental-prefix-prefix"/>
+          </else-if>
+          <else-if type="chapter">
+            <text macro="parental-suffix-delimiter"/>
+          </else-if>
+          <else-if type="entry">
+            <text macro="parental-delimiter-prefix"/>
+          </else-if>
+          <else-if type="entry-dictionary">
+            <text macro="parental-suffix-suffix"/>
+          </else-if>
+          <else-if type="entry-encyclopedia">
+            <text macro="parental-delimiter-prefix-prefix"/>
+          </else-if>
+          <else-if type="graphic">
+            <text macro="parental-suffix-suffix-delimiter"/>
+          </else-if>
+          <else-if type="interview">
+            <text macro="over-the-hill-suffix-prefix"/>
+          </else-if>
+        </choose>
+        <text variable="locator" prefix=". [" suffix="]"/>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: ITEM-1
+    title: One
+    note: Two
+    type: article
+  - id: ITEM-2
+    title: One
+    note: Two
+    type: article-journal
+  - id: ITEM-3
+    title: One
+    note: Two
+    type: article-magazine
+  - id: ITEM-4
+    title: One
+    note: Two
+    type: article-newspaper
+  - id: ITEM-5
+    title: One
+    note: Two
+    type: book
+  - id: ITEM-6
+    title: One
+    note: Two
+    type: book
+  - id: ITEM-7
+    title: One
+    note: Two
+    type: chapter
+  - id: ITEM-8
+    title: One
+    note: Two
+    type: entry
+  - id: ITEM-9
+    title: One
+    note: Two
+    type: entry-dictionary
+  - id: ITEM-10
+    title: One
+    note: Two
+    type: entry-encyclopedia
+  - id: ITEM-11
+    title: One
+    note: Two
+    type: graphic
+  - id: ITEM-12
+    title: One
+    note: Two
+    type: interview
+
+citations:
+  - citationItems:
+      - id: ITEM-1
+        locator: sibling suffix-prefix
+      - id: ITEM-2
+        locator: sibling suffix-delimiter
+      - id: ITEM-3
+        locator: sibling delimiter-prefix
+      - id: ITEM-4
+        locator: parental suffix-prefix-downhill
+      - id: ITEM-5
+        locator: parental suffix-prefix-uphill
+      - id: ITEM-6
+        locator: parental prefix-prefix
+      - id: ITEM-7
+        locator: parental suffix-delimiter
+      - id: ITEM-8
+        locator: parental delimiter-prefix
+      - id: ITEM-9
+        locator: parental suffix-suffix
+      - id: ITEM-10
+        locator: parental delimiter-prefix-prefix
+      - id: ITEM-11
+        locator: parental suffix-suffix-delimiter
+      - id: ITEM-12
+        locator: parental suffix-prefix-over-the-hill
+
+result: |-
+  One. Two. [sibling suffix-prefix]
+  One. Two. [sibling suffix-delimiter]
+  One. Two. [sibling delimiter-prefix]
+  One. Two. [parental suffix-prefix-downhill]
+  One. Two. [parental suffix-prefix-uphill]
+  One. Two. [parental prefix-prefix]
+  One. Two. [parental suffix-delimiter]
+  One. Two. [parental delimiter-prefix]
+  One. Two. [parental suffix-suffix]
+  One. Two. [parental delimiter-prefix-prefix]
+  One. Two. [parental suffix-suffix-delimiter]
+  One. Two. [parental suffix-prefix-over-the-hill]
