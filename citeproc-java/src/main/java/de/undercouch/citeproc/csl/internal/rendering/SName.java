@@ -281,23 +281,25 @@ public class SName implements SElement {
     private String render(CSLName name, boolean nameAsSort) {
         // render family name with non-dropping particle
         String family = name.getFamily();
-        if (name.getNonDroppingParticle() != null) {
-            family = name.getNonDroppingParticle().trim() + " " + family;
-        }
+        if (family != null) {
+            if (name.getNonDroppingParticle() != null) {
+                family = name.getNonDroppingParticle().trim() + " " + family;
+            }
 
-        // render short form
-        if (form == FORM_SHORT) {
-            return family;
-        }
+            // render short form
+            if (form == FORM_SHORT) {
+                return family;
+            }
 
-        // prepend dropping particle for long form
-        if (name.getDroppingParticle() != null) {
-            family = name.getDroppingParticle().trim() + " " + family;
-        }
+            // prepend dropping particle for long form
+            if (name.getDroppingParticle() != null) {
+                family = name.getDroppingParticle().trim() + " " + family;
+            }
 
-        // append suffix for long form
-        if (name.getSuffix() != null) {
-            family = StringUtils.stripEnd(family, null) + " " + name.getSuffix().trim();
+            // append suffix for long form
+            if (name.getSuffix() != null) {
+                family = StringUtils.stripEnd(family, null) + " " + name.getSuffix().trim();
+            }
         }
 
         // render long form
@@ -305,35 +307,53 @@ public class SName implements SElement {
 
         String given = name.getGiven();
         StringBuilder givenBuffer = new StringBuilder();
-        if (initializeWith != null) {
-            // produce initials for each given name and append
-            // 'initializeWith' to each of them
-            boolean found = true;
-            boolean hyphen = false;
-            for (int i = 0; i < given.length(); ++i) {
-                char c = given.charAt(i);
-                if (c == '-') {
-                    found = true;
-                    hyphen = true;
-                } else if (Character.isWhitespace(c) || c == '.') {
-                    found = true;
-                } else if (found) {
-                    if (givenBuffer.length() > 0) {
-                        givenBuffer.append(hyphen ? '-' : ' ');
+        if (given != null) {
+            if (initializeWith != null) {
+                // produce initials for each given name and append
+                // 'initializeWith' to each of them
+                boolean found = true;
+                boolean hyphen = false;
+                for (int i = 0; i < given.length(); ++i) {
+                    char c = given.charAt(i);
+                    if (c == '-') {
+                        found = true;
+                        hyphen = true;
+                    } else if (Character.isWhitespace(c) || c == '.') {
+                        found = true;
+                    } else if (found) {
+                        if (givenBuffer.length() > 0) {
+                            givenBuffer.append(hyphen ? '-' : ' ');
+                        }
+                        givenBuffer.append(c).append(initializeWith);
+                        found = false;
+                        hyphen = false;
                     }
-                    givenBuffer.append(c).append(initializeWith);
-                    found = false;
-                    hyphen = false;
                 }
+            } else {
+                givenBuffer.append(given);
             }
-        } else {
-            givenBuffer.append(given);
         }
 
         if (nameAsSort) {
-            result.append(family).append(sortSeparator).append(givenBuffer);
+            if (family != null) {
+                result.append(family);
+            }
+            if (family != null && given != null) {
+                result.append(sortSeparator);
+            }
+            if (given != null) {
+                result.append(givenBuffer);
+            }
         } else {
-            result.append(givenBuffer).append(" ").append(family);
+            if (given != null) {
+                result.append(givenBuffer);
+            }
+            if (given != null && family != null) {
+                result.append(" ");
+            }
+            if (family != null) {
+                result.append(family);
+            }
         }
 
         return result.toString();

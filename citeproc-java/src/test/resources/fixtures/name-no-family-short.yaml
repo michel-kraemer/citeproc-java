@@ -1,0 +1,32 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <locale xml:lang="en">
+      <terms>
+        <term name="and">AND</term>
+      </terms>
+    </locale>
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " form="short"/>
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: My
+      - given: Another
+        non-dropping-particle: van
+    title: My title
+
+result: |
+  M., A. My title
+
+resultLegacy: |
+  van. My title
