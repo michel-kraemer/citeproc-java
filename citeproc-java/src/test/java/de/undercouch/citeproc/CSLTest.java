@@ -531,6 +531,69 @@ public class CSLTest {
     }
 
     /**
+     * Tests if citation numbers are correctly updated
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    @Parameters({"false", "true"})
+    public void updateCitationNumber(boolean experimentalMode) throws Exception {
+        String style = "<style xmlns=\"http://purl.org/net/xbiblio/csl\" version=\"1.0\">\n" +
+                "    <citation>\n" +
+                "      <layout>\n" +
+                "        <text variable=\"citation-number\" prefix=\"[\" suffix=\"]\"/>\n" +
+                "      </layout>\n" +
+                "    </citation>\n" +
+                "    <bibliography>\n" +
+                "      <sort>\n" +
+                "        <key variable=\"title\" sort=\"descending\"/>\n" +
+                "      </sort>\n" +
+                "      <layout>\n" +
+                "        <text variable=\"citation-number\" prefix=\"[\" suffix=\"] \"/>\n" +
+                "        <text variable=\"title\"/>\n" +
+                "      </layout>\n" +
+                "    </bibliography>\n" +
+                "  </style>";
+
+        try (CSL citeproc = new CSL(new ListItemDataProvider(items), style,
+                experimentalMode)) {
+            citeproc.setOutputFormat("text");
+
+            List<Citation> updates = citeproc.makeCitation(items[0].getId());
+            assertEquals(1, updates.size());
+            assertEquals(0, updates.get(0).getIndex());
+            assertEquals("[1]", updates.get(0).getText());
+
+            updates = citeproc.makeCitation(items[3].getId());
+            assertEquals(2, updates.size());
+            assertEquals(0, updates.get(0).getIndex());
+            assertEquals("[2]", updates.get(0).getText());
+            assertEquals(1, updates.get(1).getIndex());
+            assertEquals("[1]", updates.get(1).getText());
+
+            Bibliography b = citeproc.makeBibliography();
+            assertEquals(2, b.getEntries().length);
+            assertEquals("[1] UNIX Time-Sharing System: UNIX on a Microprocessor\n",
+                    b.getEntries()[0]);
+            assertEquals("[2] The Programming Language B\n",
+                    b.getEntries()[1]);
+
+            updates = citeproc.makeCitation(items[1].getId());
+            assertEquals(2, updates.size());
+            assertEquals(0, updates.get(0).getIndex());
+            assertEquals("[3]", updates.get(0).getText());
+            assertEquals(2, updates.get(1).getIndex());
+            assertEquals("[2]", updates.get(1).getText());
+
+            b = citeproc.makeBibliography();
+            assertEquals(3, b.getEntries().length);
+            assertEquals("[1] UNIX Time-Sharing System: UNIX on a Microprocessor\n",
+                    b.getEntries()[0]);
+            assertEquals("[2] The UNIX time-sharing system\n", b.getEntries()[1]);
+            assertEquals("[3] The Programming Language B\n", b.getEntries()[2]);
+        }
+    }
+
+    /**
      * Checks if the supported output formats are calculated correctly
      * @throws Exception if something goes wrong
      */

@@ -22,6 +22,7 @@ import de.undercouch.citeproc.output.SecondFieldAlign;
 import de.undercouch.citeproc.script.ScriptRunner;
 import de.undercouch.citeproc.script.ScriptRunnerException;
 import de.undercouch.citeproc.script.ScriptRunnerFactory;
+import org.apache.commons.lang3.tuple.Pair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -55,7 +56,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -204,6 +204,11 @@ public class CSL implements Closeable {
     private final Map<String, CSLItemData> registeredItems = new LinkedHashMap<>();
 
     /**
+     * Contains the same items as {@link #registeredItems} but sorted
+     */
+    private final List<CSLItemData> sortedItems = new ArrayList<>();
+
+    /**
      * {@code true} if the citation items should not be sorted
      */
     private boolean unsorted = false;
@@ -211,7 +216,7 @@ public class CSL implements Closeable {
     /**
      * A list of generated citations sorted by their index
      */
-    private final List<Citation> generatedCitations = new ArrayList<>();
+    private final List<Pair<CSLCitation, Citation>> generatedCitations = new ArrayList<>();
 
     /**
      * Constructs a new citation processor
@@ -810,6 +815,93 @@ public class CSL implements Closeable {
     }
 
     /**
+     * Fetches the item data for the given citation items and adds it to
+     * {@link #registeredItems}. Also, sorts the items according to the sorting
+     * specified in the style's bibliography element and stores the result in
+     * {@link #sortedItems}. If the style does not have a bibliography element
+     * or no sorting is specified, the items will just be appended to
+     * {@link #sortedItems}. In addition, the method updates any items already
+     * stored in {@link #sortedItems} and coming after the generated ones.
+     * Updated items will be returned in the given {@code updatedItems} set
+     * (unless it is {@code null}).
+     * @param ids the IDs of the citation items to register
+     * @param updatedItems an empty set that will be filled with the citation
+     * items the method had to update (may be {@code null})
+     * @param unsorted {@code true} if any sorting specified in the style
+     * should be ignored
+     * @return a list of registered citation item data
+     */
+    private List<CSLItemData> registerItems(String[] ids,
+            Set<CSLItemData> updatedItems, boolean unsorted) {
+        List<CSLItemData> result = new ArrayList<>();
+
+        for (String id : ids) {
+            // check if item has already been registered
+            CSLItemData itemData = registeredItems.get(id);
+            if (itemData != null) {
+                result.add(itemData);
+                continue;
+            }
+
+            // fetch item data
+            itemData = itemDataProvider.retrieveItem(id);
+            if (itemData == null) {
+                throw new IllegalArgumentException("Missing citation " +
+                        "item with ID: " + id);
+            }
+
+            // register item
+            if (unsorted || style.getBibliography() == null ||
+                    style.getBibliography().getSort() == null) {
+                // We don't have to sort. Add item to the end of the list.
+                itemData = new CSLItemDataBuilder(itemData)
+                        .citationNumber(String.valueOf(registeredItems.size() + 1))
+                        .build();
+                sortedItems.add(itemData);
+            } else {
+                // We have to sort. Find insert point.
+                int i = Collections.binarySearch(sortedItems, itemData,
+                        style.getBibliography().getSort().comparator(style, locale));
+                if (i < 0) {
+                    i = -(i + 1);
+                } else {
+                    // binarySearch thinks we found the item in the list but
+                    // this is impossible. It's more likely that the comparator
+                    // returned 0 because no key was given or it did not yield
+                    // sensible results. Just append the item to the list.
+                    i = sortedItems.size();
+                }
+
+                itemData = new CSLItemDataBuilder(itemData)
+                        .citationNumber(String.valueOf(i + 1))
+                        .build();
+                sortedItems.add(i, itemData);
+
+                // update citation IDs of all following items
+                for (int j = i + 1; j < sortedItems.size(); ++j) {
+                    CSLItemData item2 = sortedItems.get(j);
+                    item2 = new CSLItemDataBuilder(item2)
+                            .citationNumber(String.valueOf(j + 1))
+                            .build();
+
+                    sortedItems.set(j, item2);
+                    registeredItems.put(item2.getId(), item2);
+
+                    if (updatedItems != null) {
+                        updatedItems.add(item2);
+                    }
+                }
+            }
+
+            // save registered item data
+            registeredItems.put(itemData.getId(), itemData);
+            result.add(itemData);
+        }
+
+        return result;
+    }
+
+    /**
      * Introduces the given citation IDs to the processor. The processor will
      * call {@link ItemDataProvider#retrieveItem(String)} for each ID to get
      * the respective citation item. The retrieved items will be added to the
@@ -821,16 +913,7 @@ public class CSL implements Closeable {
      */
     public void registerCitationItems(String... ids) {
         if (experimentalMode) {
-            unsorted = false;
-            registeredItems.clear();
-            for (int i = 0; i < ids.length; i++) {
-                String id = ids[i];
-                CSLItemData item = itemDataProvider.retrieveItem(id);
-                CSLItemData itemClone = new CSLItemDataBuilder(item)
-                        .citationNumber(String.valueOf(i + 1))
-                        .build();
-                registeredItems.put(id, itemClone);
-            }
+            registerCitationItems(ids, false);
         } else {
             try {
                 runner.callMethod(engine, "updateItems", new Object[] { ids });
@@ -853,8 +936,10 @@ public class CSL implements Closeable {
      */
     public void registerCitationItems(String[] ids, boolean unsorted) {
         if (experimentalMode) {
-            registerCitationItems(ids);
             this.unsorted = unsorted;
+            registeredItems.clear();
+            sortedItems.clear();
+            registerItems(ids, null, unsorted);
         } else {
             try {
                 runner.callMethod(engine, "updateItems", ids, unsorted);
@@ -871,7 +956,7 @@ public class CSL implements Closeable {
      */
     public Collection<CSLItemData> getRegisteredItems() {
         if (experimentalMode) {
-            return Collections.unmodifiableCollection(registeredItems.values());
+            return Collections.unmodifiableCollection(sortedItems);
         } else {
             List<?> r;
             try {
@@ -927,6 +1012,69 @@ public class CSL implements Closeable {
     }
 
     /**
+     * Render the given citation
+     * @param citation the citation to render
+     * @param updatedItems an empty set that will be filled with citation
+     * items that had to be updated while rendering the given one (may be
+     * {@code null})
+     * @return the rendered string
+     */
+    private String renderCitation(CSLCitation citation, Set<CSLItemData> updatedItems) {
+        // get item IDs
+        int len = citation.getCitationItems().length;
+        String[] itemIds = new String[len];
+        CSLCitationItem[] items = citation.getCitationItems();
+        for (int i = 0; i < len; i++) {
+            CSLCitationItem item = items[i];
+            itemIds[i] = item.getId();
+        }
+
+        // register items
+        List<CSLItemData> registeredItems = registerItems(itemIds,
+                updatedItems, false);
+
+        // prepare items
+        CSLCitationItem[] sortedItems = new CSLCitationItem[len];
+        for (int i = 0; i < len; i++) {
+            CSLCitationItem item = items[i];
+            CSLItemData itemData = registeredItems.get(i);
+
+            // overwrite locator
+            if (item.getLocator() != null) {
+                itemData = new CSLItemDataBuilder(itemData)
+                        .locator(item.getLocator())
+                        .build();
+            }
+
+            sortedItems[i] = new CSLCitationItemBuilder(item)
+                    .itemData(itemData)
+                    .build();
+        }
+
+        // sort array of items
+        boolean unsorted = false;
+        if (citation.getProperties() != null &&
+                citation.getProperties().getUnsorted() != null) {
+            unsorted = citation.getProperties().getUnsorted();
+        }
+        if (!unsorted && style.getCitation().getSort() != null) {
+            Comparator<CSLItemData> itemComparator =
+                    style.getCitation().getSort().comparator(style, locale);
+            Arrays.sort(sortedItems, (a, b) -> itemComparator.compare(
+                    a.getItemData(), b.getItemData()));
+        }
+
+        // render items
+        SCitation sc = style.getCitation();
+        sc.setCitationItems(sortedItems);
+
+        RenderContext ctx = new RenderContext(style, locale, null);
+        sc.render(ctx);
+
+        return outputFormat.formatCitation(ctx);
+    }
+
+    /**
      * Generates citation strings that can be inserted into the text. The
      * method calls {@link ItemDataProvider#retrieveItem(String)} for each item in the
      * given set to request the corresponding citation item data. Additionally,
@@ -949,64 +1097,45 @@ public class CSL implements Closeable {
                         "method will likely be removed in a future release.");
             }
 
-            // retrieve all items
-            int len = citation.getCitationItems().length;
-            CSLCitationItem[] sortedItems = new CSLCitationItem[len];
-            CSLCitationItem[] items = citation.getCitationItems();
-            for (int i = 0; i < len; i++) {
-                CSLCitationItem item = items[i];
+            Set<CSLItemData> updatedItems = new LinkedHashSet<>();
+            String text = renderCitation(citation, updatedItems);
 
-                CSLItemData itemData = registeredItems.get(item.getId());
-                if (itemData == null) {
-                    itemData = itemDataProvider.retrieveItem(item.getId());
-                    if (itemData == null) {
-                        throw new IllegalArgumentException("Missing citation " +
-                                "item with ID: " + item.getId());
+            // re-render updated citations
+            List<Citation> result = new ArrayList<>();
+            if (!updatedItems.isEmpty()) {
+                for (int i = 0; i < generatedCitations.size(); i++) {
+                    Pair<CSLCitation, Citation> gc = generatedCitations.get(i);
+
+                    boolean needsUpdate = false;
+                    for (CSLItemData updatedItemData : updatedItems) {
+                        for (CSLCitationItem item : gc.getLeft().getCitationItems()) {
+                            if (item.getId().equals(updatedItemData.getId())) {
+                                needsUpdate = true;
+                                break;
+                            }
+                        }
                     }
-                    itemData = new CSLItemDataBuilder(itemData)
-                            .citationNumber(String.valueOf(registeredItems.size() + 1))
-                            .build();
-                    registeredItems.put(item.getId(), itemData);
+
+                    if (!needsUpdate) {
+                        continue;
+                    }
+
+                    String ut = renderCitation(gc.getLeft(), null);
+                    if (!ut.equals(gc.getRight().getText())) {
+                        // render result was different
+                        Citation uc = new Citation(i, ut);
+                        generatedCitations.set(i, Pair.of(gc.getLeft(), uc));
+                        result.add(uc);
+                    }
                 }
-
-                // overwrite locator
-                if (item.getLocator() != null) {
-                    itemData = new CSLItemDataBuilder(itemData)
-                            .locator(item.getLocator())
-                            .build();
-                }
-
-                sortedItems[i] = new CSLCitationItemBuilder(item)
-                        .itemData(itemData)
-                        .build();
             }
-
-            // sort array of items
-            boolean unsorted = false;
-            if (citation.getProperties() != null &&
-                    citation.getProperties().getUnsorted() != null) {
-                unsorted = citation.getProperties().getUnsorted();
-            }
-            if (!unsorted && style.getCitation().getSort() != null) {
-                Comparator<CSLItemData> itemComparator =
-                        style.getCitation().getSort().comparator(style, locale);
-                Arrays.sort(sortedItems, (a, b) -> itemComparator.compare(
-                        a.getItemData(), b.getItemData()));
-            }
-
-            // render items
-            SCitation sc = style.getCitation();
-            sc.setCitationItems(sortedItems);
-
-            RenderContext ctx = new RenderContext(style, locale, null);
-            sc.render(ctx);
 
             // generate citation
-            String text = outputFormat.formatCitation(ctx);
-            Citation result = new Citation(generatedCitations.size(), text);
-            generatedCitations.add(result);
+            Citation generatedCitation = new Citation(generatedCitations.size(), text);
+            generatedCitations.add(Pair.of(citation, generatedCitation));
+            result.add(generatedCitation);
 
-            return Collections.singletonList(result);
+            return result;
         } else {
             return makeCitationLegacy(citation, citationsPre, citationsPost);
         }
@@ -1159,41 +1288,21 @@ public class CSL implements Closeable {
                     "instead.");
         }
 
-        Collection<CSLItemData> filteredItems;
-        if (filter != null) {
-            filteredItems = registeredItems.values().stream()
-                    .filter(filter)
-                    .collect(Collectors.toList());
-        } else {
-            filteredItems = registeredItems.values();
-        }
-
-        String[] entries = new String[filteredItems.size()];
-
-        // make an array of all items
-        CSLItemData[] sortedItems = new CSLItemData[filteredItems.size()];
         int i = 0;
-        for (CSLItemData item : filteredItems) {
-            sortedItems[i++] = item;
-        }
-
-        // sort array of items
-        if (!unsorted && style.getBibliography().getSort() != null) {
-            Arrays.sort(sortedItems, style.getBibliography().getSort()
-                    .comparator(style, locale));
-        }
-
-        // render items
-        for (int j = 0; j < sortedItems.length; ++j) {
-            CSLItemData item = sortedItems[j];
+        List<String> entries = new ArrayList<>();
+        for (CSLItemData item : sortedItems) {
+            if (filter != null && !filter.test(item)) {
+                continue;
+            }
 
             RenderContext ctx = new RenderContext(style, locale, item);
             style.getBibliography().render(ctx);
 
-            entries[j] = outputFormat.formatBibliographyEntry(ctx);
+            entries.add(outputFormat.formatBibliographyEntry(ctx));
         }
 
-        return outputFormat.makeBibliography(entries, style.getBibliography());
+        return outputFormat.makeBibliography(entries.toArray(new String[0]),
+                style.getBibliography());
     }
 
     private Bibliography makeBibliographyLegacy(SelectionMode mode,
@@ -1354,6 +1463,7 @@ public class CSL implements Closeable {
             outputFormat = new HtmlFormat();
             convertLinks = false;
             registeredItems.clear();
+            sortedItems.clear();
             unsorted = false;
             generatedCitations.clear();
         } else {
