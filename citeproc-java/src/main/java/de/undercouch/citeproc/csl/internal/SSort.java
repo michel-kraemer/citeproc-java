@@ -39,14 +39,64 @@ public class SSort {
      * @param locale the current locale
      * @return the comparator
      */
-    public Comparator<CSLItemData> comparator(SStyle style, LLocale locale) {
-        Collator collator = Collator.getInstance(locale.getLang());
-        return (a, b) -> {
+    public SortComparator comparator(SStyle style, LLocale locale) {
+        return new SortComparator(style, locale);
+    }
+
+    /**
+     * A sort comparator returned by {@link #comparator(SStyle, LLocale)}
+     */
+    public class SortComparator implements Comparator<CSLItemData> {
+        private final SStyle style;
+        private final LLocale locale;
+        private final Collator collator;
+        private int citationNumberDirection = 1;
+
+        /**
+         * Create a new sort comparator
+         * @param style the current citation style
+         * @param locale the current locale
+         */
+        public SortComparator(SStyle style, LLocale locale) {
+            this.style = style;
+            this.locale = locale;
+            collator = Collator.getInstance(locale.getLang());
+        }
+
+        /**
+         * Get the sort direction of the citation-number variable
+         * @return the sort direction ({@code 1} for ascending and {@code -1}
+         * for descending)
+         */
+        public int getCitationNumberDirection() {
+            return citationNumberDirection;
+        }
+
+        @Override
+        public int compare(CSLItemData a, CSLItemData b) {
+            Integer result = null;
+
             for (SKey key : keys) {
                 RenderContext ctxa = new RenderContext(style, locale, a);
-                RenderContext ctxb = new RenderContext(style, locale, b);
-
+                CollectingVariableListener vl = new CollectingVariableListener();
+                ctxa.addVariableListener(vl);
                 key.render(ctxa);
+                ctxa.removeVariableListener(vl);
+                if (vl.getCalled().contains("citation-number")) {
+                    citationNumberDirection = key.getSort();
+                    if (result != null) {
+                        // always render all keys until we have a result and
+                        // found a key with the citation-number
+                        break;
+                    }
+                }
+
+                if (result != null) {
+                    // We already have a result. No need to render the rest.
+                    continue;
+                }
+
+                RenderContext ctxb = new RenderContext(style, locale, b);
                 key.render(ctxb);
 
                 String sa = ctxa.getResult().toString();
@@ -54,17 +104,18 @@ public class SSort {
 
                 // empty elements should be put at the end of the list
                 if (sa.isEmpty() && !sb.isEmpty()) {
-                    return 1;
+                    result = 1;
                 } else if (!sa.isEmpty() && sb.isEmpty()) {
-                    return -1;
-                }
-
-                int c = collator.compare(sa, sb);
-                if (c != 0) {
-                    return c * key.getSort();
+                    result = -1;
+                } else {
+                    int c = collator.compare(sa, sb);
+                    if (c != 0) {
+                        result = c * key.getSort();
+                    }
                 }
             }
-            return 0;
-        };
+
+            return result != null ? result : 0;
+        }
     }
 }

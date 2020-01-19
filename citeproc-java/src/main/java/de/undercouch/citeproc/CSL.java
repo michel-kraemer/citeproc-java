@@ -8,6 +8,7 @@ import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CitationIDIndexPair;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SCitation;
+import de.undercouch.citeproc.csl.internal.SSort;
 import de.undercouch.citeproc.csl.internal.SStyle;
 import de.undercouch.citeproc.csl.internal.format.Format;
 import de.undercouch.citeproc.csl.internal.format.HtmlFormat;
@@ -56,6 +57,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -207,11 +209,6 @@ public class CSL implements Closeable {
      * Contains the same items as {@link #registeredItems} but sorted
      */
     private final List<CSLItemData> sortedItems = new ArrayList<>();
-
-    /**
-     * {@code true} if the citation items should not be sorted
-     */
-    private boolean unsorted = false;
 
     /**
      * A list of generated citations sorted by their index
@@ -834,6 +831,7 @@ public class CSL implements Closeable {
     private List<CSLItemData> registerItems(String[] ids,
             Set<CSLItemData> updatedItems, boolean unsorted) {
         List<CSLItemData> result = new ArrayList<>();
+        SSort.SortComparator comparator = null;
 
         for (String id : ids) {
             // check if item has already been registered
@@ -860,8 +858,11 @@ public class CSL implements Closeable {
                 sortedItems.add(itemData);
             } else {
                 // We have to sort. Find insert point.
-                int i = Collections.binarySearch(sortedItems, itemData,
-                        style.getBibliography().getSort().comparator(style, locale));
+                if (comparator == null) {
+                    comparator = style.getBibliography().getSort()
+                            .comparator(style, locale);
+                }
+                int i = Collections.binarySearch(sortedItems, itemData, comparator);
                 if (i < 0) {
                     i = -(i + 1);
                 } else {
@@ -872,25 +873,58 @@ public class CSL implements Closeable {
                     i = sortedItems.size();
                 }
 
+                // determine citation number depending on sort direction
+                int citationNumber;
+                int citationNumberDirection = comparator.getCitationNumberDirection();
+                if (citationNumberDirection > 0) {
+                    citationNumber = i + 1;
+                } else {
+                    citationNumber = sortedItems.size() + 1 - i;
+                }
+
+                // create new item data with citation data and add it to
+                // the list of sorted items
                 itemData = new CSLItemDataBuilder(itemData)
-                        .citationNumber(String.valueOf(i + 1))
+                        .citationNumber(String.valueOf(citationNumber))
                         .build();
                 sortedItems.add(i, itemData);
 
-                // update citation IDs of all following items
-                for (int j = i + 1; j < sortedItems.size(); ++j) {
+                // determine if we need to update the following items or
+                // the preceding ones (depending on the sort direction)
+                IntStream idStream;
+                if (citationNumberDirection > 0) {
+                    idStream = IntStream.range(i + 1, sortedItems.size());
+                } else {
+                    int e = i;
+                    idStream = IntStream.range(0, e).map(n -> e - 1 - n);
+                }
+
+                // update the other items if necessary
+                idStream.forEach(j -> {
                     CSLItemData item2 = sortedItems.get(j);
+
+                    // determine new citation number
+                    int citationNumber2;
+                    if (citationNumberDirection > 0) {
+                        citationNumber2 = j + 1;
+                    } else {
+                        citationNumber2 = sortedItems.size() - j;
+                    }
+
+                    // create new item data with new citation number
                     item2 = new CSLItemDataBuilder(item2)
-                            .citationNumber(String.valueOf(j + 1))
+                            .citationNumber(String.valueOf(citationNumber2))
                             .build();
 
+                    // overwrite existing item data
                     sortedItems.set(j, item2);
                     registeredItems.put(item2.getId(), item2);
 
+                    // store updated item
                     if (updatedItems != null) {
                         updatedItems.add(item2);
                     }
-                }
+                });
             }
 
             // save registered item data
@@ -936,7 +970,6 @@ public class CSL implements Closeable {
      */
     public void registerCitationItems(String[] ids, boolean unsorted) {
         if (experimentalMode) {
-            this.unsorted = unsorted;
             registeredItems.clear();
             sortedItems.clear();
             registerItems(ids, null, unsorted);
@@ -1288,7 +1321,6 @@ public class CSL implements Closeable {
                     "instead.");
         }
 
-        int i = 0;
         List<String> entries = new ArrayList<>();
         for (CSLItemData item : sortedItems) {
             if (filter != null && !filter.test(item)) {
@@ -1464,7 +1496,6 @@ public class CSL implements Closeable {
             convertLinks = false;
             registeredItems.clear();
             sortedItems.clear();
-            unsorted = false;
             generatedCitations.clear();
         } else {
             try {
