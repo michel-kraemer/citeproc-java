@@ -47,13 +47,23 @@ Docear is released under the GPLv2 but its code
 in projects licensed under Apache License 2.0. The mapping is released here
 under the Apache License 2.0 by permission of Joeran Beel, Docear.
 
-### Smart quotes
+### Smart Quotes
 
 The algorithm that produces typographically correct quotation marks and
 apostrophes is based on [smartquotes.js](https://smartquotes.js.org/) written
 by Kelly Martin and released under the MIT license. The code has been
 translated to Java and improved to support more edge cases as well as
 multiple languages.
+
+### Alphanum Algorithm
+
+citeproc-java is able to sort citations in a natural, language-sensitive way.
+The implementation of this behaviour is loosely based on the Alphanum algorithm
+by [Dave Koelle](http://www.davekoelle.com/alphanum.html) and the
+[Java implementation](http://www.davekoelle.com/files/AlphanumComparator.java)
+released under the MIT license. However, it has been extended to use a
+`java.text.Collator` for locale-sensitive comparison, and it is also able to
+compare arbitrarily large numbers.
 
 License
 -------

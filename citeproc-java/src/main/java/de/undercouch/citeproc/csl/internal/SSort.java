@@ -2,10 +2,10 @@ package de.undercouch.citeproc.csl.internal;
 
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
+import de.undercouch.citeproc.helper.AlphanumComparator;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -49,7 +49,7 @@ public class SSort {
     public class SortComparator implements Comparator<CSLItemData> {
         private final SStyle style;
         private final LLocale locale;
-        private final Collator collator;
+        private final AlphanumComparator comparator;
         private int citationNumberDirection = 1;
 
         /**
@@ -60,7 +60,7 @@ public class SSort {
         public SortComparator(SStyle style, LLocale locale) {
             this.style = style;
             this.locale = locale;
-            collator = Collator.getInstance(locale.getLang());
+            comparator = new AlphanumComparator(locale.getLang());
         }
 
         /**
@@ -108,7 +108,7 @@ public class SSort {
                 } else if (!sa.isEmpty() && sb.isEmpty()) {
                     result = -1;
                 } else {
-                    int c = collator.compare(sa, sb);
+                    int c = comparator.compare(sa, sb);
                     if (c != 0) {
                         result = c * key.getSort();
                     }
