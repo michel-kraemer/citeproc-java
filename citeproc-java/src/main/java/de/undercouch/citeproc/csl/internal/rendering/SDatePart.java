@@ -39,6 +39,18 @@ public class SDatePart implements SElement {
         stripPeriods = new StripPeriods(node);
     }
 
+    /**
+     * Construct a date-part element from a name and a form
+     * @param name the name
+     * @param form the form
+     */
+    public SDatePart(String name, String form) {
+        this.name = name;
+        this.form = form;
+        affixes = new Affixes();
+        stripPeriods = new StripPeriods();
+    }
+
     @Override
     public void render(RenderContext ctx) {
         affixes.wrap(stripPeriods.wrap(this::renderInternal)).accept(ctx);

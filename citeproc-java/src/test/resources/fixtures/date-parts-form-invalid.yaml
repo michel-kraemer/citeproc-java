@@ -1,0 +1,29 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " />
+        </names>
+        <text variable="title"/>
+        <date variable="issued" form="foobar" date-parts="year-month-day" prefix=" (" suffix=")">
+          <date-part name="year" />
+        </date>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+    issued:
+      date-parts:
+        - [2020, 2, 28]
+
+result: |
+  G. Name. My title (2020)

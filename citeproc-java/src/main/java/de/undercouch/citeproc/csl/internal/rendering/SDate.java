@@ -4,6 +4,7 @@ import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.locale.LDate;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.w3c.dom.Node;
@@ -19,6 +20,8 @@ import java.util.List;
 public class SDate implements SRenderingElement {
     private final static String[] NAMES = new String[] { "year", "month", "day" };
     private final String variable;
+    private final String form;
+    private final String datePartsAttr;
     private final List<SDatePart> dateParts = new ArrayList<>();
     private final Affixes affixes;
 
@@ -30,6 +33,25 @@ public class SDate implements SRenderingElement {
         variable = NodeHelper.getAttrValue(node, "variable");
         if (variable == null || variable.isEmpty()) {
             throw new IllegalStateException("Date element does not select a variable");
+        }
+
+        String form = NodeHelper.getAttrValue(node, "form");
+        if (!"text".equals(form) && !"numeric".equals(form)) {
+            form = null;
+        }
+        this.form = form;
+
+        if (this.form != null) {
+            String datePartsAttr = NodeHelper.getAttrValue(node, "date-parts");
+            if ("year-month-day".equals(datePartsAttr) ||
+                    "year-month".equals(datePartsAttr) ||
+                    "year".equals(datePartsAttr)) {
+                this.datePartsAttr = datePartsAttr;
+            } else {
+                this.datePartsAttr = "year-month-day";
+            }
+        } else {
+            this.datePartsAttr = null;
         }
 
         NodeList children = node.getChildNodes();
@@ -55,7 +77,7 @@ public class SDate implements SRenderingElement {
             return;
         }
 
-        if (date.getDateParts().length > 0) {
+        if (date.getDateParts() != null && date.getDateParts().length > 0) {
             int[] first = date.getDateParts()[0];
             int[] last = date.getDateParts()[date.getDateParts().length - 1];
             if (first.length != last.length) {
@@ -72,6 +94,28 @@ public class SDate implements SRenderingElement {
             RenderContext left = new RenderContext(ctx);
             RenderContext right = new RenderContext(ctx);
             RenderContext result = new RenderContext(ctx);
+
+            List<SDatePart> dateParts;
+            if (form != null && ctx.getLocale().getDateFormats() != null) {
+                dateParts = new ArrayList<>();
+                LDate d = ctx.getLocale().getDateFormats().get(form);
+                if (d != null) {
+                    for (SDatePart datePart : d.getDateParts()) {
+                        if ("year".equals(datePart.getName())) {
+                            dateParts.add(datePart);
+                        } else if ("month".equals(datePart.getName()) &&
+                                ("year-month-day".equals(datePartsAttr) ||
+                                        "year-month".equals(datePartsAttr))) {
+                            dateParts.add(datePart);
+                        } else if ("day".equals(datePart.getName()) &&
+                                "year-month-day".equals(datePartsAttr)) {
+                            dateParts.add(datePart);
+                        }
+                    }
+                }
+            } else {
+                dateParts = this.dateParts;
+            }
 
             for (SDatePart dp : dateParts) {
                 // determine which part to render
@@ -117,6 +161,8 @@ public class SDate implements SRenderingElement {
 
             // emit the final result
             ctx.emit(result.getResult());
+        } else if (date.getRaw() != null) {
+            ctx.emit(date.getRaw());
         }
     }
 

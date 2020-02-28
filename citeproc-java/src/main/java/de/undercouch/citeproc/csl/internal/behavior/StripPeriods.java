@@ -16,6 +16,13 @@ public class StripPeriods implements Behavior {
     private final boolean stripPeriods;
 
     /**
+     * Default constructor that does not strip periods
+     */
+    public StripPeriods() {
+        stripPeriods = false;
+    }
+
+    /**
      * Parses an XML node and determines if periods should be removed or not
      * @param node the XML node
      */

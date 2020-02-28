@@ -1,0 +1,30 @@
+mode: citation
+
+style: |
+  <style 
+        xmlns="http://purl.org/net/xbiblio/csl"
+        class="note"
+        version="1.0">
+    <info>
+      <id />
+      <title />
+      <updated>2009-08-10T04:49:00+09:00</updated>
+    </info>
+    <citation>
+      <layout>
+        <group delimiter=": ">
+          <text value="date"/>
+          <date variable="issued" form="text" date-parts="year"/>
+        </group>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: ITEM-1
+    issued:
+      raw: Bogus Date
+    title: Book A
+    type: book
+
+result: "date: Bogus Date"

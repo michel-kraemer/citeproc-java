@@ -15,6 +15,7 @@ import java.util.Map;
  */
 public class LLocale {
     private final Locale lang;
+    private final Map<String, LDate> dateFormats;
     private final Map<LTerm.Form, Map<String, LTerm>> terms;
     private final LStyleOptions styleOptions;
 
@@ -38,31 +39,39 @@ public class LLocale {
             lang = Locale.forLanguageTag(strLang);
         }
 
+        dateFormats = new HashMap<>();
         terms = new HashMap<>();
-        Node termsNode = NodeHelper.findDirectChild(localeRoot, "terms");
-        if (termsNode != null) {
-            NodeList termsNodeChildren = termsNode.getChildNodes();
-            for (int j = 0; j < termsNodeChildren.getLength(); ++j) {
-                Node c = termsNodeChildren.item(j);
-                if ("term".equals(c.getNodeName())) {
-                    LTerm t = new LTerm(c);
-                    Map<String, LTerm> m = terms.computeIfAbsent(t.getForm(),
-                            k -> new HashMap<>());
-                    m.put(t.getName(), t);
+        LStyleOptions styleOptions = null;
+
+        NodeList children = localeRoot.getChildNodes();
+        for (int i = 0; i < children.getLength(); ++i) {
+            Node c = children.item(i);
+            if ("terms".equals(c.getNodeName())) {
+                NodeList termsNodeChildren = c.getChildNodes();
+                for (int j = 0; j < termsNodeChildren.getLength(); ++j) {
+                    Node tc = termsNodeChildren.item(j);
+                    if ("term".equals(tc.getNodeName())) {
+                        LTerm t = new LTerm(tc);
+                        Map<String, LTerm> m = terms.computeIfAbsent(t.getForm(),
+                                k -> new HashMap<>());
+                        m.put(t.getName(), t);
+                    }
                 }
+            } else if ("style-options".equals(c.getNodeName())) {
+                styleOptions = new LStyleOptions(c);
+            } else if ("date".equals(c.getNodeName())) {
+                LDate d = new LDate(c);
+                dateFormats.put(d.getForm(), d);
             }
         }
 
-        Node styleOptionsNode = NodeHelper.findDirectChild(localeRoot, "style-options");
-        if (styleOptionsNode != null) {
-            styleOptions = new LStyleOptions(styleOptionsNode);
-        } else {
-            styleOptions = null;
-        }
+        this.styleOptions = styleOptions;
     }
 
-    private LLocale(Locale lang, Map<LTerm.Form, Map<String, LTerm>> terms, LStyleOptions styleOptions) {
+    private LLocale(Locale lang, Map<String, LDate> dateFormats,
+            Map<LTerm.Form, Map<String, LTerm>> terms, LStyleOptions styleOptions) {
         this.lang = lang;
+        this.dateFormats = dateFormats;
         this.terms = terms;
         this.styleOptions = styleOptions;
     }
@@ -70,7 +79,7 @@ public class LLocale {
     /**
      * Merge this localization data with another one and return a new object
      * where the information defined in the other one overrides the information
-     * imn this one.
+     * in this one.
      * @param other the other localization data
      * @return a new localization data object
      */
@@ -78,6 +87,11 @@ public class LLocale {
         LStyleOptions styleOptions = this.styleOptions;
         if (other.styleOptions != null) {
             styleOptions = other.styleOptions;
+        }
+
+        Map<String, LDate> dateFormats = new HashMap<>(this.dateFormats);
+        if (other.dateFormats != null) {
+            dateFormats.putAll(other.dateFormats);
         }
 
         Map<LTerm.Form, Map<String, LTerm>> terms = new HashMap<>(this.terms);
@@ -90,7 +104,7 @@ public class LLocale {
             }
         }
 
-        return new LLocale(lang, terms, styleOptions);
+        return new LLocale(lang, dateFormats, terms, styleOptions);
     }
 
     /**
@@ -99,6 +113,14 @@ public class LLocale {
      */
     public Locale getLang() {
         return lang;
+    }
+
+    /**
+     * Get the date formats defined in the localization data
+     * @return the date formats
+     */
+    public Map<String, LDate> getDateFormats() {
+        return dateFormats;
     }
 
     /**
