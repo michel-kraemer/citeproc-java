@@ -1,0 +1,18 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography second-field-align="flush">
+      <layout>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    title: My title
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+    </div>

@@ -31,7 +31,7 @@ public class HtmlFormat extends BaseFormat {
         String result;
 
         SecondFieldAlign sfa = ctx.getStyle().getBibliography().getSecondFieldAlign();
-        if (sfa != SecondFieldAlign.FALSE) {
+        if (sfa != SecondFieldAlign.FALSE && !buffer.getTokens().isEmpty()) {
             // find tokens that are part of the first field
             int i = 0;
             while (buffer.getTokens().get(i).isFirstField()) {

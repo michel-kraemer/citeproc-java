@@ -1330,7 +1330,9 @@ public class CSL implements Closeable {
             RenderContext ctx = new RenderContext(style, locale, item);
             style.getBibliography().render(ctx);
 
-            entries.add(outputFormat.formatBibliographyEntry(ctx));
+            if (!ctx.getResult().isEmpty()) {
+                entries.add(outputFormat.formatBibliographyEntry(ctx));
+            }
         }
 
         return outputFormat.makeBibliography(entries.toArray(new String[0]),
