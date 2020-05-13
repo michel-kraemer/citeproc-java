@@ -1,0 +1,31 @@
+mode: bibliography
+
+style: |
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <group delimiter=", " font-style="italic">
+          <text variable="title"/>
+          <text variable="publisher"/>
+        </group>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    title: My title
+    publisher: My Publisher
+    type: book
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><span style="font-style: italic">My title, My Publisher</span></div>
+    </div>
+
+resultLegacy:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><i>My title, My Publisher</i></div>
+    </div>

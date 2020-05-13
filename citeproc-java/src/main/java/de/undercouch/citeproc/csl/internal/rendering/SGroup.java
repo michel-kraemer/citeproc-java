@@ -5,6 +5,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SRenderingElementContainer;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
@@ -14,6 +15,7 @@ import org.w3c.dom.Node;
  */
 public class SGroup extends SRenderingElementContainer implements SRenderingElement {
     private final Affixes affixes;
+    private final int formattingAttributes;
     private final String delimiter;
 
     /**
@@ -23,6 +25,7 @@ public class SGroup extends SRenderingElementContainer implements SRenderingElem
     public SGroup(Node node) {
         super(node);
         affixes = new Affixes(node);
+        formattingAttributes = FormattingAttributes.of(node);
         delimiter = NodeHelper.getAttrValue(node, "delimiter");
     }
 
@@ -53,7 +56,7 @@ public class SGroup extends SRenderingElementContainer implements SRenderingElem
         boolean allEmpty = vl.getCalled() > 0 && vl.getCalled() == vl.getEmpty();
 
         if (!allEmpty && !child.getResult().isEmpty()) {
-            ctx.emit(child.getResult());
+            ctx.emit(child.getResult(), formattingAttributes);
         }
     }
 }
