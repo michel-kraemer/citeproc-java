@@ -65,6 +65,14 @@ released under the MIT license. However, it has been extended to use a
 `java.text.Collator` for locale-sensitive comparison, and it is also able to
 compare arbitrarily large numbers.
 
+### Title case algorithm
+
+The implementation of the algorithm that converts strings to title case is
+based on the JavaScript library [to-title-case](https://github.com/gouch/to-title-case)
+by David Gouch released under the MIT license. The code has been translated to
+Java and was slightly modified to produce strings that adhere to the CSL
+specification.
+
 License
 -------
 

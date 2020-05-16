@@ -1,0 +1,32 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <text variable="title" text-case="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item2
+    title: "This is a title with an UPPERCASE word and it has a lot of stop words in it from the specification"
+  - id: item3
+    title: "MyPublisher IN A CITY name"
+  - id: item4
+    title: "ON UPPERCASE ON YET YET"
+  - id: item5
+    title: "on should not be capitalized on or from to yet yet"
+  - id: item6
+    title: "All stop words: a an and as test at but by down for test from in into nor of on test onto or over so the till to up via with yet end"
+  - id: item7
+    title: "All stop words without colon a an and as test at but by down for test from in into nor of on test onto or over so the till to up via with yet end"
+
+result: |
+  This Is a Title with an UPPERCASE Word and It Has a Lot of Stop Words in It from the Specification
+  MyPublisher IN A CITY Name
+  ON UPPERCASE ON YET YET
+  On Should Not Be Capitalized on or from to yet Yet
+  All Stop Words: A an and as Test at but by down for Test from in into nor of on Test onto or over so the till to up via with yet End
+  All Stop Words without Colon a an and as Test at but by down for Test from in into nor of on Test onto or over so the till to up via with yet End

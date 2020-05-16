@@ -76,4 +76,115 @@ public class StringHelperTest {
         assertEquals(0, StringHelper.overlap(null, "a"));
         assertEquals(0, StringHelper.overlap(null, null));
     }
+
+    /**
+     * <p>Test {@link StringHelper#toTitleCase(String)}</p>
+     *
+     * <p>The test cases here have been copied from the JavaScript library
+     * {@code to-title-case}, Copyright 2008–2018 David Gouch, released under
+     * the MIT license. (<a href="https://github.com/gouch/to-title-case">https://github.com/gouch/to-title-case</a>).</p>
+     */
+    @Test
+    public void toTitleCase() {
+        // general
+        assertEquals("One Two", StringHelper.toTitleCase("one two"));
+        assertEquals("One Two Three", StringHelper.toTitleCase("one two three"));
+        assertEquals("Start a an and as at but by down for from in into nor of on onto or over so the till to up via with yet End",
+                StringHelper.toTitleCase("Start a an and as at but by down for from in into nor of on onto or over so the till to up via with yet end"));
+        assertEquals("A Small Word Starts", StringHelper.toTitleCase("a small word starts"));
+        assertEquals("Small Word Ends On", StringHelper.toTitleCase("small word ends on"));
+        assertEquals("Questions?", StringHelper.toTitleCase("questions?"));
+        assertEquals("Two Questions?", StringHelper.toTitleCase("Two questions?"));
+        assertEquals("One Sentence. Two Sentences.",
+                StringHelper.toTitleCase("one sentence. two sentences."));
+        assertEquals("We Keep NASA Capitalized",
+                StringHelper.toTitleCase("we keep NASA capitalized"));
+        assertEquals("Pass camelCase Through",
+                StringHelper.toTitleCase("pass camelCase through"));
+
+        // hyphens
+        assertEquals("This Sub-Phrase Is Nice",
+                StringHelper.toTitleCase("this sub-phrase is nice"));
+        assertEquals("Follow Step-by-Step Instructions",
+                StringHelper.toTitleCase("follow step-by-step instructions"));
+        assertEquals("Easy as One-Two-Three End",
+                StringHelper.toTitleCase("easy as one-two-three end"));
+        assertEquals("Start On-Demand End",
+                StringHelper.toTitleCase("start on-demand end"));
+        assertEquals("Start In-or-Out End",
+                StringHelper.toTitleCase("start in-or-out end"));
+        assertEquals("Start E-Commerce End",
+                StringHelper.toTitleCase("start e-commerce end"));
+        assertEquals("Start E-Mail End",
+                StringHelper.toTitleCase("start e-mail end"));
+
+        // punctuation
+        assertEquals("Your Hair[cut] Looks (Nice)",
+                StringHelper.toTitleCase("your hair[cut] looks (nice)"));
+        assertEquals("Keep That Colo(u)r",
+                StringHelper.toTitleCase("keep that colo(u)r"));
+        assertEquals("Leave Q&A Unscathed",
+                StringHelper.toTitleCase("leave Q&A unscathed"));
+        assertEquals("Pi\u00F1a Colada While You Listen to \u00C6nima",
+                StringHelper.toTitleCase("pi\u00F1a colada while you listen to \u00E6nima"));
+        assertEquals("Start Title \u2013 End Title",
+                StringHelper.toTitleCase("start title \u2013 end title"));
+        assertEquals("Start Title\u2013End Title",
+                StringHelper.toTitleCase("start title\u2013end title"));
+        assertEquals("Start Title \u2014 End Title",
+                StringHelper.toTitleCase("start title \u2014 end title"));
+        assertEquals("Start Title\u2014End Title",
+                StringHelper.toTitleCase("start title\u2014end title"));
+        assertEquals("Start Title - End Title",
+                StringHelper.toTitleCase("start title - end title"));
+
+        // quotes
+        assertEquals("Don't Break", StringHelper.toTitleCase("don't break"));
+        assertEquals("\"Double Quotes\"",
+                StringHelper.toTitleCase("\"double quotes\""));
+        assertEquals("Double Quotes \"Inner\" Word",
+                StringHelper.toTitleCase("double quotes \"inner\" word"));
+        assertEquals("Fancy Double Quotes \u201CInner\u201D Word",
+                StringHelper.toTitleCase("fancy double quotes \u201Cinner\u201D word"));
+        assertEquals("'Single Quotes'",
+                StringHelper.toTitleCase("'single quotes'"));
+        assertEquals("Single Quotes 'Inner' Word",
+                StringHelper.toTitleCase("single quotes 'inner' word"));
+        assertEquals("Fancy Single Quotes \u2018Inner\u2019 Word",
+                StringHelper.toTitleCase("fancy single quotes \u2018inner\u2019 word"));
+        assertEquals("\u201C\u2018A Twice Quoted Subtitle\u2019\u201D",
+                StringHelper.toTitleCase("\u201C\u2018a twice quoted subtitle\u2019\u201D"));
+        assertEquals("Have You Read \u201CThe Lottery\u201D?",
+                StringHelper.toTitleCase("have you read \u201CThe Lottery\u201D?"));
+
+        // subtitles
+        assertEquals("One: Two", StringHelper.toTitleCase("one: two"));
+        assertEquals("One Two: Three Four",
+                StringHelper.toTitleCase("one two: three four"));
+        assertEquals("One Two: \"Three Four\"",
+                StringHelper.toTitleCase("one two: \"Three Four\""));
+        assertEquals("One On: An End",
+                StringHelper.toTitleCase("one on: an end"));
+        assertEquals("One On: \"An End\"",
+                StringHelper.toTitleCase("one on: \"an end\""));
+
+        // technical
+        assertEquals("Email email@example.com Address",
+                StringHelper.toTitleCase("email email@example.com address"));
+        assertEquals("You Have an https://example.com/ Title",
+                StringHelper.toTitleCase("you have an https://example.com/ title"));
+        assertEquals("_Underscores Around Words_",
+                StringHelper.toTitleCase("_underscores around words_"));
+        assertEquals("*Asterisks Around Words*",
+                StringHelper.toTitleCase("*asterisks around words*"));
+
+        // miscellaneous
+        assertNull(StringHelper.toTitleCase(null));
+        assertEquals("", StringHelper.toTitleCase(""));
+        assertEquals("Scott Moritz and TheStreet.com\u2019s Million iPhone La-La Land",
+                StringHelper.toTitleCase("Scott Moritz and TheStreet.com\u2019s million iPhone la-la land"));
+        assertEquals("Notes and Observations Regarding Apple\u2019s Announcements from \u2018The Beat Goes On\u2019 Special Event",
+                StringHelper.toTitleCase("Notes and observations regarding Apple\u2019s announcements from \u2018The Beat Goes On\u2019 special event"));
+        assertEquals("2018", StringHelper.toTitleCase("2018"));
+    }
 }

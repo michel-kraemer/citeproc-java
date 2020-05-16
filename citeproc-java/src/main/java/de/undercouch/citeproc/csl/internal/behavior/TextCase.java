@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.behavior;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.helper.NodeHelper;
+import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.w3c.dom.Node;
@@ -49,6 +50,8 @@ public class TextCase implements Behavior {
             s = StringUtils.capitalize(s);
         } else if ("capitalize-all".equals(textCase)) {
             s = WordUtils.capitalize(s);
+        } else if ("title".equals(textCase)) {
+            s = StringHelper.toTitleCase(s);
         }
         return new Token.Builder(t)
                 .text(s)
