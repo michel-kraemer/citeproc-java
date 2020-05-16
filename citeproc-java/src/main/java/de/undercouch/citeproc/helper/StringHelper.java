@@ -323,7 +323,7 @@ public class StringHelper {
     }
 
     /**
-     * <p></p>Converts the words in a given string to title case (according to the
+     * <p>Converts the words in a given string to title case (according to the
      * CSL specification).</p>
      *
      * <p>The implementation of this method is based on JavaScript library
