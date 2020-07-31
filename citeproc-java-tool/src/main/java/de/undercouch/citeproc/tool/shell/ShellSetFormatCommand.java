@@ -6,10 +6,14 @@ import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 import de.undercouch.underline.InputReader;
 import de.undercouch.underline.OptionParserException;
 import de.undercouch.underline.UnknownAttributes;
-import jline.console.completer.Completer;
+import org.jline.reader.Candidate;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.ParsedLine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -79,26 +83,27 @@ public class ShellSetFormatCommand extends AbstractCSLToolCommand implements Com
     }
 
     @Override
-    public int complete(String buffer, int cursor, List<CharSequence> candidates) {
+    public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
         List<String> sf;
         try {
             sf = CSL.getSupportedOutputFormats();
         } catch (IOException e) {
             // could not get list of supported output formats. ignore.
-            return 0;
+            return;
         }
 
-        if (buffer.trim().isEmpty()) {
-            candidates.addAll(sf);
-        } else {
-            String[] args = buffer.split("\\s+");
-            String last = args[args.length - 1];
+        if (line.word().isEmpty()) {
+            List<Candidate> sfc = new ArrayList<>(sf.size());
             for (String f : sf) {
-                if (f.startsWith(last)) {
-                    candidates.add(f);
+                sfc.add(new Candidate(f));
+            }
+            candidates.addAll(sfc);
+        } else {
+            for (String f : sf) {
+                if (f.startsWith(line.word())) {
+                    candidates.add(new Candidate(f));
                 }
             }
         }
-        return 0;
     }
 }

@@ -8,7 +8,7 @@ dependencies {
     implementation project(':citeproc-java')
 
     implementation 'de.undercouch:underline:1.0.0'
-    implementation 'jline:jline:2.14.2'
+    implementation 'org.jline:jline:3.16.0'
 
     if (this.hasProperty('includej2v8')) {
         implementation "com.eclipsesource.j2v8:j2v8_$includej2v8"

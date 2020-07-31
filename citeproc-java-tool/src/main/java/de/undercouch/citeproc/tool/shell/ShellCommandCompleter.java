@@ -9,15 +9,20 @@ import de.undercouch.underline.Option;
 import de.undercouch.underline.OptionGroup;
 import de.undercouch.underline.OptionIntrospector;
 import de.undercouch.underline.OptionIntrospector.ID;
-import jline.console.completer.Completer;
-import org.apache.commons.lang3.StringUtils;
+import org.jline.reader.Candidate;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.ParsedLine;
+import org.jline.reader.impl.DefaultParser;
 
 import java.beans.IntrospectionException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Calculates completions for citeproc-java's interactive mode
@@ -46,13 +51,12 @@ public class ShellCommandCompleter implements Completer {
     }
 
     @Override
-    public int complete(String buffer, int cursor,
-            List<CharSequence> candidates) {
+    public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
         boolean allparsed;
-        Set<String> result = new HashSet<>();
+        Set<Candidate> result = new TreeSet<>();
 
         try {
-            Result pr = ShellCommandParser.parse(buffer, excludedCommands);
+            Result pr = ShellCommandParser.parse(line.line(), excludedCommands);
             if (pr.getFirstCommand() == HelpCommand.class ||
                     pr.getFirstCommand() == ShellHelpCommand.class) {
                 // parse again, but skip 'help'
@@ -60,10 +64,10 @@ public class ShellCommandCompleter implements Completer {
                         excludedCommands);
             }
 
+            // noinspection StatementWithEmptyBody
             if (pr.getRemainingArgs().length > 1) {
                 // command line could not be parsed completely. we cannot
                 // provide suggestions for more than one unrecognized argument.
-                allparsed = false;
             } else {
                 OptionGroup<ID> options;
                 if (pr.getLastCommand() == null) {
@@ -85,7 +89,7 @@ public class ShellCommandCompleter implements Completer {
                     }
 
                     if (allparsed || o.getLongName().startsWith(ra[0])) {
-                        result.add(o.getLongName());
+                        result.add(new Candidate(o.getLongName()));
                     }
                 }
             }
@@ -99,40 +103,23 @@ public class ShellCommandCompleter implements Completer {
                     // should never happen
                     throw new RuntimeException(e);
                 }
-                List<CharSequence> ccl = new ArrayList<>();
-                String jra = StringUtils.join(pr.getRemainingArgs(), " ");
-                cc.complete(jra, jra.length(), ccl);
-                for (CharSequence cs : ccl) {
-                    result.add(cs.toString());
-                }
+                ParsedLine pl = new DefaultParser().new ArgumentList(line.line(),
+                        Arrays.asList(pr.getRemainingArgs()),
+                        pr.getRemainingArgs().length - 1, 0, 0, null, 0, 0);
+                List<Candidate> ccl = new ArrayList<>();
+                cc.complete(reader, pl, ccl);
+                result.addAll(ccl);
             }
         } catch (InvalidOptionException e) {
             // there's an option, we cannot calculate completions anymore
             // because options are not allowed in the interactive shell
-            allparsed = false;
         } catch (IntrospectionException e) {
             throw new RuntimeException("Could not inspect command", e);
         }
 
         // sort completions
-        List<String> resultList = new ArrayList<>(result);
+        List<Candidate> resultList = new ArrayList<>(result);
         Collections.sort(resultList);
         candidates.addAll(resultList);
-
-        // determine place to insert completion
-        int pos = buffer.length();
-        if (!allparsed && pos > 0) {
-            while (pos > 0 && Character.isWhitespace(buffer.charAt(pos - 1))) --pos;
-            if (pos == 0) {
-                // buffer consists of whitespaces only
-                pos = buffer.length();
-            }
-            while (pos > 0 && !Character.isWhitespace(buffer.charAt(pos - 1))) --pos;
-        } else if (allparsed && buffer.length() > 0 &&
-                !Character.isWhitespace(buffer.charAt(buffer.length() - 1))) {
-            ++pos;
-        }
-
-        return candidates.isEmpty() ? -1 : pos;
     }
 }

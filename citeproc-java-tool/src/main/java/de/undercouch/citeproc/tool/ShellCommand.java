@@ -16,9 +16,13 @@ import de.undercouch.underline.OptionGroup;
 import de.undercouch.underline.OptionIntrospector;
 import de.undercouch.underline.OptionIntrospector.ID;
 import de.undercouch.underline.OptionParserException;
-import jline.console.ConsoleReader;
-import jline.console.history.FileHistory;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.UserInterruptException;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 import java.beans.IntrospectionException;
 import java.io.File;
@@ -62,22 +66,20 @@ public class ShellCommand extends AbstractCSLToolCommand {
     public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
             throws OptionParserException, IOException {
         // prepare console
-        final ConsoleReader reader = new ConsoleReader();
-        reader.setPrompt("> ");
-        reader.addCompleter(new ShellCommandCompleter(EXCLUDED_COMMANDS));
-        FileHistory history = new FileHistory(new File(
-                CSLToolContext.current().getConfigDir(), "shell_history.txt"));
-        reader.setHistory(history);
+        Terminal terminal = TerminalBuilder.terminal();
+        LineReader reader = LineReaderBuilder.builder()
+                .terminal(terminal)
+                .appName(CSLToolContext.current().getToolName())
+                .completer(new ShellCommandCompleter(EXCLUDED_COMMANDS))
+                .variable(LineReader.HISTORY_FILE, new File(
+                        CSLToolContext.current().getConfigDir(), "shell_history_2.txt"))
+                .build();
 
         // enable colored error stream for ANSI terminals
-        if (reader.getTerminal().isAnsiSupported()) {
-            OutputStream errout = new ErrorOutputStream(reader.getTerminal()
-                    .wrapOutIfNeeded(System.out));
-            System.setErr(new PrintStream(errout, false,
-                    ((OutputStreamWriter)reader.getOutput()).getEncoding()));
-        }
+        OutputStream errout = new ErrorOutputStream(terminal.output());
+        System.setErr(new PrintStream(errout, false, terminal.encoding().name()));
 
-        PrintWriter cout = new PrintWriter(reader.getOutput(), true);
+        PrintWriter cout = new PrintWriter(terminal.output(), true);
 
         // print welcome message
         cout.println("Welcome to " + CSLToolContext.current().getToolName() +
@@ -89,22 +91,14 @@ public class ShellCommand extends AbstractCSLToolCommand {
                 CSLToolContext.current().getToolName() + ".");
         cout.println();
 
-        String line;
         ShellContext.enter();
         try {
-            line = mainLoop(reader, cout);
+            mainLoop(reader, cout);
         } finally {
             ShellContext.exit();
-
-            // make sure we save the history before we exit
-            history.flush();
         }
 
         // print Goodbye message
-        if (line == null) {
-            // user pressed Ctrl+D
-            cout.println();
-        }
         cout.println("Bye!");
 
         return 0;
@@ -112,19 +106,24 @@ public class ShellCommand extends AbstractCSLToolCommand {
 
     /**
      * Runs the shell's main loop
-     * @param reader the console reader used to read user input from
+     * @param reader the line reader used to read user input from
      * the command line
      * @param cout the output stream
-     * @return the last line read or null if the user pressed Ctrl+D and
-     * the input stream has ended
      * @throws IOException if an I/O error occurs
      */
-    private String mainLoop(ConsoleReader reader, PrintWriter cout) throws IOException {
+    private void mainLoop(LineReader reader, PrintWriter cout) throws IOException {
         InputReader lr = new ConsoleInputReader(reader);
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (line.isEmpty()) {
+        while (true) {
+            String line = null;
+            try {
+                line = reader.readLine("> ");
+            } catch (UserInterruptException e) {
+                // ignore
+            } catch (EndOfFileException e) {
+                break;
+            }
+            if (line == null || line.isEmpty()) {
                 continue;
             }
 
@@ -176,8 +175,6 @@ public class ShellCommand extends AbstractCSLToolCommand {
                 error(e.getMessage());
             }
         }
-
-        return line;
     }
 
     /**
