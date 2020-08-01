@@ -41,6 +41,9 @@ public class ShellSetCommand extends AbstractCSLToolCommand {
             @CommandDesc(longName = "format",
                     description = "set the current output format",
                     command = ShellSetFormatCommand.class),
+            @CommandDesc(longName = "experimental",
+                    description = "enable/disable experimental pure Java mode",
+                    command = ShellSetExperimentalCommand.class),
     })
     public void setSubcommand(AbstractCSLToolCommand subcommand) {
         this.subcommand = subcommand;

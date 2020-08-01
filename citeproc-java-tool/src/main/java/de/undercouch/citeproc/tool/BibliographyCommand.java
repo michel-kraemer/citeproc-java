@@ -1,6 +1,8 @@
 package de.undercouch.citeproc.tool;
 
 import de.undercouch.citeproc.CSL;
+import de.undercouch.citeproc.DefaultAbbreviationProvider;
+import de.undercouch.citeproc.DefaultLocaleProvider;
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.helper.tool.ToolUtils;
 import de.undercouch.citeproc.output.Bibliography;
@@ -143,7 +145,9 @@ public class BibliographyCommand extends CitationIdsCommand {
         }
 
         // initialize citation processor
-        try (CSL citeproc = new CSL(provider, style, locale)) {
+        try (CSL citeproc = new CSL(provider, new DefaultLocaleProvider(),
+                new DefaultAbbreviationProvider(), null, style, locale,
+                false, CSLToolContext.current().isExperimental())) {
             // set output format
             citeproc.setOutputFormat(format);
 

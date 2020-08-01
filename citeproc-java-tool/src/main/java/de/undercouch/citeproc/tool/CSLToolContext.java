@@ -15,6 +15,7 @@ public class CSLToolContext {
     private String toolName;
     private File configDir;
     private BibliographyFileReader bibReader = new CachingBibliographyFileReader();
+    private boolean experimental = false;
 
     private CSLToolContext() {
         // hidden constructor
@@ -82,5 +83,20 @@ public class CSLToolContext {
      */
     public BibliographyFileReader getBibliographyFileReader() {
         return bibReader;
+    }
+
+    /**
+     * @return true if the experimental pure Java mode should be used
+     */
+    public boolean isExperimental() {
+        return experimental;
+    }
+
+    /**
+     * Specifies if the experimental pure Java mode should be used
+     * @param experimental true if the experimental mode should be used
+     */
+    public void setExperimental(boolean experimental) {
+        this.experimental = experimental;
     }
 }

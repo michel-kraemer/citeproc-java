@@ -41,6 +41,9 @@ public class ShellGetCommand extends AbstractCSLToolCommand {
             @CommandDesc(longName = "format",
                     description = "get the current output format",
                     command = ShellGetFormatCommand.class),
+            @CommandDesc(longName = "experimental",
+                    description = "get experimental mode",
+                    command = ShellGetExperimentalCommand.class)
     })
     public void setSubcommand(AbstractCSLToolCommand subcommand) {
         this.subcommand = subcommand;

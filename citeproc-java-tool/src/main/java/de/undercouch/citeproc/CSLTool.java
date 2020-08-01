@@ -31,6 +31,7 @@ import java.net.URL;
  */
 public class CSLTool extends AbstractCSLToolCommand {
     private boolean displayVersion;
+    private boolean experimental;
     private String outputFile;
     private AbstractCSLToolCommand command;
 
@@ -55,6 +56,17 @@ public class CSLTool extends AbstractCSLToolCommand {
             priority = 9999)
     public void setDisplayVersion(boolean display) {
         this.displayVersion = display;
+    }
+
+    /**
+     * Specifies if the experimental pure Java mode should be enabled
+     * @param experimental true if the experimental mode should be enabled
+     */
+    @OptionDesc(longName = "experimental",
+            description = "enable experimental pure Java mode",
+            priority = 8888)
+    public void setExperimental(boolean experimental) {
+        this.experimental = experimental;
     }
 
     /**
@@ -127,6 +139,7 @@ public class CSLTool extends AbstractCSLToolCommand {
         File configDir = new File(System.getProperty("user.home"), ".citeproc-java");
         configDir.mkdirs();
         CSLToolContext.current().setConfigDir(configDir);
+        CSLToolContext.current().setExperimental(experimental);
 
         // if there are no commands print usage and exit
         if (command == null) {
