@@ -37,7 +37,7 @@ public class CSLTest {
     /**
      * Example citation items
      */
-    private static CSLItemData[] items = new CSLItemData[] {
+    private static final CSLItemData[] items = new CSLItemData[] {
             new CSLItemDataBuilder()
                     .id("Johnson:1973:PLB")
                     .type(CSLType.REPORT)
@@ -490,9 +490,11 @@ public class CSLTest {
             return prePunct + str + postPunct;
         };
 
-        try (CSL citeproc = new CSL(new ListItemDataProvider(items),
-                new DefaultLocaleProvider(), new DefaultAbbreviationProvider(),
-                wrapper, "chicago-note-bibliography", "en-US", false)) {
+        try (CSL citeproc = new CSLBuilder()
+                .itemDataProvider(new ListItemDataProvider(items))
+                .variableWrapper(wrapper)
+                .style("chicago-note-bibliography")
+                .build()) {
             List<Citation> a = citeproc.makeCitation(items[0].getId());
             assertEquals(0, a.get(0).getIndex());
             assertEquals("<strong>Johnson and Kernighan</strong>, "
