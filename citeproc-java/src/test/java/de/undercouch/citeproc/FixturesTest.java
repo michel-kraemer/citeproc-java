@@ -4,6 +4,8 @@ import de.undercouch.citeproc.bibtex.BibTeXConverter;
 import de.undercouch.citeproc.bibtex.BibTeXItemDataProvider;
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.helper.json.JsonLexer;
+import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
 import org.apache.commons.io.FileUtils;
@@ -15,15 +17,20 @@ import org.junit.runners.Parameterized;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
@@ -33,27 +40,29 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Parameterized.class)
 public class FixturesTest {
     private static final String FIXTURES_DIR = "/fixtures";
+    private static final String TEST_SUITE_DIR = "/test-suite/processor-tests/humans";
+    private static final String TEST_SUITE_OVERRIDES_DIR = "/test-suite-overrides";
     private static final Map<String, ItemDataProvider> bibliographyFileCache = new HashMap<>();
 
     /**
      * {@code true} if the test should be run in experimental mode
      */
-    private boolean experimentalMode;
+    private final boolean experimentalMode;
 
     /**
      * The output format to generate
      */
-    private String outputFormat;
+    private final String outputFormat;
 
     /**
      * The expected rendered result
      */
-    private String expectedResult;
+    private final String expectedResult;
 
     /**
      * The test data
      */
-    private Map<String, Object> data;
+    private final Map<String, Object> data;
 
     /**
      * Get a map of expected results from test fixture data
@@ -75,16 +84,94 @@ public class FixturesTest {
     }
 
     /**
+     * Read a file from the CSL test suite and convert it to the same format
+     * as our test fixtures
+     * @param f the file to read
+     * @return the parsed data object
+     * @throws IOException if the file could not be read
+     */
+    private static Map<String, Object> cslTestSuiteFileToData(File f)
+            throws IOException {
+        Map<String, Object> result = new HashMap<>();
+        Pattern startPattern = Pattern.compile("^\\s*>>=+\\s*(.*?)\\s*=+>>\\s*$");
+        Pattern endPattern = Pattern.compile("^\\s*<<=+\\s*(.*?)\\s*=+<<\\s*$");
+        String currentKey = null;
+        StringBuilder currentValue = null;
+        try (BufferedReader br = Files.newBufferedReader(f.toPath())) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (currentKey == null) {
+                    Matcher m = startPattern.matcher(line);
+                    if (m.matches()) {
+                        currentKey = m.group(1);
+                        currentValue = new StringBuilder();
+                    }
+                } else {
+                    Matcher m = endPattern.matcher(line);
+                    if (m.matches()) {
+                        String value = currentValue.toString().trim();
+                        switch (currentKey.toLowerCase()) {
+                            case "mode":
+                                result.put("mode", value);
+                                break;
+
+                            case "result":
+                                result.put("result", value);
+                                break;
+
+                            case "csl":
+                                result.put("style", value);
+                                break;
+
+                            case "input": {
+                                JsonParser parser = new JsonParser(
+                                        new JsonLexer(new StringReader(value)));
+                                List<Object> items = parser.parseArray();
+                                result.put("items", items);
+                                break;
+                            }
+
+                            case "citation-items": {
+                                JsonParser parser = new JsonParser(
+                                        new JsonLexer(new StringReader(value)));
+                                List<Object> citationItems = parser.parseArray();
+                                List<Map<String, Object>> citations = new ArrayList<>();
+                                for (Object citationItem : citationItems) {
+                                    Map<String, Object> citation = new HashMap<>();
+                                    citation.put("citationItems", citationItem);
+                                    citations.add(citation);
+                                }
+                                result.put("citations", citations);
+                                break;
+                            }
+                        }
+                        currentKey = null;
+                    } else {
+                        currentValue.append(line).append("\n");
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * Get all test files
      */
     @Parameterized.Parameters(name = "{0}, {1}, {2}")
     @SuppressWarnings("unchecked")
     public static Iterable<Object[]> data() {
         URL fixturesUrl = CSL.class.getResource(FIXTURES_DIR);
+        URL testSuiteUrl = CSL.class.getResource(TEST_SUITE_DIR);
+        URL testSuiteOverridesUrl = CSL.class.getResource(TEST_SUITE_OVERRIDES_DIR);
         File fixturesDir = new File(fixturesUrl.getPath());
+        File testSuiteDir = new File(testSuiteUrl.getPath());
+        File testSuiteOverridesDir = new File(testSuiteOverridesUrl.getPath());
 
-        return FileUtils.listFiles(fixturesDir, new String[] {"yaml"}, true).stream()
-                .flatMap(f -> {
+        // read test fixtures
+        Stream<Map<String, Object>> fixturesStream = FileUtils.listFiles(fixturesDir, new String[]{"yaml"}, true)
+                .stream()
+                .map(f -> {
                     Map<String, Object> data;
                     Yaml yaml = new Yaml();
                     try (FileInputStream is = new FileInputStream(f)) {
@@ -92,42 +179,104 @@ public class FixturesTest {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+                    data.put("__name", f.getName().substring(0, f.getName().length() - 5));
+                    return data;
+                });
 
-                    Map<String, String> expectedResults = readExpectedResults(data, "result");
-                    Map<String, String> expectedResultsLegacy;
-                    if (data.containsKey("resultLegacy")) {
-                        expectedResultsLegacy = readExpectedResults(data, "resultLegacy");
-                    } else {
-                        expectedResultsLegacy = expectedResults;
+        // read fixtures from CSL test suite
+        List<String> testSuiteFiles = new ArrayList<>();
+        testSuiteFiles.add("affix_CommaAfterQuote");
+        testSuiteFiles.add("affix_InterveningEmpty");
+        testSuiteFiles.add("affix_MovingPunctuation");
+        testSuiteFiles.add("affix_PrefixFullCitationTextOnly");
+        // testSuiteFiles.add("affix_PrefixWithDecorations");
+        testSuiteFiles.add("affix_SpaceWithQuotes");
+        testSuiteFiles.add("affix_TextNodeWithMacro");
+        // testSuiteFiles.add("affix_WithCommas");
+        testSuiteFiles.add("affix_WordProcessorAffixNoSpace");
+
+        Stream<Map<String, Object>> testSuiteStream = testSuiteFiles
+                .stream()
+                .map(name -> {
+                    // read test suite file
+                    Map<String, Object> data;
+                    try {
+                        data = cslTestSuiteFileToData(new File(testSuiteDir, name + ".txt"));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
 
-                    String strExperimentalMode = (String)data.get("experimentalMode");
-                    boolean experimentalOnly = "only".equals(strExperimentalMode);
+                    // override attributes if there is an override file
+                    File overridesFiles = new File(testSuiteOverridesDir, name + ".yaml");
+                    if (overridesFiles.exists()) {
+                        Map<String, Object> overrides;
+                        Yaml yaml = new Yaml();
+                        try (FileInputStream is = new FileInputStream(overridesFiles)) {
+                            overrides = yaml.loadAs(is, Map.class);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
 
-                    Stream<Boolean> s;
-                    if (experimentalOnly) {
-                        s = Stream.of(true);
-                    } else {
-                        s = Stream.of(true, false);
-                    }
-
-                    return s.flatMap(experimentalMode -> {
-                            Map<String, String> er = expectedResults;
-                            if (!experimentalMode) {
-                                er = expectedResultsLegacy;
+                        // rename "result" to "resultLegacy" and handle HTML output
+                        Object overridesResult = overrides.get("result");
+                        if (overridesResult != null) {
+                            data.put("resultLegacy", data.get("result"));
+                            if (overridesResult instanceof Map) {
+                                Map<String, Object> overridesResultMap =
+                                        (Map<String, Object>)overridesResult;
+                                if (overridesResultMap.get("html") != null) {
+                                    Map<String, Object> resultLegacyMap =
+                                            new HashMap<>();
+                                    resultLegacyMap.put("html", data.get("resultLegacy"));
+                                    data.put("resultLegacy", resultLegacyMap);
+                                }
                             }
-                            return er.entrySet().stream().map(expectedResult ->
-                                    new Object[] {
-                                            f.getName().substring(0, f.getName().length() - 5),
-                                            experimentalMode,
-                                            expectedResult.getKey(),
-                                            expectedResult.getValue(),
-                                            data
-                                    }
-                            );
-                    });
-                })
-                .collect(Collectors.toList());
+                        }
+                        data.putAll(overrides);
+                    }
+
+                    data.put("__name", name);
+                    return data;
+                });
+
+        // convert test fixtures to parameters
+        Stream<Map<String, Object>> dataStream = Stream.concat(testSuiteStream, fixturesStream);
+
+        return dataStream.flatMap(data -> {
+            Map<String, String> expectedResults = readExpectedResults(data, "result");
+            Map<String, String> expectedResultsLegacy;
+            if (data.containsKey("resultLegacy")) {
+                expectedResultsLegacy = readExpectedResults(data, "resultLegacy");
+            } else {
+                expectedResultsLegacy = expectedResults;
+            }
+
+            String strExperimentalMode = (String)data.get("experimentalMode");
+            boolean experimentalOnly = "only".equals(strExperimentalMode);
+
+            Stream<Boolean> s;
+            if (experimentalOnly) {
+                s = Stream.of(true);
+            } else {
+                s = Stream.of(true, false);
+            }
+
+            return s.flatMap(experimentalMode -> {
+                    Map<String, String> er = expectedResults;
+                    if (!experimentalMode) {
+                        er = expectedResultsLegacy;
+                    }
+                    return er.entrySet().stream().map(expectedResult ->
+                            new Object[] {
+                                    data.get("__name"),
+                                    experimentalMode,
+                                    expectedResult.getKey(),
+                                    expectedResult.getValue(),
+                                    data
+                            }
+                    );
+            });
+        }).collect(Collectors.toList());
     }
 
     /**
