@@ -20,8 +20,6 @@ ext.citeprocJsSHA = '3674b4ad553118c66ee21cc142fe2a64293f368d'
 
 ext.citeprocJsUrlBase = "https://raw.githubusercontent.com/Juris-M/citeproc-js/${ext.citeprocJsSHA}/"
 ext.citeprocJsUrl = ext.citeprocJsUrlBase + 'citeproc.js'
-ext.citeprocZip = ext.citeprocJsSHA + '.zip'
-ext.citeprocZipUrl = 'https://github.com/Juris-M/citeproc-js/archive/' + ext.citeprocZip
 
 ext.graalVMVersion = "19.2.1"
 
