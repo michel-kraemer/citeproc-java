@@ -1,5 +1,6 @@
 package de.undercouch.citeproc.csl.internal;
 
+import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLCitationItemBuilder;
 import de.undercouch.citeproc.csl.CSLDate;
@@ -11,6 +12,7 @@ import de.undercouch.citeproc.csl.internal.rendering.SLabel;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -37,6 +39,18 @@ public class RenderContext {
      * The citation item data to render
      */
     private final CSLItemData itemData;
+
+    /**
+     * The citation to render. Will be {@code null} if a bibliography should be
+     * rendered.
+     */
+    private final CSLCitation citation;
+
+    /**
+     * All citations generated so far. Will be {@code null} if we are currently
+     * rendering a bibliography.
+     */
+    private final List<GeneratedCitation> generatedCitations;
 
     /**
      * The citation item to render
@@ -74,9 +88,23 @@ public class RenderContext {
      * @param itemData the citation item to render
      */
     public RenderContext(SStyle style, LLocale locale, CSLItemData itemData) {
+        this(style, locale, itemData, null, null);
+    }
+
+    /**
+     * Creates a new render context
+     * @param style the style used to render citation items and bibliographies
+     * @param locale localization data
+     * @param citation the citation to render
+     * @param generatedCitations all citations generated so far
+     */
+    public RenderContext(SStyle style, LLocale locale, CSLItemData itemData,
+            CSLCitation citation, List<GeneratedCitation> generatedCitations) {
         this.style = style;
         this.locale = locale;
         this.itemData = itemData;
+        this.citation = citation;
+        this.generatedCitations = generatedCitations;
         if (itemData != null) {
             this.citationItem = new CSLCitationItemBuilder(itemData.getId())
                     .itemData(itemData).build();
@@ -96,7 +124,8 @@ public class RenderContext {
      * @param parent the parent context
      */
     public RenderContext(RenderContext parent) {
-        this(parent, parent.itemData, parent.citationItem);
+        this(parent, parent.itemData, parent.citation,
+                parent.generatedCitations, parent.citationItem);
     }
 
     /**
@@ -108,7 +137,8 @@ public class RenderContext {
      * @param citationItem the citation item to render
      */
     public RenderContext(RenderContext parent, CSLCitationItem citationItem) {
-        this(parent, citationItem.getItemData(), citationItem);
+        this(parent, citationItem.getItemData(), parent.getCitation(),
+                parent.getGeneratedCitations(), citationItem);
     }
 
     /**
@@ -118,13 +148,18 @@ public class RenderContext {
      * will reflect in the parent context.
      * @param parent the parent context
      * @param itemData the citation item data to render
+     * @param citation the citation to render
+     * @param generatedCitations all citations generated so far
      * @param citationItem the citation item to render
      */
     private RenderContext(RenderContext parent, CSLItemData itemData,
+            CSLCitation citation, List<GeneratedCitation> generatedCitations,
             CSLCitationItem citationItem) {
         this.style = parent.style;
         this.locale = parent.locale;
         this.itemData = itemData;
+        this.citation = citation;
+        this.generatedCitations = generatedCitations;
         this.citationItem = citationItem;
         this.variableListeners = parent.variableListeners;
         this.suppressedVariables = parent.suppressedVariables;
@@ -560,6 +595,24 @@ public class RenderContext {
      */
     public CSLItemData getItemData() {
         return itemData;
+    }
+
+    /**
+     * Get the citation currently being rendered. Will return {@code null} if
+     * we are currently rendering a bibliography and not a citation.
+     * @return the citation
+     */
+    public CSLCitation getCitation() {
+        return citation;
+    }
+
+    /**
+     * Get all citations generated so far. Will return {@code null} if
+     * we are currently rendering a bibliography and not a citation.
+     * @return all citations generated so far
+     */
+    public List<GeneratedCitation> getGeneratedCitations() {
+        return generatedCitations;
     }
 
     /**

@@ -6,8 +6,8 @@ import de.undercouch.citeproc.csl.CSLCitationItemBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CitationIDIndexPair;
+import de.undercouch.citeproc.csl.internal.GeneratedCitation;
 import de.undercouch.citeproc.csl.internal.RenderContext;
-import de.undercouch.citeproc.csl.internal.SCitation;
 import de.undercouch.citeproc.csl.internal.SSort;
 import de.undercouch.citeproc.csl.internal.SStyle;
 import de.undercouch.citeproc.csl.internal.format.Format;
@@ -23,7 +23,6 @@ import de.undercouch.citeproc.output.SecondFieldAlign;
 import de.undercouch.citeproc.script.ScriptRunner;
 import de.undercouch.citeproc.script.ScriptRunnerException;
 import de.undercouch.citeproc.script.ScriptRunnerFactory;
-import org.apache.commons.lang3.tuple.Pair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -213,7 +212,7 @@ public class CSL implements Closeable {
     /**
      * A list of generated citations sorted by their index
      */
-    private final List<Pair<CSLCitation, Citation>> generatedCitations = new ArrayList<>();
+    private List<GeneratedCitation> generatedCitations = new ArrayList<>();
 
     /**
      * Constructs a new citation processor
@@ -1045,14 +1044,17 @@ public class CSL implements Closeable {
     }
 
     /**
-     * Render the given citation
+     * Perform steps to prepare the given citation for rendering. Register
+     * citation items and sort them. Return a prepared citation that can be
+     * passed to {@link #renderCitation(CSLCitation)}
      * @param citation the citation to render
      * @param updatedItems an empty set that will be filled with citation
      * items that had to be updated while rendering the given one (may be
      * {@code null})
-     * @return the rendered string
+     * @return the prepared citation
      */
-    private String renderCitation(CSLCitation citation, Set<CSLItemData> updatedItems) {
+    private CSLCitation preRenderCitation(CSLCitation citation,
+            Set<CSLItemData> updatedItems) {
         // get item IDs
         int len = citation.getCitationItems().length;
         String[] itemIds = new String[len];
@@ -1067,7 +1069,7 @@ public class CSL implements Closeable {
                 updatedItems, false);
 
         // prepare items
-        CSLCitationItem[] sortedItems = new CSLCitationItem[len];
+        CSLCitationItem[] preparedItems = new CSLCitationItem[len];
         for (int i = 0; i < len; i++) {
             CSLCitationItem item = items[i];
             CSLItemData itemData = registeredItems.get(i);
@@ -1079,7 +1081,7 @@ public class CSL implements Closeable {
                         .build();
             }
 
-            sortedItems[i] = new CSLCitationItemBuilder(item)
+            preparedItems[i] = new CSLCitationItemBuilder(item)
                     .itemData(itemData)
                     .build();
         }
@@ -1093,17 +1095,25 @@ public class CSL implements Closeable {
         if (!unsorted && style.getCitation().getSort() != null) {
             Comparator<CSLItemData> itemComparator =
                     style.getCitation().getSort().comparator(style, locale);
-            Arrays.sort(sortedItems, (a, b) -> itemComparator.compare(
+            Arrays.sort(preparedItems, (a, b) -> itemComparator.compare(
                     a.getItemData(), b.getItemData()));
         }
 
+        return new CSLCitation(preparedItems,
+                citation.getCitationID(), citation.getProperties());
+    }
+
+    /**
+     * Render the given prepared citation
+     * @param preparedCitation the citation to render. The citation must have
+     * been prepared by {@link #preRenderCitation(CSLCitation, Set)}
+     * @return the rendered string
+     */
+    private String renderCitation(CSLCitation preparedCitation) {
         // render items
-        SCitation sc = style.getCitation();
-        sc.setCitationItems(sortedItems);
-
-        RenderContext ctx = new RenderContext(style, locale, null);
-        sc.render(ctx);
-
+        RenderContext ctx = new RenderContext(style, locale, null,
+                preparedCitation, Collections.unmodifiableList(generatedCitations));
+        style.getCitation().render(ctx);
         return outputFormat.formatCitation(ctx);
     }
 
@@ -1131,17 +1141,20 @@ public class CSL implements Closeable {
             }
 
             Set<CSLItemData> updatedItems = new LinkedHashSet<>();
-            String text = renderCitation(citation, updatedItems);
+            CSLCitation preparedCitation = preRenderCitation(citation, updatedItems);
+            String text = renderCitation(preparedCitation);
 
             // re-render updated citations
             List<Citation> result = new ArrayList<>();
             if (!updatedItems.isEmpty()) {
-                for (int i = 0; i < generatedCitations.size(); i++) {
-                    Pair<CSLCitation, Citation> gc = generatedCitations.get(i);
+                List<GeneratedCitation> oldGeneratedCitations = generatedCitations;
+                generatedCitations = new ArrayList<>(oldGeneratedCitations.size());
+                for (int i = 0; i < oldGeneratedCitations.size(); i++) {
+                    GeneratedCitation gc = oldGeneratedCitations.get(i);
 
                     boolean needsUpdate = false;
                     for (CSLItemData updatedItemData : updatedItems) {
-                        for (CSLCitationItem item : gc.getLeft().getCitationItems()) {
+                        for (CSLCitationItem item : gc.getOriginal().getCitationItems()) {
                             if (item.getId().equals(updatedItemData.getId())) {
                                 needsUpdate = true;
                                 break;
@@ -1150,14 +1163,20 @@ public class CSL implements Closeable {
                     }
 
                     if (!needsUpdate) {
+                        generatedCitations.add(gc);
                         continue;
                     }
 
-                    String ut = renderCitation(gc.getLeft(), null);
-                    if (!ut.equals(gc.getRight().getText())) {
+                    // prepare citation again (!)
+                    CSLCitation upc = preRenderCitation(gc.getOriginal(), null);
+
+                    // render it again
+                    String ut = renderCitation(upc);
+                    if (!ut.equals(gc.getGenerated().getText())) {
                         // render result was different
                         Citation uc = new Citation(i, ut);
-                        generatedCitations.set(i, Pair.of(gc.getLeft(), uc));
+                        generatedCitations.add(new GeneratedCitation(
+                                gc.getOriginal(), upc, uc));
                         result.add(uc);
                     }
                 }
@@ -1165,7 +1184,8 @@ public class CSL implements Closeable {
 
             // generate citation
             Citation generatedCitation = new Citation(generatedCitations.size(), text);
-            generatedCitations.add(Pair.of(citation, generatedCitation));
+            generatedCitations.add(new GeneratedCitation(citation,
+                    preparedCitation, generatedCitation));
             result.add(generatedCitation);
 
             return result;

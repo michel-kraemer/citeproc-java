@@ -1,6 +1,8 @@
 package de.undercouch.citeproc.csl.internal.rendering.condition;
 
+import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLType;
+import de.undercouch.citeproc.csl.internal.GeneratedCitation;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.helper.NumberElement;
 import de.undercouch.citeproc.csl.internal.helper.NumberParser;
@@ -15,14 +17,15 @@ import java.util.List;
  * @author Michel Kraemer
  */
 public class SIf extends SCondition {
-    private static int ALL = 0;
-    private static int ANY = 1;
-    private static int NONE = 2;
+    private static final int ALL = 0;
+    private static final int ANY = 1;
+    private static final int NONE = 2;
 
     private final String[] types;
     private final String[] variables;
     private final String[] isNumerics;
     private final String[] numbers;
+    private final String[] positions;
     private final int match;
 
     /**
@@ -64,6 +67,14 @@ public class SIf extends SCondition {
             numbers = null;
         }
 
+        // get the positions to check
+        String position = NodeHelper.getAttrValue(node, "position");
+        if (position != null) {
+            positions = position.split("\\s+");
+        } else {
+            positions = null;
+        }
+
         // get the match mode
         String match = NodeHelper.getAttrValue(node, "match");
         if (match == null || match.equals("all")) {
@@ -79,10 +90,40 @@ public class SIf extends SCondition {
 
     @Override
     public boolean matches(RenderContext ctx) {
-        if (types == null && variables == null && isNumerics == null && numbers == null) {
+        if (types == null && variables == null && isNumerics == null &&
+                numbers == null && positions == null) {
             return false;
         }
 
+        Boolean mt = matchesType(ctx);
+        if (mt != null) {
+            return mt;
+        }
+
+        Boolean mv = matchesVariable(ctx);
+        if (mv != null) {
+            return mv;
+        }
+
+        Boolean mne = matchesNumerics(ctx);
+        if (mne != null) {
+            return mne;
+        }
+
+        Boolean mnb = matchesNumbers(ctx);
+        if (mnb != null) {
+            return mnb;
+        }
+
+        Boolean mnp = matchesPositions(ctx);
+        if (mnp != null) {
+            return mnp;
+        }
+
+        return match != ANY;
+    }
+
+    private Boolean matchesType(RenderContext ctx) {
         CSLType cslType = ctx.getItemData().getType();
         if (types != null && cslType != null) {
             // check if the citation item matches the given types
@@ -90,33 +131,39 @@ public class SIf extends SCondition {
             for (String s : types) {
                 boolean r = type.equals(s);
                 if (match == ALL && !r) {
-                    return false;
+                    return Boolean.FALSE;
                 }
                 if (match == ANY && r) {
-                    return true;
+                    return Boolean.TRUE;
                 }
                 if (match == NONE && r) {
-                    return false;
+                    return Boolean.FALSE;
                 }
             }
         }
+        return null;
+    }
 
+    private Boolean matchesVariable(RenderContext ctx) {
         if (variables != null) {
             // check the values of the given variables
             for (String v : variables) {
                 Object o = ctx.getVariable(v);
                 if (match == ALL && o == null) {
-                    return false;
+                    return Boolean.FALSE;
                 }
                 if (match == ANY && o != null) {
-                    return true;
+                    return Boolean.TRUE;
                 }
                 if (match == NONE && o != null) {
-                    return false;
+                    return Boolean.FALSE;
                 }
             }
         }
+        return null;
+    }
 
+    private Boolean matchesNumerics(RenderContext ctx) {
         if (isNumerics != null) {
             // check if the given variables are numeric
             for (String v : isNumerics) {
@@ -124,17 +171,20 @@ public class SIf extends SCondition {
                 boolean numeric = o != null && (o instanceof Number ||
                         NumberHelper.isNumeric(String.valueOf(o)));
                 if (match == ALL && !numeric) {
-                    return false;
+                    return Boolean.FALSE;
                 }
                 if (match == ANY && numeric) {
-                    return true;
+                    return Boolean.TRUE;
                 }
                 if (match == NONE && numeric) {
-                    return false;
+                    return Boolean.FALSE;
                 }
             }
         }
+        return null;
+    }
 
+    private Boolean matchesNumbers(RenderContext ctx) {
         if (numbers != null) {
             // check if the number variable has the given label(s)
             String v = ctx.getStringVariable("number");
@@ -151,17 +201,61 @@ public class SIf extends SCondition {
 
             for (String number : numbers) {
                 if (match == ALL && !number.equals(firstLabel)) {
-                    return false;
+                    return Boolean.FALSE;
                 }
                 if (match == ANY && number.equals(firstLabel)) {
-                    return true;
+                    return Boolean.TRUE;
                 }
                 if (match == NONE && number.equals(firstLabel)) {
+                    return Boolean.FALSE;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isFirstCitation(RenderContext ctx) {
+        List<GeneratedCitation> gcs = ctx.getGeneratedCitations();
+
+        for (GeneratedCitation gc : gcs) {
+            for (CSLCitationItem preparedItem : gc.getPrepared().getCitationItems()) {
+                if (preparedItem.getId().equals(ctx.getCitationItem().getId())) {
+                    // this item has been generated before
+                    // it is therefore not the first one
                     return false;
                 }
             }
         }
 
-        return match != ANY;
+        CSLCitationItem firstItem = ctx.getCitation().getCitationItems()[0];
+        return firstItem == ctx.getCitationItem();
+    }
+
+    private Boolean matchesPositions(RenderContext ctx) {
+        if (positions != null) {
+            if (ctx.getGeneratedCitations() == null) {
+                // we are not rendering a citation
+                if (match == ALL) {
+                    return Boolean.FALSE;
+                }
+                return null;
+            }
+
+            for (String position : positions) {
+                if (position.equals("first")) {
+                    boolean first = isFirstCitation(ctx);
+                    if (match == ALL && !first) {
+                        return Boolean.FALSE;
+                    }
+                    if (match == ANY && first) {
+                        return Boolean.TRUE;
+                    }
+                    if (match == NONE && first) {
+                        return Boolean.FALSE;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

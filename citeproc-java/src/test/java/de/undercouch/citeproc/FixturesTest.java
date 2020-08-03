@@ -115,9 +115,16 @@ public class FixturesTest {
                                 result.put("mode", value);
                                 break;
 
-                            case "result":
-                                result.put("result", value);
+                            case "result": {
+                                if (value.startsWith("<div")) {
+                                    Map<String, Object> htmlMap = new HashMap<>();
+                                    htmlMap.put("html", value);
+                                    result.put("result", htmlMap);
+                                } else {
+                                    result.put("result", value);
+                                }
                                 break;
+                            }
 
                             case "csl":
                                 result.put("style", value);
@@ -216,14 +223,15 @@ public class FixturesTest {
                         // rename "result" to "resultLegacy" and handle HTML output
                         Object overridesResult = overrides.get("result");
                         if (overridesResult != null) {
-                            data.put("resultLegacy", data.get("result"));
-                            if (overridesResult instanceof Map) {
+                            Object oldResult = data.get("result");
+                            data.put("resultLegacy", oldResult);
+                            if (overridesResult instanceof Map && oldResult instanceof String) {
                                 Map<String, Object> overridesResultMap =
                                         (Map<String, Object>)overridesResult;
                                 if (overridesResultMap.get("html") != null) {
                                     Map<String, Object> resultLegacyMap =
                                             new HashMap<>();
-                                    resultLegacyMap.put("html", data.get("resultLegacy"));
+                                    resultLegacyMap.put("html", oldResult);
                                     data.put("resultLegacy", resultLegacyMap);
                                 }
                             }
@@ -450,7 +458,7 @@ public class FixturesTest {
             // "bibheader_SecondFieldAlign",
             // "bibheader_SecondFieldAlignWithAuthor",
             // "bibheader_SecondFieldAlignWithNumber",
-            // "bugreports_Abnt",
+            "bugreports_Abnt",
             // "bugreports_AccidentalAllCaps",
             // "bugreports_AllCapsLeakage",
             // "bugreports_ApostropheOnParticle",
@@ -534,6 +542,7 @@ public class FixturesTest {
             // "bugreports_effingBug",
             // "bugreports_ikeyOne",
             // "bugreports_parenthesis",
+            // name with quotes and particle
             // "bugreports_parseName",
             // "bugreports_undefinedCrash",
             // "collapse_AuthorCollapse",
@@ -562,6 +571,7 @@ public class FixturesTest {
             "condition_EmptyIsUncertainDateFalse",
             "condition_EmptyShortTitleFalse",
             "condition_FirstNullAny",
+            // Abbreviations are not supported yet
             // "condition_IsNumeric",
             "condition_LocatorIsFalse",
             "condition_MatchAll",
@@ -1150,7 +1160,7 @@ public class FixturesTest {
             // "plural_NameLabelDefaultPlural",
             // "plural_NameLabelDefaultSingular",
             // "plural_NameLabelNever",
-            // "position_FalseInBibliography",
+            "position_FalseInBibliography",
             // "position_FirstTrueOnlyOnce",
             // "position_IbidInText",
             // "position_IbidSeparateCiteSameNote",
@@ -1166,7 +1176,7 @@ public class FixturesTest {
             // "position_NearNoteUnsupported",
             // "position_NearNoteWithPlugin",
             // "position_ResetNoteNumbers",
-            // "position_TrueInCitation",
+            "position_TrueInCitation",
             // "punctuation_DateStripPeriods",
             // "punctuation_DefaultYearSuffixDelimiter",
             // "punctuation_DelimiterWithStripPeriodsAndSubstitute1",

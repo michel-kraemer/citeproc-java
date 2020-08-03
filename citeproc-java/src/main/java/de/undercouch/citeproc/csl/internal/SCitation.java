@@ -1,6 +1,5 @@
 package de.undercouch.citeproc.csl.internal;
 
-import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
@@ -11,7 +10,6 @@ import org.w3c.dom.Node;
 public class SCitation implements SElement {
     private final SSort sort;
     private final SCitationLayout layout;
-    private CSLCitationItem[] citationItems;
 
     /**
      * Construct the citation element from an XML node
@@ -34,14 +32,6 @@ public class SCitation implements SElement {
     }
 
     /**
-     * Set the citation items to render
-     * @param citationItems the citation items
-     */
-    public void setCitationItems(CSLCitationItem[] citationItems) {
-        this.citationItems = citationItems;
-    }
-
-    /**
      * Get the sort child element (if there is any)
      * @return the sort child element (or {@code null} if the citation
      * element does not have a sort child element)
@@ -53,7 +43,6 @@ public class SCitation implements SElement {
     @Override
     public void render(RenderContext ctx) {
         if (layout != null) {
-            layout.setCitationItems(citationItems);
             layout.render(ctx);
         }
     }

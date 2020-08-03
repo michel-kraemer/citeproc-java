@@ -1,0 +1,41 @@
+mode: citation
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation>
+      <layout delimiter="&#x0A;">
+        <choose>
+          <if position="first">
+            <names variable="author" suffix=". ">
+              <name initialize-with=". " />
+            </names>
+            <text variable="title"/>
+          </if>
+          <else>
+            <text value="NOT FIRST" />
+          </else>
+        </choose>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+
+citations:
+  - citationItems:
+      - id: item1
+      - id: item1
+  - citationItems:
+      - id: item1
+      - id: item1
+
+result: |-
+  G. Name. My title
+  NOT FIRST
+  NOT FIRST
+  NOT FIRST

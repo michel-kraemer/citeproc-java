@@ -20,7 +20,6 @@ public class SCitationLayout extends SRenderingElementContainer {
 
     protected final Affixes affixes;
     private final String delimiter;
-    private CSLCitationItem[] citationItems;
 
     /**
      * Construct the layout element from an XML node
@@ -32,14 +31,6 @@ public class SCitationLayout extends SRenderingElementContainer {
         delimiter = NodeHelper.getAttrValue(node, "delimiter");
     }
 
-    /**
-     * Set the citation items to render
-     * @param citationItems the citation items
-     */
-    public void setCitationItems(CSLCitationItem[] citationItems) {
-        this.citationItems = citationItems;
-    }
-
     @Override
     public void render(RenderContext ctx) {
         affixes.wrap(this::renderInternal).accept(ctx);
@@ -47,7 +38,7 @@ public class SCitationLayout extends SRenderingElementContainer {
 
     private void renderInternal(RenderContext ctx) {
         RenderContext tmp = new RenderContext(ctx);
-        for (CSLCitationItem item : citationItems) {
+        for (CSLCitationItem item : ctx.getCitation().getCitationItems()) {
             RenderContext innerTmp = new RenderContext(ctx, item);
             innerTmp.reset();
             super.render(innerTmp);
