@@ -1,0 +1,9 @@
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><span style="font-style: italic">Work 1</span> (John Doe), 2000.</div>
+      <div class="csl-entry">John Doe, 2000. Work 2.</div>
+      <div class="csl-entry">2000. Work 3, John Doe.</div>
+      <div class="csl-entry">Work 4 (2000), John Doe.</div>
+      <div class="csl-entry">Work 5, John Doe, 2000.</div>
+    </div>
