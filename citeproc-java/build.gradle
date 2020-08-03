@@ -16,6 +16,7 @@ apply plugin: 'nebula.optional-base'
 import org.apache.commons.lang3.SystemUtils
 
 // citeproc-js version 1.2.27
+// Note: this seems to be the last version supported by Nashorn
 ext.citeprocJsSHA = '3674b4ad553118c66ee21cc142fe2a64293f368d'
 
 ext.citeprocJsUrlBase = "https://raw.githubusercontent.com/Juris-M/citeproc-js/${ext.citeprocJsSHA}/"
