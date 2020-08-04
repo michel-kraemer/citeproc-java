@@ -178,6 +178,9 @@ public class StringHelperTest {
         assertEquals("*Asterisks Around Words*",
                 StringHelper.toTitleCase("*asterisks around words*"));
 
+        // non-breaking whitespace
+        assertEquals("One\u00a0Two", StringHelper.toTitleCase("one\u00a0two"));
+
         // miscellaneous
         assertNull(StringHelper.toTitleCase(null));
         assertEquals("", StringHelper.toTitleCase(""));

@@ -256,7 +256,8 @@ public class StringHelper {
                 break;
             }
             char c = str.charAt(i);
-            if (c == ' ' || c == ':' || c == '\u2014' || c == '\u2013' || c == '-') {
+            if (Character.isSpaceChar(c) || c == ':' || c == '\u2014' ||
+                    c == '\u2013' || c == '-') {
                 result.add(str.substring(s, i));
                 result.add(str.substring(i, i + 1));
                 s = i + 1;
