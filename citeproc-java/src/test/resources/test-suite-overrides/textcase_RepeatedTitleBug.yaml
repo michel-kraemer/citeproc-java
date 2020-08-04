@@ -1,0 +1,11 @@
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">Jenrich, R. I., &amp; Bentler, P. M. (2012). Exploratory bi-factor analysis: The oblique case. <span style="font-style: italic">Psychometrika</span>, <span style="font-style: italic">77</span>(3), 442&ndash;454. <a href="https://doi.org/10.1007/s11336-012-9269-1">https://doi.org/10.1007/s11336-012-9269-1</a></div>
+    </div>
+
+resultLegacy:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">Jenrich, R. I., &#38; Bentler, P. M. (2012). Exploratory bi-factor analysis: The oblique case. <i>Psychometrika</i>, <i>77</i>(3), 442–454. <a href="https://doi.org/10.1007/s11336-012-9269-1">https://doi.org/10.1007/s11336-012-9269-1</a></div>
+    </div>

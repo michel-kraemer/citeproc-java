@@ -31,16 +31,17 @@ public class TextCase implements Behavior {
         RenderContext child = new RenderContext(ctx);
         renderFunction.accept(child);
         child.getResult().getTokens().stream()
-                .map(this::transform)
+                .map(t -> transform(t, ctx))
                 .forEach(ctx::emit);
     }
 
     /**
      * Transforms the text of a token
      * @param t the token
+     * @param ctx the current render context
      * @return the new token with the transformed text
      */
-    private Token transform(Token t) {
+    private Token transform(Token t, RenderContext ctx) {
         String s = t.getText();
         if ("lowercase".equals(textCase)) {
             s = s.toLowerCase();
@@ -51,7 +52,10 @@ public class TextCase implements Behavior {
         } else if ("capitalize-all".equals(textCase)) {
             s = WordUtils.capitalize(s);
         } else if ("title".equals(textCase)) {
-            s = StringHelper.toTitleCase(s);
+            // only apply title case when the current language is English
+            if (ctx.getItemLocale().getLanguage().equals("en")) {
+                s = StringHelper.toTitleCase(s);
+            }
         }
         return new Token.Builder(t)
                 .text(s)

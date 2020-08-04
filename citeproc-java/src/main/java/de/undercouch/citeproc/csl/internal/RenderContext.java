@@ -13,6 +13,7 @@ import de.undercouch.citeproc.csl.internal.rendering.SLabel;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -180,6 +181,17 @@ public class RenderContext {
      */
     public LLocale getLocale() {
         return locale;
+    }
+
+    /**
+     * Get the {@link Locale} that is valid for the current item to render
+     * @return the locale
+     */
+    public Locale getItemLocale() {
+        if (itemData != null && itemData.getLanguage() != null) {
+            return Locale.forLanguageTag(itemData.getLanguage());
+        }
+        return getLocale().getLang();
     }
 
     /**
