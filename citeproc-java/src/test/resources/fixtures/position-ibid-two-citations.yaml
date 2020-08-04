@@ -1,0 +1,65 @@
+mode: citation
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation>
+      <layout delimiter="&#x0A;">
+        <choose>
+          <if position="ibid">
+            <text value="IBID" />
+          </if>
+          <else>
+            <names variable="author" suffix=". ">
+              <name initialize-with=". " />
+            </names>
+            <text variable="title"/>
+          </else>
+        </choose>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+  - id: item2
+    author:
+      - given: Another
+        family: Name
+    title: Another title
+
+citations:
+  - citationItems:
+      - id: item1
+      - id: item1
+  - citationItems:
+      - id: item1
+  - citationItems:
+      - id: item2
+      - id: item1
+  - citationItems:
+      - id: item1
+
+result: |-
+  G. Name. My title
+  IBID
+  G. Name. My title
+  A. Name. Another title
+  G. Name. My title
+  G. Name. My title
+
+# According to the specification, position="ibid" should test true when "b. the
+# current cite is the first cite in the citation, and the previous citation
+# consists of a single cite referencing the same item". This is not the case in
+# this test fixture but citeproc.js uses the "ibid" position anyhow.
+# (See also 'position-ibid-two-citations-single-cite.yaml')
+resultLegacy: |-
+  G. Name. My title
+  IBID
+  IBID
+  A. Name. Another title
+  G. Name. My title
+  IBID

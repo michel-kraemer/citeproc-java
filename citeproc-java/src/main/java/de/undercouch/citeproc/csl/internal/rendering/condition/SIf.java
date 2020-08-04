@@ -231,6 +231,37 @@ public class SIf extends SCondition {
         return firstItem == ctx.getCitationItem();
     }
 
+    private boolean isIbid(RenderContext ctx) {
+        CSLCitationItem currentItem = ctx.getCitationItem();
+
+        // look for current cite (= citation item) in current citation
+        CSLCitationItem[] citationItems = ctx.getCitation().getCitationItems();
+        for (int i = 0; i < citationItems.length; i++) {
+            CSLCitationItem item = citationItems[i];
+            if (item == currentItem) {
+                if (i > 0) {
+                    // According to the specification:
+                    // a. The cite is not the first one in this citation. Check
+                    // if the preceding cite references the same item
+                    return citationItems[i - 1].getId().equals(currentItem.getId());
+                } else {
+                    // b. The cite is the first one in this citation. Check if
+                    // the preceding citation consists of a single cite
+                    // referencing the same item.
+                    List<GeneratedCitation> gcs = ctx.getGeneratedCitations();
+                    if (gcs != null && gcs.size() > 0) {
+                        CSLCitationItem[] gcis = gcs.get(gcs.size() - 1)
+                                .getPrepared().getCitationItems();
+                        return gcis.length == 1 && gcis[0].getId().equals(currentItem.getId());
+                    }
+                    break;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private Boolean matchesPositions(RenderContext ctx) {
         if (positions != null) {
             if (ctx.getGeneratedCitations() == null) {
@@ -242,17 +273,23 @@ public class SIf extends SCondition {
             }
 
             for (String position : positions) {
+                boolean b;
                 if (position.equals("first")) {
-                    boolean first = isFirstCitation(ctx);
-                    if (match == ALL && !first) {
-                        return Boolean.FALSE;
-                    }
-                    if (match == ANY && first) {
-                        return Boolean.TRUE;
-                    }
-                    if (match == NONE && first) {
-                        return Boolean.FALSE;
-                    }
+                    b = isFirstCitation(ctx);
+                } else if (position.equals("ibid")) {
+                    b = isIbid(ctx);
+                } else {
+                    b = false;
+                }
+
+                if (match == ALL && !b) {
+                    return Boolean.FALSE;
+                }
+                if (match == ANY && b) {
+                    return Boolean.TRUE;
+                }
+                if (match == NONE && b) {
+                    return Boolean.FALSE;
                 }
             }
         }

@@ -1173,7 +1173,7 @@ public class FixturesTest {
             // "position_IbidWithLocator",
             // "position_IbidWithMultipleSoloCitesInBackref",
             // "position_IbidWithPrefixFullStop",
-            // "position_IbidWithSuffix",
+            "position_IbidWithSuffix",
             // "position_IfIbidIsTrueThenSubsequentIsTrue",
             // "position_IfIbidWithLocatorIsTrueThenIbidIsTrue",
             // "position_NearNoteFalse",
