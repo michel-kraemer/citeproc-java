@@ -123,12 +123,12 @@ to your build file:
   <dependency>
     <groupId>org.citationstyles</groupId>
     <artifactId>styles</artifactId>
-    <version>2.0.0</version>
+    <version>20.11</version>
   </dependency>
   <dependency>
     <groupId>org.citationstyles</groupId>
     <artifactId>locales</artifactId>
-    <version>2.0.0</version>
+    <version>20.11</version>
   </dependency>
 </dependencies>
 {% endhighlight %}
@@ -143,8 +143,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.citationstyles:styles:2.0.0'
-    compile 'org.citationstyles:locales:2.0.0'
+    compile 'org.citationstyles:styles:20.11'
+    compile 'org.citationstyles:locales:20.11'
 }
 {% endhighlight %}
 
@@ -154,7 +154,10 @@ dependencies {
 
 The artifacts above represent releases that are updated at irregular intervals.
 If you need the most up-to-date styles and locales, you may use the
-following snapshots from the Sonatype OSS repository, which we update daily:
+following snapshots from the Sonatype OSS repository, which we update daily.
+
+**Note:** replace the version number `20.11` with the current year and month.
+For example, `21.2` for February 2021.
 
 <ul class="nav nav-tabs" id="installing-csl-snapshots-tab">
   <li class="active"><a href="#installing-csl-snapshots-maven" data-toggle="tab" class="no-scroll">Maven</a></li>
@@ -182,12 +185,12 @@ following snapshots from the Sonatype OSS repository, which we update daily:
   <dependency>
     <groupId>org.citationstyles</groupId>
     <artifactId>styles</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>20.11-SNAPSHOT</version>
   </dependency>
   <dependency>
     <groupId>org.citationstyles</groupId>
     <artifactId>locales</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>20.11-SNAPSHOT</version>
   </dependency>
 </dependencies>
 {% endhighlight %}
@@ -204,8 +207,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.citationstyles:styles:2.0.1-SNAPSHOT'
-    compile 'org.citationstyles:locales:2.0.1-SNAPSHOT'
+    compile 'org.citationstyles:styles:20.11-SNAPSHOT'
+    compile 'org.citationstyles:locales:20.11-SNAPSHOT'
 }
 {% endhighlight %}
 
