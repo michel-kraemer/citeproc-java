@@ -19,7 +19,7 @@ public class DateParser {
      * A cache for month names
      * @see #getMonthNames(Locale)
      */
-    private static Map<Locale, Map<String, Integer>> MONTH_NAMES_CACHE =
+    private final static Map<Locale, Map<String, Integer>> MONTH_NAMES_CACHE =
             new ConcurrentHashMap<>();
 
     /**

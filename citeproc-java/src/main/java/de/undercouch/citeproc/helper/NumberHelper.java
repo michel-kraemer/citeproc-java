@@ -52,12 +52,12 @@ public class NumberHelper {
         SEPARATOR
     }
 
-    private static String NUMBER = "([a-zA-Z]*[0-9]+[a-zA-Z]*)";
-    private static String SEPARATOR = "([,\\-&])";
-    private static String NUMERIC_REGEX = "^\\s*" + NUMBER + "(\\s*" + SEPARATOR + "\\s*" + NUMBER + ")*\\s*$";
-    private static String EXTRACT_REGEX = NUMBER + "|" + SEPARATOR;
-    private static Pattern numericRegex = Pattern.compile(NUMERIC_REGEX);
-    private static Pattern extractRegex = Pattern.compile(EXTRACT_REGEX);
+    private static final String NUMBER = "([a-zA-Z]*[0-9]+[a-zA-Z]*)";
+    private static final String SEPARATOR = "([,\\-&])";
+    private static final String NUMERIC_REGEX = "^\\s*" + NUMBER + "(\\s*" + SEPARATOR + "\\s*" + NUMBER + ")*\\s*$";
+    private static final String EXTRACT_REGEX = NUMBER + "|" + SEPARATOR;
+    private static final Pattern numericRegex = Pattern.compile(NUMERIC_REGEX);
+    private static final Pattern extractRegex = Pattern.compile(EXTRACT_REGEX);
 
     public static boolean isNumeric(String str) {
         return numericRegex.matcher(str).matches();

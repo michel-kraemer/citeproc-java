@@ -5,7 +5,6 @@ import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLCitationItemBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
-import de.undercouch.citeproc.csl.CitationIDIndexPair;
 import de.undercouch.citeproc.csl.internal.GeneratedCitation;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SSort;
@@ -15,14 +14,8 @@ import de.undercouch.citeproc.csl.internal.format.HtmlFormat;
 import de.undercouch.citeproc.csl.internal.format.TextFormat;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.helper.CSLUtils;
-import de.undercouch.citeproc.helper.json.JsonBuilder;
-import de.undercouch.citeproc.helper.json.MapJsonBuilderFactory;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
-import de.undercouch.citeproc.output.SecondFieldAlign;
-import de.undercouch.citeproc.script.ScriptRunner;
-import de.undercouch.citeproc.script.ScriptRunnerException;
-import de.undercouch.citeproc.script.ScriptRunnerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,7 +25,6 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,7 +38,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -112,61 +103,9 @@ import java.util.zip.ZipFile;
  *
  * String bibl = CSL.makeAdhocBibliography("ieee", item).makeString();</pre></blockquote>
  *
- * <h3>Cleanup</h3>
- *
- * <p>Make sure to call {@link #close()} to release all resources associated
- * with the CSL processor when you're done with it. We recommend using a
- * try-with-resources statement:</p>
- *
- * <blockquote><pre>
- * try (CSL citeproc = new CSL(new MyItemProvider(), "ieee")) {
- *     citeproc.setOutputFormat("html");
- *     ...
- * }</pre></blockquote>
- *
- * <h3>Thread-safety</h3>
- *
- * <p>Please note that this class is not thread-safe. However, shared resources
- * are held in memory, so constructing new instances is generally rather cheap.
- * If your settings do not change you may cache instances of this class in a
- * <code>ThreadLocal</code>.</p>
- *
- * <blockquote><pre>
- * ThreadLocal&lt;CSL&gt; csl = new ThreadLocal&lt;CSL&gt;() {
- *     &#64;Override
- *     protected CSL initialValue() {
- *         return new CSL(itemDataProvider, style, lang);
- *     }
- * };</pre></blockquote>
- *
- * Please remember to reset the <code>ThreadLocal</code> if you don't need
- * the <code>CSL</code> instance anymore to avoid memory leaks.
- *
  * @author Michel Kraemer
  */
-public class CSL implements Closeable {
-    /**
-     * A thread-local holding a JavaScript runner that can
-     * be shared amongst multiple instances of this class
-     */
-    private static ThreadLocal<ScriptRunner> sharedRunner = new ThreadLocal<>();
-
-    /**
-     * A JavaScript runner used to execute citeproc-js
-     */
-    private final ScriptRunner runner;
-
-    /**
-     * The underlying citeproc-js engine
-     */
-    private final Object engine;
-
-    /**
-     * The output format
-     * @see #setOutputFormat(String)
-     */
-    private String outputFormatName = "html";
-
+public class CSL {
     /**
      * The output format
      */
@@ -178,11 +117,6 @@ public class CSL implements Closeable {
      * @see #setConvertLinks(boolean)
      */
     private boolean convertLinks = false;
-
-    /**
-     * {@code true} if the new experimental pure Java CSL processor should be used
-     */
-    private final boolean experimentalMode;
 
     /**
      * The CSL style used to render citations and bibliographies
@@ -221,46 +155,11 @@ public class CSL implements Closeable {
      * XML representation of the style or a style's name such as <code>ieee</code>.
      * In the latter case, the processor loads the style from the classpath (e.g.
      * <code>/ieee.csl</code>)
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
+     * @throws IOException if the CSL style could not be loaded
      */
     public CSL(ItemDataProvider itemDataProvider, String style) throws IOException {
-        this(itemDataProvider, style, false);
-    }
-
-    /**
-     * Constructs a new citation processor
-     * @param itemDataProvider an object that provides citation item data
-     * @param style the citation style to use. May either be a serialized
-     * XML representation of the style or a style's name such as <code>ieee</code>.
-     * In the latter case, the processor loads the style from the classpath (e.g.
-     * <code>/ieee.csl</code>)
-     * @param experimentalMode {@code true} if the new experimental pure Java
-     * CSL processor should be used
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
-     */
-    public CSL(ItemDataProvider itemDataProvider, String style,
-            boolean experimentalMode) throws IOException {
         this(itemDataProvider, new DefaultLocaleProvider(),
-                new DefaultAbbreviationProvider(), null, style, "en-US",
-                false, experimentalMode);
-    }
-
-    /**
-     * Constructs a new citation processor
-     * @param itemDataProvider an object that provides citation item data
-     * @param abbreviationProvider an object that provides abbreviations
-     * @param style the citation style to use. May either be a serialized
-     * XML representation of the style or a style's name such as <code>ieee</code>.
-     * In the latter case, the processor loads the style from the classpath (e.g.
-     * <code>/ieee.csl</code>)
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
-     */
-    public CSL(ItemDataProvider itemDataProvider, AbbreviationProvider abbreviationProvider,
-            String style) throws IOException {
-        this(itemDataProvider, abbreviationProvider, style, "en-US");
+                new DefaultAbbreviationProvider(), null, style, "en-US");
     }
 
     /**
@@ -271,204 +170,88 @@ public class CSL implements Closeable {
      * In the latter case, the processor loads the style from the classpath (e.g.
      * <code>/ieee.csl</code>)
      * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
+     * @throws IOException if the CSL style could not be loaded
      */
     public CSL(ItemDataProvider itemDataProvider, String style, String lang) throws IOException {
-        this(itemDataProvider, new DefaultLocaleProvider(), style, lang, false);
+        this(itemDataProvider, new DefaultLocaleProvider(),
+                new DefaultAbbreviationProvider(), null, style, lang);
     }
 
     /**
      * Constructs a new citation processor
      * @param itemDataProvider an object that provides citation item data
+     * @param localeProvider an object that provides CSL locales
      * @param abbreviationProvider an object that provides abbreviations
+     * @param variableWrapper an optional object that can affect how items
+     * are rendered in citations and bibliographies
      * @param style the citation style to use. May either be a serialized
      * XML representation of the style or a style's name such as <code>ieee</code>.
      * In the latter case, the processor loads the style from the classpath (e.g.
      * <code>/ieee.csl</code>)
      * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
+     * @throws IOException if the CSL style could not be loaded
      */
-    public CSL(ItemDataProvider itemDataProvider, AbbreviationProvider abbreviationProvider,
+    public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
+            AbbreviationProvider abbreviationProvider, VariableWrapper variableWrapper,
             String style, String lang) throws IOException {
-        this(itemDataProvider, new DefaultLocaleProvider(), abbreviationProvider,
-                style, lang, false);
-    }
-
-    /**
-     * Constructs a new citation processor
-     * @param itemDataProvider an object that provides citation item data
-     * @param localeProvider an object that provides CSL locales
-     * @param style the citation style to use. May either be a serialized
-     * XML representation of the style or a style's name such as <code>ieee</code>.
-     * In the latter case, the processor loads the style from the classpath (e.g.
-     * <code>/ieee.csl</code>)
-     * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
-     * @param forceLang true if the given locale should overwrite any default locale
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
-     */
-    public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
-            String style, String lang, boolean forceLang) throws IOException {
-        this(itemDataProvider, localeProvider, new DefaultAbbreviationProvider(),
-                style, lang, forceLang);
-    }
-
-    /**
-     * Constructs a new citation processor
-     * @param itemDataProvider an object that provides citation item data
-     * @param localeProvider an object that provides CSL locales
-     * @param abbreviationProvider an object that provides abbreviations
-     * @param style the citation style to use. May either be a serialized
-     * XML representation of the style or a style's name such as <code>ieee</code>.
-     * In the latter case, the processor loads the style from the classpath (e.g.
-     * <code>/ieee.csl</code>)
-     * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
-     * @param forceLang true if the given locale should overwrite any default locale
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
-     */
-    public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
-            AbbreviationProvider abbreviationProvider, String style,
-            String lang, boolean forceLang) throws IOException {
-        this(itemDataProvider, localeProvider, abbreviationProvider, null,
-                style, lang, forceLang);
-    }
-
-    /**
-     * Constructs a new citation processor
-     * @param itemDataProvider an object that provides citation item data
-     * @param localeProvider an object that provides CSL locales
-     * @param abbreviationProvider an object that provides abbreviations
-     * @param variableWrapper an object that decorates rendered items
-     * @param style the citation style to use. May either be a serialized
-     * XML representation of the style or a style's name such as <code>ieee</code>.
-     * In the latter case, the processor loads the style from the classpath (e.g.
-     * <code>/ieee.csl</code>)
-     * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
-     * @param forceLang true if the given locale should overwrite any default locale
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
-     */
-    public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
-            AbbreviationProvider abbreviationProvider, VariableWrapper variableWrapper,
-            String style, String lang, boolean forceLang) throws IOException {
-        this(itemDataProvider, localeProvider, abbreviationProvider,
-                variableWrapper, style, lang, forceLang, false);
-    }
-
-    /**
-     * Constructs a new citation processor
-     * @param itemDataProvider an object that provides citation item data
-     * @param localeProvider an object that provides CSL locales
-     * @param abbreviationProvider an object that provides abbreviations
-     * @param variableWrapper an object that decorates rendered items
-     * @param style the citation style to use. May either be a serialized
-     * XML representation of the style or a style's name such as <code>ieee</code>.
-     * In the latter case, the processor loads the style from the classpath (e.g.
-     * <code>/ieee.csl</code>)
-     * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
-     * @param forceLang true if the given locale should overwrite any default locale
-     * @param experimentalMode {@code true} if the new experimental pure Java
-     * CSL processor should be used
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
-     */
-    public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
-            AbbreviationProvider abbreviationProvider, VariableWrapper variableWrapper,
-            String style, String lang, boolean forceLang,
-            boolean experimentalMode) throws IOException {
-        this.experimentalMode = experimentalMode;
-
         // load style if needed
         if (!isStyle(style)) {
             style = loadStyle(style);
         }
 
-        if (experimentalMode) {
-            this.runner = null;
-            this.engine = null;
-            this.itemDataProvider = itemDataProvider;
+        this.itemDataProvider = itemDataProvider;
 
-            // TODO parse style and locale directly from URL if possible
-            // TODO instead of loading them into strings first
+        // TODO parse style and locale directly from URL if possible
+        // TODO instead of loading them into strings first
 
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder;
-            try {
-                builder = factory.newDocumentBuilder();
-            } catch (ParserConfigurationException e) {
-                throw new IOException("Could not create document builder", e);
-            }
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new IOException("Could not create document builder", e);
+        }
 
-            // load style
-            Document styleDocument;
-            try {
-                styleDocument = builder.parse(new InputSource(
-                        new StringReader(style)));
-            } catch (SAXException e) {
-                throw new IOException("Could not parse style", e);
-            }
-            this.style = new SStyle(styleDocument);
+        // load style
+        Document styleDocument;
+        try {
+            styleDocument = builder.parse(new InputSource(
+                    new StringReader(style)));
+        } catch (SAXException e) {
+            throw new IOException("Could not parse style", e);
+        }
+        this.style = new SStyle(styleDocument);
 
-            // load locale
-            String strLocale = localeProvider.retrieveLocale(lang);
-            Document localeDocument;
-            try {
-                localeDocument = builder.parse(new InputSource(
-                        new StringReader(strLocale)));
-            } catch (SAXException e) {
-                throw new IOException("Could not parse locale", e);
-            }
-            LLocale locale = new LLocale(localeDocument);
+        // load locale
+        String strLocale = localeProvider.retrieveLocale(lang);
+        Document localeDocument;
+        try {
+            localeDocument = builder.parse(new InputSource(
+                    new StringReader(strLocale)));
+        } catch (SAXException e) {
+            throw new IOException("Could not parse locale", e);
+        }
+        LLocale locale = new LLocale(localeDocument);
 
-            if (this.style.getLocale() != null &&
-                    (this.style.getLocale().getLang() == null ||
-                            (this.style.getLocale().getLang().getLanguage().equals(locale.getLang().getLanguage()) &&
-                                    (this.style.getLocale().getLang().getCountry().isEmpty() ||
-                                            this.style.getLocale().getLang().getCountry().equals(locale.getLang().getCountry()))))) {
-                // additional localization data in the style file overrides or
-                // augments the data from the locale file
-                this.locale = locale.merge(this.style.getLocale());
-            } else {
-                this.locale = locale;
-            }
+        if (this.style.getLocale() != null &&
+                (this.style.getLocale().getLang() == null ||
+                        (this.style.getLocale().getLang().getLanguage().equals(locale.getLang().getLanguage()) &&
+                                (this.style.getLocale().getLang().getCountry().isEmpty() ||
+                                        this.style.getLocale().getLang().getCountry().equals(locale.getLang().getCountry()))))) {
+            // additional localization data in the style file overrides or
+            // augments the data from the locale file
+            this.locale = locale.merge(this.style.getLocale());
         } else {
-            this.style = null;
-            this.locale = null;
-            this.itemDataProvider = null;
-
-            this.runner = getRunner();
-
-            // initialize engine
-            try {
-                this.engine = this.runner.callMethod("makeCsl", Object.class,
-                        style, lang, forceLang, this.runner, itemDataProvider,
-                        localeProvider, abbreviationProvider, variableWrapper);
-            } catch (ScriptRunnerException e) {
-                throw new IllegalArgumentException("Could not parse arguments", e);
-            }
+            this.locale = locale;
         }
     }
 
     /**
-     * Calculates a list of supported output formats
+     * Get a list of supported output formats
      * @return the formats
-     * @throws IOException if the underlying JavaScript files could not be loaded
      */
-    public static List<String> getSupportedOutputFormats() throws IOException {
-        ScriptRunner runner = getRunner();
-        return getSupportedOutputFormats(runner);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static List<String> getSupportedOutputFormats(ScriptRunner runner) {
-        try {
-            return runner.callMethod("getSupportedFormats", List.class);
-        } catch (ScriptRunnerException e) {
-            throw new IllegalStateException("Could not get supported formats", e);
-        }
+    public static List<String> getSupportedOutputFormats() {
+        return Arrays.asList("text", "html");
     }
 
     private static Set<String> getAvailableFiles(String prefix,
@@ -517,38 +300,6 @@ public class CSL implements Closeable {
     }
 
     /**
-     * Get version of the underlying citeproc-js CSL processor
-     * @return the version string
-     * @throws IOException if the version could not be obtained
-     */
-    public static String getCiteprocJsVersion() throws IOException {
-        ScriptRunner runner = getRunner();
-        try {
-            return runner.callMethod("getCiteprocJsVersion", String.class);
-        } catch (ScriptRunnerException e) {
-            throw new IllegalStateException("Could not get citeproc-js version", e);
-        }
-    }
-
-    /**
-     * Get the name of the underlying JavaScript engine
-     * @return the engine name
-     * @throws IOException if the JavaScript engine could not be initialized
-     */
-    public static String getJavaScriptEngineName() throws IOException {
-        return getRunner().getName();
-    }
-
-    /**
-     * Get the version of the underlying JavaScript engine
-     * @return the version string
-     * @throws IOException if the JavaScript engine could not be initialized
-     */
-    public static String getJavaScriptEngineVersion() throws IOException {
-        return getRunner().getVersion();
-    }
-
-    /**
      * Checks if a given citation style is supported
      * @param style the citation style's name
      * @return true if the style is supported, false otherwise
@@ -571,56 +322,7 @@ public class CSL implements Closeable {
      * @throws IOException if the citation locales could not be loaded
      */
     public static Set<String> getSupportedLocales() throws IOException {
-        Set<String> locales = getAvailableFiles("locales-", "en-US", "xml");
-        try {
-            @SuppressWarnings("unchecked")
-            List<String> baseLocales = getRunner().callMethod(
-                    "getBaseLocales", List.class);
-            locales.addAll(baseLocales);
-        } catch (ScriptRunnerException e) {
-            // ignore. don't add base locales
-        }
-        return locales;
-    }
-
-    /**
-     * Gets or initializes the shared script runner {@link #sharedRunner}
-     * @return the runner
-     * @throws IOException if bundles scripts could not be loaded
-     */
-    private static ScriptRunner getRunner() throws IOException {
-        if (sharedRunner.get() == null) {
-            // create JavaScript runner
-            ScriptRunner runner = ScriptRunnerFactory.createRunner();
-
-            // load bundled scripts
-            try {
-                runner.loadScript(CSL.class.getResource("dump.js"));
-                runner.loadScript(CSL.class.getResource("citeproc.js"));
-                runner.loadScript(CSL.class.getResource("loadsys.js"));
-            } catch (ScriptRunnerException e) {
-                // should never happen because bundled JavaScript files
-                // should be OK indeed
-                throw new RuntimeException("Invalid bundled javascript file", e);
-            }
-
-            sharedRunner.set(runner);
-        }
-        return sharedRunner.get();
-    }
-
-    /**
-     * @return the JavaScript runner used to execute citeproc-js
-     */
-    protected ScriptRunner getScriptRunner() {
-        return runner;
-    }
-
-    /**
-     * @return the underlying citeproc-js engine
-     */
-    protected Object getEngine() {
-        return engine;
+        return getAvailableFiles("locales-", "en-US", "xml");
     }
 
     /**
@@ -746,30 +448,15 @@ public class CSL implements Closeable {
      * {@code "asciidoc"}, {@code "fo"}, or {@code "rtf"}
      */
     public void setOutputFormat(String format) {
-        if (experimentalMode) {
-            if ("text".equals(format)) {
-                outputFormat = new TextFormat();
-            } else if ("html".equals(format)) {
-                outputFormat = new HtmlFormat();
-            } else {
-                throw new IllegalArgumentException("Experimental mode " +
-                        "only supports `text' and `html' output formats " +
-                        "at the moment.");
-            }
-            outputFormat.setConvertLinks(convertLinks);
-            return;
+        if ("text".equals(format)) {
+            outputFormat = new TextFormat();
+        } else if ("html".equals(format)) {
+            outputFormat = new HtmlFormat();
+        } else {
+            throw new IllegalArgumentException("Unknown output format: `" +
+                    format + "'. Supported formats: `text', `html'.");
         }
-
-        if (!getSupportedOutputFormats(runner).contains(format)) {
-            throw new IllegalArgumentException("Unknown output format: " + format);
-        }
-
-        try {
-            runner.callMethod(engine, "setOutputFormat", format);
-            outputFormatName = format;
-        } catch (ScriptRunnerException e) {
-            throw new IllegalArgumentException("Could not set output format", e);
-        }
+        outputFormat.setConvertLinks(convertLinks);
     }
 
     /**
@@ -779,16 +466,8 @@ public class CSL implements Closeable {
      * @param convert true if URLs and DOIs should be converted to links
      */
     public void setConvertLinks(boolean convert) {
-        if (experimentalMode) {
-            convertLinks = convert;
-            outputFormat.setConvertLinks(convert);
-        } else {
-            try {
-                runner.callMethod("setConvertLinks", engine, convert);
-            } catch (ScriptRunnerException e) {
-                throw new IllegalArgumentException("Could not set option", e);
-            }
-        }
+        convertLinks = convert;
+        outputFormat.setConvertLinks(convert);
     }
 
     /**
@@ -798,16 +477,7 @@ public class CSL implements Closeable {
      * @param name the name of the abbreviation list to enable
      */
     public void setAbbreviations(String name) {
-        if (experimentalMode) {
-            throw new IllegalArgumentException("Experimental mode does not " +
-                    "support abbreviations yet.");
-        }
-
-        try {
-            runner.callMethod(engine, "setAbbreviations", name);
-        } catch (ScriptRunnerException e) {
-            throw new IllegalArgumentException("Could not set abbreviations", e);
-        }
+        throw new IllegalArgumentException("Abbreviations are not supported yet.");
     }
 
     /**
@@ -945,15 +615,7 @@ public class CSL implements Closeable {
      * citation item data that does not exist
      */
     public void registerCitationItems(String... ids) {
-        if (experimentalMode) {
-            registerCitationItems(ids, false);
-        } else {
-            try {
-                runner.callMethod(engine, "updateItems", new Object[] { ids });
-            } catch (ScriptRunnerException e) {
-                throw new IllegalArgumentException("Could not update items", e);
-            }
-        }
+        registerCitationItems(ids, false);
     }
 
     /**
@@ -968,17 +630,9 @@ public class CSL implements Closeable {
      * citation item data that does not exist
      */
     public void registerCitationItems(String[] ids, boolean unsorted) {
-        if (experimentalMode) {
-            registeredItems.clear();
-            sortedItems.clear();
-            registerItems(ids, null, unsorted);
-        } else {
-            try {
-                runner.callMethod(engine, "updateItems", ids, unsorted);
-            } catch (ScriptRunnerException e) {
-                throw new IllegalArgumentException("Could not update items", e);
-            }
-        }
+        registeredItems.clear();
+        sortedItems.clear();
+        registerItems(ids, null, unsorted);
     }
 
     /**
@@ -987,26 +641,7 @@ public class CSL implements Closeable {
      * @return the registered citation items
      */
     public Collection<CSLItemData> getRegisteredItems() {
-        if (experimentalMode) {
-            return Collections.unmodifiableCollection(sortedItems);
-        } else {
-            List<?> r;
-            try {
-                r = getScriptRunner().callMethod("getRefList", List.class, getEngine());
-            } catch (ScriptRunnerException e) {
-                throw new IllegalArgumentException("Could not get registered citation items", e);
-            }
-
-            List<CSLItemData> result = new ArrayList<>();
-            for (Object o : r) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> m = (Map<String, Object>)o;
-                @SuppressWarnings("unchecked")
-                Map<String, Object> ref = (Map<String, Object>)m.get("ref");
-                result.add(CSLItemData.fromJson(ref));
-            }
-            return result;
-        }
+        return Collections.unmodifiableCollection(sortedItems);
     }
 
     /**
@@ -1026,21 +661,6 @@ public class CSL implements Closeable {
             items[i] = new CSLCitationItem(ids[i]);
         }
         return makeCitation(new CSLCitation(items));
-    }
-
-    /**
-     * Generates citation strings that can be inserted into the text. The
-     * method calls {@link ItemDataProvider#retrieveItem(String)} for each item in the
-     * given set to request the corresponding citation item data. Additionally,
-     * it saves the requested citation IDs, so {@link #makeBibliography()} will
-     * generate a bibliography that only consists of the retrieved items.
-     * @param citation a set of citation items for which strings should be generated
-     * @return citations strings that can be inserted into the text
-     * @throws IllegalArgumentException if the given set of citation items
-     * refers to citation item data that does not exist
-     */
-    public List<Citation> makeCitation(CSLCitation citation) {
-        return makeCitation(citation, null, null);
     }
 
     /**
@@ -1124,108 +744,58 @@ public class CSL implements Closeable {
      * it saves the requested citation IDs, so {@link #makeBibliography()} will
      * generate a bibliography that only consists of the retrieved items.
      * @param citation a set of citation items for which strings should be generated
-     * @param citationsPre citations that precede <code>citation</code>
-     * @param citationsPost citations that come after <code>citation</code>
      * @return citations strings that can be inserted into the text
      * @throws IllegalArgumentException if the given set of citation items
      * refers to citation item data that does not exist
      */
-    public List<Citation> makeCitation(CSLCitation citation,
-            List<CitationIDIndexPair> citationsPre,
-            List<CitationIDIndexPair> citationsPost) {
-        if (experimentalMode) {
-            if (citationsPre != null || citationsPost != null) {
-                throw new IllegalArgumentException("Experimental mode does " +
-                        "not support preceding or succeeding citations. This " +
-                        "method will likely be removed in a future release.");
-            }
+    public List<Citation> makeCitation(CSLCitation citation) {
+        Set<CSLItemData> updatedItems = new LinkedHashSet<>();
+        CSLCitation preparedCitation = preRenderCitation(citation, updatedItems);
+        String text = renderCitation(preparedCitation);
 
-            Set<CSLItemData> updatedItems = new LinkedHashSet<>();
-            CSLCitation preparedCitation = preRenderCitation(citation, updatedItems);
-            String text = renderCitation(preparedCitation);
+        // re-render updated citations
+        List<Citation> result = new ArrayList<>();
+        if (!updatedItems.isEmpty()) {
+            List<GeneratedCitation> oldGeneratedCitations = generatedCitations;
+            generatedCitations = new ArrayList<>(oldGeneratedCitations.size());
+            for (int i = 0; i < oldGeneratedCitations.size(); i++) {
+                GeneratedCitation gc = oldGeneratedCitations.get(i);
 
-            // re-render updated citations
-            List<Citation> result = new ArrayList<>();
-            if (!updatedItems.isEmpty()) {
-                List<GeneratedCitation> oldGeneratedCitations = generatedCitations;
-                generatedCitations = new ArrayList<>(oldGeneratedCitations.size());
-                for (int i = 0; i < oldGeneratedCitations.size(); i++) {
-                    GeneratedCitation gc = oldGeneratedCitations.get(i);
-
-                    boolean needsUpdate = false;
-                    for (CSLItemData updatedItemData : updatedItems) {
-                        for (CSLCitationItem item : gc.getOriginal().getCitationItems()) {
-                            if (item.getId().equals(updatedItemData.getId())) {
-                                needsUpdate = true;
-                                break;
-                            }
+                boolean needsUpdate = false;
+                for (CSLItemData updatedItemData : updatedItems) {
+                    for (CSLCitationItem item : gc.getOriginal().getCitationItems()) {
+                        if (item.getId().equals(updatedItemData.getId())) {
+                            needsUpdate = true;
+                            break;
                         }
                     }
-
-                    if (!needsUpdate) {
-                        generatedCitations.add(gc);
-                        continue;
-                    }
-
-                    // prepare citation again (!)
-                    CSLCitation upc = preRenderCitation(gc.getOriginal(), null);
-
-                    // render it again
-                    String ut = renderCitation(upc);
-                    if (!ut.equals(gc.getGenerated().getText())) {
-                        // render result was different
-                        Citation uc = new Citation(i, ut);
-                        generatedCitations.add(new GeneratedCitation(
-                                gc.getOriginal(), upc, uc));
-                        result.add(uc);
-                    }
                 }
-            }
 
-            // generate citation
-            Citation generatedCitation = new Citation(generatedCitations.size(), text);
-            generatedCitations.add(new GeneratedCitation(citation,
-                    preparedCitation, generatedCitation));
-            result.add(generatedCitation);
+                if (!needsUpdate) {
+                    generatedCitations.add(gc);
+                    continue;
+                }
 
-            return result;
-        } else {
-            return makeCitationLegacy(citation, citationsPre, citationsPost);
-        }
-    }
+                // prepare citation again (!)
+                CSLCitation upc = preRenderCitation(gc.getOriginal(), null);
 
-    private List<Citation> makeCitationLegacy(CSLCitation citation,
-            List<CitationIDIndexPair> citationsPre,
-            List<CitationIDIndexPair> citationsPost) {
-        List<?> r;
-        try {
-            if (citationsPre == null && citationsPost == null) {
-                r = runner.callMethod(engine, "appendCitationCluster",
-                        List.class, citation);
-            } else {
-                r = runner.callMethod(engine, "processCitationCluster",
-                        List.class, citation, citationsPre, citationsPost);
-                r = runner.convert(r.get(1), List.class);
-            }
-        } catch (ScriptRunnerException e) {
-            throw new IllegalArgumentException("Could not make citation", e);
-        }
-
-        List<Citation> result = new ArrayList<>();
-        for (Object o : r) {
-            if (o instanceof Map) {
-                o = runner.convert(o, List.class);
-            }
-            if (o instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<Object> i = (List<Object>)o;
-                if (i.get(0) instanceof Number && i.get(1) instanceof CharSequence) {
-                    int index = ((Number)i.get(0)).intValue();
-                    String text = i.get(1).toString();
-                    result.add(new Citation(index, text));
+                // render it again
+                String ut = renderCitation(upc);
+                if (!ut.equals(gc.getGenerated().getText())) {
+                    // render result was different
+                    Citation uc = new Citation(i, ut);
+                    generatedCitations.add(new GeneratedCitation(
+                            gc.getOriginal(), upc, uc));
+                    result.add(uc);
                 }
             }
         }
+
+        // generate citation
+        Citation generatedCitation = new Citation(generatedCitations.size(), text);
+        generatedCitations.add(new GeneratedCitation(citation,
+                preparedCitation, generatedCitation));
+        result.add(generatedCitation);
 
         return result;
     }
@@ -1267,60 +837,56 @@ public class CSL implements Closeable {
      */
     public Bibliography makeBibliography(SelectionMode mode,
             CSLItemData[] selection, CSLItemData[] quash) {
-        if (experimentalMode) {
-            return makeBibliography(item -> {
-                boolean include = true;
+        return makeBibliography(item -> {
+            boolean include = true;
 
-                if (selection != null) {
-                    switch (mode) {
-                        case INCLUDE:
-                            include = false;
-                            for (CSLItemData s : selection) {
-                                if (itemDataEqualsAny(item, s)) {
-                                    include = true;
-                                    break;
-                                }
-                            }
-                            break;
-
-                        case EXCLUDE:
-                            for (CSLItemData s : selection) {
-                                if (itemDataEqualsAny(item, s)) {
-                                    include = false;
-                                    break;
-                                }
-                            }
-                            break;
-
-                        case SELECT:
-                            for (CSLItemData s : selection) {
-                                if (!itemDataEqualsAny(item, s)) {
-                                    include = false;
-                                    break;
-                                }
-                            }
-                            break;
-                    }
-                }
-
-                if (include && quash != null) {
-                    boolean match = true;
-                    for (CSLItemData s : quash) {
-                        if (!itemDataEqualsAny(item, s)) {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match) {
+            if (selection != null) {
+                switch (mode) {
+                    case INCLUDE:
                         include = false;
+                        for (CSLItemData s : selection) {
+                            if (itemDataEqualsAny(item, s)) {
+                                include = true;
+                                break;
+                            }
+                        }
+                        break;
+
+                    case EXCLUDE:
+                        for (CSLItemData s : selection) {
+                            if (itemDataEqualsAny(item, s)) {
+                                include = false;
+                                break;
+                            }
+                        }
+                        break;
+
+                    case SELECT:
+                        for (CSLItemData s : selection) {
+                            if (!itemDataEqualsAny(item, s)) {
+                                include = false;
+                                break;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            if (include && quash != null) {
+                boolean match = true;
+                for (CSLItemData s : quash) {
+                    if (!itemDataEqualsAny(item, s)) {
+                        match = false;
+                        break;
                     }
                 }
+                if (match) {
+                    include = false;
+                }
+            }
 
-                return include;
-            });
-        } else {
-            return makeBibliographyLegacy(mode, selection, quash);
-        }
+            return include;
+        });
     }
 
     /**
@@ -1331,16 +897,6 @@ public class CSL implements Closeable {
      * @return the bibliography
      */
     public Bibliography makeBibliography(Predicate<CSLItemData> filter) {
-        if (!experimentalMode) {
-            if (filter == null) {
-                return makeBibliographyLegacy(null, null, null);
-            }
-            throw new IllegalStateException("Making a bibliography with a " +
-                    "filter is not supported in legacy mode. Use " +
-                    "CSL.makeBibliography(SelectionMode, CSLItemData[], CSLItemData[])" +
-                    "instead.");
-        }
-
         List<String> entries = new ArrayList<>();
         for (CSLItemData item : sortedItems) {
             if (filter != null && !filter.test(item)) {
@@ -1359,173 +915,15 @@ public class CSL implements Closeable {
                 style.getBibliography());
     }
 
-    private Bibliography makeBibliographyLegacy(SelectionMode mode,
-            CSLItemData[] selection, CSLItemData[] quash) {
-        List<?> r;
-        try {
-            if ((selection == null || mode == null) && quash == null) {
-                r = runner.callMethod(engine, "makeBibliography", List.class);
-            } else {
-                Map<String, Object> args = new HashMap<>();
-                if (selection != null && mode != null) {
-                    args.put(mode.toString(), selectionToList(selection));
-                }
-                if (quash != null) {
-                    args.put("quash", selectionToList(quash));
-                }
-                r = runner.callMethod(engine, "makeBibliography",
-                        List.class, args);
-            }
-        } catch (ScriptRunnerException e) {
-            throw new IllegalArgumentException("Could not make bibliography", e);
-        }
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> fpm = (Map<String, Object>)r.get(0);
-        @SuppressWarnings("unchecked")
-        List<CharSequence> entriesList = runner.convert(r.get(1), List.class);
-
-        String[] entries = new String[entriesList.size()];
-        for (int i = 0; i < entries.length; ++i) {
-            entries[i] = entriesList.get(i).toString();
-        }
-
-        int maxOffset = getFromMap(fpm, "maxoffset", 0);
-        int entrySpacing = getFromMap(fpm, "entryspacing", 0);
-        int lineSpacing = getFromMap(fpm, "linespacing", 0);
-        boolean hangingIndent = getFromMap(fpm, "hangingindent", false);
-        boolean done = getFromMap(fpm, "done", false);
-        List<?> srcEntryIds = runner.convert(fpm.get("entry_ids"), List.class);
-        List<String> dstEntryIds = new ArrayList<>();
-        for (Object o : srcEntryIds) {
-            if (o instanceof Map) {
-                o = runner.convert(o, List.class);
-            }
-            if (o instanceof Collection) {
-                Collection<?> oc = (Collection<?>)o;
-                for (Object oco : oc) {
-                    dstEntryIds.add(oco.toString());
-                }
-            } else {
-                dstEntryIds.add(o.toString());
-            }
-        }
-        String[] entryIds = dstEntryIds.toArray(new String[0]);
-        SecondFieldAlign secondFieldAlign = SecondFieldAlign.FALSE;
-        Object sfa = fpm.get("second-field-align");
-        if (sfa != null) {
-            secondFieldAlign = SecondFieldAlign.fromString(sfa.toString());
-        }
-        String bibStart = getFromMap(fpm, "bibstart", "");
-        String bibEnd = getFromMap(fpm, "bibend", "");
-
-        // special treatment for some output formats
-        if (outputFormatName.equals("fo")) {
-            // make reasonable margin for an average character width
-            String em = Math.max(2.5, maxOffset * 0.6) + "em";
-            for (int i = 0; i < entries.length; ++i) {
-                entries[i] = entries[i].replace("$$$__COLUMN_WIDTH_1__$$$", em);
-            }
-        }
-
-        return new Bibliography(entries, bibStart, bibEnd, entryIds,
-                maxOffset, entrySpacing, lineSpacing, hangingIndent,
-                done, secondFieldAlign);
-    }
-
-    /**
-     * Converts the given CSLItemData objects to a list of field/value pairs
-     * that can be used to filter bibliography items. Only those fields will
-     * be included that are actually set in the given objects.
-     * @param selection the CSLItemData objects
-     * @return the list of field/value pairs
-     */
-    private List<Map<String, Object>> selectionToList(CSLItemData[] selection) {
-        MapJsonBuilderFactory mjbf = new MapJsonBuilderFactory();
-        List<Map<String, Object>> sl = new ArrayList<>();
-        for (CSLItemData item : selection) {
-            JsonBuilder jb = mjbf.createJsonBuilder();
-            @SuppressWarnings("unchecked")
-            Map<String, Object> mi = (Map<String, Object>)item.toJson(jb);
-            for (Map.Entry<String, Object> e : mi.entrySet()) {
-                Object v = e.getValue();
-                if (e.getKey().equals("id") && v instanceof String &&
-                        ((String)v).startsWith("-GEN-")) {
-                    // skip generated ids
-                    continue;
-                }
-                if (v instanceof Collection) {
-                    Collection<?> coll = (Collection<?>)v;
-                    if (coll.isEmpty()) {
-                        putSelectionFieldValue(sl, e, "");
-                    } else {
-                        for (Object ao : coll) {
-                            putSelectionFieldValue(sl, e, ao);
-                        }
-                    }
-                } else if (v instanceof Map && ((Map<?, ?>)v).isEmpty()) {
-                    putSelectionFieldValue(sl, e, "");
-                } else {
-                    putSelectionFieldValue(sl, e, v);
-                }
-            }
-        }
-        return sl;
-    }
-
-    private void putSelectionFieldValue(List<Map<String, Object>> sl,
-            Map.Entry<String, Object> e, Object v) {
-        Map<String, Object> sf = new HashMap<>(2);
-        sf.put("field", e.getKey());
-        sf.put("value", v);
-        sl.add(sf);
-    }
-
-    private int getFromMap(Map<String, Object> m, String key, int def) {
-        Number r = (Number)m.get(key);
-        if (r == null) {
-            return def;
-        }
-        return r.intValue();
-    }
-
-    private boolean getFromMap(Map<String, Object> m, String key, boolean def) {
-        Object r = m.get(key);
-        if (r == null) {
-            return def;
-        }
-        if (r instanceof CharSequence) {
-            return Boolean.parseBoolean(r.toString());
-        }
-        return (Boolean)r;
-    }
-
-    private String getFromMap(Map<String, Object> m, String key, String def) {
-        String r = (String)m.get(key);
-        if (r == null) {
-            r = def;
-        }
-        return r;
-    }
-
     /**
      * Resets the processor's state
      */
     public void reset() {
-        if (experimentalMode) {
-            outputFormatName = "html";
-            outputFormat = new HtmlFormat();
-            convertLinks = false;
-            registeredItems.clear();
-            sortedItems.clear();
-            generatedCitations.clear();
-        } else {
-            try {
-                runner.callMethod(engine, "restoreProcessorState");
-            } catch (ScriptRunnerException e) {
-                throw new IllegalArgumentException("Could not reset processor state", e);
-            }
-        }
+        outputFormat = new HtmlFormat();
+        convertLinks = false;
+        registeredItems.clear();
+        sortedItems.clear();
+        generatedCitations.clear();
     }
 
     /**
@@ -1568,59 +966,17 @@ public class CSL implements Closeable {
      */
     public static Bibliography makeAdhocBibliography(String style, String outputFormat,
             CSLItemData... items) throws IOException {
-        return makeAdhocBibliography(style, outputFormat, false, items);
-    }
-
-    /**
-     * Creates an ad hoc bibliography from the given citation items. Calling
-     * this method is rather expensive as it initializes the CSL processor.
-     * If you need to create bibliographies multiple times in your application
-     * you should create the processor yourself and cache it if necessary.
-     * @param style the citation style to use. May either be a serialized
-     * XML representation of the style or a style's name such as <code>ieee</code>.
-     * In the latter case, the processor loads the style from the classpath (e.g.
-     * <code>/ieee.csl</code>)
-     * @param outputFormat the processor's output format (one of
-     * <code>"html"</code>, <code>"text"</code>, <code>"asciidoc"</code>,
-     * <code>"fo"</code>, or <code>"rtf"</code>)
-     * @param experimentalMode {@code true} if the new experimental pure Java
-     * CSL processor should be used
-     * @param items the citation items to add to the bibliography
-     * @return the bibliography
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
-     */
-    public static Bibliography makeAdhocBibliography(String style, String outputFormat,
-            boolean experimentalMode, CSLItemData... items) throws IOException {
         ItemDataProvider provider = new ListItemDataProvider(items);
-        try (CSL csl = new CSL(provider, style, experimentalMode)) {
-            csl.setOutputFormat(outputFormat);
+        CSL csl = new CSL(provider, style);
+        csl.setOutputFormat(outputFormat);
 
-            String[] ids = new String[items.length];
-            for (int i = 0; i < items.length; ++i) {
-                ids[i] = items[i].getId();
-            }
-            csl.registerCitationItems(ids);
-
-            return csl.makeBibliography();
+        String[] ids = new String[items.length];
+        for (int i = 0; i < items.length; ++i) {
+            ids[i] = items[i].getId();
         }
-    }
+        csl.registerCitationItems(ids);
 
-    @Override
-    public void close() {
-        if (!experimentalMode) {
-            runner.release(engine);
-        }
-    }
-
-    /**
-     * Removes the shared JavaScript runner from the internal thread-local.
-     * Only call this method if you want to force re-initialization of the
-     * shared runner or if you want to gracefully shutdown the JVM and clean up
-     * behind you (usually not necessary).
-     */
-    public static void removeThreadLocals() {
-        sharedRunner.remove();
+        return csl.makeBibliography();
     }
 
     /**

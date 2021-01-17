@@ -220,36 +220,10 @@ class SourceGenerator {
         renderGrammar('InternalPage', new File(dst, 'de/undercouch/citeproc/bibtex/internal'))
     }
     
-    def filterScripts() {
-        def src = new File(project.projectDir, 'src-gen/main/resources/de/undercouch/citeproc/citeproc.js')
-        def dst = new File(project.projectDir, 'src-gen/main/resources/de/undercouch/citeproc/dateparser.js')
-        filterScript(src, dst, 'CSL.DateParser = function () {', '};')
-    }
-    
-    def filterScript(src, dst, start, end) {
-        src.withReader { r ->
-            dst.withWriter { w ->
-                def include = false
-                def line
-                while ((line = r.readLine()) != null) {
-                    if (line == start) {
-                        include = true
-                    }
-                    if (include) {
-                        dst << line
-                        dst << "\n"
-                        if (line == end) {
-                            break
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
     def generateVersionFile() {
-        def dstRes = new File(project.projectDir, 'src-gen/main/resources')
-        def versionFile = new File(dstRes, 'de/undercouch/citeproc/version.dat')
+        def dst = new File(project.projectDir, 'src-gen/main/resources/de/undercouch/citeproc')
+        dst.mkdirs()
+        def versionFile = new File(dst, 'version.dat')
         versionFile.withWriter { w ->
             w << project.version
         }

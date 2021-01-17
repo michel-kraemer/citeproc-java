@@ -144,12 +144,13 @@ public class BibliographyCommand extends CitationIdsCommand {
         }
 
         // initialize citation processor
-        try (CSL citeproc = new CSLBuilder()
-                .itemDataProvider(provider)
-                .style(style)
-                .lang(locale)
-                .experimentalMode(CSLToolContext.current().isExperimental())
-                .build()) {
+        try {
+            CSL citeproc = new CSLBuilder()
+                    .itemDataProvider(provider)
+                    .style(style)
+                    .lang(locale)
+                    .build();
+
             // set output format
             citeproc.setOutputFormat(format);
 

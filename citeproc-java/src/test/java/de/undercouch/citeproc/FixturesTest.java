@@ -410,7 +410,7 @@ public class FixturesTest {
         }
 
         // create CSL processor
-        CSL citeproc = new CSL(itemDataProvider, style, experimentalMode);
+        CSL citeproc = new CSL(itemDataProvider, style);
         citeproc.setOutputFormat(outputFormat);
         citeproc.setConvertLinks(true);
 

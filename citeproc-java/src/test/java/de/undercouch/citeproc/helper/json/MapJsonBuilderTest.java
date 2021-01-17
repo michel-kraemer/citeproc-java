@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
  * @author Michel Kraemer
  */
 public class MapJsonBuilderTest {
-    private JsonBuilderFactory factory = new MapJsonBuilderFactory();
+    private final JsonBuilderFactory factory = new MapJsonBuilderFactory();
 
     /**
      * Tests if a string array is converted correctly

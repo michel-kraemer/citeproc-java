@@ -10,10 +10,6 @@ dependencies {
     implementation 'de.undercouch:underline:1.0.0'
     implementation 'org.jline:jline:3.16.0'
 
-    if (this.hasProperty('includej2v8')) {
-        implementation "com.eclipsesource.j2v8:j2v8_$includej2v8"
-    }
-
     runtime 'org.citationstyles:styles:2.0.0'
     runtime 'org.citationstyles:locales:2.0.0'
 }

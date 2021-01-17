@@ -57,19 +57,15 @@ public class ShellSetFormatCommand extends AbstractCSLToolCommand implements Com
         }
 
         String f = formats.get(0);
-        try {
-            List<String> supportedFormats = CSL.getSupportedOutputFormats();
-            if (!supportedFormats.contains(f)) {
-                String message = "unsupported format `" + f + "'";
-                String dyms = ToolUtils.getDidYouMeanString(supportedFormats, f);
-                if (dyms != null && !dyms.isEmpty()) {
-                    message += "\n\n" + dyms;
-                }
-                error(message);
-                return false;
+        List<String> supportedFormats = CSL.getSupportedOutputFormats();
+        if (!supportedFormats.contains(f)) {
+            String message = "unsupported format `" + f + "'";
+            String dyms = ToolUtils.getDidYouMeanString(supportedFormats, f);
+            if (dyms != null && !dyms.isEmpty()) {
+                message += "\n\n" + dyms;
             }
-        } catch (IOException e) {
-            // could not check supported output formats. ignore
+            error(message);
+            return false;
         }
 
         return true;
@@ -84,13 +80,7 @@ public class ShellSetFormatCommand extends AbstractCSLToolCommand implements Com
 
     @Override
     public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
-        List<String> sf;
-        try {
-            sf = CSL.getSupportedOutputFormats();
-        } catch (IOException e) {
-            // could not get list of supported output formats. ignore.
-            return;
-        }
+        List<String> sf = CSL.getSupportedOutputFormats();
 
         if (line.word().isEmpty()) {
             List<Candidate> sfc = new ArrayList<>(sf.size());

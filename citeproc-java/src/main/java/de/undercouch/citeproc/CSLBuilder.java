@@ -19,8 +19,6 @@ public class CSLBuilder {
     private VariableWrapper variableWrapper;
     private String style;
     private String lang = "en-US";
-    private boolean forceLang = false;
-    boolean experimentalMode = false;
 
     /**
      * Set the item data provider
@@ -86,39 +84,12 @@ public class CSLBuilder {
     }
 
     /**
-     * Specifies if the locale set with {@link #lang(String)} should overwrite
-     * any default locale
-     * @param forceLang {@code true} if the configured locale should overwrite
-     * the default one
-     * @return {@code this} builder
-     */
-    public CSLBuilder forceLang(boolean forceLang) {
-        this.forceLang = forceLang;
-        return this;
-    }
-
-    /**
-     * Specifies if the new experimental pure Java CSL processor should be
-     * used
-     * @param experimentalMode {@code true} if the new experimental pure Java
-     * CSL processor should be used
-     * @return {@code this} builder
-     */
-    public CSLBuilder experimentalMode(boolean experimentalMode) {
-        this.experimentalMode = experimentalMode;
-        return this;
-    }
-
-    /**
-     * Creates the {@code CSL} object with the configured parameters. Make sure
-     * to call {@link CSL#close()} to release all resources associated with the
-     * CSL processor when you're done with it.
+     * Creates the {@code CSL} object with the configured parameters
      * @return the {@code CSL} object
-     * @throws IOException @throws IOException if the underlying JavaScript
-     * files or the CSL style could not be loaded
+     * @throws IOException if the CSL style could not be loaded
      */
     public CSL build() throws IOException {
         return new CSL(itemDataProvider, localeProvider, abbreviationProvider,
-                variableWrapper, style, lang, forceLang, experimentalMode);
+                variableWrapper, style, lang);
     }
 }

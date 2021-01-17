@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
  * @author Michel Kraemer
  */
 public class StringJsonBuilderTest {
-    private JsonBuilderFactory factory = new StringJsonBuilderFactory();
+    private final JsonBuilderFactory factory = new StringJsonBuilderFactory();
 
     /**
      * Tests if a string array is converted correctly
