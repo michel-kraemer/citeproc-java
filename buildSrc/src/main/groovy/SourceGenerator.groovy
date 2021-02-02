@@ -184,7 +184,6 @@ class SourceGenerator {
         def dst = new File(project.projectDir, 'src-gen/main/java')
         dst.mkdirs()
         
-        renderTemplatesInternal('Context', dst, true)
         renderTemplatesInternal('CSLType', dst, true)
         renderTemplatesInternal('CSLLabel', dst, true)
         renderTemplatesInternal('SecondFieldAlign', dst, true)
@@ -205,8 +204,6 @@ class SourceGenerator {
         renderTemplatesInternal('Bibliography', dst)
         renderTemplatesInternal('Citation', dst)
 
-        renderTemplatesInternal('VariableWrapperParams', dst)
-        
         renderParserTemplate('EndNoteParser', dst)
         renderParserTemplate('RISParser', dst)
     }

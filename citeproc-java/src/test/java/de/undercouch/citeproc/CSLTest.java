@@ -395,32 +395,6 @@ public class CSLTest {
     }
 
     /**
-     * Tests if output can be decorated
-     * @throws Exception if something goes wrong
-     */
-    @Test
-    public void variableWrapper() throws Exception {
-        VariableWrapper wrapper = (params, prePunct, str, postPunct) -> {
-            if (params.getContext() == Context.CITATION &&
-                    Arrays.asList(params.getVariableNames()).contains("author")) {
-                return prePunct + "<strong>" + str + "</strong>" + postPunct;
-            }
-            return prePunct + str + postPunct;
-        };
-
-        CSL citeproc = new CSLBuilder()
-                .itemDataProvider(new ListItemDataProvider(items))
-                .variableWrapper(wrapper)
-                .style("chicago-note-bibliography")
-                .build();
-        List<Citation> a = citeproc.makeCitation(items[0].getId());
-        assertEquals(0, a.get(0).getIndex());
-        assertEquals("<strong>Johnson and Kernighan</strong>, "
-                        + "\u201cThe Programming Language B.\u201d",
-                a.get(0).getText());
-    }
-
-    /**
      * Tests if citation items can be registered unsorted
      * @throws Exception if something goes wrong
      */

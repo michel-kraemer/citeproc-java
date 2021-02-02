@@ -16,7 +16,6 @@ public class CSLBuilder {
     private ItemDataProvider itemDataProvider;
     private LocaleProvider localeProvider = new DefaultLocaleProvider();
     private AbbreviationProvider abbreviationProvider = new DefaultAbbreviationProvider();
-    private VariableWrapper variableWrapper;
     private String style;
     private String lang = "en-US";
 
@@ -51,16 +50,6 @@ public class CSLBuilder {
     }
 
     /**
-     * Set an optional variable wrapper
-     * @param variableWrapper an object that decorates rendered items
-     * @return {@code this} builder
-     */
-    public CSLBuilder variableWrapper(VariableWrapper variableWrapper) {
-        this.variableWrapper = variableWrapper;
-        return this;
-    }
-
-    /**
      * Set the citation style to use. This may either be a serialized XML
      * representation of the style or a style's name such as <code>ieee</code>.
      * In the latter case, the processor loads the style from the classpath (e.g.
@@ -89,7 +78,6 @@ public class CSLBuilder {
      * @throws IOException if the CSL style could not be loaded
      */
     public CSL build() throws IOException {
-        return new CSL(itemDataProvider, localeProvider, abbreviationProvider,
-                variableWrapper, style, lang);
+        return new CSL(itemDataProvider, localeProvider, abbreviationProvider, style, lang);
     }
 }

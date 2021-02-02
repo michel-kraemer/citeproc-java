@@ -159,7 +159,7 @@ public class CSL {
      */
     public CSL(ItemDataProvider itemDataProvider, String style) throws IOException {
         this(itemDataProvider, new DefaultLocaleProvider(),
-                new DefaultAbbreviationProvider(), null, style, "en-US");
+                new DefaultAbbreviationProvider(), style, "en-US");
     }
 
     /**
@@ -174,7 +174,7 @@ public class CSL {
      */
     public CSL(ItemDataProvider itemDataProvider, String style, String lang) throws IOException {
         this(itemDataProvider, new DefaultLocaleProvider(),
-                new DefaultAbbreviationProvider(), null, style, lang);
+                new DefaultAbbreviationProvider(), style, lang);
     }
 
     /**
@@ -182,8 +182,6 @@ public class CSL {
      * @param itemDataProvider an object that provides citation item data
      * @param localeProvider an object that provides CSL locales
      * @param abbreviationProvider an object that provides abbreviations
-     * @param variableWrapper an optional object that can affect how items
-     * are rendered in citations and bibliographies
      * @param style the citation style to use. May either be a serialized
      * XML representation of the style or a style's name such as <code>ieee</code>.
      * In the latter case, the processor loads the style from the classpath (e.g.
@@ -192,8 +190,8 @@ public class CSL {
      * @throws IOException if the CSL style could not be loaded
      */
     public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
-            AbbreviationProvider abbreviationProvider, VariableWrapper variableWrapper,
-            String style, String lang) throws IOException {
+            AbbreviationProvider abbreviationProvider, String style,
+            String lang) throws IOException {
         // load style if needed
         if (!isStyle(style)) {
             style = loadStyle(style);
