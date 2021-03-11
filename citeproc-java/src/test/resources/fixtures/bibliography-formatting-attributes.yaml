@@ -1,0 +1,31 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout vertical-align="sup">
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " />
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+  - id: item2
+    author:
+      - given: Another
+        family: Name
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><sup>G. Name. My title</sup></div>
+      <div class="csl-entry"><sup>A. Name. </sup></div>
+    </div>

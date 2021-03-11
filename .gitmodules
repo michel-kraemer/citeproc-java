@@ -1,3 +1,7 @@
 [submodule "citeproc-java/src/test/resources/test-suite"]
 	path = citeproc-java/src/test/resources/test-suite
 	url = https://github.com/citation-style-language/test-suite.git
+	shallow = true
+[submodule "citeproc-java/src/test/resources/citeproc-js"]
+	path = citeproc-java/src/test/resources/citeproc-js
+	url = https://github.com/Juris-M/citeproc-js.git

@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal;
 
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.rendering.SRenderingElement;
 import org.w3c.dom.Node;
 
@@ -10,6 +11,7 @@ import org.w3c.dom.Node;
  */
 public class SLayout extends SRenderingElementContainer {
     private final Affixes affixes;
+    private final int formattingAttributes;
 
     /**
      * Construct the layout element from an XML node
@@ -18,6 +20,7 @@ public class SLayout extends SRenderingElementContainer {
     public SLayout(Node node) {
         super(node);
         affixes = new Affixes(node);
+        formattingAttributes = FormattingAttributes.of(node);
     }
 
     @Override
@@ -26,22 +29,24 @@ public class SLayout extends SRenderingElementContainer {
     }
 
     private void renderInternal(RenderContext ctx) {
+        RenderContext tmp = new RenderContext(ctx);
         for (int i = 0; i < elements.size(); i++) {
             SRenderingElement e = elements.get(i);
             if (i == 0) {
                 // render first field
-                RenderContext tmp = new RenderContext(ctx);
-                e.render(tmp);
-                for (Token t : tmp.getResult().getTokens()) {
+                RenderContext innerTmp = new RenderContext(tmp);
+                e.render(innerTmp);
+                for (Token t : innerTmp.getResult().getTokens()) {
                     // set flag in token
                     Token nt = new Token.Builder(t)
                             .firstField(true)
                             .build();
-                    ctx.emit(nt);
+                    tmp.emit(nt);
                 }
             } else {
-                e.render(ctx);
+                e.render(tmp);
             }
         }
+        ctx.emit(tmp.getResult(), formattingAttributes);
     }
 }

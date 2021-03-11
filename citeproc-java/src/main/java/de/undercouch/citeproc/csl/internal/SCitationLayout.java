@@ -2,6 +2,7 @@ package de.undercouch.citeproc.csl.internal;
 
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.apache.commons.lang3.CharSet;
 import org.w3c.dom.Node;
@@ -18,7 +19,8 @@ public class SCitationLayout extends SRenderingElementContainer {
     private static final Pattern TRIM_END = Pattern.compile("\\p{Space}+$");
     private static final Pattern IGNORE_END = Pattern.compile("[\\p{Space}\\p{Pf}\"']+$");
 
-    protected final Affixes affixes;
+    private final Affixes affixes;
+    private final int formattingAttributes;
     private final String delimiter;
 
     /**
@@ -28,6 +30,7 @@ public class SCitationLayout extends SRenderingElementContainer {
     public SCitationLayout(Node node) {
         super(node);
         affixes = new Affixes(node);
+        formattingAttributes = FormattingAttributes.of(node);
         delimiter = NodeHelper.getAttrValue(node, "delimiter");
     }
 
@@ -65,7 +68,7 @@ public class SCitationLayout extends SRenderingElementContainer {
                 tmp.emit(suffix, Token.Type.SUFFIX);
             }
         }
-        ctx.emit(tmp.getResult());
+        ctx.emit(tmp.getResult(), formattingAttributes);
     }
 
     /**
