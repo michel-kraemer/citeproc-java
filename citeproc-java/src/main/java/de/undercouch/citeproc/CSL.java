@@ -447,13 +447,21 @@ public class CSL {
      */
     public void setOutputFormat(String format) {
         if ("text".equals(format)) {
-            outputFormat = new TextFormat();
+            setOutputFormat(new TextFormat());
         } else if ("html".equals(format)) {
-            outputFormat = new HtmlFormat();
+            setOutputFormat(new HtmlFormat());
         } else {
             throw new IllegalArgumentException("Unknown output format: `" +
                     format + "'. Supported formats: `text', `html'.");
         }
+    }
+
+    /**
+     * Sets the processor's output format
+     * @param outputFormat the format
+     */
+    public void setOutputFormat(Format outputFormat) {
+        this.outputFormat = outputFormat;
         outputFormat.setConvertLinks(convertLinks);
     }
 
