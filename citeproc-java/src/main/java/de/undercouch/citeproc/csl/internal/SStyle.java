@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal;
 
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
+import de.undercouch.citeproc.csl.internal.rendering.SNameInheritableAttributes;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,6 +19,7 @@ public class SStyle {
     private final SCitation citation;
     private final SBibliography bibliography;
     private final Map<String, SMacro> macros = new HashMap<>();
+    private final SNameInheritableAttributes inheritableNameAttributes;
 
     /**
      * Creates the citation style from an XML document
@@ -55,6 +57,7 @@ public class SStyle {
         this.locale = locale;
         this.citation = citation;
         this.bibliography = bibl;
+        this.inheritableNameAttributes = new SNameInheritableAttributes(styleRoot);
     }
 
     /**
@@ -91,5 +94,13 @@ public class SStyle {
      */
     public Map<String, SMacro> getMacros() {
         return macros;
+    }
+
+    /**
+     * Get attributes that can be inherited to name elements
+     * @return the name attributes
+     */
+    public SNameInheritableAttributes getInheritableNameAttributes() {
+        return inheritableNameAttributes;
     }
 }

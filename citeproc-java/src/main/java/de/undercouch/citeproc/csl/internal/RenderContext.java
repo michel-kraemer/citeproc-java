@@ -9,6 +9,7 @@ import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.csl.internal.rendering.SLabel;
+import de.undercouch.citeproc.csl.internal.rendering.SNameInheritableAttributes;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -83,6 +84,11 @@ public class RenderContext {
     private final AtomicReference<SLabel> lastLabelRendered;
 
     /**
+     * Attributes for name elements inherited from the style, bibliography, or citation
+     */
+    private final SNameInheritableAttributes inheritedNameAttributes;
+
+    /**
      * Creates a new render context
      * @param style the style used to render citation items and bibliographies
      * @param locale localization data
@@ -115,6 +121,7 @@ public class RenderContext {
         this.variableListeners = new LinkedHashSet<>();
         this.suppressedVariables = new HashSet<>();
         this.lastLabelRendered = new AtomicReference<>();
+        this.inheritedNameAttributes = style.getInheritableNameAttributes();
     }
 
     /**
@@ -126,7 +133,23 @@ public class RenderContext {
      */
     public RenderContext(RenderContext parent) {
         this(parent, parent.itemData, parent.citation,
-                parent.generatedCitations, parent.citationItem);
+                parent.generatedCitations, parent.citationItem,
+                parent.inheritedNameAttributes);
+    }
+
+    /**
+     * Creates a new render context that has the same attributes as the given
+     * parent context but with an empty token buffer and different inherited
+     * name attributes. Changes to any of the properties (except for the token
+     * buffer) will reflect in the parent context.
+     * @param parent the parent context
+     * @param inheritedNameAttributes the new inherited name attributes
+     */
+    public RenderContext(RenderContext parent,
+            SNameInheritableAttributes inheritedNameAttributes) {
+        this(parent, parent.itemData, parent.citation,
+                parent.generatedCitations, parent.citationItem,
+                inheritedNameAttributes);
     }
 
     /**
@@ -139,7 +162,8 @@ public class RenderContext {
      */
     public RenderContext(RenderContext parent, CSLCitationItem citationItem) {
         this(parent, citationItem.getItemData(), parent.getCitation(),
-                parent.getGeneratedCitations(), citationItem);
+                parent.getGeneratedCitations(), citationItem,
+                parent.inheritedNameAttributes);
     }
 
     /**
@@ -152,10 +176,12 @@ public class RenderContext {
      * @param citation the citation to render
      * @param generatedCitations all citations generated so far
      * @param citationItem the citation item to render
+     * @param inheritedNameAttributes inherited name attributes
      */
     private RenderContext(RenderContext parent, CSLItemData itemData,
             CSLCitation citation, List<GeneratedCitation> generatedCitations,
-            CSLCitationItem citationItem) {
+            CSLCitationItem citationItem,
+            SNameInheritableAttributes inheritedNameAttributes) {
         this.style = parent.style;
         this.locale = parent.locale;
         this.itemData = itemData;
@@ -165,6 +191,7 @@ public class RenderContext {
         this.variableListeners = parent.variableListeners;
         this.suppressedVariables = parent.suppressedVariables;
         this.lastLabelRendered = parent.lastLabelRendered;
+        this.inheritedNameAttributes = inheritedNameAttributes;
     }
 
     /**
@@ -665,6 +692,14 @@ public class RenderContext {
      */
     public SLabel getLastLabelRendered() {
         return lastLabelRendered.get();
+    }
+
+    /**
+     * Get attributes that can be inherited to name elements
+     * @return the attributes
+     */
+    public SNameInheritableAttributes getInheritedNameAttributes() {
+        return inheritedNameAttributes;
     }
 
     /**

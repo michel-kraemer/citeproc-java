@@ -1,0 +1,29 @@
+mode: citation
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <citation et-al-min="2" et-al-use-first="1">
+      <layout>
+        <names variable="author" suffix=". ">
+          <name />
+        </names>
+        <text variable="title"/>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+      - given: Another
+        family: One
+      - given: Third
+        family: Name
+      - given: Fourth
+        family: Name
+    title: My title
+
+result: |-
+  Given Name et al. My title

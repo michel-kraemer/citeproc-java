@@ -29,21 +29,10 @@ public class SName implements SElement {
     public final static int FORM_COUNT = 2;
 
     private final String variable;
-    private final String and; // inheritable
     private final String delimiter;
-    private final String delimiterPrecedesEtAl; // inheritable
-    private final String delimiterPrecedesLast; // inheritable
     private final int form;
-    private final boolean initialize; // inheritable
-    private final String initializeWith; // inheritable
-    private final String nameAsSortOrder; // inheritable
-    private final String sortSeparator; // inheritable
-    private final Integer etAlMin; // inheritable
-    private final Integer etAlUseFirst; // inheritable
-    // private final Integer etAlUseLast; // inheritable
-    // private final Integer etAlUseSubsequentMin; // inheritable
-    // private final Integer etAlUseSubsequentUseFirst; // inheritable
     private final int formattingAttributes;
+    private final SNameInheritableAttributes inheritableAttributes;
 
     /**
      * Create the name element from an XML node
@@ -52,43 +41,18 @@ public class SName implements SElement {
      */
     public SName(Node node, String variable) {
         this.variable = variable;
+        this.inheritableAttributes = new SNameInheritableAttributes(node);
 
         String delimiter;
-        String delimiterPrecedesEtAl;
-        String delimiterPrecedesLast;
         String form;
-        String sortSeparator;
-        String etAlMin;
-        String etAlUseFirst;
         if (node != null) {
-            and = NodeHelper.getAttrValue(node, "and");
-            String strInitialize = NodeHelper.getAttrValue(node, "initialize");
-            initialize = strInitialize == null || Boolean.parseBoolean(strInitialize);
-            initializeWith = StringUtils.strip(NodeHelper.getAttrValue(node, "initialize-with"));
-            nameAsSortOrder = NodeHelper.getAttrValue(node, "name-as-sort-order");
             formattingAttributes = FormattingAttributes.of(node);
             delimiter = NodeHelper.getAttrValue(node, "delimiter");
-            delimiterPrecedesEtAl = NodeHelper.getAttrValue(node,
-                    "delimiter-precedes-et-al");
-            delimiterPrecedesLast = NodeHelper.getAttrValue(node,
-                    "delimiter-precedes-last");
             form = NodeHelper.getAttrValue(node, "form");
-            sortSeparator = NodeHelper.getAttrValue(node, "sort-separator");
-            etAlMin = NodeHelper.getAttrValue(node, "et-al-min");
-            etAlUseFirst = NodeHelper.getAttrValue(node, "et-al-use-first");
         } else {
-            and = null;
-            initialize = true;
-            initializeWith = null;
-            nameAsSortOrder = null;
             formattingAttributes = 0;
             delimiter = null;
-            delimiterPrecedesEtAl = null;
-            delimiterPrecedesLast = null;
             form = null;
-            sortSeparator = null;
-            etAlMin = null;
-            etAlUseFirst = null;
         }
 
         if (delimiter == null) {
@@ -96,39 +60,12 @@ public class SName implements SElement {
         }
         this.delimiter = delimiter;
 
-        if (delimiterPrecedesEtAl == null) {
-            delimiterPrecedesEtAl = "contextual";
-        }
-        this.delimiterPrecedesEtAl = delimiterPrecedesEtAl;
-
-        if (delimiterPrecedesLast == null) {
-            delimiterPrecedesLast = "contextual";
-        }
-        this.delimiterPrecedesLast = delimiterPrecedesLast;
-
         if ("count".equals(form)) {
             this.form = FORM_COUNT;
         } else if ("short".equals(form)) {
             this.form = FORM_SHORT;
         } else {
             this.form = FORM_LONG;
-        }
-
-        if (sortSeparator == null) {
-            sortSeparator = ", ";
-        }
-        this.sortSeparator = sortSeparator;
-
-        if (etAlMin != null) {
-            this.etAlMin = Integer.parseInt(etAlMin);
-        } else {
-            this.etAlMin = null;
-        }
-
-        if (etAlUseFirst != null) {
-            this.etAlUseFirst = Integer.parseInt(etAlUseFirst);
-        } else {
-            this.etAlUseFirst = null;
         }
     }
 
@@ -161,13 +98,24 @@ public class SName implements SElement {
             return;
         }
 
-        String and;
-        if ("text".equals(this.and)) {
-            and = " " + ctx.getTerm("and") + " ";
-        } else if ("symbol".equals(this.and)) {
-            and = " & ";
+        SNameInheritableAttributes ia = ctx.getInheritedNameAttributes().merge(inheritableAttributes);
+        String and = ia.getAnd();
+        Integer etAlMin = ia.getEtAlMin();
+        Integer etAlUseFirst = ia.getEtAlUseFirst();
+        String nameAsSortOrder = ia.getNameAsSortOrder();
+        String delimiterPrecedesEtAl = ia.getDelimiterPrecedesEtAl();
+        String delimiterPrecedesLast = ia.getDelimiterPrecedesLast();
+        String initializeWith = ia.getInitializeWith();
+        boolean initialize = ia.isInitialize();
+        String sortSeparator = ia.getSortSeparator();
+
+        String renderedAnd;
+        if ("text".equals(and)) {
+            renderedAnd = " " + ctx.getTerm("and") + " ";
+        } else if ("symbol".equals(and)) {
+            renderedAnd = " & ";
         } else {
-            and = delimiter;
+            renderedAnd = delimiter;
         }
 
         // get the maximum number of names to render before "et al."
@@ -194,7 +142,8 @@ public class SName implements SElement {
         for (int i = 0; i < names.length; ++i) {
             boolean nameAsSort = "all".equals(nameAsSortOrder) ||
                     (i == 0 && "first".equals(nameAsSortOrder));
-            builder.append(render(names[i], nameAsSort));
+            builder.append(render(names[i], nameAsSort, initializeWith,
+                    initialize, sortSeparator));
 
             if (i < names.length - 1) {
                 if (i == max - 1) {
@@ -210,8 +159,8 @@ public class SName implements SElement {
                 if (i == names.length - 2) {
                     boolean delimiterAppended = appendDelimiter(builder,
                             delimiterPrecedesLast, i, names.length > 2);
-                    if (!delimiterAppended || !and.equals(delimiter)) {
-                        appendAnd(builder, and);
+                    if (!delimiterAppended || !renderedAnd.equals(delimiter)) {
+                        appendAnd(builder, renderedAnd);
                     }
                 } else {
                     builder.append(delimiter);
@@ -283,9 +232,14 @@ public class SName implements SElement {
      * @param name the name to render
      * @param nameAsSort {@code true} if given name and family name should be
      * swapped (i.e. "Family, Given" instead of "Given Family")
+     * @param initializeWith the string to append to initials
+     * @param initialize {@code true} if given names should be converted to initials
+     * @param sortSeparator delimiter for name-parts that have switched positions
+     * as a result of {@code name-as-sort-order}
      * @return the rendered name
      */
-    private String render(CSLName name, boolean nameAsSort) {
+    private String render(CSLName name, boolean nameAsSort, String initializeWith,
+            boolean initialize, String sortSeparator) {
         // render family name with non-dropping particle
         String family = name.getFamily();
         if (family != null) {

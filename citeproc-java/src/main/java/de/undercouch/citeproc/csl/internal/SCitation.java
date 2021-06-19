@@ -1,5 +1,6 @@
 package de.undercouch.citeproc.csl.internal;
 
+import de.undercouch.citeproc.csl.internal.rendering.SNameInheritableAttributes;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
@@ -10,6 +11,7 @@ import org.w3c.dom.Node;
 public class SCitation implements SElement {
     private final SSort sort;
     private final SCitationLayout layout;
+    private final SNameInheritableAttributes inheritableNameAttributes;
 
     /**
      * Construct the citation element from an XML node
@@ -29,6 +31,8 @@ public class SCitation implements SElement {
         } else {
             layout = new SCitationLayout(layoutNode);
         }
+
+        inheritableNameAttributes = new SNameInheritableAttributes(node);
     }
 
     /**
@@ -43,7 +47,7 @@ public class SCitation implements SElement {
     @Override
     public void render(RenderContext ctx) {
         if (layout != null) {
-            layout.render(ctx);
+            inheritableNameAttributes.wrap(layout::render).accept(ctx);
         }
     }
 }

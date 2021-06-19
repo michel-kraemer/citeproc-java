@@ -1,5 +1,6 @@
 package de.undercouch.citeproc.csl.internal;
 
+import de.undercouch.citeproc.csl.internal.rendering.SNameInheritableAttributes;
 import de.undercouch.citeproc.helper.NodeHelper;
 import de.undercouch.citeproc.output.SecondFieldAlign;
 import org.w3c.dom.Node;
@@ -12,6 +13,7 @@ public class SBibliography implements SElement {
     private final SSort sort;
     private final SLayout layout;
     private final SecondFieldAlign secondFieldAlign;
+    private final SNameInheritableAttributes inheritableNameAttributes;
 
     /**
      * Construct the bibliography element from an XML node
@@ -40,6 +42,8 @@ public class SBibliography implements SElement {
         } else {
             secondFieldAlign = SecondFieldAlign.FALSE;
         }
+
+        inheritableNameAttributes = new SNameInheritableAttributes(node);
     }
 
     /**
@@ -63,7 +67,7 @@ public class SBibliography implements SElement {
     @Override
     public void render(RenderContext ctx) {
         if (layout != null) {
-            layout.render(ctx);
+            inheritableNameAttributes.wrap(layout::render).accept(ctx);
         }
     }
 }
