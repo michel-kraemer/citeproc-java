@@ -29,16 +29,20 @@ public class SName implements SElement {
     public final static int FORM_COUNT = 2;
 
     private final String variable;
-    private final String and;
+    private final String and; // inheritable
     private final String delimiter;
-    private final String delimiterPrecedesEtAl;
-    private final String delimiterPrecedesLast;
+    private final String delimiterPrecedesEtAl; // inheritable
+    private final String delimiterPrecedesLast; // inheritable
     private final int form;
-    private final String initializeWith;
-    private final String nameAsSortOrder;
-    private final String sortSeparator;
-    private final Integer etAlMin;
-    private final Integer etAlUseFirst;
+    private final boolean initialize; // inheritable
+    private final String initializeWith; // inheritable
+    private final String nameAsSortOrder; // inheritable
+    private final String sortSeparator; // inheritable
+    private final Integer etAlMin; // inheritable
+    private final Integer etAlUseFirst; // inheritable
+    // private final Integer etAlUseLast; // inheritable
+    // private final Integer etAlUseSubsequentMin; // inheritable
+    // private final Integer etAlUseSubsequentUseFirst; // inheritable
     private final int formattingAttributes;
 
     /**
@@ -58,6 +62,8 @@ public class SName implements SElement {
         String etAlUseFirst;
         if (node != null) {
             and = NodeHelper.getAttrValue(node, "and");
+            String strInitialize = NodeHelper.getAttrValue(node, "initialize");
+            initialize = strInitialize == null || Boolean.parseBoolean(strInitialize);
             initializeWith = StringUtils.strip(NodeHelper.getAttrValue(node, "initialize-with"));
             nameAsSortOrder = NodeHelper.getAttrValue(node, "name-as-sort-order");
             formattingAttributes = FormattingAttributes.of(node);
@@ -72,6 +78,7 @@ public class SName implements SElement {
             etAlUseFirst = NodeHelper.getAttrValue(node, "et-al-use-first");
         } else {
             and = null;
+            initialize = true;
             initializeWith = null;
             nameAsSortOrder = null;
             formattingAttributes = 0;
@@ -309,24 +316,46 @@ public class SName implements SElement {
         StringBuilder givenBuffer = new StringBuilder();
         if (given != null) {
             if (initializeWith != null) {
-                // produce initials for each given name and append
-                // 'initializeWith' to each of them
-                boolean found = true;
-                boolean hyphen = false;
-                for (int i = 0; i < given.length(); ++i) {
-                    char c = given.charAt(i);
-                    if (c == '-') {
-                        found = true;
-                        hyphen = true;
-                    } else if (Character.isWhitespace(c) || c == '.') {
-                        found = true;
-                    } else if (found) {
-                        if (givenBuffer.length() > 0) {
-                            givenBuffer.append(hyphen ? '-' : ' ');
+                if (initialize) {
+                    // produce initials for each given name and append
+                    // 'initializeWith' to each of them
+                    boolean found = true;
+                    boolean hyphen = false;
+                    for (int i = 0; i < given.length(); ++i) {
+                        char c = given.charAt(i);
+                        if (c == '-') {
+                            found = true;
+                            hyphen = true;
+                        } else if (Character.isWhitespace(c) || c == '.') {
+                            found = true;
+                        } else if (found) {
+                            if (givenBuffer.length() > 0) {
+                                givenBuffer.append(hyphen ? '-' : ' ');
+                            }
+                            givenBuffer.append(c).append(initializeWith);
+                            found = false;
+                            hyphen = false;
                         }
-                        givenBuffer.append(c).append(initializeWith);
-                        found = false;
-                        hyphen = false;
+                    }
+                } else {
+                    // only append 'initializeWith' to initials already present
+                    StringBuilder tmp = new StringBuilder();
+                    for (int i = 0; i < given.length(); ++i) {
+                        char c = given.charAt(i);
+                        tmp.append(c);
+                        if (Character.isWhitespace(c) || c == '-' || c == '.') {
+                            givenBuffer.append(tmp);
+                            if (tmp.length() == 1) {
+                                givenBuffer.append(initializeWith);
+                            }
+                            tmp = new StringBuilder();
+                        }
+                    }
+                    if (tmp.length() > 0) {
+                        givenBuffer.append(tmp);
+                        if (tmp.length() == 1) {
+                            givenBuffer.append(initializeWith);
+                        }
                     }
                 }
             } else {

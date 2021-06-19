@@ -1,0 +1,23 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name initialize-with=". "/>
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: James T
+        family: Kirk
+    title: To boldly go where no man has gone before
+
+result: |
+  J. T. Kirk. To boldly go where no man has gone before
