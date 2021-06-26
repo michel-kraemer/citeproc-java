@@ -12,6 +12,7 @@ import de.undercouch.underline.OptionDesc;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -155,15 +156,14 @@ public class BibliographyCommand extends CitationIdsCommand {
             citeproc.setOutputFormat(format);
 
             // register citation items
-            String[] citationIdsArr = new String[citationIds.size()];
-            citationIdsArr = citationIds.toArray(citationIdsArr);
-            if (citationIds.isEmpty()) {
-                citationIdsArr = provider.getIds();
+            Collection<String> cids = citationIds;
+            if (cids.isEmpty()) {
+                cids = provider.getIds();
             }
-            citeproc.registerCitationItems(citationIdsArr);
+            citeproc.registerCitationItems(cids);
 
             // generate bibliography
-            doGenerateCSL(citeproc, citationIdsArr, out);
+            doGenerateCSL(citeproc, cids, out);
         } catch (FileNotFoundException e) {
             error(e.getMessage());
             return 1;
@@ -179,7 +179,8 @@ public class BibliographyCommand extends CitationIdsCommand {
      * should be generated (the CSL processor should already be prepared)
      * @param out the stream to write the result to
      */
-    protected void doGenerateCSL(CSL citeproc, String[] citationIds, PrintWriter out) {
+    protected void doGenerateCSL(CSL citeproc, Collection<String> citationIds,
+            PrintWriter out) {
         Bibliography bibl = citeproc.makeBibliography();
         out.println(bibl.makeString());
     }

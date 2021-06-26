@@ -9,6 +9,7 @@ import de.undercouch.underline.InputReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -52,9 +53,9 @@ public class JsonCommand extends CitationIdsCommand {
         // create an array of citation item data objects (either for
         // the whole bibliography or for the given citation ids only)
         out.print("[");
-        List<String> ids = citationIds;
+        Collection<String> ids = citationIds;
         if (ids.isEmpty()) {
-            ids = Arrays.asList(provider.getIds());
+            ids = provider.getIds();
         }
 
         int i = 0;

@@ -2,7 +2,8 @@ package de.undercouch.citeproc;
 
 import de.undercouch.citeproc.csl.CSLItemData;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,10 +41,11 @@ public class CompoundItemDataProvider implements ItemDataProvider {
 	}
 
 	@Override
-	public String[] getIds() {
-		return providers.stream()
-			.map(ItemDataProvider::getIds)
-			.flatMap(Arrays::stream)
-			.toArray(String[]::new);
+	public Collection<String> getIds() {
+		List<String> result = new ArrayList<>();
+		for (ItemDataProvider p : providers) {
+			result.addAll(p.getIds());
+		}
+		return result;
 	}
 }

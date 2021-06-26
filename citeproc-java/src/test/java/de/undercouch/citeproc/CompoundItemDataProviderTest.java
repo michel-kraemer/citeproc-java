@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link CompoundItemDataProvider}
@@ -32,7 +32,7 @@ public class CompoundItemDataProviderTest {
     public void empty() {
         CompoundItemDataProvider p = new CompoundItemDataProvider(
                 Collections.emptyList());
-        assertArrayEquals(new String[0], p.getIds());
+        assertTrue(p.getIds().isEmpty());
         assertNull(p.retrieveItem("ID"));
         assertNull(p.retrieveItem(""));
         assertNull(p.retrieveItem(null));
@@ -46,7 +46,7 @@ public class CompoundItemDataProviderTest {
     public void oneItemList() {
         CompoundItemDataProvider p = new CompoundItemDataProvider(
                 Collections.singletonList(l1));
-        assertArrayEquals(l1.getIds(), p.getIds());
+        assertEquals(new ArrayList<>(l1.getIds()), p.getIds());
         assertNull(p.retrieveItem("ID"));
         assertNull(p.retrieveItem(""));
         assertNull(p.retrieveItem(null));
@@ -66,9 +66,9 @@ public class CompoundItemDataProviderTest {
         CompoundItemDataProvider p = new CompoundItemDataProvider(
                 Arrays.asList(l1, l2));
         ArrayList<String> a = new ArrayList<>();
-        a.addAll(Arrays.asList(l1.getIds()));
-        a.addAll(Arrays.asList(l2.getIds()));
-        assertEquals(a, Arrays.asList(p.getIds()));
+        a.addAll(l1.getIds());
+        a.addAll(l2.getIds());
+        assertEquals(a, p.getIds());
         assertNull(p.retrieveItem("ID"));
         assertNull(p.retrieveItem(""));
         assertNull(p.retrieveItem(null));

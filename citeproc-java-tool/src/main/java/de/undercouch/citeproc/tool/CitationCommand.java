@@ -4,6 +4,7 @@ import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.output.Citation;
 
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -22,7 +23,8 @@ public class CitationCommand extends BibliographyCommand {
     }
 
     @Override
-    protected void doGenerateCSL(CSL citeproc, String[] citationIds, PrintWriter out) {
+    protected void doGenerateCSL(CSL citeproc, Collection<String> citationIds,
+            PrintWriter out) {
         List<Citation> cits = citeproc.makeCitation(citationIds);
         for (Citation c : cits) {
             out.println(c.getText());

@@ -6,7 +6,6 @@ import de.undercouch.underline.InputReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class ListCommand extends AbstractCSLToolCommand implements ProviderComma
     public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
             throws IOException {
         // list available citation ids and exit
-        List<String> ids = new ArrayList<>(Arrays.asList(getProvider().getIds()));
+        List<String> ids = new ArrayList<>(getProvider().getIds());
         Collections.sort(ids);
         for (String id : ids) {
             out.println(id);

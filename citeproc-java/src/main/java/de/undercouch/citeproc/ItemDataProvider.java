@@ -2,6 +2,8 @@ package de.undercouch.citeproc;
 
 import de.undercouch.citeproc.csl.CSLItemData;
 
+import java.util.Collection;
+
 /**
  * Retrieves citation items
  * @author Michel Kraemer
@@ -15,7 +17,7 @@ public interface ItemDataProvider {
     CSLItemData retrieveItem(String id);
 
     /**
-     * @return an array of all item IDs this provider can serve
+     * @return all item IDs this provider can serve
      */
-    String[] getIds();
+    Collection<String> getIds();
 }

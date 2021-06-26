@@ -66,7 +66,7 @@ public abstract class CitationIdsCommand extends AbstractCSLToolCommand implemen
                 StringBuilder message = new StringBuilder("unknown citation id: " + id);
 
                 // find alternatives
-                List<String> availableIds = Arrays.asList(provider.getIds());
+                Collection<String> availableIds = provider.getIds();
                 if (!availableIds.isEmpty()) {
                     Collection<String> mins = Levenshtein.findSimilar(availableIds, id);
                     if (mins.size() > 0) {

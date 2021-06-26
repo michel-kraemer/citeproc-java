@@ -3,6 +3,8 @@ package de.undercouch.citeproc;
 import de.undercouch.citeproc.csl.CSLItemData;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,7 @@ public class ListItemDataProvider implements ItemDataProvider {
     /**
      * The items that this provider holds
      */
-    protected Map<String, CSLItemData> items = new LinkedHashMap<>();
+    protected final Map<String, CSLItemData> items;
 
     /**
      * Creates a data provider that serves items from the given array
@@ -30,9 +32,11 @@ public class ListItemDataProvider implements ItemDataProvider {
      * @param items the items to serve
      */
     public ListItemDataProvider(List<CSLItemData> items) {
+        Map<String, CSLItemData> is = new LinkedHashMap<>();
         for (CSLItemData i : items) {
-            this.items.put(i.getId(), i);
+            is.put(i.getId(), i);
         }
+        this.items = is;
     }
 
     @Override
@@ -41,12 +45,7 @@ public class ListItemDataProvider implements ItemDataProvider {
     }
 
     @Override
-    public String[] getIds() {
-        String[] ids = new String[items.size()];
-        int i = 0;
-        for (Map.Entry<String, CSLItemData> e : items.entrySet()) {
-            ids[i++] = e.getKey();
-        }
-        return ids;
+    public Collection<String> getIds() {
+        return Collections.unmodifiableSet(items.keySet());
     }
 }

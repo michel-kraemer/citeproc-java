@@ -26,6 +26,8 @@ import java.io.StringReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -368,25 +370,23 @@ public class FixturesTest {
         }
 
         // get the item IDs to test against
-        String[][] itemIds;
+        List<Collection<String>> itemIds;
         List<Object> itemIdsListObj = (List<Object>)data.get("itemIds");
         if (itemIdsListObj != null && !itemIdsListObj.isEmpty() &&
                 itemIdsListObj.get(0) instanceof String) {
-            itemIds = new String[1][];
-            itemIds[0] = new String[itemIdsListObj.size()];
-            for (int i = 0; i < itemIdsListObj.size(); i++) {
-                Object o = itemIdsListObj.get(i);
-                itemIds[0][i] = (String)o;
+            ArrayList<String> iis = new ArrayList<>();
+            for (Object o : itemIdsListObj) {
+                iis.add((String)o);
             }
+            itemIds = Collections.singletonList(iis);
         } else if (itemIdsListObj != null) {
-            itemIds = new String[itemIdsListObj.size()][];
-            for (int i = 0; i < itemIdsListObj.size(); i++) {
-                List<String> l = (List<String>)itemIdsListObj.get(i);
-                itemIds[i] = l.toArray(new String[0]);
+            itemIds = new ArrayList<>();
+            for (Object o : itemIdsListObj) {
+                List<String> l = (List<String>)o;
+                itemIds.add(l);
             }
         } else {
-            itemIds = new String[1][];
-            itemIds[0] = itemDataProvider.getIds();
+            itemIds = Collections.singletonList(itemDataProvider.getIds());
         }
 
         // get the raw citations
@@ -415,7 +415,7 @@ public class FixturesTest {
         citeproc.setConvertLinks(true);
 
         // register citation items
-        for (String[] ii : itemIds) {
+        for (Collection<String> ii : itemIds) {
             citeproc.registerCitationItems(ii);
         }
 

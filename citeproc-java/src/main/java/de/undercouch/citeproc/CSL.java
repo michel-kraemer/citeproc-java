@@ -503,7 +503,7 @@ public class CSL {
      * should be ignored
      * @return a list of registered citation item data
      */
-    private List<CSLItemData> registerItems(String[] ids,
+    private List<CSLItemData> registerItems(Collection<String> ids,
             Set<CSLItemData> updatedItems, boolean unsorted) {
         List<CSLItemData> result = new ArrayList<>();
         SSort.SortComparator comparator = null;
@@ -636,6 +636,35 @@ public class CSL {
      * citation item data that does not exist
      */
     public void registerCitationItems(String[] ids, boolean unsorted) {
+        registerCitationItems(Arrays.asList(ids), unsorted);
+    }
+
+    /**
+     * Introduces the given citation IDs to the processor. The processor will
+     * call {@link ItemDataProvider#retrieveItem(String)} for each ID to get
+     * the respective citation item. The retrieved items will be added to the
+     * bibliography, so you don't have to call {@link #makeCitation(String...)}
+     * for each of them anymore.
+     * @param ids the IDs to register
+     * @throws IllegalArgumentException if one of the given IDs refers to
+     * citation item data that does not exist
+     */
+    public void registerCitationItems(Collection<String> ids) {
+        registerCitationItems(ids, false);
+    }
+
+    /**
+     * Introduces the given citation IDs to the processor. The processor will
+     * call {@link ItemDataProvider#retrieveItem(String)} for each ID to get
+     * the respective citation item. The retrieved items will be added to the
+     * bibliography, so you don't have to call {@link #makeCitation(String...)}
+     * for each of them anymore.
+     * @param ids the IDs to register
+     * @param unsorted true if items should not be sorted in the bibliography
+     * @throws IllegalArgumentException if one of the given IDs refers to
+     * citation item data that does not exist
+     */
+    public void registerCitationItems(Collection<String> ids, boolean unsorted) {
         registeredItems.clear();
         sortedItems.clear();
         registerItems(ids, null, unsorted);
@@ -662,9 +691,25 @@ public class CSL {
      * citation item data that does not exist
      */
     public List<Citation> makeCitation(String... ids) {
-        CSLCitationItem[] items = new CSLCitationItem[ids.length];
-        for (int i = 0; i < ids.length; ++i) {
-            items[i] = new CSLCitationItem(ids[i]);
+        return makeCitation(Arrays.asList(ids));
+    }
+
+    /**
+     * Generates citation strings that can be inserted into the text. The
+     * method calls {@link ItemDataProvider#retrieveItem(String)} for each of the given
+     * IDs to request the corresponding citation item. Additionally, it saves
+     * the IDs, so {@link #makeBibliography()} will generate a bibliography
+     * that only consists of the retrieved citation items.
+     * @param ids IDs of citation items for which strings should be generated
+     * @return citations strings that can be inserted into the text
+     * @throws IllegalArgumentException if one of the given IDs refers to
+     * citation item data that does not exist
+     */
+    public List<Citation> makeCitation(Collection<String> ids) {
+        CSLCitationItem[] items = new CSLCitationItem[ids.size()];
+        int i = 0;
+        for (String id : ids) {
+            items[i++] = new CSLCitationItem(id);
         }
         return makeCitation(new CSLCitation(items));
     }
@@ -683,11 +728,11 @@ public class CSL {
             Set<CSLItemData> updatedItems) {
         // get item IDs
         int len = citation.getCitationItems().length;
-        String[] itemIds = new String[len];
+        List<String> itemIds = new ArrayList<>(len);
         CSLCitationItem[] items = citation.getCitationItems();
         for (int i = 0; i < len; i++) {
             CSLCitationItem item = items[i];
-            itemIds[i] = item.getId();
+            itemIds.add(item.getId());
         }
 
         // register items
