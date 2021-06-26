@@ -2,18 +2,20 @@ package de.undercouch.citeproc.csl.internal.rendering;
 
 import de.undercouch.citeproc.csl.internal.CountingVariableListener;
 import de.undercouch.citeproc.csl.internal.RenderContext;
-import de.undercouch.citeproc.csl.internal.SRenderingElementContainer;
+import de.undercouch.citeproc.csl.internal.SRenderingElementContainerElement;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
+import java.util.List;
+
 /**
  * A group of rendering elements from a style file
  * @author Michel Kraemer
  */
-public class SGroup extends SRenderingElementContainer implements SRenderingElement {
+public class SGroup extends SRenderingElementContainerElement implements SRenderingElement {
     private final Affixes affixes;
     private final int formattingAttributes;
     private final String delimiter;
@@ -39,6 +41,7 @@ public class SGroup extends SRenderingElementContainer implements SRenderingElem
         RenderContext child = new RenderContext(ctx);
         CountingVariableListener vl = new CountingVariableListener();
         child.addVariableListener(vl);
+        List<SRenderingElement> elements = getElements(ctx);
         for (SRenderingElement e : elements) {
             RenderContext tmp = new RenderContext(child);
             e.render(tmp);

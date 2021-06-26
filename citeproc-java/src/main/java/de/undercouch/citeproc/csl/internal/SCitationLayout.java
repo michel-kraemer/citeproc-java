@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * A layout element inside a citation element in a style file
  * @author Michel Kraemer
  */
-public class SCitationLayout extends SRenderingElementContainer {
+public class SCitationLayout extends SRenderingElementContainerElement {
     private static final CharSet PUNCTUATION_END = CharSet.getInstance(":.,;!?)]&");
     private static final CharSet PUNCTUATION_START = CharSet.getInstance("([&");
     private static final Pattern TRIM_END = Pattern.compile("\\p{Space}+$");

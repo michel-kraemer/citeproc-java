@@ -15,7 +15,7 @@ import java.util.List;
  * children to render
  * @author Michel Kraemer
  */
-public class SChoose implements SRenderingElement {
+public class SChoose {
     private final List<SCondition> conditions = new ArrayList<>();
 
     /**
@@ -58,13 +58,14 @@ public class SChoose implements SRenderingElement {
         }
     }
 
-    @Override
-    public void render(RenderContext ctx) {
+    public List<SRenderingElement> evaluate(RenderContext ctx) {
+        List<SRenderingElement> result = new ArrayList<>();
         for (SCondition c : conditions) {
             if (c.matches(ctx)) {
-                c.render(ctx);
+                result.addAll(c.getElements(ctx));
                 break;
             }
         }
+        return result;
     }
 }

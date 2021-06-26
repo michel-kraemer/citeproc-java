@@ -5,11 +5,13 @@ import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.rendering.SRenderingElement;
 import org.w3c.dom.Node;
 
+import java.util.List;
+
 /**
  * A layout element in a style file
  * @author Michel Kraemer
  */
-public class SLayout extends SRenderingElementContainer {
+public class SLayout extends SRenderingElementContainerElement {
     private final Affixes affixes;
     private final int formattingAttributes;
 
@@ -30,6 +32,7 @@ public class SLayout extends SRenderingElementContainer {
 
     private void renderInternal(RenderContext ctx) {
         RenderContext tmp = new RenderContext(ctx);
+        List<SRenderingElement> elements = getElements(ctx);
         for (int i = 0; i < elements.size(); i++) {
             SRenderingElement e = elements.get(i);
             if (i == 0) {

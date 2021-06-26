@@ -12,14 +12,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * A container for style elements. Renders all elements at once.
+ * A container for style elements
  * @author Michel Kraemer
  */
-public class SRenderingElementContainer implements SElement {
-    protected List<SRenderingElement> elements = new ArrayList<>();
+public class SRenderingElementContainer {
+    private final List<Object> rawElements = new ArrayList<>();
 
     /**
      * Construct the container from an XML node
@@ -30,7 +31,7 @@ public class SRenderingElementContainer implements SElement {
         for (int i = 0; i < children.getLength(); ++i) {
             Node c = children.item(i);
             String nodeName = c.getNodeName();
-            SRenderingElement element = null;
+            Object element = null;
             if ("choose".equals(nodeName)) {
                 element = new SChoose(c);
             } else if ("date".equals(nodeName)) {
@@ -47,13 +48,27 @@ public class SRenderingElementContainer implements SElement {
                 element = new SText(c);
             }
             if (element != null) {
-                elements.add(element);
+                rawElements.add(element);
             }
         }
     }
 
-    @Override
-    public void render(RenderContext ctx) {
-        elements.forEach(e -> e.render(ctx));
+    public List<SRenderingElement> getElements(RenderContext ctx) {
+        if (rawElements.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<SRenderingElement> result = new ArrayList<>();
+        for (Object o : rawElements) {
+            if (o instanceof SRenderingElement) {
+                result.add((SRenderingElement)o);
+            } else if (o instanceof SChoose) {
+                SChoose choose = (SChoose)o;
+                result.addAll(choose.evaluate(ctx));
+            } else {
+                throw new RuntimeException("Unknown raw element type: " + o.getClass());
+            }
+        }
+        return result;
     }
 }
