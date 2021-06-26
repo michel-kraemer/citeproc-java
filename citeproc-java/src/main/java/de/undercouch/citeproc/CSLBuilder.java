@@ -6,9 +6,7 @@ import java.io.IOException;
  * <p>Builder for {@link CSL} objects.</p>
  *
  * <p>Please read the javadoc of the {@link CSL} class for more information
- * about its usage. In particular, take note of the 'Cleanup' section to
- * correctly release all resources when you're done with the citation
- * processor.</p>
+ * about its usage.</p>
  *
  * @author Michel Kraemer
  */
@@ -78,6 +76,14 @@ public class CSLBuilder {
      * @throws IOException if the CSL style could not be loaded
      */
     public CSL build() throws IOException {
+        if (itemDataProvider == null) {
+            throw new IllegalArgumentException("Cannot construct a CSL " +
+                    "object without an ItemDataProvider");
+        }
+        if (style == null) {
+            throw new IllegalArgumentException("Cannot construct a CSL " +
+                    "object without a citation style");
+        }
         return new CSL(itemDataProvider, localeProvider, abbreviationProvider, style, lang);
     }
 }
