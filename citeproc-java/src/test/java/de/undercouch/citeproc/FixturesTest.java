@@ -9,8 +9,16 @@ import de.undercouch.citeproc.helper.json.JsonParser;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Engine;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Source;
+import org.graalvm.polyglot.Value;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.ParseException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -24,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +53,7 @@ public class FixturesTest {
     private static final String FIXTURES_DIR = "/fixtures";
     private static final String TEST_SUITE_DIR = "/test-suite/processor-tests/humans";
     private static final String TEST_SUITE_OVERRIDES_DIR = "/test-suite-overrides";
+    private static final String CITEPROC_JS_FILE = "/citeproc-js/citeproc.js";
     private static final Map<String, ItemDataProvider> bibliographyFileCache = new HashMap<>();
 
     /**
@@ -65,6 +75,37 @@ public class FixturesTest {
      * The test data
      */
     private final Map<String, Object> data;
+
+    /**
+     * Shared JavaScript engine
+     */
+    private static Engine engine;
+
+    /**
+     * Source of citeproc.js
+     */
+    private static Source citeprocJsSource;
+
+    /**
+     * Initialize shared JavaScript engine
+     */
+    @BeforeClass
+    public static void startUpClass() throws IOException {
+        engine = Engine.create();
+
+        URL citeprocJsUrl = FixturesTest.class.getResource(CITEPROC_JS_FILE);
+        assert citeprocJsUrl != null;
+        String citeprocJs = IOUtils.toString(citeprocJsUrl, StandardCharsets.UTF_8);
+        citeprocJsSource = Source.create("js", citeprocJs);
+    }
+
+    /**
+     * Close shared JavaScript engine
+     */
+    @AfterClass
+    public static void tearDownClass() {
+        engine.close();
+    }
 
     /**
      * Get a map of expected results from test fixture data
@@ -184,9 +225,9 @@ public class FixturesTest {
     @Parameterized.Parameters(name = "{0}, {1}, {2}")
     @SuppressWarnings("unchecked")
     public static Iterable<Object[]> data() {
-        URL fixturesUrl = CSL.class.getResource(FIXTURES_DIR);
-        URL testSuiteUrl = CSL.class.getResource(TEST_SUITE_DIR);
-        URL testSuiteOverridesUrl = CSL.class.getResource(TEST_SUITE_OVERRIDES_DIR);
+        URL fixturesUrl = FixturesTest.class.getResource(FIXTURES_DIR);
+        URL testSuiteUrl = FixturesTest.class.getResource(TEST_SUITE_DIR);
+        URL testSuiteOverridesUrl = FixturesTest.class.getResource(TEST_SUITE_OVERRIDES_DIR);
         File fixturesDir = new File(fixturesUrl.getPath());
         File testSuiteDir = new File(testSuiteUrl.getPath());
         File testSuiteOverridesDir = new File(testSuiteOverridesUrl.getPath());
@@ -409,6 +450,19 @@ public class FixturesTest {
             }
         }
 
+        String actualResult;
+        if (experimentalMode) {
+            actualResult = applyCSL(mode, style, itemDataProvider, itemIds, citations);
+        } else {
+            actualResult = applyCiteprocJs(mode, style, itemDataProvider, itemIds, citations);
+        }
+
+        // compare result
+        assertEquals(expectedResult, actualResult);
+    }
+
+    private String applyCSL(String mode, String style, ItemDataProvider itemDataProvider,
+            List<Collection<String>> itemIds, List<CSLCitation> citations) throws IOException {
         // create CSL processor
         CSL citeproc = new CSL(itemDataProvider, style);
         citeproc.setOutputFormat(outputFormat);
@@ -441,9 +495,95 @@ public class FixturesTest {
         } else {
             throw new IllegalStateException("Unknown mode: " + mode);
         }
+        return actualResult;
+    }
 
-        // compare result
-        assertEquals(expectedResult, actualResult);
+    private String applyCiteprocJs(String mode, String style, ItemDataProvider itemDataProvider,
+            List<Collection<String>> itemIds, List<CSLCitation> citations) throws IOException {
+        // load style if necessary
+        if (!style.trim().startsWith("<")) {
+            if (!style.endsWith(".csl")) {
+                style = style + ".csl";
+            }
+            if (!style.startsWith("/")) {
+                style = "/" + style;
+            }
+            URL styleUrl = CSL.class.getResource(style);
+            assert styleUrl != null;
+            style = IOUtils.toString(styleUrl, StandardCharsets.UTF_8);
+        }
+
+        try (Context context = Context.newBuilder("js")
+                .engine(engine)
+                .allowHostAccess(HostAccess.ALL)
+                .allowHostClassLookup(className -> true)
+                .build()) {
+            context.eval(citeprocJsSource);
+
+            Value bindings = context.getBindings("js");
+            bindings.putMember("style", style);
+            bindings.putMember("itemDataProvider", itemDataProvider);
+            bindings.putMember("itemIds", itemIds);
+            bindings.putMember("outputFormat", outputFormat);
+            bindings.putMember("citations", citations);
+
+            LocaleProvider localeProvider = new DefaultLocaleProvider();
+            bindings.putMember("localeProvider", localeProvider);
+
+            context.eval("js",
+                "let StringJsonBuilderFactory = Java.type('de.undercouch.citeproc.helper.json.StringJsonBuilderFactory')\n" +
+                "let jsonFactory = new StringJsonBuilderFactory()\n");
+
+            context.eval("js",
+                    "let sys = {\n" +
+                        "retrieveLocale: function(lang) { return localeProvider.retrieveLocale(lang) },\n" +
+                        "retrieveItem: function(id) {\n" +
+                            "let item = itemDataProvider.retrieveItem(id)\n" +
+                            "let jsonBuilder = jsonFactory.createJsonBuilder()\n" +
+                            "return JSON.parse(item.toJson(jsonBuilder))\n" +
+                        "}\n" +
+                    "}\n" +
+                    "let csl = new CSL.Engine(sys, style)\n" +
+                    "csl.setOutputFormat(outputFormat)\n" +
+                    "csl.opt.development_extensions.wrap_url_and_doi = true\n" +
+                    "for (let ids of itemIds) {\n" +
+                        // convert IDs to native JavaScript array
+                        "let idsArr = []\n" +
+                        "for (let id of ids) { idsArr.push(id) }\n" +
+                        "csl.updateItems(idsArr);\n" +
+                    "}\n");
+
+            String actualResult;
+            if ("bibliography".equals(mode)) {
+                context.eval("js",
+                        "let bibliography = csl.makeBibliography()\n" +
+                        "let biblStr = ''\n" +
+                        "if (bibliography[0].bibstart) biblStr += bibliography[0].bibstart\n" +
+                        "for (let e of bibliography[1]) biblStr += e\n" +
+                        "if (bibliography[0].bibend) biblStr += bibliography[0].bibend\n");
+                actualResult = bindings.getMember("biblStr").asString();
+            } else if ("citation".equals(mode)) {
+                context.eval("js",
+                        "let generatedCitations = []\n" +
+                        "if (citations) {\n" +
+                            "for (let c of citations) {\n" +
+                                "let jsonBuilder = jsonFactory.createJsonBuilder()\n" +
+                                "let obj = JSON.parse(c.toJson(jsonBuilder))\n" +
+                                "let r = csl.appendCitationCluster(obj)\n" +
+                                "generatedCitations.push(r[0][1])\n" +
+                            "}\n" +
+                        "} else {\n" +
+                            "let citation = { citationItems: csl.registry.reflist }\n" +
+                            "let r = csl.appendCitationCluster(citation)\n" +
+                            "generatedCitations.push(r[0][1])\n" +
+                        "}\n" +
+                        "generatedCitations = generatedCitations.join('\\n')\n");
+                actualResult = bindings.getMember("generatedCitations").asString();
+            } else {
+                throw new IllegalStateException("Unknown mode: " + mode);
+            }
+            return actualResult;
+        }
     }
 
     private final static String[] TEST_SUITE_TESTS = new String[] {

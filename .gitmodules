@@ -5,3 +5,4 @@
 [submodule "citeproc-java/src/test/resources/citeproc-js"]
 	path = citeproc-java/src/test/resources/citeproc-js
 	url = https://github.com/Juris-M/citeproc-js.git
+	shallow = true

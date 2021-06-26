@@ -16,4 +16,8 @@ itemIds:
   - Thomas:2004:LLF        # TechReport
 
 result:
-  (comp.lang.awk, 1997; Ghemawat, Gobioff, & Leung, 2003; Giné, Solsona, Hernández, & Luque, 2003; McKusick, 1997; Nisley, 2003; Nye & O’Reilly, 1992; Thomas, Okada, Markstein, & Li, 2004; Weidner, 1997)
+  (comp.lang.awk, 1997; Ghemawat et al., 2003; Giné et al., 2003; McKusick, 1997; Nisley, 2003; Nye & O’Reilly, 1992; Thomas et al., 2004; Weidner, 1997)
+
+# citeproc-js used another title-case algorithm and the titel "comp.lang.awk" is therefore rendered differently
+resultLegacy:
+  (Comp.Lang.Awk, 1997; Ghemawat et al., 2003; Giné et al., 2003; McKusick, 1997; Nisley, 2003; Nye & O’Reilly, 1992; Thomas et al., 2004; Weidner, 1997)

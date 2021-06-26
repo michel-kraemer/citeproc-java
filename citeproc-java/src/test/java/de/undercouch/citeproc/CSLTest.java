@@ -528,8 +528,6 @@ public class CSLTest {
         assertTrue(ss.contains("de-DE"));
         assertTrue(ss.contains("en-US"));
         assertTrue(ss.contains("en-GB"));
-        assertTrue(ss.contains("de"));
-        assertTrue(ss.contains("en"));
     }
 
     /**
