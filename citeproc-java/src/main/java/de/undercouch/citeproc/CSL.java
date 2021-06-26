@@ -231,17 +231,17 @@ public class CSL {
         }
         LLocale locale = new LLocale(localeDocument);
 
-        if (this.style.getLocale() != null &&
-                (this.style.getLocale().getLang() == null ||
-                        (this.style.getLocale().getLang().getLanguage().equals(locale.getLang().getLanguage()) &&
-                                (this.style.getLocale().getLang().getCountry().isEmpty() ||
-                                        this.style.getLocale().getLang().getCountry().equals(locale.getLang().getCountry()))))) {
-            // additional localization data in the style file overrides or
-            // augments the data from the locale file
-            this.locale = locale.merge(this.style.getLocale());
-        } else {
-            this.locale = locale;
+        for (LLocale l : this.style.getLocales()) {
+            if (l.getLang() == null ||
+                    (l.getLang().getLanguage().equals(locale.getLang().getLanguage()) &&
+                            (l.getLang().getCountry().isEmpty() ||
+                                    l.getLang().getCountry().equals(locale.getLang().getCountry())))) {
+                // additional localization data in the style file overrides or
+                // augments the data from the locale file
+                locale = locale.merge(l);
+            }
         }
+        this.locale = locale;
     }
 
     /**

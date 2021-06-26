@@ -1,0 +1,25 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <locale xml:lang="en">
+      <terms>
+        <term name="issue" form="long">Foobar</term>
+      </terms>
+    </locale>
+    <bibliography>
+      <layout>
+        <text term="issue"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+
+result: |
+  Foobar

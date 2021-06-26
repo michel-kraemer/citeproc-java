@@ -7,7 +7,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,7 +17,7 @@ import java.util.Map;
  * @author Michel Kraemer
  */
 public class SStyle {
-    private final LLocale locale;
+    private final List<LLocale> locales;
     private final SCitation citation;
     private final SBibliography bibliography;
     private final Map<String, SMacro> macros = new HashMap<>();
@@ -26,7 +28,7 @@ public class SStyle {
      * @param styleDocument the XML document
      */
     public SStyle(Document styleDocument) {
-        LLocale locale = null;
+        List<LLocale> locales = new ArrayList<>();
         SCitation citation = null;
         SBibliography bibl = null;
 
@@ -37,7 +39,7 @@ public class SStyle {
             String nodeName = c.getNodeName();
             switch (nodeName) {
                 case "locale":
-                    locale = new LLocale(c);
+                    locales.add(new LLocale(c));
                     break;
                 case "citation":
                     citation = new SCitation(c);
@@ -54,7 +56,7 @@ public class SStyle {
             }
         }
 
-        this.locale = locale;
+        this.locales = locales;
         this.citation = citation;
         this.bibliography = bibl;
         this.inheritableNameAttributes = new SNameInheritableAttributes(styleRoot);
@@ -63,11 +65,11 @@ public class SStyle {
     /**
      * Get additional localization data defined in the style file. This
      * data may override or augments information from the locale file
-     * @return the additional localization data (or {@code null} if there
+     * @return the additional localization data (or an empty list if there
      * is no additional information in the style file)
      */
-    public LLocale getLocale() {
-        return locale;
+    public List<LLocale> getLocales() {
+        return locales;
     }
 
     /**
