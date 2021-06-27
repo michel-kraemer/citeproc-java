@@ -1,0 +1,32 @@
+mode: bibliography
+
+style: |
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <group>
+          <choose>
+            <if variable="container-title">
+              <text value="Should not show" />
+            </if>
+          </choose>
+          <text value="Should show anyway" />
+        </group>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+  - id: item2
+    author:
+      - given: Another
+        family: Name
+
+result: |
+  Should show anyway
+  Should show anyway

@@ -241,17 +241,29 @@ public class RenderContext {
      * @throws IllegalArgumentException if the variable is unknown
      */
     public Object getVariable(String name) {
-        Object result = getStringVariable(name);
+        return getVariable(name, false);
+    }
+
+    /**
+     * Get the value of a string, date, or name variable
+     * @param name the variable's name
+     * @param ignoreListeners {@code true} if {@link VariableListener}s should
+     * not be notified about this call.
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the variable is unknown
+     */
+    public Object getVariable(String name, boolean ignoreListeners) {
+        Object result = getStringVariable(name, ignoreListeners);
         if (result != null) {
             return result;
         }
 
-        result = getDateVariable(name);
+        result = getDateVariable(name, ignoreListeners);
         if (result != null) {
             return result;
         }
 
-        return getNameVariable(name);
+        return getNameVariable(name, ignoreListeners);
     }
 
     /**
@@ -261,7 +273,19 @@ public class RenderContext {
      * @throws IllegalArgumentException if the variable is unknown
      */
     public String getStringVariable(String name) {
-        return getStringVariable(name, VariableForm.LONG);
+        return getStringVariable(name, false);
+    }
+
+    /**
+     * Get the value of the string variable with the given name
+     * @param name the variable's name
+     * @param ignoreListeners {@code true} if {@link VariableListener}s should
+     * not be notified about this call.
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the variable is unknown
+     */
+    public String getStringVariable(String name, boolean ignoreListeners) {
+        return getStringVariable(name, VariableForm.LONG, ignoreListeners);
     }
 
     /**
@@ -272,6 +296,19 @@ public class RenderContext {
      * @throws IllegalArgumentException if the variable is unknown
      */
     public String getStringVariable(String name, VariableForm form) {
+        return getStringVariable(name, form, false);
+    }
+
+    /**
+     * Get the value of the string variable with the given name
+     * @param name the variable's name
+     * @param form the variable form to get
+     * @param ignoreListeners {@code true} if {@link VariableListener}s should
+     * not be notified about this call.
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the variable is unknown
+     */
+    public String getStringVariable(String name, VariableForm form, boolean ignoreListeners) {
         String result = null;
         if (!suppressedVariables.contains(name)) {
             switch (name) {
@@ -457,8 +494,10 @@ public class RenderContext {
             }
         }
 
-        for (VariableListener l : variableListeners) {
-            l.onFetchStringVariable(name, result);
+        if (!ignoreListeners) {
+            for (VariableListener l : variableListeners) {
+                l.onFetchStringVariable(name, result);
+            }
         }
 
         return result;
@@ -471,6 +510,18 @@ public class RenderContext {
      * @throws IllegalArgumentException if the date variable is unknown
      */
     public CSLDate getDateVariable(String name) {
+        return getDateVariable(name, false);
+    }
+
+    /**
+     * Get the value of the date variable with the given name
+     * @param name the variable's name
+     * @param ignoreListeners {@code true} if {@link VariableListener}s should
+     * not be notified about this call.
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the date variable is unknown
+     */
+    public CSLDate getDateVariable(String name, boolean ignoreListeners) {
         CSLDate result;
         if (!suppressedVariables.contains(name)) {
             switch (name) {
@@ -500,14 +551,20 @@ public class RenderContext {
             result = null;
         }
 
-        for (VariableListener l : variableListeners) {
-            l.onFetchDateVariable(name, result);
+        if (!ignoreListeners) {
+            for (VariableListener l : variableListeners) {
+                l.onFetchDateVariable(name, result);
+            }
         }
 
         return result;
     }
 
     public CSLName[] getNameVariable(String name) {
+        return getNameVariable(name, false);
+    }
+
+    public CSLName[] getNameVariable(String name, boolean ignoreListeners) {
         CSLName[] result;
         if (!suppressedVariables.contains(name)) {
             switch (name) {
@@ -558,8 +615,10 @@ public class RenderContext {
             result = null;
         }
 
-        for (VariableListener l : variableListeners) {
-            l.onFetchNameVariable(name, result);
+        if (!ignoreListeners) {
+            for (VariableListener l : variableListeners) {
+                l.onFetchNameVariable(name, result);
+            }
         }
 
         return result;

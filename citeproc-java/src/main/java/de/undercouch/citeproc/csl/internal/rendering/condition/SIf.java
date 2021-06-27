@@ -148,7 +148,7 @@ public class SIf extends SCondition {
         if (variables != null) {
             // check the values of the given variables
             for (String v : variables) {
-                Object o = ctx.getVariable(v);
+                Object o = ctx.getVariable(v, true);
                 if (match == ALL && o == null) {
                     return Boolean.FALSE;
                 }
@@ -167,7 +167,7 @@ public class SIf extends SCondition {
         if (isNumerics != null) {
             // check if the given variables are numeric
             for (String v : isNumerics) {
-                Object o = ctx.getVariable(v);
+                Object o = ctx.getVariable(v, true);
                 boolean numeric = o != null && (o instanceof Number ||
                         NumberHelper.isNumeric(String.valueOf(o)));
                 if (match == ALL && !numeric) {
@@ -187,7 +187,7 @@ public class SIf extends SCondition {
     private Boolean matchesNumbers(RenderContext ctx) {
         if (numbers != null) {
             // check if the number variable has the given label(s)
-            String v = ctx.getStringVariable("number");
+            String v = ctx.getStringVariable("number", true);
             String firstLabel = null;
             if (v != null) {
                 List<NumberElement> elements = NumberParser.parse(v);
