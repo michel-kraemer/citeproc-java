@@ -8,6 +8,10 @@ import de.undercouch.citeproc.helper.NodeHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A name element from a style file
  * @author Michel Kraemer
@@ -90,11 +94,17 @@ public class SName implements SElement {
 
     @Override
     public void render(RenderContext ctx) {
-        CSLName[] names = null;
+        List<CSLName> names = new ArrayList<>();
         if (variable != null) {
-            names = ctx.getNameVariable(variable);
+            String[] variables = variable.split("\\s+");
+            for (String v : variables) {
+                CSLName[] vn = ctx.getNameVariable(v);
+                if (vn != null) {
+                    names.addAll(Arrays.asList(vn));
+                }
+            }
         }
-        if (names == null) {
+        if (names.isEmpty()) {
             return;
         }
 
@@ -120,7 +130,7 @@ public class SName implements SElement {
 
         // get the maximum number of names to render before "et al."
         int max = -1;
-        if (etAlMin != null && etAlUseFirst != null && names.length >= etAlMin) {
+        if (etAlMin != null && etAlUseFirst != null && names.size() >= etAlMin) {
             max = etAlUseFirst;
             if (max == 0) {
                 // do not render any name
@@ -130,7 +140,7 @@ public class SName implements SElement {
 
         // shortcut: render number of names
         if (form == FORM_COUNT) {
-            int count = names.length;
+            int count = names.size();
             if (max > -1 && max < count) {
                 count = max;
             }
@@ -139,13 +149,13 @@ public class SName implements SElement {
         }
 
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < names.length; ++i) {
+        for (int i = 0; i < names.size(); ++i) {
             boolean nameAsSort = "all".equals(nameAsSortOrder) ||
                     (i == 0 && "first".equals(nameAsSortOrder));
-            builder.append(render(names[i], nameAsSort, initializeWith,
+            builder.append(render(names.get(i), nameAsSort, initializeWith,
                     initialize, sortSeparator));
 
-            if (i < names.length - 1) {
+            if (i < names.size() - 1) {
                 if (i == max - 1) {
                     // We reached the maximum number of names. Render "et al."
                     // and then break
@@ -156,9 +166,9 @@ public class SName implements SElement {
                 }
 
                 // render delimiter and 'and' term
-                if (i == names.length - 2) {
+                if (i == names.size() - 2) {
                     boolean delimiterAppended = appendDelimiter(builder,
-                            delimiterPrecedesLast, i, names.length > 2);
+                            delimiterPrecedesLast, i, names.size() > 2);
                     if (!delimiterAppended || !renderedAnd.equals(delimiter)) {
                         appendAnd(builder, renderedAnd);
                     }

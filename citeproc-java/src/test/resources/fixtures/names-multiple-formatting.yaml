@@ -1,0 +1,40 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author editor" delimiter="; " suffix=". " font-style="italic">
+          <name and="symbol" initialize-with=". " delimiter=", "/>
+          <label form="short" prefix=", " text-case="title"/>
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: First
+        family: Author
+      - given: Second
+        family: Author
+    editor:
+      - given: First
+        family: Editor
+      - given: Second
+        family: Editor
+    title: My title
+
+resultLegacy:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><i>F. Author &#38; S. Author; F. Editor &#38; S. Editor, Eds.</i> My title</div>
+    </div>
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><span style="font-style: italic">F. Author &amp; S. Author; F. Editor &amp; S. Editor, Eds.</span> My title</div>
+    </div>

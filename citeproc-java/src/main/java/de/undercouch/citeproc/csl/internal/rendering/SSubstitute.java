@@ -35,7 +35,7 @@ public class SSubstitute extends SRenderingElementContainerElement {
         List<SRenderingElement> elements = new ArrayList<>(originalElements.size());
         for (SRenderingElement e : originalElements) {
             if (e instanceof SNames) {
-                e = new SNames(parentNamesNode, ((SNames)e).getVariable(), false);
+                e = new SNames(parentNamesNode, ((SNames)e).getVariableAttribute(), false);
             }
             elements.add(e);
         }
