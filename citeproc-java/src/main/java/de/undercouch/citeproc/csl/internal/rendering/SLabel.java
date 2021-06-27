@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.bibtex.PageParser;
 import de.undercouch.citeproc.bibtex.PageRange;
 import de.undercouch.citeproc.csl.CSLLabel;
+import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.StripPeriods;
@@ -82,6 +83,7 @@ public class SLabel implements SRenderingElement {
         String term = variable;
         boolean plural = false;
         boolean isLocator = false;
+        CSLName[] names;
         if (variable.equals("page")) {
             PageRange range = PageParser.parse(String.valueOf(value));
             plural = range.isMultiplePages();
@@ -106,6 +108,8 @@ public class SLabel implements SRenderingElement {
                     plural = element.isPlural();
                 }
             }
+        } else if ((names = ctx.getNameVariable(variable)) != null) {
+            plural = names.length > 1;
         }
 
         ctx.setLastLabelRendered(this);
