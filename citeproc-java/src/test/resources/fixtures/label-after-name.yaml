@@ -1,0 +1,30 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author" delimiter=", " suffix=". ">
+          <name and="symbol" initialize-with=". " delimiter=", "/>
+        </names>
+        <text variable="title"/>
+        <names variable="editor" delimiter="; " prefix=" (" suffix=")">
+          <name and="symbol" initialize-with=". " delimiter=", "/>
+          <label form="short" prefix=", " text-case="title"/>
+        </names>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: First
+        family: Author
+    editor:
+      - given: First
+        family: Editor
+    title: My title
+
+result: |
+  F. Author. My title (F. Editor, Ed.)

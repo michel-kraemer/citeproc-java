@@ -1,19 +1,24 @@
 package de.undercouch.citeproc.csl.internal.rendering;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.SElement;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A names element from a style file
  * @author Michel Kraemer
  */
 public class SNames implements SRenderingElement {
-    private final SName name;
     private final Affixes affixes;
-    private final SLabel label;
+    private final SName name;
     private final SSubstitute substitute;
+    private final List<SElement> elements = new ArrayList<>();
 
     /**
      * Creates the names element from an XML node
@@ -31,29 +36,38 @@ public class SNames implements SRenderingElement {
      * should be parsed, {@code false} if it should be ignored
      */
     public SNames(Node node, String variable, boolean parseSubstitute) {
-        name = new SName(NodeHelper.findDirectChild(node, "name"), variable);
+        SName name = null;
+        SSubstitute substitute = null;
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); ++i) {
+            Node c = children.item(i);
+            String nodeName = c.getNodeName();
+            SElement element = null;
+            if ("name".equals(nodeName)) {
+                name = new SName(c, variable);
+                element = name;
+            } else if ("label".equals(nodeName)) {
+                element = new SLabel(c, variable);
+            } else if (parseSubstitute && "substitute".equals(nodeName)) {
+                substitute = new SSubstitute(c, node);
+            }
+            if (element != null) {
+                elements.add(element);
+            }
+        }
+
+        if (name == null) {
+            name = new SName(null, variable);
+            elements.add(0, name);
+        }
+
+        this.name = name;
+        this.substitute = substitute;
+
         if (name.getForm() == SName.FORM_COUNT) {
             affixes = new Affixes();
         } else {
             affixes = new Affixes(node);
-        }
-
-        Node labelNode = NodeHelper.findDirectChild(node, "label");
-        if (labelNode != null) {
-            label = new SLabel(labelNode, variable);
-        } else {
-            label = null;
-        }
-
-        if (parseSubstitute) {
-            Node substituteNode = NodeHelper.findDirectChild(node, "substitute");
-            if (substituteNode != null) {
-                substitute = new SSubstitute(substituteNode, node);
-            } else {
-                substitute = null;
-            }
-        } else {
-            substitute = null;
         }
     }
 
@@ -80,10 +94,8 @@ public class SNames implements SRenderingElement {
     }
 
     private void renderInternal(RenderContext ctx) {
-        if (label != null) {
-            label.render(ctx);
+        for (SElement e : elements) {
+            e.render(ctx);
         }
-
-        name.render(ctx);
     }
 }
