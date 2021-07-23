@@ -4,11 +4,14 @@ style:
   <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
     <bibliography>
       <layout>
-        <names variable="author editor" delimiter="; " suffix=". ">
-          <name and="symbol" initialize-with=". " delimiter=", " />
-          <name and="symbol" initialize-with=". " delimiter=", " form="count" />
+        <names variable="author" delimiter=", " suffix=". ">
+          <name and="symbol" initialize-with=". " delimiter=", "/>
         </names>
         <text variable="title"/>
+        <names variable="editor translator" delimiter="; " prefix=" (" suffix=")">
+          <name and="symbol" initialize-with=". " delimiter=", "/>
+          <label form="short" prefix=", " text-case="title"/>
+        </names>
       </layout>
     </bibliography>
   </style>
@@ -28,4 +31,4 @@ items:
     title: My title
 
 result: |
-  4My title
+  F. Author & S. Author. My title (F. Editor & S. Editor, Eds.)

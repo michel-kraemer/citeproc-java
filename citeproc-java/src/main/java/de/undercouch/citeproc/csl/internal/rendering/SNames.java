@@ -51,14 +51,6 @@ public class SNames implements SRenderingElement {
         boolean allFormCount = true;
         Node firstNameNode = null;
         for (String variable : variables) {
-            if (!elements.isEmpty() && delimiter != null) {
-                elements.add((SRenderingElement)ctx -> {
-                    if (!ctx.getResult().isEmpty()) {
-                        ctx.emit(delimiter);
-                    }
-                });
-            }
-
             List<SElement> elementsForVariable = new ArrayList<>();
             SName name = null;
             Node nameNode = null;
@@ -93,7 +85,20 @@ public class SNames implements SRenderingElement {
 
             allFormCount = allFormCount && name.getForm() == SName.FORM_COUNT;
 
-            elements.addAll(elementsForVariable);
+            if (!elements.isEmpty() && delimiter != null) {
+                elements.add((SRenderingElement)ctx -> {
+                    RenderContext tmp = new RenderContext(ctx);
+                    for (SElement e : elementsForVariable) {
+                        e.render(tmp);
+                    }
+                    if (!tmp.getResult().isEmpty()) {
+                        ctx.emit(delimiter);
+                        ctx.emit(tmp.getResult());
+                    }
+                });
+            } else {
+                elements.addAll(elementsForVariable);
+            }
         }
 
         this.variableAttribute = variableAttribute;
