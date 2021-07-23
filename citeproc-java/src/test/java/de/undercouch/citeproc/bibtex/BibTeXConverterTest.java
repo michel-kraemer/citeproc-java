@@ -4,12 +4,14 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLType;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
+import org.jbibtex.BibTeXParser;
 import org.jbibtex.Key;
 import org.jbibtex.ParseException;
 import org.jbibtex.StringValue;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -170,5 +172,48 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         CSLItemData cid = conv.toItemData(e);
         assertEquals("CSL 'type' not set", CSLType.THESIS, cid.getType());
         assertEquals("CSL 'genre' not set", "Thesis (Ph.D.)", cid.getGenre());
+    }
+
+    /**
+     * Test if a chapter in a book series is converted correctly
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void inBookSeries() throws ParseException {
+        String entry = "@incollection{kraemer-2021,\n" +
+                "  author    = {Michel Krämer},\n" +
+                "  editor    = {Hammoudi, Slimane and Quix, Christoph and Bernardino, Jorge},\n" +
+                "  title     = {Efficient Scheduling of Scientific Workflow Actions in the\n" +
+                "    Cloud Based on Required Capabilities},\n" +
+                "  booktitle = {Data Management Technologies and Applications},\n" +
+                "  year      = {2021},\n" +
+                "  publisher = {Springer International Publishing},\n" +
+                "  address   = {Cham},\n" +
+                "  volume    = {1446},\n" +
+                "  series    = {Communications in Computer and Information Science},\n" +
+                "  pages     = {32--55},\n" +
+                "  isbn      = {978-3-030-83014-4},\n" +
+                "  doi       = {10.1007/978-3-030-83014-4_2}\n" +
+        "}";
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("kraemer-2021");
+        assertEquals(CSLType.CHAPTER, item.getType());
+        assertEquals(1, item.getAuthor().length);
+        assertEquals(3, item.getEditor().length);
+        assertEquals("Efficient Scheduling of Scientific Workflow Actions " +
+                "in the Cloud Based on Required Capabilities", item.getTitle());
+        assertEquals("Data Management Technologies and Applications",
+                item.getContainerTitle());
+        assertEquals("Communications in Computer and Information Science",
+                item.getCollectionTitle());
+        assertEquals("1446", item.getVolume());
+        assertEquals(2021, item.getIssued().getDateParts()[0][0]);
+        assertEquals("Springer International Publishing", item.getPublisher());
+        assertEquals("Cham", item.getPublisherPlace());
+        assertEquals("32", item.getPageFirst());
+        assertEquals("978-3-030-83014-4", item.getISBN());
+        assertEquals("10.1007/978-3-030-83014-4_2", item.getDOI());
     }
 }

@@ -228,6 +228,18 @@ public class BibTeXConverter {
             builder.containerTitle(entries.get(FIELD_SERIES));
             builder.collectionTitle(entries.get(FIELD_SERIES));
         }
+        if (entries.containsKey(FIELD_SERIES)) {
+            if (entries.containsKey(FIELD_JOURNAL)) {
+                builder.containerTitle(entries.get(FIELD_JOURNAL));
+                builder.collectionTitle(entries.get(FIELD_SERIES));
+            } else if (entries.containsKey(FIELD_JOURNALTITLE)) {
+                builder.containerTitle(entries.get(FIELD_JOURNALTITLE));
+                builder.collectionTitle(entries.get(FIELD_SERIES));
+            } else if (entries.containsKey(FIELD_BOOKTITLE)) {
+                builder.containerTitle(entries.get(FIELD_BOOKTITLE));
+                builder.collectionTitle(entries.get(FIELD_SERIES));
+            }
+        }
 
         // map number and issue
         builder.number(entries.get(FIELD_NUMBER));
