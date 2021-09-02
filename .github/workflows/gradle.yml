@@ -24,7 +24,7 @@ jobs:
       run: bash <(curl -s https://codecov.io/bash)
 
   publishDockerImage:
-    needs: [build, runTestSuite]
+    needs: [build]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
