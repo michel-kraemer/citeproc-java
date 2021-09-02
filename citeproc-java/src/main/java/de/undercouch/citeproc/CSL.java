@@ -979,10 +979,7 @@ public class CSL {
 
     /**
      * Creates an ad hoc bibliography from the given citation items using the
-     * <code>"html"</code> output format. Calling this method is rather
-     * expensive as it initializes the CSL processor. If you need to create
-     * bibliographies multiple times in your application you should create
-     * the processor yourself and cache it if necessary.
+     * <code>"html"</code> output format.
      * @param style the citation style to use. May either be a serialized
      * XML representation of the style or a style's name such as <code>ieee</code>.
      * In the latter case, the processor loads the style from the classpath (e.g.
@@ -999,10 +996,7 @@ public class CSL {
     }
 
     /**
-     * Creates an ad hoc bibliography from the given citation items. Calling
-     * this method is rather expensive as it initializes the CSL processor.
-     * If you need to create bibliographies multiple times in your application
-     * you should create the processor yourself and cache it if necessary.
+     * Creates an ad hoc bibliography from the given citation items.
      * @param style the citation style to use. May either be a serialized
      * XML representation of the style or a style's name such as <code>ieee</code>.
      * In the latter case, the processor loads the style from the classpath (e.g.
@@ -1012,8 +1006,7 @@ public class CSL {
      * <code>"fo"</code>, or <code>"rtf"</code>)
      * @param items the citation items to add to the bibliography
      * @return the bibliography
-     * @throws IOException if the underlying JavaScript files or the CSL style
-     * could not be loaded
+     * @throws IOException if the CSL style could not be loaded
      */
     public static Bibliography makeAdhocBibliography(String style, String outputFormat,
             CSLItemData... items) throws IOException {
