@@ -72,11 +72,17 @@ public class SDate implements SRenderingElement {
     }
 
     private void renderInternal(RenderContext ctx) {
-        CSLDate date = ctx.getDateVariable(variable);
+        // fetch date variable but don't notify listeners until we know
+        // if we need to render anything or not
+        CSLDate date = ctx.getDateVariable(variable, true);
+
         if (date == null) {
+            // notify listeners that the variable was empty
+            ctx.getVariableListeners().forEach(v -> v.onFetchDateVariable(variable, null));
             return;
         }
 
+        boolean notifyListenersEmpty = true;
         if (date.getDateParts() != null && date.getDateParts().length > 0) {
             int[] first = date.getDateParts()[0];
             int[] last = date.getDateParts()[date.getDateParts().length - 1];
@@ -160,9 +166,19 @@ public class SDate implements SRenderingElement {
             merge(left, right, result);
 
             // emit the final result
+            notifyListenersEmpty = result.getResult().isEmpty();
             ctx.emit(result.getResult());
         } else if (date.getRaw() != null) {
+            notifyListenersEmpty = date.getRaw().isEmpty();
             ctx.emit(date.getRaw());
+        }
+
+        if (notifyListenersEmpty) {
+            // notify listeners that we did not render anything
+            ctx.getVariableListeners().forEach(v -> v.onFetchDateVariable(variable, null));
+        } else {
+            // notify listeners that we actually rendered something
+            ctx.getVariableListeners().forEach(v -> v.onFetchDateVariable(variable, date));
         }
     }
 

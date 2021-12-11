@@ -738,6 +738,14 @@ public class RenderContext {
     }
 
     /**
+     * Get the set of variable listeners
+     * @return the set
+     */
+    public Set<VariableListener> getVariableListeners() {
+        return variableListeners;
+    }
+
+    /**
      * Save the last label rendered
      * @param label the label (may be {@code null})
      */
