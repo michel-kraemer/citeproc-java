@@ -10,8 +10,8 @@ dependencies {
     implementation 'de.undercouch:underline:1.0.0'
     implementation 'org.jline:jline:3.16.0'
 
-    runtime 'org.citationstyles:styles:21.3'
-    runtime 'org.citationstyles:locales:21.3'
+    runtime 'org.citationstyles:styles:21.10'
+    runtime 'org.citationstyles:locales:21.10'
 }
 
 mainClassName = 'de.undercouch.citeproc.CSLTool'

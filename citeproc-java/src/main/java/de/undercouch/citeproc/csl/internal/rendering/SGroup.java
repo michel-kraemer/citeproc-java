@@ -60,6 +60,13 @@ public class SGroup extends SRenderingElementContainerElement implements SRender
 
         if (!allEmpty && !child.getResult().isEmpty()) {
             ctx.emit(child.getResult(), formattingAttributes);
+
+            // This group has been rendered and so should any parent group:
+            // To achieve this, we pretend we called a variable with a non-null
+            // value. This will make the parent variable listeners count this
+            // variable and, therefore, force the parent group to be rendered.
+            ctx.getVariableListeners().forEach(l -> l.onFetchStringVariable(
+                    "__dummy_group_variable", "__dummy_value"));
         }
     }
 }
