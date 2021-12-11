@@ -75,14 +75,14 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
         assertEquals("[1]S. C. Johnson and B. W. Kernighan, \u201cThe Programming Language B,\u201d "
                 + "Bell Laboratories, Murray Hill, NJ, USA, Technical report 8, 1973.\n", b.getEntries()[0]);
         assertEquals("[2]D. M. Ritchie and K. Thompson, \u201cThe UNIX time-sharing system,\u201d "
-                + "Operating Systems Review, vol. 7, no. 4, Art. no. 4, Oct. 1973.\n", b.getEntries()[1]);
+                + "Operating Systems Review, vol. 7, Art. no. 4, Oct. 1973.\n", b.getEntries()[1]);
         assertEquals("[3]D. W. Ritchie and K. Thompson, \u201cThe UNIX Time-Sharing System,\u201d "
-                + "Communications of the Association for Computing Machinery, vol. 17, no. 7, Art. no. 7, "
+                + "Communications of the Association for Computing Machinery, vol. 17, Art. no. 7, "
                 + "Jul. 1974.\n", b.getEntries()[2]);
         assertEquals("[4]H. Lycklama, \u201cUNIX Time-Sharing System: UNIX on a Microprocessor,\u201d "
-                + "The Bell System Technical Journal, vol. 57, no. 6, Art. no. 6, "
+                + "The Bell System Technical Journal, vol. 57, Art. no. 6, "
                 + "Jul.\u2013Aug. 1978, [Online]. Available: "
-                + "http://bstj.bell-labs.com/BSTJ/images/Vol57/bstj57-6-2087.pdf.\n", b.getEntries()[3]);
+                + "http://bstj.bell-labs.com/BSTJ/images/Vol57/bstj57-6-2087.pdf\n", b.getEntries()[3]);
     }
 
     /**
@@ -179,7 +179,7 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 
         Bibliography b = citeproc.makeBibliography();
         assertEquals(1, b.getEntries().length);
-        assertEquals("Sterling, T. L. (Ed.). (2001). Beowulf Cluster Computing with Linux "
+        assertEquals("Sterling, T. L. (2001). Beowulf Cluster Computing with Linux "
                 + "(p. xxxiii + 496). MIT Press.\n", b.getEntries()[0]);
 
         // compare with another item from the unix database
@@ -200,13 +200,13 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
         BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
         sys.addDatabase(db);
 
-        citeproc.reset();
+        citeproc = new CSL(sys, "apa");
         citeproc.setOutputFormat("text");
         sys.registerCitationItems(citeproc);
 
         Bibliography b2 = citeproc.makeBibliography();
         assertEquals(1, b2.getEntries().length);
-        assertEquals("Rice, J. (Ed.). (1993). Five steps to HP-UX. OnWord Press.\n", b2.getEntries()[0]);
+        assertEquals("Rice, J. (1993). Five steps to HP-UX. OnWord Press.\n", b2.getEntries()[0]);
     }
 
     /**

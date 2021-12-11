@@ -43,10 +43,8 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals("Dennis W.", cid.getAuthor()[0].getGiven());
         assertEquals("Thompson", cid.getAuthor()[1].getFamily());
         assertEquals("Ken", cid.getAuthor()[1].getGiven());
-        assertEquals("Communications of the Association for Computing Machinery", cid.getCollectionTitle());
         assertEquals("Communications of the Association for Computing Machinery", cid.getContainerTitle());
         assertEquals("17", cid.getVolume());
-        assertEquals("7", cid.getIssue());
         assertEquals("7", cid.getNumber());
         assertEquals("11", cid.getNumberOfPages());
         assertEquals("365-375", cid.getPage());
@@ -72,10 +70,8 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals(1, cid.getAuthor().length);
         assertEquals("Lycklama", cid.getAuthor()[0].getFamily());
         assertEquals("H.", cid.getAuthor()[0].getGiven());
-        assertEquals("The Bell System Technical Journal", cid.getCollectionTitle());
         assertEquals("The Bell System Technical Journal", cid.getContainerTitle());
         assertEquals("57", cid.getVolume());
-        assertEquals("6", cid.getIssue());
         assertEquals("6", cid.getNumber());
         assertEquals("15", cid.getNumberOfPages());
         assertEquals("2087-2101", cid.getPage());
@@ -103,10 +99,8 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals("Dennis W.", cid.getAuthor()[0].getGiven());
         assertEquals("Thompson", cid.getAuthor()[1].getFamily());
         assertEquals("Ken", cid.getAuthor()[1].getGiven());
-        assertEquals("Communications of the Association for Computing Machinery", cid.getCollectionTitle());
         assertEquals("Communications of the Association for Computing Machinery", cid.getContainerTitle());
         assertEquals("17", cid.getVolume());
-        assertEquals("7", cid.getIssue());
         assertEquals("7", cid.getNumber());
         assertEquals("11", cid.getNumberOfPages());
         assertEquals("365-375", cid.getPage());

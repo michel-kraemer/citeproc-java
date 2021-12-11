@@ -217,15 +217,11 @@ public class BibTeXConverter {
         // map journal/journaltitle, booktitle, series
         if (entries.containsKey(FIELD_JOURNAL)) {
             builder.containerTitle(entries.get(FIELD_JOURNAL));
-            builder.collectionTitle(entries.get(FIELD_JOURNAL));
         } else if (entries.containsKey(FIELD_JOURNALTITLE)) {
             builder.containerTitle(entries.get(FIELD_JOURNALTITLE));
-            builder.collectionTitle(entries.get(FIELD_JOURNALTITLE));
         } else if (entries.containsKey(FIELD_BOOKTITLE)) {
             builder.containerTitle(entries.get(FIELD_BOOKTITLE));
-            builder.collectionTitle(entries.get(FIELD_BOOKTITLE));
         } else {
-            builder.containerTitle(entries.get(FIELD_SERIES));
             builder.collectionTitle(entries.get(FIELD_SERIES));
         }
         if (entries.containsKey(FIELD_SERIES)) {
@@ -243,11 +239,7 @@ public class BibTeXConverter {
 
         // map number and issue
         builder.number(entries.get(FIELD_NUMBER));
-        if (entries.containsKey(FIELD_ISSUE)) {
-            builder.issue(entries.get(FIELD_ISSUE));
-        } else {
-            builder.issue(entries.get(FIELD_NUMBER));
-        }
+        builder.issue(entries.get(FIELD_ISSUE));
 
         // map publisher, institution, school, organisation
         if (type == CSLType.REPORT) {
