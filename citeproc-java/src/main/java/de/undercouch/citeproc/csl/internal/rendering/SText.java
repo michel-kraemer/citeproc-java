@@ -59,7 +59,12 @@ public class SText implements SRenderingElement {
 
     private void renderInternal(RenderContext ctx) {
         if (variable != null && !variable.isEmpty()) {
-            String v = ctx.getStringVariable(variable, VariableForm.fromString(form));
+            // year-suffix is a special variable that is used to disambiguate
+            // dates. Listeners should not be notified about it
+            boolean ignoreListeners = variable.equals("year-suffix");
+
+            String v = ctx.getStringVariable(variable, VariableForm.fromString(form),
+                    ignoreListeners);
             if (v != null) {
                 switch (variable) {
                     case "page":

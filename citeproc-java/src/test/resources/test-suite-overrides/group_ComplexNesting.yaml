@@ -1,0 +1,13 @@
+# convertLinks is enabled by default in our tests
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">Doe Inc. (n.d.). Retrieved June 1, 1965, from <a href="http://example.com/">http://example.com/</a></div>
+    </div>
+
+resultLegacy:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">Doe Inc. (n.d.). Retrieved June 1, 1965, from <a href="http://example.com/">http://example.com/</a></div>
+    </div>
