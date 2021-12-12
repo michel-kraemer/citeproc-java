@@ -136,7 +136,7 @@ public class CSLTest {
         assertEquals("[4]H. Lycklama, \u201cUNIX Time-Sharing System: UNIX on a Microprocessor,\u201d "
                 + "The Bell System Technical Journal, vol. 57, no. 6, pp. 2087\u20132101, "
                 + "Jul.\u2013Aug. 1978, [Online]. Available: "
-                + "http://bstj.bell-labs.com/BSTJ/images/Vol57/bstj57-6-2087.pdf.\n", b.getEntries()[3]);
+                + "http://bstj.bell-labs.com/BSTJ/images/Vol57/bstj57-6-2087.pdf\n", b.getEntries()[3]);
     }
 
     /**

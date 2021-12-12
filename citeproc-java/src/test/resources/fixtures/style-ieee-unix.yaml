@@ -17,8 +17,8 @@ itemIds:
 
 result: |
   [1]A. Nye and T. O’Reilly, X Toolkit Intrinsics Programming Manual: Motif Edition, Second., vol. 4M. 981 Chestnut Street, Newton, MA 02164, USA: O’Reilly & Associates, Inc., 1992, p. 674.
-  [2]F. Giné, F. Solsona, P. Hernández, and E. Luque, “Dealing with Memory Constraints in a Non-Dedicated Linux Cluster,” The International Journal of High Performance Computing Applications, vol. 17, no. 1, Art. no. 1, 2003.
-  [3]E. Nisley, “Embedded Space: Real-Time Linux,” Dr. Dobb’s Journal of Software Tools, vol. 28, no. 4, Art. no. 4, Apr. 2003, [Online]. Available: http://www.ddj.com/documents/s=7827/ddj0304j/
+  [2]F. Giné, F. Solsona, P. Hernández, and E. Luque, “Dealing with Memory Constraints in a Non-Dedicated Linux Cluster,” The International Journal of High Performance Computing Applications, vol. 17, Art. no. 1, 2003.
+  [3]E. Nisley, “Embedded Space: Real-Time Linux,” Dr. Dobb’s Journal of Software Tools, vol. 28, Art. no. 4, Apr. 2003, [Online]. Available: http://www.ddj.com/documents/s=7827/ddj0304j/
   [4]J. R. Weidner, “A general purpose extended attribute service as a file system layer: with an example client that implements POSIX.6 access control lists,” M.S., UCLA Computer Science Dept., Los Angeles, CA, 1997.
   [5]M. K. McKusick, UNIX kernel internals: September 22-26, 1997, Engineering 819.235. Los Angeles, University Extension, Dept. of Engineering, Information Systems, and Technical Management, Short Course Program: University of California, 1997, p. various.
   [6]“comp.lang.awk.” 1997. [Online]. Available: news:comp.lang.awk
