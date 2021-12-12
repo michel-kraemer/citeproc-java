@@ -1,0 +1,45 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <group delimiter=" ">
+          <names variable="author" suffix=". ">
+            <name initialize-with=". " />
+          </names>
+          <text variable="title"/>
+          <text variable="version" suffix=")" prefix="(" />
+          <text variable="container-title"/>
+        </group>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+    version: "1.0.0 (2021-12-12)"
+    container-title: "My container"
+  - id: item2
+    author:
+        - given: Given
+          family: Name
+    title: My title
+    version: "(2021-12-12) 1.0.0"
+    container-title: "My container"
+  - id: item3
+    author:
+        - given: Given
+          family: Name
+    title: My title
+    version: "(2021-12-12)"
+    container-title: "My container"
+
+result: |
+  G. Name. My title (1.0.0 (2021-12-12)) My container
+  G. Name. My title ((2021-12-12) 1.0.0) My container
+  G. Name. My title ((2021-12-12)) My container

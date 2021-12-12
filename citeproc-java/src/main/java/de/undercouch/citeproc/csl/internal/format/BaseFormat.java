@@ -100,8 +100,9 @@ abstract public class BaseFormat implements Format {
             }
 
             Token t1 = tokens.get(i);
-            if (t1.getType() == Token.Type.PREFIX ||
-                    t1.getType() == Token.Type.SUFFIX ||
+            boolean mergeableSuffix = t1.getType() == Token.Type.SUFFIX &&
+                    !t1.getText().startsWith(")");
+            if (t1.getType() == Token.Type.PREFIX || mergeableSuffix ||
                     t1.getType() == Token.Type.DELIMITER) {
                 // collect as much preceding text as necessary
                 Token t0 = tokens.get(j);
