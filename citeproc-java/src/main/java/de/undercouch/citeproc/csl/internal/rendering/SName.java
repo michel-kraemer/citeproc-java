@@ -229,7 +229,8 @@ public class SName implements SElement {
      * @param and the 'and' term
      */
     private void appendAnd(StringBuilder builder, String and) {
-        if (Character.isWhitespace(builder.charAt(builder.length() - 1)) &&
+        if (builder.length() > 0 &&
+                Character.isWhitespace(builder.charAt(builder.length() - 1)) &&
                 Character.isWhitespace(and.charAt(0))) {
             builder.append(and, 1, and.length());
         } else {
