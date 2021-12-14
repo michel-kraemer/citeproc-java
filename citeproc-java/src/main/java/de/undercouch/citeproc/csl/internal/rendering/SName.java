@@ -251,6 +251,11 @@ public class SName implements SElement {
      */
     private String render(CSLName name, boolean nameAsSort, String initializeWith,
             boolean initialize, String sortSeparator) {
+        // if the 'literal' attribute is set, just return its value and nothing else
+        if (name.getLiteral() != null) {
+            return name.getLiteral();
+        }
+
         // render family name with non-dropping particle
         String family = name.getFamily();
         if (family != null) {
