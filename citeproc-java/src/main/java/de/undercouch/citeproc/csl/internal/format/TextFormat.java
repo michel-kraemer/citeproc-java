@@ -23,7 +23,8 @@ public class TextFormat extends BaseFormat {
     }
 
     @Override
-    protected String doFormatBibliographyEntry(TokenBuffer buffer, RenderContext ctx) {
+    protected String doFormatBibliographyEntry(TokenBuffer buffer,
+            RenderContext ctx, int index) {
         if (!buffer.isEmpty()) {
             buffer.append("\n", Token.Type.TEXT);
         }

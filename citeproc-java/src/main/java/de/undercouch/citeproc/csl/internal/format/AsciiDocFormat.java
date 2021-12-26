@@ -5,20 +5,18 @@ import de.undercouch.citeproc.csl.internal.SBibliography;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.SecondFieldAlign;
-import org.apache.commons.text.StringEscapeUtils;
 
-import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FS_ITALIC;
 import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FW_BOLD;
 import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.VA_SUP;
 
 /**
- * The HTML output format
+ * The AsciiDoc output format
  * @author Michel Kraemer
  */
-public class HtmlFormat extends BaseFormat {
+public class AsciiDocFormat extends BaseFormat {
     @Override
     public String getName() {
-        return "html";
+        return "asciidoc";
     }
 
     @Override
@@ -29,6 +27,13 @@ public class HtmlFormat extends BaseFormat {
     @Override
     protected String doFormatBibliographyEntry(TokenBuffer buffer,
             RenderContext ctx, int index) {
+        String pre;
+        if (index > 0) {
+            pre = "\n";
+        } else {
+            pre = "";
+        }
+
         String result;
 
         SecondFieldAlign sfa = ctx.getStyle().getBibliography().getSecondFieldAlign();
@@ -42,96 +47,101 @@ public class HtmlFormat extends BaseFormat {
             TokenBuffer restBuffer = buffer.copy(i, buffer.getTokens().size());
 
             // render first field and rest independently
-            result = "\n    <div class=\"csl-left-margin\">" + format(firstBuffer) +
-                    "</div><div class=\"csl-right-inline\">" + format(restBuffer) + "</div>\n  ";
+            result = "[.csl-left-margin]##" + format(firstBuffer) +
+                    "##[.csl-right-inline]##" + format(restBuffer) + "##";
         } else {
             result = format(buffer);
         }
 
-        return "  <div class=\"csl-entry\">" + result + "</div>\n";
+        return pre + "[.csl-entry]\n" + result + "\n";
     }
 
     @Override
     protected String doFormatLink(String text, String uri) {
-        return "<a href=\"" + uri + "\">" + text + "</a>";
+        // AsciiDoc renders URLs automatically as links
+        return uri;
     }
 
     @Override
     public Bibliography makeBibliography(String[] entries,
             SBibliography bibliographyElement) {
         SecondFieldAlign sfa = bibliographyElement.getSecondFieldAlign();
-        return new Bibliography(entries, "<div class=\"csl-bib-body\">\n", "</div>",
-                null, null, null, null, null, null, sfa);
+        return new Bibliography(entries, null, null, null, null, null, null,
+                null, null, sfa);
     }
 
     @Override
     protected String escape(String str) {
-        return StringEscapeUtils.escapeHtml4(str);
+        return str.replace("*", "pass:[*]")
+                .replace("_", "pass:[_]")
+                .replace("#", "pass:[#]")
+                .replace("^", "pass:[^]")
+                .replace("~", "pass:[~]")
+                .replace("[[", "pass:[[[]")
+                .replace("  ", "&#160; ");
     }
 
     @Override
     protected String openFontStyle(int fontStyle) {
-        if (fontStyle == FS_ITALIC) {
-            return "<span style=\"font-style: italic\">";
-        } else {
-            return "<span style=\"font-style: oblique\">";
-        }
+        return "__";
     }
 
     @Override
     protected String closeFontStyle(int fontStyle) {
-        return "</span>";
+        return "__";
     }
 
     @Override
     protected String openFontVariant(int fontVariant) {
-        return "<span style=\"font-variant: small-caps\">";
+        return "[.small-caps]#";
     }
 
     @Override
     protected String closeFontVariant(int fontVariant) {
-        return "</span>";
+        return "#";
     }
 
     @Override
     protected String openFontWeight(int fontWeight) {
         if (fontWeight == FW_BOLD) {
-            return "<span style=\"font-weight: bold\">";
-        } else {
-            return "<span style=\"font-weight: 100\">";
+            return "**";
         }
+        return "";
     }
 
     @Override
     protected String closeFontWeight(int fontWeight) {
-        return "</span>";
+        if (fontWeight == FW_BOLD) {
+            return "**";
+        }
+        return "";
     }
 
     @Override
     protected String openTextDecoration(int textDecoration) {
-        return "<span style=\"text-decoration: underline\">";
+        return "[.underline]#";
     }
 
     @Override
     protected String closeTextDecoration(int textDecoration) {
-        return "</span>";
+        return "#";
     }
 
     @Override
     protected String openVerticalAlign(int verticalAlign) {
         if (verticalAlign == VA_SUP) {
-            return "<sup>";
+            return "^";
         } else {
-            return "<sub>";
+            return "~";
         }
     }
 
     @Override
     protected String closeVerticalAlign(int verticalAlign) {
         if (verticalAlign == VA_SUP) {
-            return "</sup>";
+            return "^";
         } else {
-            return "</sub>";
+            return "~";
         }
     }
 }

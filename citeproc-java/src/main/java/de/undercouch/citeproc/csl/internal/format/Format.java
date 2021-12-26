@@ -32,9 +32,10 @@ public interface Format {
     /**
      * Format a bibliography entry
      * @param ctx the render context containing the bibliography entry
+     * @param index the index of the entry
      * @return the formatted entry
      */
-    String formatBibliographyEntry(RenderContext ctx);
+    String formatBibliographyEntry(RenderContext ctx, int index);
 
     /**
      * Create a {@link Bibliography} object with the given entries and

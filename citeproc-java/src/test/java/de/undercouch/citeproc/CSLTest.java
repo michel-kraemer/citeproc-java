@@ -276,10 +276,12 @@ public class CSLTest {
         Bibliography b = citeproc.makeBibliography();
 
         assertEquals(1, b.getEntries().length);
-        assertEquals("[1] M. Kr\u00E4mer, ``citeproc-java: A Citation Style "
-                + "Language (CSL) processor for Java,'' Sep. 09, 2013. "
+        assertEquals("[.csl-entry]\n" +
+                "[.csl-left-margin]##[1]##[.csl-right-inline]##M. Kr\u00E4mer, " +
+                "\u201Cciteproc-java: A Citation Style "
+                + "Language (CSL) processor for Java,\u201D Sep. 09, 2013. "
                 + "http://michel-kraemer.github.io/citeproc-java/ "
-                + "(accessed Sep. 11, 2013).\n", b.getEntries()[0]);
+                + "(accessed Sep. 11, 2013).##\n", b.getEntries()[0]);
     }
 
     /**
@@ -287,7 +289,7 @@ public class CSLTest {
      * @throws Exception if something goes wrong
      */
     @Test
-    public void asciiFOFormat() throws Exception {
+    public void foFormat() throws Exception {
         CSL citeproc = new CSL(new ListItemDataProvider(items), "ieee");
         citeproc.setOutputFormat("fo");
         citeproc.makeCitation(items[0].getId());

@@ -242,11 +242,11 @@ abstract public class BaseFormat implements Format {
     protected abstract String doFormatCitation(TokenBuffer buffer, RenderContext ctx);
 
     @Override
-    public String formatBibliographyEntry(RenderContext ctx) {
+    public String formatBibliographyEntry(RenderContext ctx, int index) {
         TokenBuffer buffer = new TokenBuffer();
         buffer.append(ctx.getResult());
         postProcess(buffer, ctx);
-        return doFormatBibliographyEntry(buffer, ctx);
+        return doFormatBibliographyEntry(buffer, ctx, index);
     }
 
     /**
@@ -254,9 +254,11 @@ abstract public class BaseFormat implements Format {
      * @param buffer the post-processed buffer to format
      * @param ctx the render context holding the original, non-post-processed
      * buffer and parameters
+     * @param index the index of the entry
      * @return the formatted bibliography entry
      */
-    protected abstract String doFormatBibliographyEntry(TokenBuffer buffer, RenderContext ctx);
+    protected abstract String doFormatBibliographyEntry(TokenBuffer buffer,
+            RenderContext ctx, int index);
 
     /**
      * Convert a URL to a link

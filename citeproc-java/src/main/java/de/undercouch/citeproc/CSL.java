@@ -9,6 +9,7 @@ import de.undercouch.citeproc.csl.internal.GeneratedCitation;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SSort;
 import de.undercouch.citeproc.csl.internal.SStyle;
+import de.undercouch.citeproc.csl.internal.format.AsciiDocFormat;
 import de.undercouch.citeproc.csl.internal.format.Format;
 import de.undercouch.citeproc.csl.internal.format.HtmlFormat;
 import de.undercouch.citeproc.csl.internal.format.TextFormat;
@@ -249,7 +250,7 @@ public class CSL {
      * @return the formats
      */
     public static List<String> getSupportedOutputFormats() {
-        return Arrays.asList("text", "html");
+        return Arrays.asList("asciidoc", "html", "text");
     }
 
     private static Set<String> getAvailableFiles(String prefix,
@@ -446,13 +447,15 @@ public class CSL {
      * {@code "asciidoc"}, {@code "fo"}, or {@code "rtf"}
      */
     public void setOutputFormat(String format) {
-        if ("text".equals(format)) {
-            setOutputFormat(new TextFormat());
+        if ("asciidoc".equals(format)) {
+            setOutputFormat(new AsciiDocFormat());
         } else if ("html".equals(format)) {
             setOutputFormat(new HtmlFormat());
+        } else if ("text".equals(format)) {
+            setOutputFormat(new TextFormat());
         } else {
             throw new IllegalArgumentException("Unknown output format: `" +
-                    format + "'. Supported formats: `text', `html'.");
+                    format + "'. Supported formats: `asciidoc', `html', `text'.");
         }
     }
 
@@ -948,17 +951,26 @@ public class CSL {
      * @return the bibliography
      */
     public Bibliography makeBibliography(Predicate<CSLItemData> filter) {
-        List<String> entries = new ArrayList<>();
-        for (CSLItemData item : sortedItems) {
-            if (filter != null && !filter.test(item)) {
-                continue;
+        List<CSLItemData> filteredItems;
+        if (filter == null) {
+            filteredItems = sortedItems;
+        } else {
+            filteredItems = new ArrayList<>();
+            for (CSLItemData item : sortedItems) {
+                if (filter.test(item)) {
+                    filteredItems.add(item);
+                }
             }
+        }
 
+        List<String> entries = new ArrayList<>();
+        for (int i = 0; i < filteredItems.size(); i++) {
+            CSLItemData item = filteredItems.get(i);
             RenderContext ctx = new RenderContext(style, locale, item);
             style.getBibliography().render(ctx);
 
             if (!ctx.getResult().isEmpty()) {
-                entries.add(outputFormat.formatBibliographyEntry(ctx));
+                entries.add(outputFormat.formatBibliographyEntry(ctx, i));
             }
         }
 
