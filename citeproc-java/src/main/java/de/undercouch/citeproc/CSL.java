@@ -444,8 +444,8 @@ public class CSL {
 
     /**
      * Sets the processor's output format
-     * @param format the format (one of {@code "html"}, {@code "text"},
-     * {@code "asciidoc"}, {@code "fo"}, or {@code "rtf"}
+     * @param format the format (one of {@code "asciidoc"}, {@code "fo"},
+     * {@code "html"}, and {@code "text"}.
      */
     public void setOutputFormat(String format) {
         if ("asciidoc".equals(format)) {
@@ -458,7 +458,7 @@ public class CSL {
             setOutputFormat(new TextFormat());
         } else {
             throw new IllegalArgumentException("Unknown output format: `" +
-                    format + "'. Supported formats: `asciidoc', `html', `text'.");
+                    format + "'. Supported formats: `asciidoc', `fo', `html', `text'.");
         }
     }
 

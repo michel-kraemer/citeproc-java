@@ -488,11 +488,10 @@ public class CSLTest {
     @Test
     public void getSupportedFormats() {
         List<String> sf = CSL.getSupportedOutputFormats();
-        assertEquals(5, sf.size());
+        assertEquals(4, sf.size());
         assertTrue(sf.contains("html"));
         assertTrue(sf.contains("text"));
         assertTrue(sf.contains("asciidoc"));
-        assertTrue(sf.contains("rtf"));
         assertTrue(sf.contains("fo"));
     }
 
