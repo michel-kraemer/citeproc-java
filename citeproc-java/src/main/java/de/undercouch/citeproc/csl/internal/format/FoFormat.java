@@ -83,7 +83,7 @@ public class FoFormat extends BaseFormat {
 
     @Override
     protected String doFormatLink(String text, String uri) {
-        return "<a href=\"" + uri + "\">" + text + "</a>";
+        return "<fo:basic-link external-destination=\"url('" + uri + "')\">" + text + "</fo:basic-link>";
     }
 
     @Override
