@@ -10,6 +10,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SSort;
 import de.undercouch.citeproc.csl.internal.SStyle;
 import de.undercouch.citeproc.csl.internal.format.AsciiDocFormat;
+import de.undercouch.citeproc.csl.internal.format.FoFormat;
 import de.undercouch.citeproc.csl.internal.format.Format;
 import de.undercouch.citeproc.csl.internal.format.HtmlFormat;
 import de.undercouch.citeproc.csl.internal.format.TextFormat;
@@ -250,7 +251,7 @@ public class CSL {
      * @return the formats
      */
     public static List<String> getSupportedOutputFormats() {
-        return Arrays.asList("asciidoc", "html", "text");
+        return Arrays.asList("asciidoc", "fo", "html", "text");
     }
 
     private static Set<String> getAvailableFiles(String prefix,
@@ -449,6 +450,8 @@ public class CSL {
     public void setOutputFormat(String format) {
         if ("asciidoc".equals(format)) {
             setOutputFormat(new AsciiDocFormat());
+        } else if ("fo".equals(format)) {
+            setOutputFormat(new FoFormat());
         } else if ("html".equals(format)) {
             setOutputFormat(new HtmlFormat());
         } else if ("text".equals(format)) {
