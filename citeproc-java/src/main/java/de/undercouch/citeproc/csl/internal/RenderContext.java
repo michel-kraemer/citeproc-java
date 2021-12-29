@@ -1,5 +1,6 @@
 package de.undercouch.citeproc.csl.internal;
 
+import de.undercouch.citeproc.AbbreviationProvider;
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLCitationItemBuilder;
@@ -36,6 +37,11 @@ public class RenderContext {
      * Localization data
      */
     private final LLocale locale;
+
+    /**
+     * An optional abbreviation provider (may be {@code null})
+     */
+    private final AbbreviationProvider abbreviationProvider;
 
     /**
      * The citation item data to render
@@ -93,22 +99,28 @@ public class RenderContext {
      * @param style the style used to render citation items and bibliographies
      * @param locale localization data
      * @param itemData the citation item to render
+     * @param abbreviationProvider an optional abbreviation provider (may be {@code null})
      */
-    public RenderContext(SStyle style, LLocale locale, CSLItemData itemData) {
-        this(style, locale, itemData, null, null);
+    public RenderContext(SStyle style, LLocale locale, CSLItemData itemData,
+            AbbreviationProvider abbreviationProvider) {
+        this(style, locale, itemData, abbreviationProvider, null, null);
     }
 
     /**
      * Creates a new render context
      * @param style the style used to render citation items and bibliographies
      * @param locale localization data
+     * @param itemData the citation item to render
+     * @param abbreviationProvider an optional abbreviation provider (may be {@code null})
      * @param citation the citation to render
      * @param generatedCitations all citations generated so far
      */
     public RenderContext(SStyle style, LLocale locale, CSLItemData itemData,
-            CSLCitation citation, List<GeneratedCitation> generatedCitations) {
+            AbbreviationProvider abbreviationProvider, CSLCitation citation,
+            List<GeneratedCitation> generatedCitations) {
         this.style = style;
         this.locale = locale;
+        this.abbreviationProvider = abbreviationProvider;
         this.itemData = itemData;
         this.citation = citation;
         this.generatedCitations = generatedCitations;
@@ -184,6 +196,7 @@ public class RenderContext {
             SNameInheritableAttributes inheritedNameAttributes) {
         this.style = parent.style;
         this.locale = parent.locale;
+        this.abbreviationProvider = parent.abbreviationProvider;
         this.itemData = itemData;
         this.citation = citation;
         this.generatedCitations = generatedCitations;
@@ -346,26 +359,20 @@ public class RenderContext {
                     result = itemData.getCollectionNumber();
                     break;
                 case "collection-title":
-                    if (form == VariableForm.SHORT) {
-                        result = itemData.getCollectionTitleShort();
-                    }
-                    if (result == null) {
-                        result = itemData.getCollectionTitle();
-                    }
+                    result = itemData.getCollectionTitle();
                     break;
                 case "collection-title-short":
-                    result = itemData.getCollectionTitleShort();
+                    name = "collection-title";
+                    form = VariableForm.SHORT;
+                    result = itemData.getCollectionTitle();
                     break;
                 case "container-title":
-                    if (form == VariableForm.SHORT) {
-                        result = itemData.getContainerTitleShort();
-                    }
-                    if (result == null) {
-                        result = itemData.getContainerTitle();
-                    }
+                    result = itemData.getContainerTitle();
                     break;
                 case "container-title-short":
-                    result = itemData.getContainerTitleShort();
+                    name = "container-title";
+                    form = VariableForm.SHORT;
+                    result = itemData.getContainerTitle();
                     break;
                 case "dimensions":
                     result = itemData.getDimensions();
@@ -476,6 +483,11 @@ public class RenderContext {
                     break;
                 case "title-short":
                     result = itemData.getTitleShort();
+                    if (result == null) {
+                        name = "title";
+                        form = VariableForm.SHORT;
+                        result = itemData.getTitle();
+                    }
                     break;
                 case "URL":
                     result = itemData.getURL();
@@ -491,6 +503,13 @@ public class RenderContext {
                     break;
                 default:
                     break;
+            }
+        }
+
+        if (abbreviationProvider != null && form == VariableForm.SHORT) {
+            String abbrev = abbreviationProvider.getAbbreviation(name, result, itemData);
+            if (abbrev != null) {
+                result = abbrev;
             }
         }
 

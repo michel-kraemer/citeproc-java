@@ -1,0 +1,43 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <group delimiter="/">
+          <names variable="author" suffix=". ">
+            <name initialize-with=". " />
+          </names>
+          <text variable="title"/>
+          <text variable="title" form="short"/>
+          <text variable="container-title"/>
+          <text variable="container-title" form="short"/>
+          <text variable="publisher" />
+          <text variable="publisher" form="short"/>
+        </group>
+      </layout>
+    </bibliography>
+  </style>
+
+abbreviations:
+  container-title:
+    "Computer Science": "Comp. Sci."
+  publisher:
+    "Company with a very long name Inc.": "Company Inc."
+  title:
+    "My long title": Short title
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My long title
+    container-title: Computer Science
+    publisher: Company with a very long name Inc.
+
+result: |
+  G. Name. /My long title/Short title/Computer Science/Comp. Sci./Company with a very long name Inc./Company Inc.
+
+resultLegacy: |
+  G. Name. /My long title/Short title/Computer Science/Comp. Sci./Company with a very long name Inc./Company with a very long name Inc.

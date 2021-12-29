@@ -1,7 +1,5 @@
 package de.undercouch.citeproc;
 
-import de.undercouch.citeproc.csl.CSLAbbreviationList;
-import de.undercouch.citeproc.csl.CSLAbbreviationListBuilder;
 import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
@@ -13,9 +11,7 @@ import junitparams.JUnitParamsRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -372,15 +368,8 @@ public class CSLTest {
      */
     @Test
     public void abbreviations() throws Exception {
-        Map<String, String> titleAbbreviations = new HashMap<>();
-        titleAbbreviations.put("The Programming Language B", "B");
-
-        CSLAbbreviationList abbrevs = new CSLAbbreviationListBuilder()
-                .title(titleAbbreviations)
-                .build();
-
         DefaultAbbreviationProvider prov = new DefaultAbbreviationProvider();
-        prov.add(AbbreviationProvider.DEFAULT_LIST_NAME, abbrevs);
+        prov.addAbbreviation("title", "The Programming Language B", "B");
 
         CSL citeproc = new CSLBuilder()
                 .itemDataProvider(new ListItemDataProvider(items))
@@ -388,7 +377,6 @@ public class CSLTest {
                 .style("chicago-note-bibliography")
                 .build();
         citeproc.setOutputFormat("text");
-        citeproc.setAbbreviations(AbbreviationProvider.DEFAULT_LIST_NAME);
 
         List<Citation> a = citeproc.makeCitation(items[0].getId());
         assertEquals(0, a.get(0).getIndex());

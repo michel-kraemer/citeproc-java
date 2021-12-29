@@ -191,7 +191,6 @@ class SourceGenerator {
         renderTemplatesInternal('EndNoteType', dst, true)
         renderTemplatesInternal('RISType', dst, true)
         
-        renderTemplatesInternal('CSLAbbreviationList', dst)
         renderTemplatesInternal('CSLCitation', dst)
         renderTemplatesInternal('CSLCitationItem', dst)
         renderTemplatesInternal('CSLDate', dst)

@@ -202,6 +202,14 @@ public class FixturesTest {
                                 result.put("itemIds", itemIds);
                                 break;
                             }
+
+                            case "abbreviations": {
+                                JsonParser parser = new JsonParser(
+                                        new JsonLexer(new StringReader(value)));
+                                Map<String, Object> abbrevs = parser.parseObject();
+                                result.put("abbreviations", abbrevs.get("default"));
+                                break;
+                            }
                         }
                         currentKey = null;
                     } else {
@@ -410,6 +418,20 @@ public class FixturesTest {
                     "`items' must be specified.");
         }
 
+        // get abbreviations
+        DefaultAbbreviationProvider abbreviationProvider = null;
+        if (data.containsKey("abbreviations")) {
+            abbreviationProvider = new DefaultAbbreviationProvider();
+            Map<String, Map<String, String>> abbrevs =
+                    (Map<String, Map<String, String>>)data.get("abbreviations");
+            for (Map.Entry<String, Map<String, String>> vm : abbrevs.entrySet()) {
+                for (Map.Entry<String, String> om : vm.getValue().entrySet()) {
+                    abbreviationProvider.addAbbreviation(vm.getKey(),
+                            om.getKey(), om.getValue());
+                }
+            }
+        }
+
         // get the item IDs to test against
         List<Collection<String>> itemIds;
         List<Object> itemIdsListObj = (List<Object>)data.get("itemIds");
@@ -452,9 +474,11 @@ public class FixturesTest {
 
         String actualResult;
         if (experimentalMode) {
-            actualResult = applyCSL(mode, style, itemDataProvider, itemIds, citations);
+            actualResult = applyCSL(mode, style, itemDataProvider,
+                    abbreviationProvider, itemIds, citations);
         } else {
-            actualResult = applyCiteprocJs(mode, style, itemDataProvider, itemIds, citations);
+            actualResult = applyCiteprocJs(mode, style, itemDataProvider,
+                    abbreviationProvider, itemIds, citations);
         }
 
         // compare result
@@ -462,9 +486,14 @@ public class FixturesTest {
     }
 
     private String applyCSL(String mode, String style, ItemDataProvider itemDataProvider,
-            List<Collection<String>> itemIds, List<CSLCitation> citations) throws IOException {
+            AbbreviationProvider abbreviationProvider, List<Collection<String>> itemIds,
+            List<CSLCitation> citations) throws IOException {
         // create CSL processor
-        CSL citeproc = new CSL(itemDataProvider, style);
+        CSL citeproc = new CSLBuilder()
+                .itemDataProvider(itemDataProvider)
+                .style(style)
+                .abbreviationProvider(abbreviationProvider)
+                .build();
         citeproc.setOutputFormat(outputFormat);
         citeproc.setConvertLinks(true);
 
@@ -499,7 +528,8 @@ public class FixturesTest {
     }
 
     private String applyCiteprocJs(String mode, String style, ItemDataProvider itemDataProvider,
-            List<Collection<String>> itemIds, List<CSLCitation> citations) throws IOException {
+            AbbreviationProvider abbreviationProvider, List<Collection<String>> itemIds,
+            List<CSLCitation> citations) throws IOException {
         // load style if necessary
         if (!style.trim().startsWith("<")) {
             if (!style.endsWith(".csl")) {
@@ -552,6 +582,17 @@ public class FixturesTest {
                         "for (let id of ids) { idsArr.push(id) }\n" +
                         "csl.updateItems(idsArr);\n" +
                     "}\n");
+
+            if (abbreviationProvider != null) {
+                bindings.putMember("abbreviationProvider", abbreviationProvider);
+                context.eval("js",
+                        "sys.getAbbreviation = function(styleID, abbrevs, name, category, orig, itemType) {\n" +
+                            "let r = abbreviationProvider.getAbbreviation(category, orig, null)\n" +
+                            "if (r) {\n" +
+                                "abbrevs[name][category][orig] = r\n" +
+                            "}\n" +
+                        "}\n");
+            }
 
             String actualResult;
             if ("bibliography".equals(mode)) {
@@ -1466,12 +1507,12 @@ public class FixturesTest {
             // "variables_ContainerTitleShort",
             // "variables_ContainerTitleShort2",
             // "variables_ShortForm",
-            // "variables_TitleShortOnAbbrevWithTitle",
+            "variables_TitleShortOnAbbrevWithTitle",
             // "variables_TitleShortOnAbbrevWithTitleCondition",
             // "variables_TitleShortOnAbbrevWithTitleGroup",
-            // "variables_TitleShortOnShortTitleNoTitle",
-            // "variables_TitleShortOnShortTitleNoTitleCondition",
-            // "variables_TitleShortOnShortTitleNoTitleGroup",
+            "variables_TitleShortOnShortTitleNoTitle",
+            "variables_TitleShortOnShortTitleNoTitleCondition",
+            "variables_TitleShortOnShortTitleNoTitleGroup",
             // "virtual_PageFirst"
     };
 }

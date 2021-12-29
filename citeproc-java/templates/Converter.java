@@ -169,7 +169,7 @@ public class ${desc}Converter {
         builder.publisher(ref.getPublisher());
         builder.reviewedTitle(ref.getReviewedItem());
         builder.section(ref.getSection());
-        builder.shortTitle(ref.getShortTitle());
+        builder.titleShort(ref.getShortTitle());
         builder.title(ref.getTitle());
         builder.volume(ref.getVolume());
         

@@ -136,6 +136,11 @@ public class CSL {
     private final ItemDataProvider itemDataProvider;
 
     /**
+     * An object that provides abbreviations (may be {@link null})
+     */
+    private final AbbreviationProvider abbreviationProvider;
+
+    /**
      * Citation items registered through {@link #registerCitationItems(String...)}
      */
     private final Map<String, CSLItemData> registeredItems = new LinkedHashMap<>();
@@ -160,8 +165,7 @@ public class CSL {
      * @throws IOException if the CSL style could not be loaded
      */
     public CSL(ItemDataProvider itemDataProvider, String style) throws IOException {
-        this(itemDataProvider, new DefaultLocaleProvider(),
-                new DefaultAbbreviationProvider(), style, "en-US");
+        this(itemDataProvider, new DefaultLocaleProvider(), null, style, "en-US");
     }
 
     /**
@@ -175,8 +179,7 @@ public class CSL {
      * @throws IOException if the CSL style could not be loaded
      */
     public CSL(ItemDataProvider itemDataProvider, String style, String lang) throws IOException {
-        this(itemDataProvider, new DefaultLocaleProvider(),
-                new DefaultAbbreviationProvider(), style, lang);
+        this(itemDataProvider, new DefaultLocaleProvider(), null, style, lang);
     }
 
     /**
@@ -184,6 +187,7 @@ public class CSL {
      * @param itemDataProvider an object that provides citation item data
      * @param localeProvider an object that provides CSL locales
      * @param abbreviationProvider an object that provides abbreviations
+     * (may be {@link null})
      * @param style the citation style to use. May either be a serialized
      * XML representation of the style or a style's name such as <code>ieee</code>.
      * In the latter case, the processor loads the style from the classpath (e.g.
@@ -200,6 +204,7 @@ public class CSL {
         }
 
         this.itemDataProvider = itemDataProvider;
+        this.abbreviationProvider = abbreviationProvider;
 
         // TODO parse style and locale directly from URL if possible
         // TODO instead of loading them into strings first
@@ -483,16 +488,6 @@ public class CSL {
     }
 
     /**
-     * Enables the abbreviation list with the given name. The processor will
-     * call {@link AbbreviationProvider#getAbbreviations(String)} with the
-     * given String to get the abbreviations that should be used from here on.
-     * @param name the name of the abbreviation list to enable
-     */
-    public void setAbbreviations(String name) {
-        throw new IllegalArgumentException("Abbreviations are not supported yet.");
-    }
-
-    /**
      * Fetches the item data for the given citation items and adds it to
      * {@link #registeredItems}. Also, sorts the items according to the sorting
      * specified in the style's bibliography element and stores the result in
@@ -541,7 +536,7 @@ public class CSL {
                 // We have to sort. Find insert point.
                 if (comparator == null) {
                     comparator = style.getBibliography().getSort()
-                            .comparator(style, locale);
+                            .comparator(style, locale, abbreviationProvider);
                 }
                 int i = Collections.binarySearch(sortedItems, itemData, comparator);
                 if (i < 0) {
@@ -771,7 +766,8 @@ public class CSL {
         }
         if (!unsorted && style.getCitation().getSort() != null) {
             Comparator<CSLItemData> itemComparator =
-                    style.getCitation().getSort().comparator(style, locale);
+                    style.getCitation().getSort().comparator(style, locale,
+                            abbreviationProvider);
             Arrays.sort(preparedItems, (a, b) -> itemComparator.compare(
                     a.getItemData(), b.getItemData()));
         }
@@ -788,7 +784,7 @@ public class CSL {
      */
     private String renderCitation(CSLCitation preparedCitation) {
         // render items
-        RenderContext ctx = new RenderContext(style, locale, null,
+        RenderContext ctx = new RenderContext(style, locale, null, abbreviationProvider,
                 preparedCitation, Collections.unmodifiableList(generatedCitations));
         style.getCitation().render(ctx);
         return outputFormat.formatCitation(ctx);
@@ -969,7 +965,8 @@ public class CSL {
         List<String> entries = new ArrayList<>();
         for (int i = 0; i < filteredItems.size(); i++) {
             CSLItemData item = filteredItems.get(i);
-            RenderContext ctx = new RenderContext(style, locale, item);
+            RenderContext ctx = new RenderContext(style, locale, item,
+                    abbreviationProvider);
             style.getBibliography().render(ctx);
 
             if (!ctx.getResult().isEmpty()) {
@@ -1063,12 +1060,6 @@ public class CSL {
             return true;
         }
         if (b.getLanguage() != null && Objects.equals(a.getLanguage(), b.getLanguage())) {
-            return true;
-        }
-        if (b.getJournalAbbreviation() != null && Objects.equals(a.getJournalAbbreviation(), b.getJournalAbbreviation())) {
-            return true;
-        }
-        if (b.getShortTitle() != null && Objects.equals(a.getShortTitle(), b.getShortTitle())) {
             return true;
         }
         if (b.getAuthor() != null && Arrays.equals(a.getAuthor(), b.getAuthor())) {
@@ -1165,9 +1156,6 @@ public class CSL {
             return true;
         }
         if (b.getContainerTitle() != null && Objects.equals(a.getContainerTitle(), b.getContainerTitle())) {
-            return true;
-        }
-        if (b.getContainerTitleShort() != null && Objects.equals(a.getContainerTitleShort(), b.getContainerTitleShort())) {
             return true;
         }
         if (b.getDimensions() != null && Objects.equals(a.getDimensions(), b.getDimensions())) {

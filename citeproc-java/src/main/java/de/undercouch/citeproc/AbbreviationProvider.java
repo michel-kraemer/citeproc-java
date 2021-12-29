@@ -1,6 +1,6 @@
 package de.undercouch.citeproc;
 
-import de.undercouch.citeproc.csl.CSLAbbreviationList;
+import de.undercouch.citeproc.csl.CSLItemData;
 
 /**
  * Retrieves abbreviations for titles, authorities, institution names, etc.
@@ -8,15 +8,12 @@ import de.undercouch.citeproc.csl.CSLAbbreviationList;
  */
 public interface AbbreviationProvider {
     /**
-     * A list name that can be used for default abbreviations that do not
-     * have to be enabled via {@link CSL#setAbbreviations(String)}
+     * Retrieves an abbreviation for a given variable
+     * @param variable the name of the variable
+     * @param original the original (unabbreviated) string
+     * @param item the current CSL item data
+     * @return the abbreviated string or {@code null} if the original string
+     * should not be abbreviated
      */
-    String DEFAULT_LIST_NAME = "default";
-
-    /**
-     * Retrieves an abbreviation list with a given name
-     * @param name the list's name
-     * @return the abbreviation list or null if there is no such list
-     */
-    CSLAbbreviationList getAbbreviations(String name);
+    String getAbbreviation(String variable, String original, CSLItemData item);
 }

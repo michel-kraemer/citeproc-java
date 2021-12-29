@@ -1,5 +1,6 @@
 package de.undercouch.citeproc.csl.internal;
 
+import de.undercouch.citeproc.AbbreviationProvider;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.helper.AlphanumComparator;
@@ -37,18 +38,21 @@ public class SSort {
      * according
      * @param style the current citation style
      * @param locale the current locale
+     * @param abbreviationProvider the current abbreviation provider
      * @return the comparator
      */
-    public SortComparator comparator(SStyle style, LLocale locale) {
-        return new SortComparator(style, locale);
+    public SortComparator comparator(SStyle style, LLocale locale,
+            AbbreviationProvider abbreviationProvider) {
+        return new SortComparator(style, locale, abbreviationProvider);
     }
 
     /**
-     * A sort comparator returned by {@link #comparator(SStyle, LLocale)}
+     * A sort comparator returned by {@link #comparator(SStyle, LLocale, AbbreviationProvider)}
      */
     public class SortComparator implements Comparator<CSLItemData> {
         private final SStyle style;
         private final LLocale locale;
+        private final AbbreviationProvider abbreviationProvider;
         private final AlphanumComparator comparator;
         private int citationNumberDirection = 1;
 
@@ -56,10 +60,13 @@ public class SSort {
          * Create a new sort comparator
          * @param style the current citation style
          * @param locale the current locale
+         * @param abbreviationProvider the current abbreviation provider
          */
-        public SortComparator(SStyle style, LLocale locale) {
+        public SortComparator(SStyle style, LLocale locale,
+                AbbreviationProvider abbreviationProvider) {
             this.style = style;
             this.locale = locale;
+            this.abbreviationProvider = abbreviationProvider;
             comparator = new AlphanumComparator(locale.getLang());
         }
 
@@ -77,7 +84,8 @@ public class SSort {
             Integer result = null;
 
             for (SKey key : keys) {
-                RenderContext ctxa = new RenderContext(style, locale, a);
+                RenderContext ctxa = new RenderContext(style, locale, a,
+                        abbreviationProvider);
                 CollectingVariableListener vl = new CollectingVariableListener();
                 ctxa.addVariableListener(vl);
                 key.render(ctxa);
@@ -96,7 +104,8 @@ public class SSort {
                     continue;
                 }
 
-                RenderContext ctxb = new RenderContext(style, locale, b);
+                RenderContext ctxb = new RenderContext(style, locale, b,
+                        abbreviationProvider);
                 key.render(ctxb);
 
                 String sa = ctxa.getResult().toString();
