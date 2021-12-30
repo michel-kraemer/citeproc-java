@@ -323,6 +323,7 @@ public class RenderContext {
      */
     public String getStringVariable(String name, VariableForm form, boolean ignoreListeners) {
         String result = null;
+        String origResultForAbbrev = null;
         if (!suppressedVariables.contains(name)) {
             switch (name) {
                 case "abstract":
@@ -379,6 +380,7 @@ public class RenderContext {
                     if (result == null) {
                         name = "container-title";
                         form = VariableForm.SHORT;
+                        origResultForAbbrev = itemData.getContainerTitle();
                     }
                     break;
                 case "dimensions":
@@ -493,6 +495,7 @@ public class RenderContext {
                     if (result == null) {
                         name = "title";
                         form = VariableForm.SHORT;
+                        origResultForAbbrev = itemData.getTitle();
                     }
                     break;
                 case "URL":
@@ -513,7 +516,13 @@ public class RenderContext {
         }
 
         if (abbreviationProvider != null && form == VariableForm.SHORT) {
-            String abbrev = abbreviationProvider.getAbbreviation(name, result, itemData);
+            String orig;
+            if (result == null && origResultForAbbrev != null) {
+                orig = origResultForAbbrev;
+            } else {
+                orig = result;
+            }
+            String abbrev = abbreviationProvider.getAbbreviation(name, orig, itemData);
             if (abbrev != null) {
                 result = abbrev;
             }
