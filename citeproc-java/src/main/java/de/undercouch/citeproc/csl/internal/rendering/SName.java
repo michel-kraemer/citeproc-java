@@ -5,6 +5,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SElement;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.helper.NodeHelper;
+import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 
@@ -283,54 +284,8 @@ public class SName implements SElement {
         StringBuilder result = new StringBuilder();
 
         String given = name.getGiven();
-        StringBuilder givenBuffer = new StringBuilder();
-        if (given != null) {
-            if (initializeWith != null) {
-                if (initialize) {
-                    // produce initials for each given name and append
-                    // 'initializeWith' to each of them
-                    boolean found = true;
-                    boolean hyphen = false;
-                    for (int i = 0; i < given.length(); ++i) {
-                        char c = given.charAt(i);
-                        if (c == '-') {
-                            found = true;
-                            hyphen = true;
-                        } else if (Character.isWhitespace(c) || c == '.') {
-                            found = true;
-                        } else if (found) {
-                            if (givenBuffer.length() > 0) {
-                                givenBuffer.append(hyphen ? '-' : ' ');
-                            }
-                            givenBuffer.append(c).append(initializeWith);
-                            found = false;
-                            hyphen = false;
-                        }
-                    }
-                } else {
-                    // only append 'initializeWith' to initials already present
-                    StringBuilder tmp = new StringBuilder();
-                    for (int i = 0; i < given.length(); ++i) {
-                        char c = given.charAt(i);
-                        tmp.append(c);
-                        if (Character.isWhitespace(c) || c == '-' || c == '.') {
-                            givenBuffer.append(tmp);
-                            if (tmp.length() == 1) {
-                                givenBuffer.append(initializeWith);
-                            }
-                            tmp = new StringBuilder();
-                        }
-                    }
-                    if (tmp.length() > 0) {
-                        givenBuffer.append(tmp);
-                        if (tmp.length() == 1) {
-                            givenBuffer.append(initializeWith);
-                        }
-                    }
-                }
-            } else {
-                givenBuffer.append(given);
-            }
+        if (initializeWith != null && family != null && given != null) {
+            given = StringHelper.initializeName(given, initializeWith, !initialize);
         }
 
         if (nameAsSort) {
@@ -341,11 +296,11 @@ public class SName implements SElement {
                 result.append(sortSeparator);
             }
             if (given != null) {
-                result.append(givenBuffer);
+                result.append(given);
             }
         } else {
             if (given != null) {
-                result.append(givenBuffer);
+                result.append(given);
             }
             if (given != null && family != null) {
                 result.append(" ");

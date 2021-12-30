@@ -1,0 +1,51 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author" suffix="&#x0A;">
+          <name initialize-with=" " initialize="true"/>
+        </names>
+        <names variable="author" suffix="&#x0A;">
+          <name initialize-with="" initialize="true"/>
+        </names>
+        <names variable="author" suffix="&#x0A;">
+          <name initialize-with="." initialize="true"/>
+        </names>
+        <names variable="author">
+          <name initialize-with=". " initialize="true"/>
+        </names>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Jean Luc
+      - given: Jean-Luc
+      - given: Jean Luc
+        family: Picard
+      - given: Jean-Luc
+        family: Picard
+      - given: J.-L.
+        family: Picard
+      - given: J.L.
+        family: Picard
+      - given: J. L.
+        family: Picard
+      - given: Je. Luc
+        family: Picard
+      - given: Cpt. Jean-Luc
+        family: Picard
+      - given: JL
+        family: Picard
+      - given: James T.
+        family: Kirk
+
+result: |
+  Jean Luc, Jean-Luc, J L Picard, J-L Picard, J-L Picard, J L Picard, J L Picard, Je L Picard, Cpt J-L Picard, J Picard, J T Kirk
+  Jean Luc, Jean-Luc, JL Picard, J-L Picard, J-L Picard, JL Picard, JL Picard, JeL Picard, CptJ-L Picard, J Picard, JT Kirk
+  Jean Luc, Jean-Luc, J.L. Picard, J.-L. Picard, J.-L. Picard, J.L. Picard, J.L. Picard, Je.L. Picard, Cpt.J.-L. Picard, J. Picard, J.T. Kirk
+  Jean Luc, Jean-Luc, J. L. Picard, J.-L. Picard, J.-L. Picard, J. L. Picard, J. L. Picard, Je. L. Picard, Cpt. J.-L. Picard, J. Picard, J. T. Kirk

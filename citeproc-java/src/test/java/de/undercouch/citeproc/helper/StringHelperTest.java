@@ -190,4 +190,166 @@ public class StringHelperTest {
                 StringHelper.toTitleCase("Notes and observations regarding Apple\u2019s announcements from \u2018The Beat Goes On\u2019 special event"));
         assertEquals("2018", StringHelper.toTitleCase("2018"));
     }
+
+    /**
+     * Tests {@link StringHelper#initializeName(String, String)}
+     */
+    @Test
+    public void initializeName() {
+        // with space
+        assertEquals("J L", StringHelper.initializeName("Jean Luc", " "));
+        assertEquals("J-L", StringHelper.initializeName("Jean-Luc", " "));
+        assertEquals("J-L", StringHelper.initializeName("J.-L.", " "));
+        assertEquals("J L", StringHelper.initializeName("J.L.", " "));
+        assertEquals("J L", StringHelper.initializeName("J. L.", " "));
+        assertEquals("J-L", StringHelper.initializeName("J-Luc", " "));
+        assertEquals("J-L", StringHelper.initializeName("Jean-L", " "));
+        assertEquals("J L", StringHelper.initializeName("J Luc", " "));
+        assertEquals("J L", StringHelper.initializeName("Jean L", " "));
+        assertEquals("Je L", StringHelper.initializeName("Je. Luc", " "));
+        assertEquals("Cpt J-L", StringHelper.initializeName("Cpt. Jean-Luc", " "));
+        assertEquals("J", StringHelper.initializeName("JL", " "));
+        assertEquals("J T", StringHelper.initializeName("James T.", " "));
+        assertEquals("J T", StringHelper.initializeName("James T", " "));
+
+        // with empty string
+        assertEquals("JL", StringHelper.initializeName("Jean Luc", ""));
+        assertEquals("J-L", StringHelper.initializeName("Jean-Luc", ""));
+        assertEquals("J-L", StringHelper.initializeName("J.-L.", ""));
+        assertEquals("JL", StringHelper.initializeName("J.L.", ""));
+        assertEquals("JL", StringHelper.initializeName("J. L.", ""));
+        assertEquals("J-L", StringHelper.initializeName("J-Luc", ""));
+        assertEquals("J-L", StringHelper.initializeName("Jean-L", ""));
+        assertEquals("JL", StringHelper.initializeName("J Luc", ""));
+        assertEquals("JL", StringHelper.initializeName("Jean L", ""));
+        assertEquals("JeL", StringHelper.initializeName("Je. Luc", ""));
+        assertEquals("CptJ-L", StringHelper.initializeName("Cpt. Jean-Luc", ""));
+        assertEquals("J", StringHelper.initializeName("JL", ""));
+        assertEquals("JT", StringHelper.initializeName("James T.", ""));
+        assertEquals("JT", StringHelper.initializeName("James T", ""));
+
+        // with period
+        assertEquals("J.L.", StringHelper.initializeName("Jean Luc", "."));
+        assertEquals("J.-L.", StringHelper.initializeName("Jean-Luc", "."));
+        assertEquals("J.-L.", StringHelper.initializeName("J.-L.", "."));
+        assertEquals("J.L.", StringHelper.initializeName("J.L.", "."));
+        assertEquals("J.L.", StringHelper.initializeName("J. L.", "."));
+        assertEquals("J.-L.", StringHelper.initializeName("J-Luc", "."));
+        assertEquals("J.-L.", StringHelper.initializeName("Jean-L", "."));
+        assertEquals("J.L.", StringHelper.initializeName("J Luc", "."));
+        assertEquals("J.L.", StringHelper.initializeName("Jean L", "."));
+        assertEquals("Je.L.", StringHelper.initializeName("Je. Luc", "."));
+        assertEquals("Cpt.J.-L.", StringHelper.initializeName("Cpt. Jean-Luc", "."));
+        assertEquals("J.", StringHelper.initializeName("JL", "."));
+        assertEquals("J.T.", StringHelper.initializeName("James T.", "."));
+        assertEquals("J.T.", StringHelper.initializeName("James T", "."));
+
+        // with period and space
+        assertEquals("J. L.", StringHelper.initializeName("Jean Luc", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("Jean-Luc", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("J.-L.", ". "));
+        assertEquals("J. L.", StringHelper.initializeName("J.L.", ". "));
+        assertEquals("J. L.", StringHelper.initializeName("J. L.", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("J-Luc", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("Jean-L", ". "));
+        assertEquals("J. L.", StringHelper.initializeName("J Luc", ". "));
+        assertEquals("J. L.", StringHelper.initializeName("Jean L", ". "));
+        assertEquals("Je. L.", StringHelper.initializeName("Je. Luc", ". "));
+        assertEquals("Cpt. J.-L.", StringHelper.initializeName("Cpt. Jean-Luc", ". "));
+        assertEquals("J.", StringHelper.initializeName("JL", ". "));
+        assertEquals("J. T.", StringHelper.initializeName("James T.", ". "));
+        assertEquals("J. T.", StringHelper.initializeName("James T", ". "));
+
+        // strings that need normalization
+        assertEquals("J. L.", StringHelper.initializeName(" Jean   Luc ", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName(" Jean -   Luc ", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("Jean\u2013 Luc ", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("Jean\u2013-- Luc ", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("J.. -L.", ". "));
+        assertEquals("J. L.", StringHelper.initializeName("J..L.", ". "));
+        assertEquals("J. L.", StringHelper.initializeName("J . L. ", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("J . .- L. ", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("J ..- L. ", ". "));
+    }
+
+    /**
+     * Tests {@link StringHelper#initializeName(String, String, boolean)}
+     */
+    @Test
+    public void initializeNameOnlyNormalize() {
+        // with space
+        assertEquals("Jean Luc", StringHelper.initializeName("Jean Luc", " ", true));
+        assertEquals("Jean-Luc", StringHelper.initializeName("Jean-Luc", " ", true));
+        assertEquals("J-L", StringHelper.initializeName("J.-L.", " ", true));
+        assertEquals("J L", StringHelper.initializeName("J.L.", " ", true));
+        assertEquals("J L", StringHelper.initializeName("J. L.", " ", true));
+        assertEquals("J-Luc", StringHelper.initializeName("J-Luc", " ", true));
+        assertEquals("Jean-L", StringHelper.initializeName("Jean-L", " ", true));
+        assertEquals("J Luc", StringHelper.initializeName("J Luc", " ", true));
+        assertEquals("Jean L", StringHelper.initializeName("Jean L", " ", true));
+        assertEquals("Je Luc", StringHelper.initializeName("Je. Luc", " ", true));
+        assertEquals("Cpt Jean-Luc", StringHelper.initializeName("Cpt. Jean-Luc", " ", true));
+        assertEquals("JL", StringHelper.initializeName("JL", " ", true));
+        assertEquals("James T", StringHelper.initializeName("James T.", " ", true));
+        assertEquals("James T", StringHelper.initializeName("James T", " ", true));
+
+        // with empty string
+        assertEquals("Jean Luc", StringHelper.initializeName("Jean Luc", "", true));
+        assertEquals("Jean-Luc", StringHelper.initializeName("Jean-Luc", "", true));
+        assertEquals("J-L", StringHelper.initializeName("J.-L.", "", true));
+        assertEquals("JL", StringHelper.initializeName("J.L.", "", true));
+        assertEquals("JL", StringHelper.initializeName("J. L.", "", true));
+        assertEquals("J-Luc", StringHelper.initializeName("J-Luc", "", true));
+        assertEquals("Jean-L", StringHelper.initializeName("Jean-L", "", true));
+        assertEquals("J Luc", StringHelper.initializeName("J Luc", "", true));
+        assertEquals("Jean L", StringHelper.initializeName("Jean L", "", true));
+        assertEquals("Je Luc", StringHelper.initializeName("Je. Luc", "", true));
+        assertEquals("Cpt Jean-Luc", StringHelper.initializeName("Cpt. Jean-Luc", "", true));
+        assertEquals("JL", StringHelper.initializeName("JL", "", true));
+        assertEquals("James T", StringHelper.initializeName("James T.", "", true));
+        assertEquals("James T", StringHelper.initializeName("James T", "", true));
+
+        // with period
+        assertEquals("Jean Luc", StringHelper.initializeName("Jean Luc", ".", true));
+        assertEquals("Jean-Luc", StringHelper.initializeName("Jean-Luc", ".", true));
+        assertEquals("J.-L.", StringHelper.initializeName("J.-L.", ".", true));
+        assertEquals("J.L.", StringHelper.initializeName("J.L.", ".", true));
+        assertEquals("J.L.", StringHelper.initializeName("J. L.", ".", true));
+        assertEquals("J.-Luc", StringHelper.initializeName("J-Luc", ".", true));
+        assertEquals("Jean-L.", StringHelper.initializeName("Jean-L", ".", true));
+        assertEquals("J. Luc", StringHelper.initializeName("J Luc", ".", true));
+        assertEquals("Jean L.", StringHelper.initializeName("Jean L", ".", true));
+        assertEquals("Je. Luc", StringHelper.initializeName("Je. Luc", ".", true));
+        assertEquals("Cpt. Jean-Luc", StringHelper.initializeName("Cpt. Jean-Luc", ".", true));
+        assertEquals("JL", StringHelper.initializeName("JL", ".", true));
+        assertEquals("James T.", StringHelper.initializeName("James T.", ".", true));
+        assertEquals("James T.", StringHelper.initializeName("James T", ".", true));
+
+        // with period and space
+        assertEquals("Jean Luc", StringHelper.initializeName("Jean Luc", ". ", true));
+        assertEquals("Jean-Luc", StringHelper.initializeName("Jean-Luc", ". ", true));
+        assertEquals("J.-L.", StringHelper.initializeName("J.-L.", ". ", true));
+        assertEquals("J. L.", StringHelper.initializeName("J.L.", ". ", true));
+        assertEquals("J. L.", StringHelper.initializeName("J. L.", ". ", true));
+        assertEquals("J.-Luc", StringHelper.initializeName("J-Luc", ". ", true));
+        assertEquals("Jean-L.", StringHelper.initializeName("Jean-L", ". ", true));
+        assertEquals("J. Luc", StringHelper.initializeName("J Luc", ". ", true));
+        assertEquals("Jean L.", StringHelper.initializeName("Jean L", ". ", true));
+        assertEquals("Je. Luc", StringHelper.initializeName("Je. Luc", ". ", true));
+        assertEquals("Cpt. Jean-Luc", StringHelper.initializeName("Cpt. Jean-Luc", ". ", true));
+        assertEquals("JL", StringHelper.initializeName("JL", ". ", true));
+        assertEquals("James T.", StringHelper.initializeName("James T.", ". ", true));
+        assertEquals("James T.", StringHelper.initializeName("James T", ". ", true));
+
+        // strings that need normalization
+        assertEquals("Jean Luc", StringHelper.initializeName(" Jean   Luc ", ". ", true));
+        assertEquals("Jean-Luc", StringHelper.initializeName(" Jean -   Luc ", ". ", true));
+        assertEquals("Jean-Luc", StringHelper.initializeName("Jean\u2013 Luc ", ". ", true));
+        assertEquals("Jean-Luc", StringHelper.initializeName("Jean\u2013-- Luc ", ". ", true));
+        assertEquals("J.-L.", StringHelper.initializeName("J.. -L.", ". ", true));
+        assertEquals("J. L.", StringHelper.initializeName("J..L.", ". ", true));
+        assertEquals("J. L.", StringHelper.initializeName("J . L. ", ". ", true));
+        assertEquals("J.-L.", StringHelper.initializeName("J . .- L. ", ". ", true));
+        assertEquals("J.-L.", StringHelper.initializeName("J ..- L. ", ". ", true));
+    }
 }

@@ -3,7 +3,6 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.behavior.Behavior;
 import de.undercouch.citeproc.helper.NodeHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 
 import java.util.Objects;
@@ -54,7 +53,7 @@ public class SNameInheritableAttributes implements Behavior {
             and = NodeHelper.getAttrValue(node, "and");
             String strInitialize = NodeHelper.getAttrValue(node, "initialize");
             initialize = strInitialize == null ? DEFAULT_INITIALIZE : Boolean.parseBoolean(strInitialize);
-            initializeWith = StringUtils.strip(NodeHelper.getAttrValue(node, "initialize-with"));
+            initializeWith = NodeHelper.getAttrValue(node, "initialize-with");
             nameAsSortOrder = NodeHelper.getAttrValue(node, "name-as-sort-order");
             delimiterPrecedesEtAl = NodeHelper.getAttrValue(node,
                     "delimiter-precedes-et-al");

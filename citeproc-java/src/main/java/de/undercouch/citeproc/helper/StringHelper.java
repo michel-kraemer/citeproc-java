@@ -25,6 +25,18 @@ public class StringHelper {
             "till", "to", "up", "via", "with", "without", "yet"
     };
 
+    private static class NamePart {
+        final String part;
+        final boolean hyphen;
+        final boolean alreadyInitialized;
+
+        NamePart(String part, boolean hyphen, boolean alreadyInitialized) {
+            this.part = part;
+            this.hyphen = hyphen;
+            this.alreadyInitialized = alreadyInitialized;
+        }
+    }
+
     /**
      * Sanitizes a string so it can be used as an identifier
      * @param s the string to sanitize
@@ -383,5 +395,90 @@ public class StringHelper {
             }
         }
         return String.join("", l);
+    }
+
+    /**
+     * Parse the given name, split it into parts, and convert them to initials
+     * @param name the name to convert
+     * @param initializeWith the string to append to each initial
+     * @return the converted name
+     */
+    public static String initializeName(String name, String initializeWith) {
+        return initializeName(name, initializeWith, false);
+    }
+
+    /**
+     * Parse the given name, split it into parts, and either convert them all
+     * to initials or only normalize existing initials
+     * @param name the name to convert
+     * @param initializeWith the string to append to each initial
+     * @param onlyNormalize {@code true} if only existing initials should be
+     * normalized and uninitialized names should be kept as is
+     * @return the converted name
+     */
+    public static String initializeName(String name, String initializeWith,
+            boolean onlyNormalize) {
+        // trim string, normalize spaces, normalize hyphens
+        name = name.trim()
+                .replaceAll("\\s+", " ")
+                .replaceAll("\\s*\\.", ".")
+                .replaceAll("\\.+", ".")
+                .replaceAll("\\s*[-\u2010\u2011\u2012\u2013\u2014\u2015]+\\s*", "-");
+
+        List<NamePart> parts = new ArrayList<>();
+        int lp = 0;
+        for (int i = 1; i <= name.length(); ++i) {
+            if (i == name.length() || name.charAt(i) == ' ') {
+                if (i > lp) {
+                    String sub = name.substring(lp, i);
+                    parts.add(new NamePart(sub, false, sub.length() == 1 && isAllUppercase(sub)));
+                }
+                lp = i + 1;
+            } else if (name.charAt(i) == '-') {
+                if (i > lp) {
+                    String sub = name.substring(lp, i);
+                    parts.add(new NamePart(sub, true, sub.length() == 1 && isAllUppercase(sub)));
+                }
+                lp = i + 1;
+            } else if (name.charAt(i) == '.' && (i < name.length() - 1 && name.charAt(i + 1) == '-')) {
+                if (i > lp) {
+                    parts.add(new NamePart(name.substring(lp, i), true, true));
+                }
+                i++;
+                lp = i + 1;
+            } else if (name.charAt(i) == '.') {
+                if (i > lp) {
+                    parts.add(new NamePart(name.substring(lp, i), false, true));
+                }
+                lp = i + 1;
+            }
+        }
+
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < parts.size(); i++) {
+            NamePart p = parts.get(i);
+            if (onlyNormalize && i > 0 &&
+                    (!p.alreadyInitialized || !parts.get(i - 1).alreadyInitialized) &&
+                    result.length() > 0 &&
+                    result.charAt(result.length() - 1) != ' ' &&
+                    result.charAt(result.length() - 1) != '-') {
+                result.append(" ");
+            }
+            if (onlyNormalize || p.alreadyInitialized) {
+                result.append(p.part);
+            } else {
+                result.append(p.part.charAt(0));
+            }
+            if (!onlyNormalize || p.alreadyInitialized) {
+                result.append(initializeWith);
+            }
+            if (p.hyphen) {
+                result.append("-");
+            }
+        }
+
+        return result.toString()
+                .replaceAll("\\s+-", "-")
+                .trim();
     }
 }
