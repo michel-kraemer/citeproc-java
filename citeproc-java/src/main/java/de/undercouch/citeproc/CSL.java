@@ -136,7 +136,7 @@ public class CSL {
     private final ItemDataProvider itemDataProvider;
 
     /**
-     * An object that provides abbreviations (may be {@link null})
+     * An object that provides abbreviations (may be {@code null})
      */
     private final AbbreviationProvider abbreviationProvider;
 
@@ -187,7 +187,7 @@ public class CSL {
      * @param itemDataProvider an object that provides citation item data
      * @param localeProvider an object that provides CSL locales
      * @param abbreviationProvider an object that provides abbreviations
-     * (may be {@link null})
+     * (may be {@code null})
      * @param style the citation style to use. May either be a serialized
      * XML representation of the style or a style's name such as <code>ieee</code>.
      * In the latter case, the processor loads the style from the classpath (e.g.
