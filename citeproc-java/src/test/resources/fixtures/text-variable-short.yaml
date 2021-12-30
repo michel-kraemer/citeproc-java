@@ -12,6 +12,7 @@ style:
           <text variable="title-short"/>
           <text variable="container-title"/>
           <text variable="container-title" form="short"/>
+          <text variable="container-title-short"/>
           <text variable="collection-title"/>
           <text variable="collection-title" form="short"/>
         </group>
@@ -28,8 +29,9 @@ items:
     title: My title
     title-short: My short title
     container-title: My container
+    container-title-short: My short container
     collection-title: My collection
 
 result: |
   My title/My title/My title/My title/My container/My container/My collection/My collection.
-  My title/My title/My title/My short title/My short title/My container/My container/My collection/My collection.
+  My title/My title/My title/My short title/My short title/My container/My short container/My short container/My collection/My collection.

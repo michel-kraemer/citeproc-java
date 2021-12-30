@@ -367,12 +367,19 @@ public class RenderContext {
                     result = itemData.getCollectionTitle();
                     break;
                 case "container-title":
-                    result = itemData.getContainerTitle();
+                    if (form == VariableForm.SHORT) {
+                        result = itemData.getContainerTitleShort();
+                    }
+                    if (result == null) {
+                        result = itemData.getContainerTitle();
+                    }
                     break;
                 case "container-title-short":
-                    name = "container-title";
-                    form = VariableForm.SHORT;
-                    result = itemData.getContainerTitle();
+                    result = itemData.getContainerTitleShort();
+                    if (result == null) {
+                        name = "container-title";
+                        form = VariableForm.SHORT;
+                    }
                     break;
                 case "dimensions":
                     result = itemData.getDimensions();
@@ -486,7 +493,6 @@ public class RenderContext {
                     if (result == null) {
                         name = "title";
                         form = VariableForm.SHORT;
-                        result = itemData.getTitle();
                     }
                     break;
                 case "URL":

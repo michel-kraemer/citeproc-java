@@ -23,6 +23,14 @@
             "name": "language"
         },
         {
+            "type": "String",
+            "name": "journalAbbreviation"
+        },
+        {
+            "type": "String",
+            "name": "shortTitle"
+        },
+        {
             "type": "CSLName[]",
             "name": "author"
         },
@@ -149,6 +157,10 @@
         {
             "type": "String",
             "name": "container-title"
+        },
+        {
+            "type": "String",
+            "name": "container-title-short"
         },
         {
             "type": "String",

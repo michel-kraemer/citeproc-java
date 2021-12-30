@@ -1062,6 +1062,12 @@ public class CSL {
         if (b.getLanguage() != null && Objects.equals(a.getLanguage(), b.getLanguage())) {
             return true;
         }
+        if (b.getJournalAbbreviation() != null && Objects.equals(a.getJournalAbbreviation(), b.getJournalAbbreviation())) {
+            return true;
+        }
+        if (b.getShortTitle() != null && Objects.equals(a.getShortTitle(), b.getShortTitle())) {
+            return true;
+        }
         if (b.getAuthor() != null && Arrays.equals(a.getAuthor(), b.getAuthor())) {
             return true;
         }
@@ -1156,6 +1162,9 @@ public class CSL {
             return true;
         }
         if (b.getContainerTitle() != null && Objects.equals(a.getContainerTitle(), b.getContainerTitle())) {
+            return true;
+        }
+        if (b.getContainerTitleShort() != null && Objects.equals(a.getContainerTitleShort(), b.getContainerTitleShort())) {
             return true;
         }
         if (b.getDimensions() != null && Objects.equals(a.getDimensions(), b.getDimensions())) {
