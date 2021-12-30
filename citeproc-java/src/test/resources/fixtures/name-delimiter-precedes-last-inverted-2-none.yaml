@@ -27,4 +27,8 @@ items:
     title: My title
 
 result: |
+  G. Name AND A. One My title
+
+# IMHO, according to the standard, citeproc.js behaves incorrectly here
+resultLegacy: |
   G. Name; AND A. One My title

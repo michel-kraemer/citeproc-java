@@ -161,7 +161,7 @@ public class SName implements SElement {
                     // We reached the maximum number of names. Render "et al."
                     // and then break
                     String etAl = ctx.getTerm("et-al");
-                    appendDelimiter(builder, delimiterPrecedesEtAl, i, max > 1);
+                    appendDelimiter(builder, delimiterPrecedesEtAl, nameAsSort, max > 1);
                     appendAnd(builder, " " + etAl);
                     break;
                 }
@@ -169,7 +169,7 @@ public class SName implements SElement {
                 // render delimiter and 'and' term
                 if (i == names.size() - 2) {
                     boolean delimiterAppended = appendDelimiter(builder,
-                            delimiterPrecedesLast, i, names.size() > 2);
+                            delimiterPrecedesLast, nameAsSort, names.size() > 2);
                     if (!delimiterAppended || !renderedAnd.equals(delimiter)) {
                         appendAnd(builder, renderedAnd);
                     }
@@ -186,13 +186,14 @@ public class SName implements SElement {
      * @param builder the builder to append to
      * @param delimiterPrecedes the mode (i.e. "contextual", "always",
      * "after-inverted-name", or "never")
-     * @param i the index of the rendered name preceding the delimiter
+     * @param nameAsSort {@code true} if the name preceding the delimiter
+     * has been inverted as a result of the {@code name-as-sort-order} attribute
      * @param contextual {@code true} if the delimiter should actually be
      * appended in contextual mode
      * @return {@code true} if the delimiter was actually appended
      */
     private boolean appendDelimiter(StringBuilder builder,
-            String delimiterPrecedes, int i, boolean contextual) {
+            String delimiterPrecedes, boolean nameAsSort, boolean contextual) {
         boolean delimiterAppended = false;
         switch (delimiterPrecedes) {
             case "contextual":
@@ -208,10 +209,10 @@ public class SName implements SElement {
                 break;
 
             case "after-inverted-name":
-                // IMHO, according to the standard, we should
-                // check for nameAsSort == true here, but
-                // citeproc.js seems to behave differently
-                if (i == 0) {
+                // side note: IMHO, according to the standard, we must
+                // check for nameAsSort == true here, but citeproc.js
+                // seems to behave differently
+                if (nameAsSort) {
                     builder.append(delimiter);
                     delimiterAppended = true;
                 }
