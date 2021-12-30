@@ -220,6 +220,6 @@ public class ShellCommandCompleterTest {
 
         r = new ArrayList<>();
         complete("set format", r);
-        assertEquals(5, r.size());
+        assertEquals(4, r.size());
     }
 }
