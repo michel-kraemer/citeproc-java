@@ -25,8 +25,13 @@ public class PageParser {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         InternalPageParser parser = new InternalPageParser(tokens);
         parser.removeErrorListeners(); // do not output errors to console
-        PagesContext ctx = parser.pages();
-        if (ctx.literal == null || ctx.literal.isEmpty() ||
+        PagesContext ctx;
+        try {
+            ctx = parser.pages();
+        } catch (NumberFormatException e) {
+            ctx = null;
+        }
+        if (ctx == null || ctx.literal == null || ctx.literal.isEmpty() ||
                 ctx.exception != null || parser.getNumberOfSyntaxErrors() > 0) {
             // unparsable fall back to literal string
             return new PageRange(pages, null, null, false);

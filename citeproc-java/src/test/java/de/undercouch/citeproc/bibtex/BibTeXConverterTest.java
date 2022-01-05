@@ -210,4 +210,29 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals("978-3-030-83014-4", item.getISBN());
         assertEquals("10.1007/978-3-030-83014-4_2", item.getDOI());
     }
+
+    /**
+     * Check if the parser correctly falls back to a literal string if the
+     * 'pages' field contains an illegal number.
+     * See https://github.com/michel-kraemer/citeproc-java/issues/114
+     */
+    @Test
+    public void invalidPageNumber() throws ParseException {
+        String entry = "@Article{baks-2021,\n" +
+                "  author           = {Sandipan Baksi},\n" +
+                "  date             = {2021},\n" +
+                "  journaltitle     = {The Indian Economic {\\&} Social History Review},\n" +
+                "  pages            = {001946462110645},\n" +
+                "  title            = {Science journalism in Hindi in pre-independence India: A study of Hindi periodicals},\n" +
+                "  doi              = {10.1177/00194646211064586},\n" +
+                "  creationdate     = {2022-01-03T11:59:38},\n" +
+                "  modificationdate = {2022-01-03T12:01:49},\n" +
+                "  publisher        = {{SAGE} Publications},\n" +
+                "}";
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("baks-2021");
+        assertEquals("001946462110645", item.getPage());
+    }
 }
