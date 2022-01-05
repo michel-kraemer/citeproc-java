@@ -215,6 +215,7 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
      * Check if the parser correctly falls back to a literal string if the
      * 'pages' field contains an illegal number.
      * See https://github.com/michel-kraemer/citeproc-java/issues/114
+     * @throws ParseException if the BibTeX entry could not be parsed
      */
     @Test
     public void invalidPageNumber() throws ParseException {
@@ -234,5 +235,28 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         Map<String, CSLItemData> items = converter.toItemData(db);
         CSLItemData item = items.get("baks-2021");
         assertEquals("001946462110645", item.getPage());
+    }
+
+    /**
+     * Check if the 'urldate' of a webpage is correctly mapped to the CSL
+     * accessed field.
+     * See https://github.com/michel-kraemer/citeproc-java/issues/115
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void urldate() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "title = {Title of the test entry},\n" +
+                "url = {https://test.com},\n" +
+                "author = {Testname, Test},\n" +
+                "urldate = {2020-01-02},\n" +
+                "date = {1984},\n" +
+                "}";
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+        assertEquals("2020-01-02", item.getAccessed().getRaw());
+        assertEquals("1984", item.getIssued().getRaw());
     }
 }

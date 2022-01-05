@@ -201,17 +201,20 @@ public class BibTeXConverter {
         }
 
         // map date
-        if (type == CSLType.WEBPAGE && entries.containsKey(FIELD_URLDATE)) {
-            CSLDate date = DateParser.toDate(entries.get(FIELD_URLDATE));
-            builder.issued(date);
-        } else if (entries.containsKey(FIELD_DATE)) {
-            CSLDate date = DateParser.toDate(entries.get(FIELD_DATE));
-            builder.issued(date);
-            builder.eventDate(date);
+        CSLDate date;
+        if (entries.containsKey(FIELD_DATE)) {
+            date = DateParser.toDate(entries.get(FIELD_DATE));
         } else {
-            CSLDate date = DateParser.toDate(entries.get(FIELD_YEAR), entries.get(FIELD_MONTH));
-            builder.issued(date);
-            builder.eventDate(date);
+            date = DateParser.toDate(entries.get(FIELD_YEAR), entries.get(FIELD_MONTH));
+        }
+        builder.issued(date);
+        builder.eventDate(date);
+
+        // 'urldate' is the access date in biblatex as defined in
+        // https://ctan.kako-dev.de/macros/latex/contrib/biblatex/doc/biblatex.pdf
+        if (entries.containsKey(FIELD_URLDATE)) {
+            CSLDate urlDate = DateParser.toDate(entries.get(FIELD_URLDATE));
+            builder.accessed(urlDate);
         }
 
         // map journal/journaltitle, booktitle, series
