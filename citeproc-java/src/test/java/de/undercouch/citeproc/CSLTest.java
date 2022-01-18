@@ -530,4 +530,25 @@ public class CSLTest {
         assertEquals("[1]S. C. Johnson and B. W. Kernighan, \u201cThe Programming Language B,\u201d "
                 + "Bell Laboratories, Murray Hill, NJ, USA, 8, 1973.\n", bibl);
     }
+
+    /**
+     * Test if the processor throws an exception if the style does not support
+     * formatting bibliographies
+     * @throws Exception if everything is working as expected
+     */
+    @Test(expected = IllegalStateException.class)
+    public void styleDoesNotSupportBibliographies() throws Exception {
+        CSL.makeAdhocBibliography("oxford-art-journal.csl", "text", items[0]);
+    }
+
+    /**
+     * Test if the processor can determine if a style supports formatting
+     * bibliographies
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    public void canFormatBibliographies() throws Exception {
+        assertFalse(CSL.canFormatBibliographies("oxford-art-journal.csl"));
+        assertTrue(CSL.canFormatBibliographies("ieee.csl"));
+    }
 }

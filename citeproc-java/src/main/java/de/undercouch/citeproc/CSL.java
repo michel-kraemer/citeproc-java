@@ -189,7 +189,7 @@ public class CSL {
      * @param abbreviationProvider an object that provides abbreviations
      * (may be {@code null})
      * @param style the citation style to use. May either be a serialized
-     * XML representation of the style or a style's name such as <code>ieee</code>.
+     * XML representation of the style or a style name such as <code>ieee</code>.
      * In the latter case, the processor loads the style from the classpath (e.g.
      * <code>/ieee.csl</code>)
      * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
@@ -200,7 +200,7 @@ public class CSL {
             String lang) throws IOException {
         // load style if needed
         if (!isStyle(style)) {
-            style = loadStyle(style);
+            style = retrieveStyle(style);
         }
 
         this.itemDataProvider = itemDataProvider;
@@ -208,35 +208,11 @@ public class CSL {
 
         // TODO parse style and locale directly from URL if possible
         // TODO instead of loading them into strings first
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        try {
-            builder = factory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new IOException("Could not create document builder", e);
-        }
-
-        // load style
-        Document styleDocument;
-        try {
-            styleDocument = builder.parse(new InputSource(
-                    new StringReader(style)));
-        } catch (SAXException e) {
-            throw new IOException("Could not parse style", e);
-        }
-        this.style = new SStyle(styleDocument);
+        this.style = loadStyle(style);
 
         // load locale
         String strLocale = localeProvider.retrieveLocale(lang);
-        Document localeDocument;
-        try {
-            localeDocument = builder.parse(new InputSource(
-                    new StringReader(strLocale)));
-        } catch (SAXException e) {
-            throw new IOException("Could not parse locale", e);
-        }
-        LLocale locale = new LLocale(localeDocument);
+        LLocale locale = loadLocale(strLocale);
 
         for (LLocale l : this.style.getLocales()) {
             if (l.getLang() == null ||
@@ -336,7 +312,7 @@ public class CSL {
      * @param style the string to examine
      * @return true if the String is XML, false otherwise
      */
-    private boolean isStyle(String style) {
+    private static boolean isStyle(String style) {
         for (int i = 0; i < style.length(); ++i) {
             char c = style.charAt(i);
             if (!Character.isWhitespace(c)) {
@@ -347,18 +323,67 @@ public class CSL {
     }
 
     /**
-     * Loads a CSL style from the classpath. For example, if the given name
+     * Determines whether the given citation style contains instructions to
+     * format bibliographies.
+     * @param style the style
+     * @return {@code true} if the style can be used to format bibliographies
+     */
+    private static boolean canFormatBibliographies(SStyle style) {
+        return style.getBibliography() != null;
+    }
+
+    /**
+     * Determines whether the given citation style contains instructions to
+     * format bibliographies
+     * @param style the citation style. May either be a serialized XML
+     * representation of the style or a style name such as <code>ieee</code>.
+     * In the latter case, the style is loaded from the classpath (e.g.
+     * <code>/ieee.csl</code>)
+     * @return {@code true} if the style can be used to format bibliographies
+     * @throws IOException if the style could not be loaded or parsed
+     */
+    public static boolean canFormatBibliographies(String style) throws IOException {
+        if (!isStyle(style)) {
+            style = retrieveStyle(style);
+        }
+        SStyle ss = loadStyle(style);
+        return canFormatBibliographies(ss);
+    }
+
+    private static SStyle loadStyle(String style) throws IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new IOException("Could not create document builder", e);
+        }
+
+        // load style
+        Document styleDocument;
+        try {
+            styleDocument = builder.parse(new InputSource(
+                    new StringReader(style)));
+        } catch (SAXException e) {
+            throw new IOException("Could not parse style", e);
+        }
+
+        return new SStyle(styleDocument);
+    }
+
+    /**
+     * Retrieves a CSL style from the classpath. For example, if the given name
      * is <code>ieee</code> this method will load the file <code>/ieee.csl</code>
      * @param styleName the style's name
      * @return the serialized XML representation of the style
      * @throws IOException if the style could not be loaded
      */
-    private String loadStyle(String styleName) throws IOException {
+    private static String retrieveStyle(String styleName) throws IOException {
         URL url;
         if (styleName.startsWith("http://") || styleName.startsWith("https://")) {
             try {
                 // try to load matching style from classpath
-                return loadStyle(styleName.substring(styleName.lastIndexOf('/') + 1));
+                return retrieveStyle(styleName.substring(styleName.lastIndexOf('/') + 1));
             } catch (FileNotFoundException e) {
                 // there is no matching style in classpath
                 url = new URL(styleName);
@@ -373,7 +398,7 @@ public class CSL {
             }
 
             // try to find style in classpath
-            url = getClass().getResource(styleName);
+            url = CSL.class.getResource(styleName);
             if (url == null) {
                 throw new FileNotFoundException("Could not find style in "
                         + "classpath: " + styleName);
@@ -395,7 +420,7 @@ public class CSL {
                 throw new IOException("Dependent style does not have an "
                         + "independent parent");
             }
-            return loadStyle(independentParentLink);
+            return retrieveStyle(independentParentLink);
         }
 
         return result;
@@ -406,7 +431,7 @@ public class CSL {
      * @param style the style
      * @return true if the string is a dependent style, false otherwise
      */
-    private boolean isDependent(String style) {
+    private static boolean isDependent(String style) {
         if (!style.trim().startsWith("<")) {
             return false;
         }
@@ -425,7 +450,7 @@ public class CSL {
      * @throws IOException if the string could not be read
      * @throws SAXException if the string could not be parsed
      */
-    public String getIndependentParentLink(String style)
+    public static String getIndependentParentLink(String style)
             throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -445,6 +470,25 @@ public class CSL {
             }
         }
         return null;
+    }
+
+    private static LLocale loadLocale(String strLocale) throws IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new IOException("Could not create document builder", e);
+        }
+
+        Document localeDocument;
+        try {
+            localeDocument = builder.parse(new InputSource(
+                    new StringReader(strLocale)));
+        } catch (SAXException e) {
+            throw new IOException("Could not parse locale", e);
+        }
+        return new LLocale(localeDocument);
     }
 
     /**
@@ -950,6 +994,11 @@ public class CSL {
      * @return the bibliography
      */
     public Bibliography makeBibliography(Predicate<CSLItemData> filter) {
+        if (!canFormatBibliographies(style)) {
+            throw new IllegalStateException("The citation style does " +
+                    "not contain instructions to format bibliographies");
+        }
+
         List<CSLItemData> filteredItems;
         if (filter == null) {
             filteredItems = sortedItems;
