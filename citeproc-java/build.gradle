@@ -6,7 +6,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'nebula.optional-base'
 
-ext.graalVMVersion = "21.0.0"
+ext.graalVMVersion = "22.0.0.2"
 
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.12.0'
