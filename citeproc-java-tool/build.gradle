@@ -8,7 +8,7 @@ dependencies {
     implementation project(':citeproc-java')
 
     implementation 'de.undercouch:underline:1.0.0'
-    implementation 'org.jline:jline:3.16.0'
+    implementation 'org.jline:jline:3.21.0'
 
     runtime 'org.citationstyles:styles:21.11'
     runtime 'org.citationstyles:locales:21.11'
