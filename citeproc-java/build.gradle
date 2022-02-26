@@ -1,5 +1,5 @@
 plugins {
-    id 'nebula.optional-base' version '5.0.3'
+    id 'nebula.optional-base' version '7.0.0'
 }
 
 apply plugin: 'maven'
