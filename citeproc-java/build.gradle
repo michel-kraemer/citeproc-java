@@ -18,7 +18,7 @@ dependencies {
     testCompile 'commons-io:commons-io:2.6'
     testCompile 'org.fusesource.jansi:jansi:1.18'
     testCompile 'org.citationstyles:styles:21.11'
-    testCompile 'org.citationstyles:locales:21.11'
+    testCompile 'org.citationstyles:locales:22.2'
     testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
     testCompile "org.graalvm.sdk:graal-sdk:$graalVMVersion"
     testCompile "org.graalvm.js:js:$graalVMVersion"
