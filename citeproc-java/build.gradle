@@ -15,7 +15,7 @@ dependencies {
     compile 'org.antlr:antlr4-runtime:4.9.3'
     compile 'org.yaml:snakeyaml:1.25', optional
 
-    testCompile 'commons-io:commons-io:2.6'
+    testCompile 'commons-io:commons-io:2.11.0'
     testCompile 'org.fusesource.jansi:jansi:2.4.0'
     testCompile 'org.citationstyles:styles:21.11'
     testCompile 'org.citationstyles:locales:22.2'
