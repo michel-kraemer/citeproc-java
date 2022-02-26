@@ -16,7 +16,7 @@ dependencies {
     compile 'org.yaml:snakeyaml:1.25', optional
 
     testCompile 'commons-io:commons-io:2.6'
-    testCompile 'org.fusesource.jansi:jansi:1.18'
+    testCompile 'org.fusesource.jansi:jansi:2.4.0'
     testCompile 'org.citationstyles:styles:21.11'
     testCompile 'org.citationstyles:locales:21.11'
     testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
