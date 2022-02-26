@@ -2,7 +2,7 @@ subprojects {
     apply plugin: 'jacoco'
     apply plugin: 'java'
 
-    version = '3.0.0-alpha.4'
+    version = '3.0.0-alpha.5'
     group = 'de.undercouch'
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
