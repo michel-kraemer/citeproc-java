@@ -6,19 +6,19 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'nebula.optional-base'
 
-ext.graalVMVersion = "21.0.0"
+ext.graalVMVersion = "22.0.0.2"
 
 dependencies {
-    compile 'org.apache.commons:commons-lang3:3.9'
+    compile 'org.apache.commons:commons-lang3:3.12.0'
     compile 'org.apache.commons:commons-text:1.8'
     compile 'org.jbibtex:jbibtex:1.0.17'
-    compile 'org.antlr:antlr4-runtime:4.7.2'
+    compile 'org.antlr:antlr4-runtime:4.9.3'
     compile 'org.yaml:snakeyaml:1.25', optional
 
     testCompile 'commons-io:commons-io:2.6'
-    testCompile 'org.fusesource.jansi:jansi:1.18'
+    testCompile 'org.fusesource.jansi:jansi:2.4.0'
     testCompile 'org.citationstyles:styles:21.11'
-    testCompile 'org.citationstyles:locales:21.11'
+    testCompile 'org.citationstyles:locales:22.2'
     testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
     testCompile "org.graalvm.sdk:graal-sdk:$graalVMVersion"
     testCompile "org.graalvm.js:js:$graalVMVersion"
