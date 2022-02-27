@@ -2,11 +2,12 @@ plugins {
     id 'nebula.optional-base' version '7.0.0'
 }
 
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'nebula.optional-base'
 
 ext.graalVMVersion = "22.0.0.2"
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 dependencies {
     compile 'org.apache.commons:commons-lang3:3.12.0'
@@ -57,70 +58,57 @@ jar {
     from new File(project.rootDir, 'LICENSE.txt')
 }
 
-// define artifacts for upload
-artifacts {
-    archives jar
-    archives packageJavadoc
-    archives packageSources
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            pom {
+                name = 'citeproc-java'
+                packaging = 'jar'
+                description = 'A Citation Style Language (CSL) Processor for Java.'
+                url = 'https://michelkraemer.com'
+ 
+                scm {
+                    url = 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
+                    connection = 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
+                    developerConnection = 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
+                }
+ 
+                licenses {
+                    license {
+                        name = 'The Apache Software License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution = 'repo'
+                    }
+                }
+ 
+                developers {
+                    developer {
+                        id = 'michel-kraemer'
+                        name = 'Michel Kraemer'
+                        email = 'michel@undercouch.de'
+                        url = 'https://michelkraemer.com'
+                    }
+                }
+            }
+        }
+    }
 }
 
 // sign all artifacts
 signing {
-    required { !version.endsWith('SNAPSHOT') && gradle.taskGraph.hasTask('uploadArchives') }
-    sign configurations.archives
+    useGpgCmd()
+    sign publishing.publications.mavenJava
 }
 
-// remove test dependencies and runtime dependencies
-// from configuration-to-scope mapping
-// this also removes them from the maven pom file
-conf2ScopeMappings.mappings.remove(configurations.testCompile)
-conf2ScopeMappings.mappings.remove(configurations.runtime)
+tasks.withType(Sign) {
+    // only sign release artifacts and not snapshots
+    onlyIf { isReleaseVersion }
+}
 
-uploadArchives {
+nexusPublishing {
     repositories {
-        mavenDeployer {
-            // sign artifacts before upload
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            
-            // upload to sonatype OSS
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
-                authentication(userName: this.hasProperty('sonatypeUsername') ? sonatypeUsername : '',
-                    password: this.hasProperty('sonatypePassword') ? sonatypePassword : '')
-            }
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
-                authentication(userName: this.hasProperty('sonatypeUsername') ? sonatypeUsername : '',
-                    password: this.hasProperty('sonatypePassword') ? sonatypePassword : '')
-            }
-            
-            // pom file details
-            pom.project {
-               name 'citeproc-java'
-               packaging 'jar'
-               description 'A Citation Style Language (CSL) Processor for Java.'
-               url 'http://www.michel-kraemer.com'
- 
-               scm {
-                   url 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
-                   connection 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
-                   developerConnection 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
-               }
- 
-               licenses {
-                   license {
-                       name 'The Apache Software License, Version 2.0'
-                       url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                       distribution 'repo'
-                   }
-               }
- 
-               developers {
-                   developer {
-                       id 'michel-kraemer'
-                       name 'Michel Kraemer'
-                       email 'michel@undercouch.de'
-                   }
-               }
-           }
-        }
+        sonatype()
     }
 }

@@ -1,3 +1,7 @@
+plugins {
+    id 'io.github.gradle-nexus.publish-plugin' version "1.1.0"
+}
+
 subprojects {
     apply plugin: 'jacoco'
     apply plugin: 'java'
@@ -29,16 +33,10 @@ subprojects {
         options.source '8' // Java version
     }
     
-    // package javadoc into a jar file
-    task packageJavadoc(type: Jar, dependsOn: 'javadoc') {
-        from javadoc.destinationDir
-        classifier = 'javadoc'
-    }
-    
-    // package source into a jar file
-    task packageSources(type: Jar) {
-        from sourceSets.main.allSource
-        classifier = 'sources'
+    // package javadoc and sources
+    java {
+        withJavadocJar()
+        withSourcesJar()
     }
 
     tasks.withType(JavaCompile) {
