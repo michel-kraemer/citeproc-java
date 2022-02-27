@@ -1,4 +1,5 @@
 plugins {
+    id 'java-library'
     id 'nebula.optional-base' version '7.0.0'
 }
 
@@ -10,20 +11,20 @@ ext.graalVMVersion = "22.0.0.2"
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 dependencies {
-    compile 'org.apache.commons:commons-lang3:3.12.0'
-    compile 'org.apache.commons:commons-text:1.9'
-    compile 'org.jbibtex:jbibtex:1.0.19'
-    compile 'org.antlr:antlr4-runtime:4.9.3'
-    compile 'org.yaml:snakeyaml:1.30', optional
+    api 'org.jbibtex:jbibtex:1.0.19'
+    api 'org.antlr:antlr4-runtime:4.9.3'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-text:1.9'
+    implementation 'org.yaml:snakeyaml:1.30', optional
 
-    testCompile 'commons-io:commons-io:2.11.0'
-    testCompile 'org.fusesource.jansi:jansi:2.4.0'
-    testCompile 'org.citationstyles:styles:22.2'
-    testCompile 'org.citationstyles:locales:22.2'
-    testCompile 'com.carrotsearch:junit-benchmarks:0.7.2'
-    testCompile "org.graalvm.sdk:graal-sdk:$graalVMVersion"
-    testCompile "org.graalvm.js:js:$graalVMVersion"
-    testCompile 'pl.pragmatists:JUnitParams:1.1.1'
+    testImplementation 'commons-io:commons-io:2.11.0'
+    testImplementation 'org.fusesource.jansi:jansi:2.4.0'
+    testImplementation 'org.citationstyles:styles:22.2'
+    testImplementation 'org.citationstyles:locales:22.2'
+    testImplementation 'com.carrotsearch:junit-benchmarks:0.7.2'
+    testImplementation "org.graalvm.sdk:graal-sdk:$graalVMVersion"
+    testImplementation "org.graalvm.js:js:$graalVMVersion"
+    testImplementation 'pl.pragmatists:JUnitParams:1.1.1'
 
     // compile-time-only dependency to jackson annotations to avoid
     // warnings during javadoc generation
