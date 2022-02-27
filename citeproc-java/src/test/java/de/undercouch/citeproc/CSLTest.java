@@ -7,9 +7,7 @@ import de.undercouch.citeproc.csl.CSLNameBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
-import junitparams.JUnitParamsRunner;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.List;
 import java.util.Set;
@@ -22,7 +20,6 @@ import static org.junit.Assert.assertTrue;
  * Tests the CSL processor {@link CSL}
  * @author Michel Kraemer
  */
-@RunWith(JUnitParamsRunner.class)
 public class CSLTest {
     /**
      * Example citation items

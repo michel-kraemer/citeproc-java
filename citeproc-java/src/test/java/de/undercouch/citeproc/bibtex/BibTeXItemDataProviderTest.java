@@ -3,12 +3,10 @@ package de.undercouch.citeproc.bibtex;
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
-import junitparams.JUnitParamsRunner;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.Key;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +20,6 @@ import static org.junit.Assert.fail;
  * Tests the BibTeX citation item provider
  * @author Michel Kraemer
  */
-@RunWith(JUnitParamsRunner.class)
 public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
     private static BibTeXDatabase db;
     private static final BibTeXItemDataProvider sys = new BibTeXItemDataProvider();
