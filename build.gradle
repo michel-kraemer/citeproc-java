@@ -2,12 +2,21 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version "1.1.0"
 }
 
+group = 'de.undercouch'
+version = '3.0.0-alpha.6'
+
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
+}
+
 subprojects {
     apply plugin: 'jacoco'
     apply plugin: 'java'
 
-    version = '3.0.0-alpha.6'
-    group = 'de.undercouch'
+    group = rootProject.group
+    version = rootProject.version
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
 
@@ -17,7 +26,7 @@ subprojects {
             url 'https://oss.sonatype.org/content/groups/public'
         }
     }
-    
+
     dependencies {
         testImplementation 'junit:junit:4.13.2'
     }

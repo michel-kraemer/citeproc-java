@@ -106,9 +106,3 @@ tasks.withType(Sign) {
     // only sign release artifacts and not snapshots
     onlyIf { isReleaseVersion }
 }
-
-nexusPublishing {
-    repositories {
-        sonatype()
-    }
-}
