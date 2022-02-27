@@ -22,7 +22,7 @@ jobs:
         java-version: 11
         distribution: 'zulu'
     - name: Build with Gradle
-      run: "./gradlew build -PexcludeTests='**/TestSuiteTest.class'"
+      run: "./gradlew test"
     - name: Create test reports
       run: ./gradlew jacocoTestReport
     - name: Upload code coverage report
