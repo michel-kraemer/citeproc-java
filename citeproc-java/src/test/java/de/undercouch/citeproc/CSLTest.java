@@ -178,6 +178,40 @@ public class CSLTest {
     }
 
     /**
+     * Tests if an ad hoc citation can be created
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    public void makeAdhocCitation() throws Exception {
+        CSLItemData item = new CSLItemDataBuilder()
+                .id("citeproc-java")
+                .type(CSLType.WEBPAGE)
+                .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
+                .author("Michel", "Kr\u00E4mer")
+                .issued(2013, 9, 7)
+                .URL("http://michel-kraemer.github.io/citeproc-java/")
+                .accessed(2013, 12, 6)
+                .build();
+
+        List<Citation> citations = CSL.makeAdhocCitation("apa", "text", item);
+        assertEquals(1, citations.size());
+        Citation c = citations.get(0);
+        assertEquals("(Krämer, 2013)", c.getText());
+    }
+
+    /**
+     * Tests if ad hoc citations can be created
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    public void makeAdhocCitations() throws Exception {
+        List<Citation> citations = CSL.makeAdhocCitation("apa", "text", items[0], items[1]);
+        assertEquals(1, citations.size());
+        Citation c = citations.get(0);
+        assertEquals("(Johnson & Kernighan, 1973; Ritchie & Thompson, 1973)", c.getText());
+    }
+
+    /**
      * Tests if the processor throws an {@link IllegalArgumentException} if
      * a citation item does not exist
      * @throws Exception if something else goes wrong

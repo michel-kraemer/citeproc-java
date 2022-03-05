@@ -1085,6 +1085,50 @@ public class CSL {
     }
 
     /**
+     * Creates an ad hoc citation from the given citation items using the
+     * <code>"html"</code> output format.
+     * @param style the citation style to use. May either be a serialized
+     * XML representation of the style or a style's name such as <code>ieee</code>.
+     * In the latter case, the processor loads the style from the classpath (e.g.
+     * <code>/ieee.csl</code>)
+     * @param items the citation items
+     * @return a list of generated citations strings that can be inserted into the text
+     * @see #makeCitation(String...)
+     * @throws IOException if the CSL style could not be loaded
+     */
+    public static List<Citation> makeAdhocCitation(String style, CSLItemData... items)
+            throws IOException {
+        return makeAdhocCitation(style, "html", items);
+    }
+
+    /**
+     * Creates an ad hoc citation from the given citation items.
+     * @param style the citation style to use. May either be a serialized
+     * XML representation of the style or a style's name such as <code>ieee</code>.
+     * In the latter case, the processor loads the style from the classpath (e.g.
+     * <code>/ieee.csl</code>)
+     * @param outputFormat the processor's output format (one of
+     * <code>"html"</code>, <code>"text"</code>, <code>"asciidoc"</code>,
+     * <code>"fo"</code>, or <code>"rtf"</code>)
+     * @param items the citation items
+     * @return a list of generated citations strings that can be inserted into the text
+     * @see #makeCitation(String...)
+     * @throws IOException if the CSL style could not be loaded
+     */
+    public static List<Citation> makeAdhocCitation(String style, String outputFormat,
+            CSLItemData... items) throws IOException {
+        ItemDataProvider provider = new ListItemDataProvider(items);
+        CSL csl = new CSL(provider, style);
+        csl.setOutputFormat(outputFormat);
+
+        String[] ids = new String[items.length];
+        for (int i = 0; i < items.length; ++i) {
+            ids[i] = items[i].getId();
+        }
+        return csl.makeCitation(ids);
+    }
+
+    /**
      * Test if any of the attributes of {@code b} match the ones of {@code a}.
      * Note: This method will be deprecated in the next release
      * @param a the first object
