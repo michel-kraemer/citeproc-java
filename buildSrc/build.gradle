@@ -9,7 +9,7 @@ dependencies {
     implementation localGroovy()
     
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9.3'
-    implementation 'org.antlr:antlr4:4.7.2'
+    implementation 'org.antlr:antlr4:4.9.3'
     implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
     implementation 'org.eclipse.tycho:org.eclipse.jdt.core:3.14.0.v20171206-0802'
     implementation 'org.eclipse.platform:org.eclipse.text:3.9.0'
