@@ -605,14 +605,26 @@ public class RenderContext {
                 case "author":
                     result = itemData.getAuthor();
                     break;
+                case "chair":
+                    result = itemData.getChair();
+                    break;
                 case "collection-editor":
                     result = itemData.getCollectionEditor();
                     break;
                 case "composer":
                     result = itemData.getComposer();
                     break;
+                case "compiler":
+                    result = itemData.getCompiler();
+                    break;
                 case "container-author":
                     result = itemData.getContainerAuthor();
+                    break;
+                case "contributor":
+                    result = itemData.getContributor();
+                    break;
+                case "curator":
+                    result = itemData.getCurator();
                     break;
                 case "director":
                     result = itemData.getDirector();
@@ -623,14 +635,26 @@ public class RenderContext {
                 case "editorial-director":
                     result = itemData.getEditorialDirector();
                     break;
+                case "executive-producer":
+                    result = itemData.getExecutiveProducer();
+                    break;
                 case "illustrator":
                     result = itemData.getIllustrator();
                     break;
                 case "interviewer":
                     result = itemData.getInterviewer();
                     break;
+                case "organizer":
+                    result = itemData.getOrganizer();
+                    break;
                 case "original-author":
                     result = itemData.getOriginalAuthor();
+                    break;
+                case "performer":
+                    result = itemData.getPerformer();
+                    break;
+                case "producer":
+                    result = itemData.getProducer();
                     break;
                 case "recipient":
                     result = itemData.getRecipient();

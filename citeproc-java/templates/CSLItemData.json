@@ -36,6 +36,10 @@
         },
         {
             "type": "CSLName[]",
+            "name": "chair"
+        },
+        {
+            "type": "CSLName[]",
             "name": "collection-editor"
         },
         {
@@ -44,7 +48,19 @@
         },
         {
             "type": "CSLName[]",
+            "name": "compiler"
+        },
+        {
+            "type": "CSLName[]",
             "name": "container-author"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "contributor"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "curator"
         },
         {
             "type": "CSLName[]",
@@ -60,7 +76,7 @@
         },
         {
             "type": "CSLName[]",
-            "name": "interviewer"
+            "name": "executive-producer"
         },
         {
             "type": "CSLName[]",
@@ -68,7 +84,23 @@
         },
         {
             "type": "CSLName[]",
+            "name": "interviewer"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "organizer"
+        },
+        {
+            "type": "CSLName[]",
             "name": "original-author"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "performer"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "producer"
         },
         {
             "type": "CSLName[]",
