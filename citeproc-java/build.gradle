@@ -7,7 +7,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'nebula.optional-base'
 
-ext.graalVMVersion = "22.0.0.2"
+ext.graalVMVersion = "22.1.0"
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 dependencies {
