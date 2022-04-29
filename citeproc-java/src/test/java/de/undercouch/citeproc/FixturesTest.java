@@ -1337,7 +1337,7 @@ public class FixturesTest {
             // "page_ExpandWeirdComposite",
             // "page_Minimal",
             // "page_NoOption",
-            // "page_NumberPageFirst",
+            "page_NumberPageFirst",
             // "page_PluralDetectWithEndash",
             // "page_WithLocaleAndWeirdDelimiter",
             // "plural_LabelForced",

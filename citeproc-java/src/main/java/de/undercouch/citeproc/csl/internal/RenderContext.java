@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal;
 
 import de.undercouch.citeproc.AbbreviationProvider;
+import de.undercouch.citeproc.bibtex.PageParser;
 import de.undercouch.citeproc.csl.CSLCitation;
 import de.undercouch.citeproc.csl.CSLCitationItem;
 import de.undercouch.citeproc.csl.CSLCitationItemBuilder;
@@ -451,6 +452,9 @@ public class RenderContext {
                     break;
                 case "page-first":
                     result = itemData.getPageFirst();
+                    if (result == null && itemData.getPage() != null) {
+                        result = PageParser.parse(itemData.getPage()).getPageFirst();
+                    }
                     break;
                 case "PMCID":
                     result = itemData.getPMCID();
