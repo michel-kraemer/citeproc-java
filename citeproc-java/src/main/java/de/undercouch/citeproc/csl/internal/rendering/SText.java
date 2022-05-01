@@ -1,5 +1,8 @@
 package de.undercouch.citeproc.csl.internal.rendering;
 
+import de.undercouch.citeproc.bibtex.PageParser;
+import de.undercouch.citeproc.bibtex.PageRange;
+import de.undercouch.citeproc.bibtex.PageRanges;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SMacro;
 import de.undercouch.citeproc.csl.internal.Token;
@@ -12,6 +15,7 @@ import de.undercouch.citeproc.csl.internal.helper.NumberElement;
 import de.undercouch.citeproc.csl.internal.helper.NumberParser;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.NodeHelper;
+import de.undercouch.citeproc.helper.PageRangeFormatter;
 import org.w3c.dom.Node;
 
 import java.util.List;
@@ -57,6 +61,53 @@ public class SText implements SRenderingElement {
         affixes.wrap(quotes.wrap(textCase.wrap(this::renderInternal))).accept(ctx);
     }
 
+    private void renderPage(String page, RenderContext ctx) {
+        String delimiter = ctx.getTerm("page-range-delimiter");
+        String pageRangeFormat = ctx.getStyle().getPageRangeFormat();
+        final PageRangeFormatter.Format format;
+        switch (pageRangeFormat == null ? "" : pageRangeFormat) {
+            case "chicago":
+            case "chicago-15":
+                format = PageRangeFormatter.Format.CHICAGO15;
+                break;
+
+            case "chicago-16":
+                format = PageRangeFormatter.Format.CHICAGO16;
+                break;
+
+            case "expanded":
+                format = PageRangeFormatter.Format.EXPANDED;
+                break;
+
+            case "minimal":
+                format = PageRangeFormatter.Format.MINIMAL;
+                break;
+
+            case "minimal-two":
+                format = PageRangeFormatter.Format.MINIMAL2;
+                break;
+
+            default:
+                format = null;
+                break;
+        }
+
+        if (format != null) {
+            PageRanges prs = PageParser.parse(page);
+            int i = 0;
+            for (PageRange r : prs) {
+                if (i > 0) {
+                    ctx.emit(", ", Token.Type.TEXT, formattingAttributes);
+                }
+                ctx.emit(PageRangeFormatter.format(r, format, delimiter),
+                        Token.Type.TEXT, formattingAttributes);
+                ++i;
+            }
+        } else {
+            ctx.emit(page.replace("-", delimiter), Token.Type.TEXT, formattingAttributes);
+        }
+    }
+
     private void renderInternal(RenderContext ctx) {
         if (variable != null && !variable.isEmpty()) {
             // year-suffix is a special variable that is used to disambiguate
@@ -68,9 +119,7 @@ public class SText implements SRenderingElement {
             if (v != null) {
                 switch (variable) {
                     case "page":
-                        String delimiter = ctx.getTerm("page-range-delimiter");
-                        ctx.emit(v.replace("-", delimiter),
-                                Token.Type.TEXT, formattingAttributes);
+                        renderPage(v, ctx);
                         break;
 
                     case "locator":

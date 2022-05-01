@@ -287,11 +287,12 @@ public class BibTeXConverter {
         // map pages
         String pages = entries.get(FIELD_PAGES);
         if (pages != null) {
-            PageRange pr = PageParser.parse(pages);
-            builder.page(pr.getLiteral());
-            builder.pageFirst(pr.getPageFirst());
-            if (pr.getNumberOfPages() != null) {
-                builder.numberOfPages(String.valueOf(pr.getNumberOfPages()));
+            PageRanges ranges = PageParser.parse(pages);
+            builder.page(ranges.getLiteral());
+            builder.pageFirst(ranges.getPageFirst());
+            Integer numberOfPages = ranges.getNumberOfPages();
+            if (numberOfPages != null) {
+                builder.numberOfPages(String.valueOf(numberOfPages));
             }
         }
 

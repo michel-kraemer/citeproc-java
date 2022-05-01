@@ -2,6 +2,7 @@ package de.undercouch.citeproc.csl.internal;
 
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.csl.internal.rendering.SNameInheritableAttributes;
+import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -22,6 +23,7 @@ public class SStyle {
     private final SBibliography bibliography;
     private final Map<String, SMacro> macros = new HashMap<>();
     private final SNameInheritableAttributes inheritableNameAttributes;
+    private final String pageRangeFormat;
 
     /**
      * Creates the citation style from an XML document
@@ -60,6 +62,7 @@ public class SStyle {
         this.citation = citation;
         this.bibliography = bibl;
         this.inheritableNameAttributes = new SNameInheritableAttributes(styleRoot);
+        this.pageRangeFormat = NodeHelper.getAttrValue(styleRoot, "page-range-format");
     }
 
     /**
@@ -104,5 +107,13 @@ public class SStyle {
      */
     public SNameInheritableAttributes getInheritableNameAttributes() {
         return inheritableNameAttributes;
+    }
+
+    /**
+     * Get the page range format defined for this style
+     * @return the format or {@code null} if no value has been defined
+     */
+    public String getPageRangeFormat() {
+        return pageRangeFormat;
     }
 }

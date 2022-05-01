@@ -1,7 +1,7 @@
 package de.undercouch.citeproc.csl.internal.rendering;
 
 import de.undercouch.citeproc.bibtex.PageParser;
-import de.undercouch.citeproc.bibtex.PageRange;
+import de.undercouch.citeproc.bibtex.PageRanges;
 import de.undercouch.citeproc.csl.CSLLabel;
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.internal.RenderContext;
@@ -85,8 +85,8 @@ public class SLabel implements SRenderingElement {
         boolean isLocator = false;
         CSLName[] names;
         if (variable.equals("page")) {
-            PageRange range = PageParser.parse(String.valueOf(value));
-            plural = range.isMultiplePages();
+            PageRanges ranges = PageParser.parse(String.valueOf(value));
+            plural = ranges.isMultiplePages();
         } else if (variable.equals("number") || (isLocator = variable.equals("locator"))) {
             List<NumberElement> elements = NumberParser.parse(String.valueOf(value));
             if (elements.size() > nNumberElement) {

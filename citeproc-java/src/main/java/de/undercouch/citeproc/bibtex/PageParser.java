@@ -14,11 +14,11 @@ import org.antlr.v4.runtime.CommonTokenStream;
 public class PageParser {
     /**
      * Parses a given page or range of pages. If the given string cannot
-     * be parsed, the method will return a page range with a literal string.
+     * be parsed, the method will return a single page range with a literal string.
      * @param pages the page or range of pages
-     * @return the parsed page or page range (never {@code null})
+     * @return the parsed page or page ranges (never {@code null} and never empty)
      */
-    public static PageRange parse(String pages) {
+    public static PageRanges parse(String pages) {
         CharStream cs = CharStreams.fromString(pages);
         InternalPageLexer lexer = new InternalPageLexer(cs);
         lexer.removeErrorListeners(); // do not output errors to console
@@ -31,12 +31,11 @@ public class PageParser {
         } catch (NumberFormatException e) {
             ctx = null;
         }
-        if (ctx == null || ctx.literal == null || ctx.literal.isEmpty() ||
+        if (ctx == null || ctx.ranges == null || ctx.ranges.isEmpty() ||
                 ctx.exception != null || parser.getNumberOfSyntaxErrors() > 0) {
             // unparsable fall back to literal string
-            return new PageRange(pages, null, null, false);
+            return new PageRanges(new PageRange(pages, null, null, null, false));
         }
-        return new PageRange(ctx.literal, ctx.pageFrom, ctx.numberOfPages,
-                ctx.multiplePages);
+        return ctx.ranges;
     }
 }

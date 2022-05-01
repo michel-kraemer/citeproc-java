@@ -7,6 +7,7 @@ package de.undercouch.citeproc.bibtex;
 public class PageRange {
     private final String literal;
     private final String pageFirst;
+    private final String pageLast;
     private final Integer numberOfPages;
     private final boolean multiplePages;
 
@@ -19,10 +20,11 @@ public class PageRange {
      * pages (may be {@code true} even if the actual {@code numberOfPages}
      * could not be determined)
      */
-    public PageRange(String literal, String pageFirst, Integer numberOfPages,
-            boolean multiplePages) {
+    public PageRange(String literal, String pageFirst, String pageLast,
+            Integer numberOfPages, boolean multiplePages) {
         this.literal = literal;
         this.pageFirst = pageFirst;
+        this.pageLast = pageLast;
         this.numberOfPages = numberOfPages;
         this.multiplePages = multiplePages;
     }
@@ -38,6 +40,13 @@ public class PageRange {
      */
     public String getPageFirst() {
         return pageFirst;
+    }
+
+    /**
+     * @return the last page in the range (can be {@code null})
+     */
+    public String getPageLast() {
+        return pageLast;
     }
 
     /**

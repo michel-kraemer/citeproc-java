@@ -2,6 +2,8 @@ package de.undercouch.citeproc.bibtex;
 
 import org.junit.Test;
 
+import java.util.function.Consumer;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -17,9 +19,16 @@ public class PageParserTest {
      */
     @Test
     public void singlePage() {
-        PageRange pr = PageParser.parse("10");
-        assertEquals(Integer.valueOf(1), pr.getNumberOfPages());
-        assertFalse(pr.isMultiplePages());
+        PageRanges prs = PageParser.parse("10");
+        assertEquals(Integer.valueOf(1), prs.getNumberOfPages());
+        assertFalse(prs.isMultiplePages());
+
+        assertEquals(1, prs.size());
+        PageRange pr0 = prs.get(0);
+        assertEquals(Integer.valueOf(1), pr0.getNumberOfPages());
+        assertEquals("10", pr0.getPageFirst());
+        assertEquals("10", pr0.getPageLast());
+        assertFalse(pr0.isMultiplePages());
     }
 
     /**
@@ -27,35 +36,26 @@ public class PageParserTest {
      */
     @Test
     public void simplePageRange() {
-        PageRange pr = PageParser.parse("10-20");
-        assertEquals("10-20", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertEquals(Integer.valueOf(11), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+        Consumer<PageRanges> checkPageRanges = prs -> {
+            assertEquals("10-20", prs.getLiteral());
+            assertEquals("10", prs.getPageFirst());
+            assertEquals(Integer.valueOf(11), prs.getNumberOfPages());
+            assertTrue(prs.isMultiplePages());
 
-        pr = PageParser.parse("10 - 20");
-        assertEquals("10-20", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertEquals(Integer.valueOf(11), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+            assertEquals(1, prs.size());
+            PageRange pr0 = prs.get(0);
+            assertEquals("10-20", pr0.getLiteral());
+            assertEquals("10", pr0.getPageFirst());
+            assertEquals("20", pr0.getPageLast());
+            assertEquals(Integer.valueOf(11), pr0.getNumberOfPages());
+            assertTrue(pr0.isMultiplePages());
+        };
 
-        pr = PageParser.parse("10--20");
-        assertEquals("10-20", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertEquals(Integer.valueOf(11), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
-
-        pr = PageParser.parse("10---20");
-        assertEquals("10-20", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertEquals(Integer.valueOf(11), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
-
-        pr = PageParser.parse("10\u201320");
-        assertEquals("10-20", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertEquals(Integer.valueOf(11), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+        checkPageRanges.accept(PageParser.parse("10-20"));
+        checkPageRanges.accept(PageParser.parse("10 - 20"));
+        checkPageRanges.accept(PageParser.parse("10--20"));
+        checkPageRanges.accept(PageParser.parse("10---20"));
+        checkPageRanges.accept(PageParser.parse("10\u201320"));
     }
 
     /**
@@ -63,17 +63,30 @@ public class PageParserTest {
      */
     @Test
     public void twoPageRanges() {
-        PageRange pr = PageParser.parse("10-20,30--40");
-        assertEquals("10-20,30-40", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertEquals(Integer.valueOf(22), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+        Consumer<PageRanges> checkPageRanges = prs -> {
+            assertEquals("10-20, 30-40", prs.getLiteral());
+            assertEquals("10", prs.getPageFirst());
+            assertEquals(Integer.valueOf(22), prs.getNumberOfPages());
+            assertTrue(prs.isMultiplePages());
 
-        pr = PageParser.parse("10 -  20 ,30 --40");
-        assertEquals("10-20,30-40", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertEquals(Integer.valueOf(22), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+            assertEquals(2, prs.size());
+            PageRange pr0 = prs.get(0);
+            assertEquals("10-20", pr0.getLiteral());
+            assertEquals("10", pr0.getPageFirst());
+            assertEquals("20", pr0.getPageLast());
+            assertEquals(Integer.valueOf(11), pr0.getNumberOfPages());
+            assertTrue(pr0.isMultiplePages());
+
+            PageRange pr1 = prs.get(1);
+            assertEquals("30-40", pr1.getLiteral());
+            assertEquals("30", pr1.getPageFirst());
+            assertEquals("40", pr1.getPageLast());
+            assertEquals(Integer.valueOf(11), pr1.getNumberOfPages());
+            assertTrue(pr1.isMultiplePages());
+        };
+
+        checkPageRanges.accept(PageParser.parse("10-20,30--40"));
+        checkPageRanges.accept(PageParser.parse("10 -  20 ,30 --40"));
     }
 
     /**
@@ -81,11 +94,46 @@ public class PageParserTest {
      */
     @Test
     public void complex() {
-        PageRange pr = PageParser.parse("10-20,30--40,45,50\u201355,5");
-        assertEquals("10-20,30-40,45,50-55,5", pr.getLiteral());
-        assertEquals("5", pr.getPageFirst());
-        assertEquals(Integer.valueOf(30), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+        PageRanges prs = PageParser.parse("10-20, 30--40, 45, 50\u201355, 5");
+        assertEquals("10-20, 30-40, 45, 50-55, 5", prs.getLiteral());
+        assertEquals("5", prs.getPageFirst());
+        assertEquals(Integer.valueOf(30), prs.getNumberOfPages());
+        assertTrue(prs.isMultiplePages());
+
+        PageRange pr0 = prs.get(0);
+        assertEquals("10-20", pr0.getLiteral());
+        assertEquals("10", pr0.getPageFirst());
+        assertEquals("20", pr0.getPageLast());
+        assertEquals(Integer.valueOf(11), pr0.getNumberOfPages());
+        assertTrue(pr0.isMultiplePages());
+
+        PageRange pr1 = prs.get(1);
+        assertEquals("30-40", pr1.getLiteral());
+        assertEquals("30", pr1.getPageFirst());
+        assertEquals("40", pr1.getPageLast());
+        assertEquals(Integer.valueOf(11), pr1.getNumberOfPages());
+        assertTrue(pr1.isMultiplePages());
+
+        PageRange pr2 = prs.get(2);
+        assertEquals("45", pr2.getLiteral());
+        assertEquals("45", pr2.getPageFirst());
+        assertEquals("45", pr2.getPageLast());
+        assertEquals(Integer.valueOf(1), pr2.getNumberOfPages());
+        assertFalse(pr2.isMultiplePages());
+
+        PageRange pr3 = prs.get(3);
+        assertEquals("50-55", pr3.getLiteral());
+        assertEquals("50", pr3.getPageFirst());
+        assertEquals("55", pr3.getPageLast());
+        assertEquals(Integer.valueOf(6), pr3.getNumberOfPages());
+        assertTrue(pr3.isMultiplePages());
+
+        PageRange pr4 = prs.get(4);
+        assertEquals("5", pr4.getLiteral());
+        assertEquals("5", pr4.getPageFirst());
+        assertEquals("5", pr4.getPageLast());
+        assertEquals(Integer.valueOf(1), pr4.getNumberOfPages());
+        assertFalse(pr4.isMultiplePages());
     }
 
     /**
@@ -93,17 +141,33 @@ public class PageParserTest {
      */
     @Test
     public void fromToUnknown() {
-        PageRange pr = PageParser.parse("10-??");
-        assertEquals("10-??", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertNull(pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+        PageRanges prs = PageParser.parse("10-??");
+        assertEquals("10-??", prs.getLiteral());
+        assertEquals("10", prs.getPageFirst());
+        assertNull(prs.getNumberOfPages());
+        assertTrue(prs.isMultiplePages());
 
-        pr = PageParser.parse("10 - ??");
-        assertEquals("10 - ??", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertNull(pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+        assertEquals(1, prs.size());
+        PageRange pr0 = prs.get(0);
+        assertEquals("10-??", pr0.getLiteral());
+        assertEquals("10", pr0.getPageFirst());
+        assertEquals("??", pr0.getPageLast());
+        assertNull(pr0.getNumberOfPages());
+        assertTrue(pr0.isMultiplePages());
+
+        prs = PageParser.parse("10 - ??");
+        assertEquals("10 - ??", prs.getLiteral());
+        assertEquals("10", prs.getPageFirst());
+        assertNull(prs.getNumberOfPages());
+        assertTrue(prs.isMultiplePages());
+
+        assertEquals(1, prs.size());
+        pr0 = prs.get(0);
+        assertEquals("10 - ??", pr0.getLiteral());
+        assertEquals("10", pr0.getPageFirst());
+        assertEquals("??", pr0.getPageLast());
+        assertNull(pr0.getNumberOfPages());
+        assertTrue(pr0.isMultiplePages());
     }
 
     /**
@@ -111,17 +175,33 @@ public class PageParserTest {
      */
     @Test
     public void unknownRange() {
-        PageRange pr = PageParser.parse("??-??");
-        assertEquals("??-??", pr.getLiteral());
-        assertEquals("??", pr.getPageFirst());
-        assertNull(pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+        PageRanges prs = PageParser.parse("??-??");
+        assertEquals("??-??", prs.getLiteral());
+        assertEquals("??", prs.getPageFirst());
+        assertNull(prs.getNumberOfPages());
+        assertTrue(prs.isMultiplePages());
 
-        pr = PageParser.parse("?? - ??");
-        assertEquals("?? - ??", pr.getLiteral());
-        assertEquals("??", pr.getPageFirst());
-        assertNull(pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+        assertEquals(1, prs.size());
+        PageRange pr0 = prs.get(0);
+        assertEquals("??-??", pr0.getLiteral());
+        assertEquals("??", pr0.getPageFirst());
+        assertEquals("??", pr0.getPageLast());
+        assertNull(pr0.getNumberOfPages());
+        assertTrue(pr0.isMultiplePages());
+
+        prs = PageParser.parse("?? - ??");
+        assertEquals("?? - ??", prs.getLiteral());
+        assertEquals("??", prs.getPageFirst());
+        assertNull(prs.getNumberOfPages());
+        assertTrue(prs.isMultiplePages());
+
+        assertEquals(1, prs.size());
+        pr0 = prs.get(0);
+        assertEquals("?? - ??", pr0.getLiteral());
+        assertEquals("??", pr0.getPageFirst());
+        assertEquals("??", pr0.getPageLast());
+        assertNull(pr0.getNumberOfPages());
+        assertTrue(pr0.isMultiplePages());
     }
 
     /**
@@ -129,11 +209,19 @@ public class PageParserTest {
      */
     @Test
     public void unknownPage() {
-        PageRange pr = PageParser.parse("??");
-        assertEquals("??", pr.getLiteral());
-        assertEquals("??", pr.getPageFirst());
-        assertNull(pr.getNumberOfPages());
-        assertFalse(pr.isMultiplePages());
+        PageRanges prs = PageParser.parse("??");
+        assertEquals("??", prs.getLiteral());
+        assertEquals("??", prs.getPageFirst());
+        assertNull(prs.getNumberOfPages());
+        assertFalse(prs.isMultiplePages());
+
+        assertEquals(1, prs.size());
+        PageRange pr0 = prs.get(0);
+        assertEquals("??", pr0.getLiteral());
+        assertEquals("??", pr0.getPageFirst());
+        assertEquals("??", pr0.getPageLast());
+        assertNull(pr0.getNumberOfPages());
+        assertFalse(pr0.isMultiplePages());
     }
 
     /**
@@ -141,11 +229,19 @@ public class PageParserTest {
      */
     @Test
     public void singlePageRange() {
-        PageRange pr = PageParser.parse("10-10");
-        assertEquals("10", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertEquals(Integer.valueOf(1), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+        PageRanges prs = PageParser.parse("10-10");
+        assertEquals("10", prs.getLiteral());
+        assertEquals("10", prs.getPageFirst());
+        assertEquals(Integer.valueOf(1), prs.getNumberOfPages());
+        assertTrue(prs.isMultiplePages());
+
+        assertEquals(1, prs.size());
+        PageRange pr0 = prs.get(0);
+        assertEquals("10", pr0.getLiteral());
+        assertEquals("10", pr0.getPageFirst());
+        assertEquals("10", pr0.getPageLast());
+        assertEquals(Integer.valueOf(1), pr0.getNumberOfPages());
+        assertTrue(pr0.isMultiplePages());
     }
 
     /**
@@ -153,17 +249,30 @@ public class PageParserTest {
      */
     @Test
     public void twoPages() {
-        PageRange pr = PageParser.parse("10,11");
-        assertEquals("10,11", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertEquals(Integer.valueOf(2), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+        Consumer<PageRanges> checkPageRanges = prs -> {
+            assertEquals("10, 11", prs.getLiteral());
+            assertEquals("10", prs.getPageFirst());
+            assertEquals(Integer.valueOf(2), prs.getNumberOfPages());
+            assertTrue(prs.isMultiplePages());
 
-        PageParser.parse("10, 11");
-        assertEquals("10,11", pr.getLiteral());
-        assertEquals("10", pr.getPageFirst());
-        assertEquals(Integer.valueOf(2), pr.getNumberOfPages());
-        assertTrue(pr.isMultiplePages());
+            assertEquals(2, prs.size());
+            PageRange pr0 = prs.get(0);
+            assertEquals("10", pr0.getLiteral());
+            assertEquals("10", pr0.getPageFirst());
+            assertEquals("10", pr0.getPageLast());
+            assertEquals(Integer.valueOf(1), pr0.getNumberOfPages());
+            assertFalse(pr0.isMultiplePages());
+
+            PageRange pr1 = prs.get(1);
+            assertEquals("11", pr1.getLiteral());
+            assertEquals("11", pr1.getPageFirst());
+            assertEquals("11", pr1.getPageLast());
+            assertEquals(Integer.valueOf(1), pr1.getNumberOfPages());
+            assertFalse(pr1.isMultiplePages());
+        };
+
+        checkPageRanges.accept(PageParser.parse("10,11"));
+        checkPageRanges.accept(PageParser.parse("10, 11"));
     }
 
     /**
@@ -171,16 +280,32 @@ public class PageParserTest {
      */
     @Test
     public void literal() {
-        PageRange pr = PageParser.parse("A page");
-        assertEquals("A page", pr.getLiteral());
-        assertNull(pr.getPageFirst());
-        assertNull(pr.getNumberOfPages());
-        assertFalse(pr.isMultiplePages());
+        PageRanges prs = PageParser.parse("A page");
+        assertEquals("A page", prs.getLiteral());
+        assertNull(prs.getPageFirst());
+        assertNull(prs.getNumberOfPages());
+        assertFalse(prs.isMultiplePages());
 
-        pr = PageParser.parse("A,,page");
-        assertEquals("A,,page", pr.getLiteral());
-        assertNull(pr.getPageFirst());
-        assertNull(pr.getNumberOfPages());
-        assertFalse(pr.isMultiplePages());
+        assertEquals(1, prs.size());
+        PageRange pr0 = prs.get(0);
+        assertEquals("A page", pr0.getLiteral());
+        assertNull(pr0.getPageFirst());
+        assertNull(pr0.getPageLast());
+        assertNull(pr0.getNumberOfPages());
+        assertFalse(pr0.isMultiplePages());
+
+        prs = PageParser.parse("A,,page");
+        assertEquals("A,,page", prs.getLiteral());
+        assertNull(prs.getPageFirst());
+        assertNull(prs.getNumberOfPages());
+        assertFalse(prs.isMultiplePages());
+
+        assertEquals(1, prs.size());
+        pr0 = prs.get(0);
+        assertEquals("A,,page", pr0.getLiteral());
+        assertNull(pr0.getPageFirst());
+        assertNull(pr0.getPageLast());
+        assertNull(pr0.getNumberOfPages());
+        assertFalse(pr0.isMultiplePages());
     }
 }

@@ -1331,14 +1331,18 @@ public class FixturesTest {
             // "number_SimpleNumberOrdinalShort",
             // "number_SimpleNumberRoman",
             // "number_StrangeError",
-            // "page_Chicago",
+            "page_Chicago",
+            // unsupported
             // "page_ChicagoWeird",
+            // covered by PageRangeFormatterTest
             // "page_Expand",
+            // unsupported
             // "page_ExpandWeirdComposite",
+            // covered by PageRangeFormatterTest
             // "page_Minimal",
-            // "page_NoOption",
+            "page_NoOption",
             "page_NumberPageFirst",
-            // "page_PluralDetectWithEndash",
+            "page_PluralDetectWithEndash",
             // "page_WithLocaleAndWeirdDelimiter",
             // "plural_LabelForced",
             // "plural_NameLabelAlways",
