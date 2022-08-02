@@ -7,7 +7,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'nebula.optional-base'
 
-ext.graalVMVersion = "22.1.0.1"
+ext.graalVMVersion = "22.2.0"
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 dependencies {
@@ -18,8 +18,8 @@ dependencies {
     implementation 'org.yaml:snakeyaml:1.30', optional
 
     testImplementation 'commons-io:commons-io:2.11.0'
-    testImplementation 'org.citationstyles:styles:22.4'
-    testImplementation 'org.citationstyles:locales:22.4'
+    testImplementation 'org.citationstyles:styles:22.7'
+    testImplementation 'org.citationstyles:locales:22.7'
     testImplementation "org.graalvm.sdk:graal-sdk:$graalVMVersion"
     testImplementation "org.graalvm.js:js:$graalVMVersion"
 
