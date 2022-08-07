@@ -52,7 +52,7 @@ public class TextCase implements Behavior {
         } else if ("capitalize-all".equals(textCase)) {
             s = WordUtils.capitalize(s);
         } else if ("title".equals(textCase)) {
-            // only apply title case when the current language is English
+            // only apply title case if the current language is English
             if (ctx.getItemLocale().getLanguage().equals("en")) {
                 s = StringHelper.toTitleCase(s);
             }

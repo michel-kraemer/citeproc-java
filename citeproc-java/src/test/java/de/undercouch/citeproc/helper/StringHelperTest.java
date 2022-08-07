@@ -111,7 +111,7 @@ public class StringHelperTest {
                 StringHelper.toTitleCase("easy as one-two-three end"));
         assertEquals("Start On-Demand End",
                 StringHelper.toTitleCase("start on-demand end"));
-        assertEquals("Start In-or-Out End",
+        assertEquals("Start In-or-out End",
                 StringHelper.toTitleCase("start in-or-out end"));
         assertEquals("Start E-Commerce End",
                 StringHelper.toTitleCase("start e-commerce end"));
@@ -140,6 +140,7 @@ public class StringHelperTest {
 
         // quotes
         assertEquals("Don't Break", StringHelper.toTitleCase("don't break"));
+        assertEquals("Don\u2019t Break", StringHelper.toTitleCase("don\u2019t break"));
         assertEquals("\"Double Quotes\"",
                 StringHelper.toTitleCase("\"double quotes\""));
         assertEquals("Double Quotes \"Inner\" Word",
@@ -152,6 +153,10 @@ public class StringHelperTest {
                 StringHelper.toTitleCase("single quotes 'inner' word"));
         assertEquals("Fancy Single Quotes \u2018Inner\u2019 Word",
                 StringHelper.toTitleCase("fancy single quotes \u2018inner\u2019 word"));
+        assertEquals("Single Quotes 'To Stop' Word",
+                StringHelper.toTitleCase("single quotes 'To stop' word"));
+        assertEquals("Fancy Single Quotes 'To Stop' Word",
+                StringHelper.toTitleCase("fancy single quotes 'To stop' word"));
         assertEquals("\u201C\u2018A Twice Quoted Subtitle\u2019\u201D",
                 StringHelper.toTitleCase("\u201C\u2018a twice quoted subtitle\u2019\u201D"));
         assertEquals("Have You Read \u201CThe Lottery\u201D?",
@@ -171,12 +176,22 @@ public class StringHelperTest {
         // technical
         assertEquals("Email email@example.com Address",
                 StringHelper.toTitleCase("email email@example.com address"));
+        assertEquals("Email EMail@examPLe.com Address",
+                StringHelper.toTitleCase("email EMail@examPLe.com address"));
         assertEquals("You Have an https://example.com/ Title",
                 StringHelper.toTitleCase("you have an https://example.com/ title"));
-        assertEquals("_Underscores Around Words_",
+        assertEquals("_Underscores around Words_",
                 StringHelper.toTitleCase("_underscores around words_"));
-        assertEquals("*Asterisks Around Words*",
+        assertEquals("*Asterisks around Words*",
                 StringHelper.toTitleCase("*asterisks around words*"));
+
+        // word combinations
+        assertEquals("I Am far from Home",
+                StringHelper.toTitleCase("i am far frOm home"));
+        assertEquals("Godzilla vs. King Kong",
+                StringHelper.toTitleCase("godzilla vs. king kong"));
+        assertEquals("My Name Is d'Artagnan",
+                StringHelper.toTitleCase("my name is D'artagnan"));
 
         // non-breaking whitespace
         assertEquals("One\u00a0Two", StringHelper.toTitleCase("one\u00a0two"));
@@ -186,9 +201,22 @@ public class StringHelperTest {
         assertEquals("", StringHelper.toTitleCase(""));
         assertEquals("Scott Moritz and TheStreet.com\u2019s Million iPhone La-La Land",
                 StringHelper.toTitleCase("Scott Moritz and TheStreet.com\u2019s million iPhone la-la land"));
+        assertEquals("Back to the 50's", StringHelper.toTitleCase("back to the 50's"));
         assertEquals("Notes and Observations Regarding Apple\u2019s Announcements from \u2018The Beat Goes On\u2019 Special Event",
                 StringHelper.toTitleCase("Notes and observations regarding Apple\u2019s announcements from \u2018The Beat Goes On\u2019 special event"));
         assertEquals("2018", StringHelper.toTitleCase("2018"));
+
+        // two sentences with stop word
+        assertEquals("This Is the First Sentence. And This Is Another.",
+                StringHelper.toTitleCase("this is the first sentence. and this is another."));
+
+        // many whitespaces
+        assertEquals("  This   Is      a Sentence  with    Many  Whitespaces:   And   a  Stop Word",
+                StringHelper.toTitleCase("  this   is      a sentence  with    many  whitespaces:   and   a  stop word"));
+
+        // all caps
+        assertEquals("All Caps Sentence with Stop Word",
+                StringHelper.toTitleCase("ALL CAPS SENTENCE WITH STOP WORD"));
     }
 
     /**
