@@ -101,6 +101,8 @@ public class StringHelperTest {
                 StringHelper.toTitleCase("we keep NASA capitalized"));
         assertEquals("Pass camelCase Through",
                 StringHelper.toTitleCase("pass camelCase through"));
+        assertEquals("MyPublisher IN A CITY Name",
+                StringHelper.toTitleCase("MyPublisher IN A CITY name"));
 
         // hyphens
         assertEquals("This Sub-Phrase Is Nice",
@@ -161,6 +163,8 @@ public class StringHelperTest {
                 StringHelper.toTitleCase("\u201C\u2018a twice quoted subtitle\u2019\u201D"));
         assertEquals("Have You Read \u201CThe Lottery\u201D?",
                 StringHelper.toTitleCase("have you read \u201CThe Lottery\u201D?"));
+        assertEquals("Normal \"Quotes\" to \"Follow\" a Stop Word",
+                StringHelper.toTitleCase("normal \"quotes\" to \"follow\" a stop word"));
 
         // subtitles
         assertEquals("One: Two", StringHelper.toTitleCase("one: two"));
@@ -192,6 +196,10 @@ public class StringHelperTest {
                 StringHelper.toTitleCase("godzilla vs. king kong"));
         assertEquals("My Name Is d'Artagnan",
                 StringHelper.toTitleCase("my name is D'artagnan"));
+        assertEquals("My Name Is D'ARTAGNAN",
+                StringHelper.toTitleCase("my name is D'ARTAGNAN"));
+        assertEquals("My Name Is D'ARTAGNAN Foobar",
+                StringHelper.toTitleCase("my name is D'ARTAGNAN foobar"));
 
         // non-breaking whitespace
         assertEquals("One\u00a0Two", StringHelper.toTitleCase("one\u00a0two"));

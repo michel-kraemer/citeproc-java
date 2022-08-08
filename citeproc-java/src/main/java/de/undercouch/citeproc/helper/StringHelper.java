@@ -41,7 +41,7 @@ public class StringHelper {
                 "^before" + p, "^behind" + p, "^below" + p, "^beneath" + p,
                 "^beside" + p, "^besides" + p, "^between" + p, "^beyond" + p,
                 "^but" + p, "^by" + p, "^c" + p, "^ca" + p, "^circa" + p,
-                "^close\\s+to" + p, "^d'(?=\\p{L})", "^de" + p, "^despite" + p,
+                "^close\\s+to" + p, "^d['’](?=\\p{L})", "^de" + p, "^despite" + p,
                 "^down" + p, "^due\\s+to" + p, "^during" + p, "^et" + p,
                 "^except" + p, "^far\\s+from" + p, "^for" + p, "^forenenst" + p,
                 "^from" + p, "^given" + p, "^in" + p, "^inside" + p,
@@ -359,17 +359,52 @@ public class StringHelper {
     }
 
     /**
+     * Check if all letters in the given string are uppercase
+     * @param s the string
+     * @return {@code true} if the letters in the given string are all uppercase
+     */
+    private static boolean titleAllUppercase(String s) {
+        for (int i = 0; i < s.length(); ++i) {
+            char c = s.charAt(i);
+            if (Character.isLetter(c) && !Character.isUpperCase(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Check if a string should be capitalized
      * @param s the string
      * @return {@code true} if the string should be capitalized
      */
-    private static boolean shouldNotCapitalize(String s) {
+    private static boolean shouldCapitalize(String s) {
+        // do not capitalize single greek characters used as symbols in
+        // scientific papers
+        if (s.length() == 1 && s.charAt(0) >= 0x0370 && s.charAt(0) <= 0x03FF) {
+            return false;
+        }
+
         for (int i = 1; i < s.length(); ++i) {
             if (Character.isUpperCase(s.charAt(i))) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
+    }
+
+    private static boolean shouldStopwordLowercase(String w, String str) {
+        // exception
+        if (w.equalsIgnoreCase("d'") || w.equalsIgnoreCase("d’")) {
+            // check next word
+            Matcher wm = WORD_PATTERN.matcher(str.substring(2));
+            // do not lowercase "d'" if the word immediately following it
+            // is also completely uppercase
+            return !wm.find() || !titleAllUppercase(str.substring(2, wm.end() + 2));
+        }
+
+        // don't lowercase stop words that are all uppercase
+        return !titleAllUppercase(w);
     }
 
     /**
@@ -387,15 +422,7 @@ public class StringHelper {
         }
 
         // convert all caps title to lowercase
-        boolean allCaps = true;
-        for (int i = 0; i < str.length(); ++i) {
-            char c = str.charAt(i);
-            if (Character.isLetter(c) && !Character.isUpperCase(c)) {
-                allCaps = false;
-                break;
-            }
-        }
-        if (allCaps) {
+        if (titleAllUppercase(str)) {
             str = str.toLowerCase(Locale.ENGLISH);
         }
 
@@ -424,7 +451,12 @@ public class StringHelper {
                 }
             }
             if (swe >= 0) {
-                sb.append(ss.substring(0, swe).toLowerCase(Locale.ENGLISH));
+                String w = ss.substring(0, swe);
+                if (shouldStopwordLowercase(w, ss)) {
+                    sb.append(w.toLowerCase(Locale.ENGLISH));
+                } else {
+                    sb.append(w);
+                }
                 i += swe;
                 nwords++;
                 continue;
@@ -463,7 +495,7 @@ public class StringHelper {
             Matcher wm = WORD_PATTERN.matcher(ss);
             if (wm.find()) {
                 String w = ss.substring(0, wm.end());
-                if (!shouldNotCapitalize(w)) {
+                if (shouldCapitalize(w)) {
                     w = Character.toTitleCase(w.charAt(0)) + w.substring(1);
                 }
                 sb.append(w);
@@ -473,16 +505,27 @@ public class StringHelper {
             }
 
             char c = str.charAt(i);
-            if (c == ':' || c == '.' || c == '"' || c == '“' || c == '\'' || c == '‘') {
-                nwords = 0; // start a new sentence
+            if (c == ':' || c == '.' || c == '“' || c == '‘') {
+                // start a new sentence
+                nwords = 0;
             }
+            // maybe start a new sentence but only if there are no whitespace
+            // characters following the quote
+            boolean maybeNewSentence = c == '"' || c == '\'';
+
             sb.append(c);
             ++i;
 
             // eat up whitespaces
+            boolean foundWhitespace = false;
             while (i < str.length() && Character.isWhitespace(c = str.charAt(i))) {
                 sb.append(c);
+                foundWhitespace = true;
                 ++i;
+            }
+
+            if (maybeNewSentence && !foundWhitespace) {
+                nwords = 0;
             }
         }
         return sb.toString();
