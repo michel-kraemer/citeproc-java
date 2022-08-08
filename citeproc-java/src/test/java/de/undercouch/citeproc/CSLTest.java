@@ -582,4 +582,37 @@ public class CSLTest {
         assertFalse(CSL.canFormatBibliographies("oxford-art-journal.csl"));
         assertTrue(CSL.canFormatBibliographies("ieee.csl"));
     }
+
+    /**
+     * Test if titles with 'modern-language-association-8th-edition' style are
+     * rendered in title-case
+     * See <a href="https://github.com/michel-kraemer/citeproc-java/issues/150">https://github.com/michel-kraemer/citeproc-java/issues/150</a>
+     */
+    @Test
+    public void mlaTitleCase() throws Exception {
+        CSLItemData item = new CSLItemDataBuilder()
+                .type(CSLType.MAP)
+                .author(new CSLNameBuilder().given("Smith").family("Dan").build(),
+                        new CSLNameBuilder().given("Bræin").family("Dan").build(),
+                        new CSLNameBuilder().given("Bræin").family("Ane").build())
+                .issued(2003)
+                .edition("4th ed.")
+                .ISBN("0142002941")
+                .note("Includes bibliographical references (p. 122-125) and index.")
+                .publisher("Penguin")
+                .publisherPlace("New York, N.Y.")
+                .title("The Penguin atlas of war and peace")
+                .build();
+
+        CSL citeproc = new CSL(new ListItemDataProvider(item),
+                "modern-language-association-8th-edition");
+        citeproc.setOutputFormat("text");
+        citeproc.makeCitation(item.getId());
+
+        Bibliography b = citeproc.makeBibliography();
+
+        assertEquals(1, b.getEntries().length);
+        assertEquals("Dan, Smith, et al. The Penguin Atlas of War " +
+                "and Peace. 4th ed., Penguin, 2003.\n", b.getEntries()[0]);
+    }
 }
