@@ -15,7 +15,7 @@ public class CSLBuilder {
     private LocaleProvider localeProvider = new DefaultLocaleProvider();
     private AbbreviationProvider abbreviationProvider = new DefaultAbbreviationProvider();
     private String style;
-    private String lang = "en-US";
+    private String lang;
 
     /**
      * Set the item data provider

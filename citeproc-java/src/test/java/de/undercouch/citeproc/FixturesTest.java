@@ -10,6 +10,7 @@ import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.Citation;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -140,7 +142,10 @@ public class FixturesTest {
         Pattern endPattern = Pattern.compile("^\\s*<<=+\\s*(.*?)\\s*=+<<\\s*$");
         String currentKey = null;
         StringBuilder currentValue = null;
-        try (BufferedReader br = Files.newBufferedReader(f.toPath())) {
+        try (InputStream is = Files.newInputStream(f.toPath());
+             BOMInputStream bis = new BOMInputStream(is);
+             InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
+             BufferedReader br = new BufferedReader(isr)) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (currentKey == null) {
@@ -632,9 +637,11 @@ public class FixturesTest {
             "affix_InterveningEmpty",
             "affix_MovingPunctuation",
             "affix_PrefixFullCitationTextOnly",
+            // manual decorations are unsupported
             // "affix_PrefixWithDecorations",
             "affix_SpaceWithQuotes",
             "affix_TextNodeWithMacro",
+            // we do not strip extraneous characters
             // "affix_WithCommas",
             "affix_WordProcessorAffixNoSpace",
             "api_UpdateItemsDelete",
@@ -786,45 +793,45 @@ public class FixturesTest {
             // "date_January",
             // "date_KeyVariable",
             // "date_LiteralFailGracefullyIfNoValue",
-            // "date_LocalizedDateFormats-af-ZA",
-            // "date_LocalizedDateFormats-ar-AR",
-            // "date_LocalizedDateFormats-bg-BG",
-            // "date_LocalizedDateFormats-ca-AD",
-            // "date_LocalizedDateFormats-cs-CZ",
-            // "date_LocalizedDateFormats-da-DK",
-            // "date_LocalizedDateFormats-de-AT",
-            // "date_LocalizedDateFormats-de-CH",
-            // "date_LocalizedDateFormats-de-DE",
-            // "date_LocalizedDateFormats-el-GR",
-            // "date_LocalizedDateFormats-en-US",
-            // "date_LocalizedDateFormats-es-ES",
-            // "date_LocalizedDateFormats-et-EE",
-            // "date_LocalizedDateFormats-fr-FR",
-            // "date_LocalizedDateFormats-he-IL",
-            // "date_LocalizedDateFormats-hu-HU",
-            // "date_LocalizedDateFormats-is-IS",
-            // "date_LocalizedDateFormats-it-IT",
-            // "date_LocalizedDateFormats-ja-JP",
-            // "date_LocalizedDateFormats-kh-KH",
-            // "date_LocalizedDateFormats-ko-KR",
-            // "date_LocalizedDateFormats-mn-MN",
-            // "date_LocalizedDateFormats-nb-NO",
-            // "date_LocalizedDateFormats-nl-NL",
-            // "date_LocalizedDateFormats-pl-PL",
-            // "date_LocalizedDateFormats-pt-BR",
-            // "date_LocalizedDateFormats-pt-PT",
-            // "date_LocalizedDateFormats-ro-RO",
-            // "date_LocalizedDateFormats-ru-RU",
-            // "date_LocalizedDateFormats-sk-SK",
-            // "date_LocalizedDateFormats-sl-SL",
-            // "date_LocalizedDateFormats-sr-RS",
-            // "date_LocalizedDateFormats-sv-SE",
-            // "date_LocalizedDateFormats-th-TH",
-            // "date_LocalizedDateFormats-tr-TR",
-            // "date_LocalizedDateFormats-uk-UA",
-            // "date_LocalizedDateFormats-vi-VN",
-            // "date_LocalizedDateFormats-zh-CN",
-            // "date_LocalizedDateFormats-zh-TW",
+            "date_LocalizedDateFormats-af-ZA",
+            "date_LocalizedDateFormats-ar-AR",
+            "date_LocalizedDateFormats-bg-BG",
+            "date_LocalizedDateFormats-ca-AD",
+            "date_LocalizedDateFormats-cs-CZ",
+            "date_LocalizedDateFormats-da-DK",
+            "date_LocalizedDateFormats-de-AT",
+            "date_LocalizedDateFormats-de-CH",
+            "date_LocalizedDateFormats-de-DE",
+            "date_LocalizedDateFormats-el-GR",
+            "date_LocalizedDateFormats-en-US",
+            "date_LocalizedDateFormats-es-ES",
+            "date_LocalizedDateFormats-et-EE",
+            "date_LocalizedDateFormats-fr-FR",
+            "date_LocalizedDateFormats-he-IL",
+            "date_LocalizedDateFormats-hu-HU",
+            "date_LocalizedDateFormats-is-IS",
+            "date_LocalizedDateFormats-it-IT",
+            "date_LocalizedDateFormats-ja-JP",
+            "date_LocalizedDateFormats-kh-KH",
+            "date_LocalizedDateFormats-ko-KR",
+            "date_LocalizedDateFormats-mn-MN",
+            "date_LocalizedDateFormats-nb-NO",
+            "date_LocalizedDateFormats-nl-NL",
+            "date_LocalizedDateFormats-pl-PL",
+            "date_LocalizedDateFormats-pt-BR",
+            "date_LocalizedDateFormats-pt-PT",
+            "date_LocalizedDateFormats-ro-RO",
+            "date_LocalizedDateFormats-ru-RU",
+            "date_LocalizedDateFormats-sk-SK",
+            "date_LocalizedDateFormats-sl-SL",
+            "date_LocalizedDateFormats-sr-RS",
+            "date_LocalizedDateFormats-sv-SE",
+            "date_LocalizedDateFormats-th-TH",
+            "date_LocalizedDateFormats-tr-TR",
+            "date_LocalizedDateFormats-uk-UA",
+            "date_LocalizedDateFormats-vi-VN",
+            "date_LocalizedDateFormats-zh-CN",
+            "date_LocalizedDateFormats-zh-TW",
             // "date_LocalizedNumericDefault",
             // "date_LocalizedNumericDefaultMissingDay",
             // "date_LocalizedNumericDefaultWithAffixes",

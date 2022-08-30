@@ -18,6 +18,7 @@ import java.util.Map;
  * @author Michel Kraemer
  */
 public class SStyle {
+    private final String defaultLocale;
     private final List<LLocale> locales;
     private final SCitation citation;
     private final SBibliography bibliography;
@@ -63,6 +64,16 @@ public class SStyle {
         this.bibliography = bibl;
         this.inheritableNameAttributes = new SNameInheritableAttributes(styleRoot);
         this.pageRangeFormat = NodeHelper.getAttrValue(styleRoot, "page-range-format");
+        this.defaultLocale = NodeHelper.getAttrValue(styleRoot, "default-locale");
+    }
+
+    /**
+     * Get the default locale for this style if defined
+     * @return the default locale or {@code null} if no default locale is
+     * defined in this style
+     */
+    public String getDefaultLocale() {
+        return defaultLocale;
     }
 
     /**

@@ -165,7 +165,7 @@ public class CSL {
      * @throws IOException if the CSL style could not be loaded
      */
     public CSL(ItemDataProvider itemDataProvider, String style) throws IOException {
-        this(itemDataProvider, new DefaultLocaleProvider(), null, style, "en-US");
+        this(itemDataProvider, new DefaultLocaleProvider(), null, style, null);
     }
 
     /**
@@ -192,7 +192,10 @@ public class CSL {
      * XML representation of the style or a style name such as <code>ieee</code>.
      * In the latter case, the processor loads the style from the classpath (e.g.
      * <code>/ieee.csl</code>)
-     * @param lang an RFC 4646 identifier for the citation locale (e.g. <code>en-US</code>)
+     * @param lang an RFC 4646 identifier for the citation locale (e.g.
+     * {@code en-US}). If this argument is {@code null}, the default locale of
+     * the citation style will be used. If the citation style does not define
+     * a default locale, the method falls back to {@code en-US}.
      * @throws IOException if the CSL style could not be loaded
      */
     public CSL(ItemDataProvider itemDataProvider, LocaleProvider localeProvider,
@@ -209,6 +212,13 @@ public class CSL {
         // TODO parse style and locale directly from URL if possible
         // TODO instead of loading them into strings first
         this.style = loadStyle(style);
+
+        if (lang == null) {
+            lang = this.style.getDefaultLocale();
+            if (lang == null) {
+                lang = "en-US";
+            }
+        }
 
         // load locale
         String strLocale = localeProvider.retrieveLocale(lang);
