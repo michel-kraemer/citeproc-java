@@ -13,5 +13,5 @@ dependencies {
     implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
     implementation 'org.eclipse.tycho:org.eclipse.jdt.core:3.14.0.v20171206-0802'
     implementation 'org.eclipse.platform:org.eclipse.text:3.9.0'
-    implementation 'org.eclipse.platform:org.eclipse.core.resources:3.13.500'
+    implementation 'org.eclipse.platform:org.eclipse.core.resources:3.18.0'
 }
