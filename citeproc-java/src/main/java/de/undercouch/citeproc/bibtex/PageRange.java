@@ -15,6 +15,7 @@ public class PageRange {
      * Constructs a range of pages
      * @param literal the string from which this range has been created
      * @param pageFirst the first page in the range (can be {@code null})
+     * @param pageLast the last page in the range (can be {@code null})
      * @param numberOfPages the number of pages in this range (can be {@code null})
      * @param multiplePages {@code true} if this object represents multiple
      * pages (may be {@code true} even if the actual {@code numberOfPages}

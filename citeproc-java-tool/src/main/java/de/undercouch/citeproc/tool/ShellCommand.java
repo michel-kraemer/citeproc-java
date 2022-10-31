@@ -28,7 +28,6 @@ import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -154,7 +153,7 @@ public class ShellCommand extends AbstractCSLToolCommand {
 
             Command cmd;
             try {
-                cmd = cmdClass.newInstance();
+                cmd = cmdClass.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 // should never happen
                 throw new RuntimeException(e);

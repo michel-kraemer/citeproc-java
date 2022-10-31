@@ -98,7 +98,7 @@ public class ShellCommandCompleter implements Completer {
                     Completer.class.isAssignableFrom(pr.getLastCommand())) {
                 Completer cc;
                 try {
-                    cc = (Completer)pr.getLastCommand().newInstance();
+                    cc = (Completer)pr.getLastCommand().getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
                     // should never happen
                     throw new RuntimeException(e);

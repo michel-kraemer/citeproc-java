@@ -87,7 +87,7 @@ public class ShellHelpCommand extends AbstractCSLToolCommand {
         CSLToolCommand cmd = null;
         if (cmdClass != null) {
             try {
-                cmd = (CSLToolCommand)cmdClass.newInstance();
+                cmd = (CSLToolCommand)cmdClass.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 // should never happen
                 throw new RuntimeException(e);
