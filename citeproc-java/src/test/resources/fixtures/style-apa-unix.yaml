@@ -18,9 +18,9 @@ itemIds:
 result: |
   comp.lang.awk. (1997). news:comp.lang.awk
   Ghemawat, S., Gobioff, H., & Leung, S.-T. (2003). The Google File System. 29–43. http://doi.acm.org/10.1145/945445.945450
-  Giné, F., Solsona, F., Hernández, P., & Luque, E. (2003). Dealing with Memory Constraints in a Non-Dedicated Linux Cluster. The International Journal of High Performance Computing Applications, 17, 39–48.
+  Giné, F., Solsona, F., Hernández, P., & Luque, E. (2003). Dealing with Memory Constraints in a Non-Dedicated Linux Cluster. The International Journal of High Performance Computing Applications, 17, Article 1.
   McKusick, M. K. (1997). UNIX kernel internals: September 22-26, 1997, Engineering 819.235 (p. various). University of California.
-  Nisley, E. (2003). Embedded Space: Real-Time Linux. Dr. Dobb’s Journal of Software Tools, 28, 79–81. http://www.ddj.com/documents/s=7827/ddj0304j/
+  Nisley, E. (2003). Embedded Space: Real-Time Linux. Dr. Dobb’s Journal of Software Tools, 28, Article 4. http://www.ddj.com/documents/s=7827/ddj0304j/
   Nye, A., & O’Reilly, T. (1992). X Toolkit Intrinsics Programming Manual: Motif Edition (Second, Vol. 4M, p. 674). O’Reilly & Associates, Inc.
   Thomas, J. W., Okada, J. P., Markstein, P., & Li, R.-C. (2004). The Libm Library and Floating-Point Arithmetic in HP-UX for Itanium-Based Systems: Updated for HP-UX 11i v2 (p. 26) [Technical report]. Hewlett–Packard Corporation. http://h21007.www2.hp.com/dspp/ddl/ddl_Download_File_TRX/1,1249,942,00.pdf
   Weidner, J. R. (1997). A general purpose extended attribute service as a file system layer: with an example client that implements POSIX.6 access control lists (M.S. No. 970024; p. 32). UCLA Computer Science Dept.
