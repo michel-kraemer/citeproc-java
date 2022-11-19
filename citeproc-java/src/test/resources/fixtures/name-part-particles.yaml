@@ -1,0 +1,45 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name form="long">
+            <name-part name="given" text-case="uppercase" font-weight="bold" prefix="[" suffix="]" />
+            <name-part name="family" text-case="lowercase" font-style="italic" prefix="(" suffix=")" />
+          </name>
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        non-dropping-particle: dE
+        family: Name
+      - given: The
+        dropping-particle: van
+        non-dropping-particle: dE
+        family: Third
+        suffix: III
+      - given: Another
+        dropping-particle: van
+        family: One
+        suffix: Jr.
+    title: My title
+
+resultLegacy:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">[<b>GIVEN</b>] (<i>de</i> <i>name</i>), [<b>THE</b>] (<b>VAN</b> <i>de</i> <i>third</i> III), [<b>ANOTHER</b>] (<b>VAN</b> <i>one</i> Jr.). My title</div>
+    </div>
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">[<span style="font-weight: bold">GIVEN</span>] (<span style="font-style: italic">de</span> <span style="font-style: italic">name</span>), [<span style="font-weight: bold">THE</span>] (<span style="font-weight: bold">VAN</span> <span style="font-style: italic">de</span> <span style="font-style: italic">third</span> III), [<span style="font-weight: bold">ANOTHER</span>] (<span style="font-weight: bold">VAN</span> <span style="font-style: italic">one</span> Jr.). My title</div>
+    </div>

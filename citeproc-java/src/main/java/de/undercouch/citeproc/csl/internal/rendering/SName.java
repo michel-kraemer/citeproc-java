@@ -3,15 +3,22 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.CSLName;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SElement;
+import de.undercouch.citeproc.csl.internal.TokenBuffer;
+import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
+import de.undercouch.citeproc.csl.internal.behavior.TextCase;
 import de.undercouch.citeproc.helper.NodeHelper;
 import de.undercouch.citeproc.helper.StringHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static de.undercouch.citeproc.csl.internal.Token.Type.DELIMITER;
+import static de.undercouch.citeproc.csl.internal.Token.Type.SUFFIX;
+import static de.undercouch.citeproc.csl.internal.Token.Type.TEXT;
 
 /**
  * A name element from a style file
@@ -38,6 +45,12 @@ public class SName implements SElement {
     private final int form;
     private final int formattingAttributes;
     private final SNameInheritableAttributes inheritableAttributes;
+    private final int familyFormattingAttributes;
+    private final int givenFormattingAttributes;
+    private final Affixes familyAffixes;
+    private final Affixes givenAffixes;
+    private final TextCase familyTextCase;
+    private final TextCase givenTextCase;
 
     /**
      * Create the name element from an XML node
@@ -50,10 +63,51 @@ public class SName implements SElement {
 
         String delimiter;
         String form;
+        boolean namePartFamilyParsed = false;
+        boolean namePartGivenParsed = false;
+        int familyFormattingAttributes = FormattingAttributes.UNDEFINED;
+        int givenFormattingAttributes = FormattingAttributes.UNDEFINED;
+        Affixes familyAffixes = new Affixes();
+        Affixes givenAffixes = new Affixes();
+        TextCase familyTextCase = null;
+        TextCase givenTextCase = null;
         if (node != null) {
             formattingAttributes = FormattingAttributes.of(node);
             delimiter = NodeHelper.getAttrValue(node, "delimiter");
             form = NodeHelper.getAttrValue(node, "form");
+
+            NodeList children = node.getChildNodes();
+            for (int i = 0; i < children.getLength(); ++i) {
+                Node c = children.item(i);
+                String nodeName = c.getNodeName();
+                if ("name-part".equals(nodeName)) {
+                    String namePartName = NodeHelper.getAttrValue(c, "name");
+                    if (namePartName == null) {
+                        throw new IllegalStateException("Missing name part name");
+                    }
+                    if (namePartName.equals("family")) {
+                        if (!namePartFamilyParsed) {
+                            familyFormattingAttributes = FormattingAttributes.of(c);
+                            familyAffixes = new Affixes(c);
+                            familyTextCase = new TextCase(c);
+                            namePartFamilyParsed = true;
+                        } else {
+                            throw new IllegalStateException("Duplicate name part name: family");
+                        }
+                    } else if (namePartName.equals("given")) {
+                        if (!namePartGivenParsed) {
+                            givenFormattingAttributes = FormattingAttributes.of(c);
+                            givenAffixes = new Affixes(c);
+                            givenTextCase = new TextCase(c);
+                            namePartGivenParsed = true;
+                        } else {
+                            throw new IllegalStateException("Duplicate name part name: given");
+                        }
+                    } else {
+                        throw new IllegalStateException("Unknown name part name: " + namePartName);
+                    }
+                }
+            }
         } else {
             formattingAttributes = 0;
             delimiter = null;
@@ -72,6 +126,13 @@ public class SName implements SElement {
         } else {
             this.form = FORM_LONG;
         }
+
+        this.familyFormattingAttributes = familyFormattingAttributes;
+        this.givenFormattingAttributes = givenFormattingAttributes;
+        this.familyAffixes = familyAffixes;
+        this.givenAffixes = givenAffixes;
+        this.familyTextCase = familyTextCase;
+        this.givenTextCase = givenTextCase;
     }
 
     /**
@@ -149,41 +210,41 @@ public class SName implements SElement {
             return;
         }
 
-        StringBuilder builder = new StringBuilder();
+        TokenBuffer buffer = new TokenBuffer();
         for (int i = 0; i < names.size(); ++i) {
             boolean nameAsSort = "all".equals(nameAsSortOrder) ||
                     (i == 0 && "first".equals(nameAsSortOrder));
-            builder.append(render(names.get(i), nameAsSort, initializeWith,
-                    initialize, sortSeparator));
+            buffer.append(render(names.get(i), nameAsSort, initializeWith,
+                    initialize, sortSeparator, ctx));
 
             if (i < names.size() - 1) {
                 if (i == max - 1) {
                     // We reached the maximum number of names. Render "et al."
                     // and then break
                     String etAl = ctx.getTerm("et-al");
-                    appendDelimiter(builder, delimiterPrecedesEtAl, nameAsSort, max > 1);
-                    appendAnd(builder, " " + etAl);
+                    appendDelimiter(buffer, delimiterPrecedesEtAl, nameAsSort, max > 1);
+                    buffer.append(" " + etAl, SUFFIX);
                     break;
                 }
 
                 // render delimiter and 'and' term
                 if (i == names.size() - 2) {
-                    boolean delimiterAppended = appendDelimiter(builder,
+                    boolean delimiterAppended = appendDelimiter(buffer,
                             delimiterPrecedesLast, nameAsSort, names.size() > 2);
                     if (!delimiterAppended || !renderedAnd.equals(delimiter)) {
-                        appendAnd(builder, renderedAnd);
+                        buffer.append(renderedAnd, DELIMITER);
                     }
                 } else {
-                    builder.append(delimiter);
+                    buffer.append(delimiter, DELIMITER);
                 }
             }
         }
-        ctx.emit(builder.toString(), formattingAttributes);
+        ctx.emit(buffer, formattingAttributes);
     }
 
     /**
      * Append {@link #delimiter} to a builder according to the given mode
-     * @param builder the builder to append to
+     * @param buffer the token buffer to append to
      * @param delimiterPrecedes the mode (i.e. "contextual", "always",
      * "after-inverted-name", or "never")
      * @param nameAsSort {@code true} if the name preceding the delimiter
@@ -192,19 +253,19 @@ public class SName implements SElement {
      * appended in contextual mode
      * @return {@code true} if the delimiter was actually appended
      */
-    private boolean appendDelimiter(StringBuilder builder,
+    private boolean appendDelimiter(TokenBuffer buffer,
             String delimiterPrecedes, boolean nameAsSort, boolean contextual) {
         boolean delimiterAppended = false;
         switch (delimiterPrecedes) {
             case "contextual":
                 if (contextual) {
-                    builder.append(delimiter);
+                    buffer.append(delimiter, DELIMITER);
                     delimiterAppended = true;
                 }
                 break;
 
             case "always":
-                builder.append(delimiter);
+                buffer.append(delimiter, DELIMITER);
                 delimiterAppended = true;
                 break;
 
@@ -213,7 +274,7 @@ public class SName implements SElement {
                 // check for nameAsSort == true here, but citeproc.js
                 // seems to behave differently
                 if (nameAsSort) {
-                    builder.append(delimiter);
+                    buffer.append(delimiter, DELIMITER);
                     delimiterAppended = true;
                 }
                 break;
@@ -225,22 +286,6 @@ public class SName implements SElement {
     }
 
     /**
-     * Append 'and' term to builder. Ignore leading whitespace in 'and' term if
-     * builder ends with a whitespace.
-     * @param builder the builder to append to
-     * @param and the 'and' term
-     */
-    private void appendAnd(StringBuilder builder, String and) {
-        if (builder.length() > 0 &&
-                Character.isWhitespace(builder.charAt(builder.length() - 1)) &&
-                Character.isWhitespace(and.charAt(0))) {
-            builder.append(and, 1, and.length());
-        } else {
-            builder.append(and);
-        }
-    }
-
-    /**
      * Render a single name
      * @param name the name to render
      * @param nameAsSort {@code true} if given name and family name should be
@@ -249,20 +294,32 @@ public class SName implements SElement {
      * @param initialize {@code true} if given names should be converted to initials
      * @param sortSeparator delimiter for name-parts that have switched positions
      * as a result of {@code name-as-sort-order}
+     * @param ctx the current render context
      * @return the rendered name
      */
-    private String render(CSLName name, boolean nameAsSort, String initializeWith,
-            boolean initialize, String sortSeparator) {
+    private TokenBuffer render(CSLName name, boolean nameAsSort, String initializeWith,
+            boolean initialize, String sortSeparator, RenderContext ctx) {
         // if the 'literal' attribute is set, just return its value and nothing else
         if (name.getLiteral() != null) {
-            return name.getLiteral();
+            return new TokenBuffer().append(name.getLiteral(), TEXT);
         }
 
         // render family name with non-dropping particle
-        String family = name.getFamily();
-        if (family != null) {
+        String strFamily = name.getFamily();
+        TokenBuffer family = new TokenBuffer();
+        if (strFamily != null) {
+            if (familyTextCase != null) {
+                strFamily = familyTextCase.applyTo(strFamily, ctx);
+            }
+            family.append(strFamily, TEXT, familyFormattingAttributes);
+
             if (name.getNonDroppingParticle() != null) {
-                family = name.getNonDroppingParticle().trim() + " " + family;
+                family.prepend(" ", DELIMITER);
+                String ndp = name.getNonDroppingParticle().trim();
+                if (familyTextCase != null) {
+                    ndp = familyTextCase.applyTo(ndp, ctx);
+                }
+                family.prepend(ndp, TEXT, familyFormattingAttributes);
             }
 
             // render short form
@@ -272,45 +329,53 @@ public class SName implements SElement {
 
             // prepend dropping particle for long form
             if (name.getDroppingParticle() != null) {
-                family = name.getDroppingParticle().trim() + " " + family;
+                family.prepend(" ", DELIMITER);
+                // according to the spec, we need to use the formatting
+                // attributes of the given name here
+                String dp = name.getDroppingParticle().trim();
+                if (givenTextCase != null) {
+                    dp = givenTextCase.applyTo(dp, ctx);
+                }
+                family.prepend(dp, TEXT, givenFormattingAttributes);
             }
 
             // append suffix for long form
             if (name.getSuffix() != null) {
-                family = StringUtils.stripEnd(family, null) + " " + name.getSuffix().trim();
+                family.append(" ", DELIMITER);
+                family.append(name.getSuffix().trim(), TEXT);
             }
         }
+        familyAffixes.applyTo(family);
 
         // render long form
-        StringBuilder result = new StringBuilder();
-
-        String given = name.getGiven();
-        if (initializeWith != null && family != null && given != null) {
-            given = StringHelper.initializeName(given, initializeWith, !initialize);
+        String strGiven = name.getGiven();
+        if (initializeWith != null && !family.isEmpty() && strGiven != null) {
+            strGiven = StringHelper.initializeName(strGiven, initializeWith, !initialize);
         }
+        TokenBuffer given = new TokenBuffer();
+        if (strGiven != null) {
+            if (givenTextCase != null) {
+                strGiven = givenTextCase.applyTo(strGiven, ctx);
+            }
+            given.append(strGiven, TEXT, givenFormattingAttributes);
+        }
+        givenAffixes.applyTo(given);
 
+        TokenBuffer result = new TokenBuffer();
         if (nameAsSort) {
-            if (family != null) {
-                result.append(family);
+            result.append(family);
+            if (!family.isEmpty() && !given.isEmpty()) {
+                result.append(sortSeparator, DELIMITER);
             }
-            if (family != null && given != null) {
-                result.append(sortSeparator);
-            }
-            if (given != null) {
-                result.append(given);
-            }
+            result.append(given);
         } else {
-            if (given != null) {
-                result.append(given);
+            result.append(given);
+            if (!given.isEmpty() && !family.isEmpty()) {
+                result.append(" ", DELIMITER);
             }
-            if (given != null && family != null) {
-                result.append(" ");
-            }
-            if (family != null) {
-                result.append(family);
-            }
+            result.append(family);
         }
 
-        return result.toString();
+        return result;
     }
 }

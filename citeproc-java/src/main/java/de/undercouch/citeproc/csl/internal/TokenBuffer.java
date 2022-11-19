@@ -37,6 +37,16 @@ public class TokenBuffer {
     }
 
     /**
+     * Prepend a token to the buffer
+     * @param token the token
+     * @return this token buffer
+     */
+    public TokenBuffer prepend(Token token) {
+        tokens.add(0, token);
+        return this;
+    }
+
+    /**
      * Append a token with a given type to the buffer
      * @param text the token's text
      * @param type the token's type
@@ -44,6 +54,19 @@ public class TokenBuffer {
      */
     public TokenBuffer append(String text, Token.Type type) {
         return append(new Token.Builder()
+                .text(text)
+                .type(type)
+                .build());
+    }
+
+    /**
+     * Prepend a token with a given type to the buffer
+     * @param text the token's text
+     * @param type the token's type
+     * @return this token buffer
+     */
+    public TokenBuffer prepend(String text, Token.Type type) {
+        return prepend(new Token.Builder()
                 .text(text)
                 .type(type)
                 .build());
@@ -65,12 +88,37 @@ public class TokenBuffer {
     }
 
     /**
+     * Prepend a token with a given type and formatting attributes to the buffer
+     * @param text the token's text
+     * @param type the token's type
+     * @param formattingAttributes the token's formatting attributes
+     * @return this token buffer
+     */
+    public TokenBuffer prepend(String text, Token.Type type, int formattingAttributes) {
+        return prepend(new Token.Builder()
+                .text(text)
+                .type(type)
+                .mergeFormattingAttributes(formattingAttributes)
+                .build());
+    }
+
+    /**
      * Append the contents of another token buffer to this one
      * @param other the other token buffer
      * @return this token buffer
      */
     public TokenBuffer append(TokenBuffer other) {
         this.tokens.addAll(other.tokens);
+        return this;
+    }
+
+    /**
+     * Prepend the contents of another token buffer to this one
+     * @param other the other token buffer
+     * @return this token buffer
+     */
+    public TokenBuffer prepend(TokenBuffer other) {
+        this.tokens.addAll(0, other.tokens);
         return this;
     }
 

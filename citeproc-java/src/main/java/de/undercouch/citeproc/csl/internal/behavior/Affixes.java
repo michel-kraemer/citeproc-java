@@ -2,6 +2,7 @@ package de.undercouch.citeproc.csl.internal.behavior;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.Token;
+import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
@@ -44,6 +45,21 @@ public class Affixes implements Behavior {
             ctx.emit(child.getResult());
             if (suffix != null) {
                 ctx.emit(suffix, Token.Type.SUFFIX);
+            }
+        }
+    }
+
+    /**
+     * Modifies the given token buffer and renders prefix and suffix
+     * @param buffer the buffer to modify
+     */
+    public void applyTo(TokenBuffer buffer) {
+        if (!buffer.isEmpty()) {
+            if (prefix != null) {
+                buffer.prepend(prefix, Token.Type.PREFIX);
+            }
+            if (suffix != null) {
+                buffer.append(suffix, Token.Type.SUFFIX);
             }
         }
     }

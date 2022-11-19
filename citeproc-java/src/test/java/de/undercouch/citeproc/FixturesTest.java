@@ -1168,8 +1168,8 @@ public class FixturesTest {
             // "name_MultipleLiteral",
             // "name_NoNameNode",
             // "name_NonDroppingParticleDefault",
-            // "name_OnlyFamilyname",
-            // "name_OnlyGivenname",
+            "name_OnlyFamilyname",
+            "name_OnlyGivenname",
             // "name_OverridingHierarchicalDelimiter",
             // "name_ParseNames",
             // "name_ParsedCommaDelimitedDroppingParticleSortOrderingWithoutAffixes",
@@ -1184,7 +1184,7 @@ public class FixturesTest {
             // "name_ParticleFormatting",
             // "name_ParticleParse1",
             // "name_ParticlesDemoteNonDroppingNever",
-            // "name_PeriodAfterInitials",
+            "name_PeriodAfterInitials",
             // "name_QuashOrdinaryVariableRenderedViaSubstitute",
             // "name_RomanianTwo",
             // "name_SemicolonWithAnd",
@@ -1202,13 +1202,13 @@ public class FixturesTest {
             // "name_SubstituteOnNamesSpanNamesSpanFail",
             // "name_SubstituteOnNumberGroupSpanFail",
             // "name_TwoRolesSameRenderingSeparateRoleLabels",
-            // "name_WesternArticularLowercase",
-            // "name_WesternPrimaryFontStyle",
-            // "name_WesternPrimaryFontStyleTwoAuthors",
-            // "name_WesternSimple",
-            // "name_WesternTwoAuthors",
+            "name_WesternArticularLowercase",
+            "name_WesternPrimaryFontStyle",
+            "name_WesternPrimaryFontStyleTwoAuthors",
+            "name_WesternSimple",
+            "name_WesternTwoAuthors",
             // "name_WithNonBreakingSpace",
-            // "name_namepartAffixes",
+            "name_namepartAffixes",
             // "name_namepartAffixesNameAsSortOrder",
             // "name_namepartAffixesNameAsSortOrderDemoteNonDroppingParticle",
             // "nameattr_AndOnBibliographyInBibliography",
@@ -1515,7 +1515,9 @@ public class FixturesTest {
             // we do not support roman numbers yet
             // "textcase_UppercaseNumber",
             "unicode_NonBreakingSpace",
+            // "container-title-short" is deprecated
             // "variables_ContainerTitleShort",
+            // "container-title-short" is deprecated
             // "variables_ContainerTitleShort2",
             "variables_ShortForm",
             "variables_TitleShortOnAbbrevWithTitle",
@@ -1524,6 +1526,6 @@ public class FixturesTest {
             "variables_TitleShortOnShortTitleNoTitle",
             "variables_TitleShortOnShortTitleNoTitleCondition",
             "variables_TitleShortOnShortTitleNoTitleGroup",
-            // "virtual_PageFirst"
+            "virtual_PageFirst"
     };
 }

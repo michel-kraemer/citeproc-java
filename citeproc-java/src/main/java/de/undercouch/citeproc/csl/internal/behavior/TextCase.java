@@ -42,7 +42,18 @@ public class TextCase implements Behavior {
      * @return the new token with the transformed text
      */
     private Token transform(Token t, RenderContext ctx) {
-        String s = t.getText();
+        return new Token.Builder(t)
+                .text(applyTo(t.getText(), ctx))
+                .build();
+    }
+
+    /**
+     * Apply the text-case rules to the given string
+     * @param s the string to transform
+     * @param ctx the current render context
+     * @return the transformed string
+     */
+    public String applyTo(String s, RenderContext ctx) {
         if ("lowercase".equals(textCase)) {
             s = s.toLowerCase();
         } else if ("uppercase".equals(textCase)) {
@@ -57,8 +68,6 @@ public class TextCase implements Behavior {
                 s = StringHelper.toTitleCase(s);
             }
         }
-        return new Token.Builder(t)
-                .text(s)
-                .build();
+        return s;
     }
 }

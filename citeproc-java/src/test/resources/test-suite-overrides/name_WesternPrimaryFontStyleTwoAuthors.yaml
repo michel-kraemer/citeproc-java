@@ -1,0 +1,6 @@
+resultLegacy:
+  html: John <b>Doe</b>; Jane <b>Roe</b>
+
+result:
+  html: |-
+    John <span style="font-weight: bold">Doe</span>; Jane <span style="font-weight: bold">Roe</span>

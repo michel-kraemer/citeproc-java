@@ -1,0 +1,6 @@
+resultLegacy:
+  html: John <i>Doe</i>
+
+result:
+  html: |-
+    John <span style="font-style: italic">Doe</span>
