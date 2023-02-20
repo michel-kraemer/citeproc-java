@@ -29,9 +29,9 @@ dependencies {
     testCompileOnly "com.fasterxml.jackson.core:jackson-annotations:2.+"
 }
 
-task generateSources() {
-    inputs.files fileTree(dir: projectDir, includes: [ 'templates/*', 'grammars/*' ])
-    outputs.files fileTree(dir: 'src-gen', includes: [ '**/*.java', '**/*.dat' ])
+tasks.register('generateSources') {
+    inputs.files fileTree(dir: projectDir, includes: ['templates/*', 'grammars/*'])
+    outputs.files fileTree(dir: 'src-gen', includes: ['**/*.java', '**/*.dat'])
     doLast {
         SourceGenerator sg = new SourceGenerator(project)
         sg.renderTemplates()
@@ -40,7 +40,7 @@ task generateSources() {
     }
 }
 
-task cleanGeneratedSources(type: Delete) {
+tasks.register('cleanGeneratedSources', Delete) {
     delete 'src-gen'
 }
 
@@ -68,13 +68,13 @@ publishing {
                 packaging = 'jar'
                 description = 'A Citation Style Language (CSL) Processor for Java.'
                 url = 'https://michelkraemer.com'
- 
+
                 scm {
                     url = 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
                     connection = 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
                     developerConnection = 'scm:git:git://github.com/michel-kraemer/citeproc-java.git'
                 }
- 
+
                 licenses {
                     license {
                         name = 'The Apache Software License, Version 2.0'
@@ -82,7 +82,7 @@ publishing {
                         distribution = 'repo'
                     }
                 }
- 
+
                 developers {
                     developer {
                         id = 'michel-kraemer'
@@ -102,7 +102,15 @@ signing {
     sign publishing.publications.mavenJava
 }
 
-tasks.withType(Sign) {
+tasks.withType(Sign).configureEach {
     // only sign release artifacts and not snapshots
     onlyIf { isReleaseVersion }
+}
+
+
+configurations.configureEach {
+    resolutionStrategy {
+        force "org.antlr:antlr4-runtime:${libs.versions.antlr.get()}"
+        force "org.antlr:antlr4-tool:${libs.versions.antlr.get()}"
+    }
 }
