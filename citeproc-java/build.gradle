@@ -107,10 +107,3 @@ tasks.withType(Sign).configureEach {
     onlyIf { isReleaseVersion }
 }
 
-
-configurations.configureEach {
-    resolutionStrategy {
-        force "org.antlr:antlr4-runtime:${libs.versions.antlr.get()}"
-        force "org.antlr:antlr4-tool:${libs.versions.antlr.get()}"
-    }
-}
