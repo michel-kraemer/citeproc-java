@@ -6,10 +6,13 @@ import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.locale.LDate;
 import de.undercouch.citeproc.helper.NodeHelper;
+import de.undercouch.citeproc.helper.time.AnyDateParser;
 import org.apache.commons.lang3.ArrayUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,10 +85,44 @@ public class SDate implements SRenderingElement {
             return;
         }
 
+        int[][] dps = date.getDateParts();
+        String literal = date.getLiteral();
+        if (dps == null && date.getRaw() != null) {
+            try {
+                // try to parse raw date
+                TemporalAccessor ta = AnyDateParser.parse(date.getRaw(),
+                        ctx.getLocale().getLang());
+                if (ta.isSupported(ChronoField.YEAR)) {
+                    if (ta.isSupported(ChronoField.MONTH_OF_YEAR)) {
+                        if (ta.isSupported(ChronoField.DAY_OF_MONTH)) {
+                            dps = new int[][] {{
+                                    ta.get(ChronoField.YEAR),
+                                    ta.get(ChronoField.MONTH_OF_YEAR),
+                                    ta.get(ChronoField.DAY_OF_MONTH)
+                            }};
+                        } else {
+                            dps = new int[][] {{
+                                    ta.get(ChronoField.YEAR),
+                                    ta.get(ChronoField.MONTH_OF_YEAR)
+                            }};
+                        }
+                    } else {
+                        dps = new int[][] {{
+                                ta.get(ChronoField.YEAR)
+                        }};
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+                if (literal == null) {
+                    literal = date.getRaw();
+                }
+            }
+        }
+
         boolean notifyListenersEmpty = true;
-        if (date.getDateParts() != null && date.getDateParts().length > 0) {
-            int[] first = date.getDateParts()[0];
-            int[] last = date.getDateParts()[date.getDateParts().length - 1];
+        if (dps != null && dps.length > 0) {
+            int[] first = dps[0];
+            int[] last = dps[dps.length - 1];
             if (first.length != last.length) {
                 throw new IllegalStateException("Elements in date range must " +
                         "have the same length");
@@ -168,9 +205,9 @@ public class SDate implements SRenderingElement {
             // emit the final result
             notifyListenersEmpty = result.getResult().isEmpty();
             ctx.emit(result.getResult());
-        } else if (date.getRaw() != null) {
-            notifyListenersEmpty = date.getRaw().isEmpty();
-            ctx.emit(date.getRaw());
+        } else if (literal != null) {
+            notifyListenersEmpty = literal.isEmpty();
+            ctx.emit(literal);
         }
 
         if (notifyListenersEmpty) {
