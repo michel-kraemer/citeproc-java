@@ -27,19 +27,17 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -51,7 +49,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 /**
  * <p>The citation processor.</p>
@@ -252,27 +250,24 @@ public class CSL {
         // first load a file that is known to exist
         String name = prefix + knownName + "." + extension;
         URL knownUrl = CSL.class.getResource("/" + name);
-        if (knownUrl != null) {
-            String path = knownUrl.getPath();
-            // get the jar file containing the file
-            if (path.endsWith(".jar!/" + name)) {
-                String jarPath = path.substring(0, path.length() - name.length() - 2);
-                URI jarUri;
-                try {
-                    jarUri = new URI(jarPath);
-                } catch (URISyntaxException e) {
-                    // ignore
-                    return result;
-                }
-                try (ZipFile zip = new ZipFile(new File(jarUri))) {
-                    Enumeration<? extends ZipEntry> entries = zip.entries();
-                    while (entries.hasMoreElements()) {
-                        ZipEntry e = entries.nextElement();
-                        if (e.getName().endsWith("." + extension) &&
-                                (prefix.isEmpty() || e.getName().startsWith(prefix))) {
-                            result.add(e.getName().substring(
-                                    prefix.length(), e.getName().length() - 4));
-                        }
+        if (knownUrl != null && knownUrl.toString().endsWith(".jar!/" + name)) {
+            URL url;
+            try {
+                final String path = knownUrl.toString();
+                url = new URL(path.substring(0, path.length() - name.length() - 2));
+            } catch (MalformedURLException e) {
+                final String path = knownUrl.getPath();
+                url = new URL(path.substring(0, path.length() - name.length() - 2));
+            }
+
+            try (InputStream inputStream = url.openStream();
+                 ZipInputStream zip = new ZipInputStream(inputStream)) {
+                ZipEntry e;
+                while ((e = zip.getNextEntry()) != null) {
+                    if (e.getName().endsWith("." + extension) &&
+                            (prefix.isEmpty() || e.getName().startsWith(prefix))) {
+                        result.add(e.getName().substring(
+                                prefix.length(), e.getName().length() - 4));
                     }
                 }
             }
