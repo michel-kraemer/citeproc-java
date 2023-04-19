@@ -7,7 +7,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'com.netflix.nebula.optional-base'
 
-ext.graalVMVersion = "22.3.1"
+ext.graalVMVersion = "22.3.2"
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 dependencies {
