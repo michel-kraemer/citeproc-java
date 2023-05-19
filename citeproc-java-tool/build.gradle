@@ -12,7 +12,7 @@ dependencies {
     implementation 'org.jline:jline:3.23.0'
 
     runtimeOnly 'org.citationstyles:styles:23.2'
-    runtimeOnly 'org.citationstyles:locales:23.2'
+    runtimeOnly 'org.citationstyles:locales:23.5'
 }
 
 mainClassName = 'de.undercouch.citeproc.CSLTool'
