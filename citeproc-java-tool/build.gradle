@@ -11,8 +11,8 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.jline:jline:3.23.0'
 
-    runtimeOnly 'org.citationstyles:styles:23.2'
-    runtimeOnly 'org.citationstyles:locales:23.2'
+    runtimeOnly 'org.citationstyles:styles:23.5'
+    runtimeOnly 'org.citationstyles:locales:23.5'
 }
 
 mainClassName = 'de.undercouch.citeproc.CSLTool'
