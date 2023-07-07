@@ -389,8 +389,8 @@ public class CSLTest {
                 .event("Conference")
                 .eventPlace("The Place")
                 .build();
-        String bib = CSL.makeAdhocBibliography("ieee", "text", item).makeString();
-        assertEquals("[1]T. Author, “The Paper,” presented at the Conference, The Place.\n", bib);
+        String bib = CSL.makeAdhocBibliography("apa", "text", item).makeString();
+        assertEquals("Author, T. (n.d.). The Paper. Conference, The Place.\n", bib);
     }
 
     /**

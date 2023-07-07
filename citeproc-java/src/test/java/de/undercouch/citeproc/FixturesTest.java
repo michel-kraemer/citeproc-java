@@ -143,7 +143,7 @@ public class FixturesTest {
         String currentKey = null;
         StringBuilder currentValue = null;
         try (InputStream is = Files.newInputStream(f.toPath());
-             BOMInputStream bis = new BOMInputStream(is);
+             BOMInputStream bis = BOMInputStream.builder().setInputStream(is).get();
              InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
              BufferedReader br = new BufferedReader(isr)) {
             String line;

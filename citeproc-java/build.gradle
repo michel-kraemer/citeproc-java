@@ -17,9 +17,9 @@ dependencies {
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation 'org.yaml:snakeyaml:2.0', optional
 
-    testImplementation 'commons-io:commons-io:2.11.0'
-    testImplementation 'org.citationstyles:styles:23.2'
-    testImplementation 'org.citationstyles:locales:23.2'
+    testImplementation 'commons-io:commons-io:2.13.0'
+    testImplementation 'org.citationstyles:styles:23.5'
+    testImplementation 'org.citationstyles:locales:23.5'
     testImplementation "org.graalvm.sdk:graal-sdk:$graalVMVersion"
     testImplementation "org.graalvm.js:js:$graalVMVersion"
 
