@@ -2,10 +2,13 @@ package de.undercouch.citeproc.csl.internal.format;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SBibliography;
+import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.SecondFieldAlign;
 import org.apache.commons.text.StringEscapeUtils;
+
+import java.util.List;
 
 import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FS_ITALIC;
 import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FW_BOLD;
@@ -35,11 +38,12 @@ public class HtmlFormat extends BaseFormat {
         if (sfa != SecondFieldAlign.FALSE && !buffer.getTokens().isEmpty()) {
             // find tokens that are part of the first field
             int i = 0;
-            while (buffer.getTokens().get(i).isFirstField()) {
+            List<Token> tokens = buffer.getTokens();
+            while (i < tokens.size() && tokens.get(i).isFirstField()) {
                 ++i;
             }
             TokenBuffer firstBuffer = buffer.copy(0, i);
-            TokenBuffer restBuffer = buffer.copy(i, buffer.getTokens().size());
+            TokenBuffer restBuffer = buffer.copy(i, tokens.size());
 
             // render first field and rest independently
             result = "\n    <div class=\"csl-left-margin\">" + format(firstBuffer) +

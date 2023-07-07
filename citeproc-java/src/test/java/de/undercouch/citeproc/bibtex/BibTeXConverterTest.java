@@ -214,7 +214,7 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
     /**
      * Check if the parser correctly falls back to a literal string if the
      * 'pages' field contains an illegal number.
-     * See https://github.com/michel-kraemer/citeproc-java/issues/114
+     * See <a href="https://github.com/michel-kraemer/citeproc-java/issues/114">issue 114</a>
      * @throws ParseException if the BibTeX entry could not be parsed
      */
     @Test
@@ -240,7 +240,7 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
     /**
      * Check if the 'urldate' of a webpage is correctly mapped to the CSL
      * accessed field.
-     * See https://github.com/michel-kraemer/citeproc-java/issues/115
+     * See <a href="https://github.com/michel-kraemer/citeproc-java/issues/115">issue 115</a>
      * @throws ParseException if the BibTeX entry could not be parsed
      */
     @Test

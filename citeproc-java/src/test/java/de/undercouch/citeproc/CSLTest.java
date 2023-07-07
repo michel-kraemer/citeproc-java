@@ -586,7 +586,7 @@ public class CSLTest {
     /**
      * Test if titles with 'modern-language-association-8th-edition' style are
      * rendered in title-case
-     * See <a href="https://github.com/michel-kraemer/citeproc-java/issues/150">https://github.com/michel-kraemer/citeproc-java/issues/150</a>
+     * See <a href="https://github.com/michel-kraemer/citeproc-java/issues/150">issue 150</a>
      */
     @Test
     public void mlaTitleCase() throws Exception {
@@ -614,5 +614,30 @@ public class CSLTest {
         assertEquals(1, b.getEntries().length);
         assertEquals("Dan, Smith, et al. The Penguin Atlas of War " +
                 "and Peace. 4th ed., Penguin, 2003.\n", b.getEntries()[0]);
+    }
+
+    /**
+     * Check if an empty 'thesis' item can be converted to HTML
+     * See <a href="https://github.com/michel-kraemer/citeproc-java/issues/206">issue 206</a>
+     */
+    @Test
+    public void emptyHtml() throws Exception {
+        CSLItemData item = new CSLItemDataBuilder()
+                .type(CSLType.THESIS)
+                .build();
+
+        CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee");
+        citeproc.setOutputFormat("html");
+        citeproc.makeCitation(item.getId());
+
+        Bibliography b = citeproc.makeBibliography();
+
+        assertEquals(1, b.getEntries().length);
+        assertEquals(
+                "  <div class=\"csl-entry\">\n" +
+                "    <div class=\"csl-left-margin\">[1]</div><div class=\"csl-right-inline\"></div>\n" +
+                "  </div>\n",
+                b.getEntries()[0]
+        );
     }
 }
