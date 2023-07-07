@@ -69,16 +69,16 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 
         Bibliography b = citeproc.makeBibliography();
         assertEquals(4, b.getEntries().length);
-        assertEquals("[1]S. C. Johnson and B. W. Kernighan, \u201cThe Programming Language B,\u201d "
+        assertEquals("[1]S. C. Johnson and B. W. Kernighan, “The Programming Language B,” "
                 + "Bell Laboratories, Murray Hill, NJ, USA, Technical report 8, 1973.\n", b.getEntries()[0]);
-        assertEquals("[2]D. M. Ritchie and K. Thompson, \u201cThe UNIX time-sharing system,\u201d "
+        assertEquals("[2]D. M. Ritchie and K. Thompson, “The UNIX time-sharing system,” "
                 + "Operating Systems Review, vol. 7, Art. no. 4, Oct. 1973.\n", b.getEntries()[1]);
-        assertEquals("[3]D. W. Ritchie and K. Thompson, \u201cThe UNIX Time-Sharing System,\u201d "
+        assertEquals("[3]D. W. Ritchie and K. Thompson, “The UNIX Time-Sharing System,” "
                 + "Communications of the Association for Computing Machinery, vol. 17, Art. no. 7, "
                 + "Jul. 1974.\n", b.getEntries()[2]);
-        assertEquals("[4]H. Lycklama, \u201cUNIX Time-Sharing System: UNIX on a Microprocessor,\u201d "
+        assertEquals("[4]H. Lycklama, “UNIX Time-Sharing System: UNIX on a Microprocessor,” "
                 + "The Bell System Technical Journal, vol. 57, Art. no. 6, "
-                + "Jul.\u2013Aug. 1978, [Online]. Available: "
+                + "Jul.–Aug. 1978, [Online]. Available: "
                 + "http://bstj.bell-labs.com/BSTJ/images/Vol57/bstj57-6-2087.pdf\n", b.getEntries()[3]);
     }
 
@@ -156,8 +156,8 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
         Bibliography bibl = citeproc.makeBibliography();
         for (String e : bibl.getEntries()) {
             assertEquals("[1]M. G. Strintzis and I. Kompatsiaris, "
-                    + "\u201c3D Model-Based Segmentation of Videoconference "
-                    + "Image Sequences,\u201d Kobe, Japan, 1999.", e.trim());
+                    + "“3D Model-Based Segmentation of Videoconference "
+                    + "Image Sequences,” Kobe, Japan, 1999.", e.trim());
         }
     }
 
@@ -251,13 +251,13 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
         Bibliography b = citeproc.makeBibliography();
         assertEquals(2, b.getEntries().length);
         assertEquals("[1]J. Padhye, V. Firoiu, and D. Towsley, " +
-                "\u201cA Stochastic Model of TCP Reno Congestion Avoidance and Control,\u201d " +
+                "“A Stochastic Model of TCP Reno Congestion Avoidance and Control,” " +
                 "Univ. of Massachusetts, Amherst, MA, CMPSCI Tech. Rep. " +
-                "99\u201302, 1999.\n", b.getEntries()[0]);
+                "99–02, 1999.\n", b.getEntries()[0]);
         assertEquals("[2]D. Middleton and A. D. Spaulding, " +
-                "\u201cA Tutorial Review of Elements of Weak Signal Detection in Non-Gaussian EMI Environments,\u201d " +
+                "“A Tutorial Review of Elements of Weak Signal Detection in Non-Gaussian EMI Environments,” " +
                 "National Telecommunications and Information Administration (NTIA), " +
-                "U.S. Dept. of Commerce, NTIA Report 86\u2013194, May 1986.\n", b.getEntries()[1]);
+                "U.S. Dept. of Commerce, NTIA Report 86–194, May 1986.\n", b.getEntries()[1]);
     }
 
     /**
@@ -284,8 +284,8 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
 
         Bibliography bibl = citeproc.makeBibliography();
         for (String e : bibl.getEntries()) {
-            assertEquals("[1]Test, \u201cNew information on Riograndia " +
-                    "guaibensis Bonaparte,.\u201d", e.trim());
+            assertEquals("[1]Test, “New information on Riograndia " +
+                    "guaibensis Bonaparte,.”", e.trim());
         }
     }
 }

@@ -119,16 +119,16 @@ public class CSLTest {
 
         Bibliography b = citeproc.makeBibliography();
         assertEquals(4, b.getEntries().length);
-        assertEquals("[1]S. C. Johnson and B. W. Kernighan, \u201cThe Programming Language B,\u201d "
+        assertEquals("[1]S. C. Johnson and B. W. Kernighan, “The Programming Language B,” "
                 + "Bell Laboratories, Murray Hill, NJ, USA, 8, 1973.\n", b.getEntries()[0]);
-        assertEquals("[2]D. M. Ritchie and K. Thompson, \u201cThe UNIX time-sharing system,\u201d "
+        assertEquals("[2]D. M. Ritchie and K. Thompson, “The UNIX time-sharing system,” "
                 + "Operating Systems Review, vol. 7, no. 4, p. 27, Oct. 1973.\n", b.getEntries()[1]);
-        assertEquals("[3]D. M. Ritchie and K. Thompson, \u201cThe UNIX Time-Sharing System,\u201d "
-                + "Communications of the Association for Computing Machinery, vol. 17, no. 7, pp. 365\u2013375, "
+        assertEquals("[3]D. M. Ritchie and K. Thompson, “The UNIX Time-Sharing System,” "
+                + "Communications of the Association for Computing Machinery, vol. 17, no. 7, pp. 365–375, "
                 + "Jul. 1974.\n", b.getEntries()[2]);
-        assertEquals("[4]H. Lycklama, \u201cUNIX Time-Sharing System: UNIX on a Microprocessor,\u201d "
-                + "The Bell System Technical Journal, vol. 57, no. 6, pp. 2087\u20132101, "
-                + "Jul.\u2013Aug. 1978, [Online]. Available: "
+        assertEquals("[4]H. Lycklama, “UNIX Time-Sharing System: UNIX on a Microprocessor,” "
+                + "The Bell System Technical Journal, vol. 57, no. 6, pp. 2087–2101, "
+                + "Jul.–Aug. 1978, [Online]. Available: "
                 + "http://bstj.bell-labs.com/BSTJ/images/Vol57/bstj57-6-2087.pdf\n", b.getEntries()[3]);
     }
 
@@ -165,15 +165,15 @@ public class CSLTest {
                 .id("citeproc-java")
                 .type(CSLType.WEBPAGE)
                 .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
-                .author("Michel", "Kr\u00E4mer")
+                .author("Michel", "Krämer")
                 .issued(2013, 9, 7)
                 .URL("http://michel-kraemer.github.io/citeproc-java/")
                 .accessed(2013, 12, 6)
                 .build();
 
         String bibl = CSL.makeAdhocBibliography("ieee", "text", item).makeString();
-        assertEquals("[1]M. Kr\u00E4mer, \u201cciteproc-java: A Citation Style "
-                + "Language (CSL) processor for Java,\u201d Sep. 07, 2013. "
+        assertEquals("[1]M. Krämer, “citeproc-java: A Citation Style "
+                + "Language (CSL) processor for Java,” Sep. 07, 2013. "
                 + "http://michel-kraemer.github.io/citeproc-java/ (accessed Dec. 06, 2013).\n", bibl);
     }
 
@@ -187,7 +187,7 @@ public class CSLTest {
                 .id("citeproc-java")
                 .type(CSLType.WEBPAGE)
                 .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
-                .author("Michel", "Kr\u00E4mer")
+                .author("Michel", "Krämer")
                 .issued(2013, 9, 7)
                 .URL("http://michel-kraemer.github.io/citeproc-java/")
                 .accessed(2013, 12, 6)
@@ -232,7 +232,7 @@ public class CSLTest {
                 .id("citeproc-java")
                 .type(CSLType.WEBPAGE)
                 .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
-                .author("Michel", "Kr\u00E4mer")
+                .author("Michel", "Krämer")
                 .issued(2013, 9, 9)
                 .URL("http://michel-kraemer.github.io/citeproc-java/")
                 .accessed(2013, 9, 11)
@@ -290,7 +290,7 @@ public class CSLTest {
                 .id("citeproc-java")
                 .type(CSLType.WEBPAGE)
                 .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
-                .author("Michel", "Kr\u00E4mer")
+                .author("Michel", "Krämer")
                 .issued(2013, 9, 9)
                 .URL("http://michel-kraemer.github.io/citeproc-java/")
                 .accessed(2013, 9, 11)
@@ -304,9 +304,9 @@ public class CSLTest {
 
         assertEquals(1, b.getEntries().length);
         assertEquals("[.csl-entry]\n" +
-                "[.csl-left-margin]##[1]##[.csl-right-inline]##M. Kr\u00E4mer, " +
-                "\u201Cciteproc-java: A Citation Style "
-                + "Language (CSL) processor for Java,\u201D Sep. 09, 2013. "
+                "[.csl-left-margin]##[1]##[.csl-right-inline]##M. Krämer, " +
+                "“citeproc-java: A Citation Style "
+                + "Language (CSL) processor for Java,” Sep. 09, 2013. "
                 + "http://michel-kraemer.github.io/citeproc-java/ "
                 + "(accessed Sep. 11, 2013).##\n", b.getEntries()[0]);
     }
@@ -335,7 +335,7 @@ public class CSLTest {
                 + "        </fo:table-cell>\n"
                 + "        <fo:table-cell>\n"
                 + "          <fo:block>S. C. Johnson and B. W. Kernighan, "
-                + "\u201cThe Programming Language B,\u201d Bell Laboratories, "
+                + "“The Programming Language B,” Bell Laboratories, "
                 + "Murray Hill, NJ, USA, 8, 1973.</fo:block>\n"
                 + "        </fo:table-cell>\n"
                 + "      </fo:table-row>\n"
@@ -390,7 +390,7 @@ public class CSLTest {
                 .eventPlace("The Place")
                 .build();
         String bib = CSL.makeAdhocBibliography("ieee", "text", item).makeString();
-        assertEquals("[1]T. Author, \u201cThe Paper,\u201d presented at the Conference, The Place.\n", bib);
+        assertEquals("[1]T. Author, “The Paper,” presented at the Conference, The Place.\n", bib);
     }
 
     /**
@@ -411,7 +411,7 @@ public class CSLTest {
 
         List<Citation> a = citeproc.makeCitation(items[0].getId());
         assertEquals(0, a.get(0).getIndex());
-        assertEquals("Johnson and Kernighan, \u201cB.\u201d", a.get(0).getText());
+        assertEquals("Johnson and Kernighan, “B.”", a.get(0).getText());
     }
 
     /**
@@ -558,7 +558,7 @@ public class CSLTest {
     public void dependentStyle() throws Exception {
         String bibl = CSL.makeAdhocBibliography("dependent/proceedings-of-the-ieee.csl",
                 "text", items[0]).makeString();
-        assertEquals("[1]S. C. Johnson and B. W. Kernighan, \u201cThe Programming Language B,\u201d "
+        assertEquals("[1]S. C. Johnson and B. W. Kernighan, “The Programming Language B,” "
                 + "Bell Laboratories, Murray Hill, NJ, USA, 8, 1973.\n", bibl);
     }
 

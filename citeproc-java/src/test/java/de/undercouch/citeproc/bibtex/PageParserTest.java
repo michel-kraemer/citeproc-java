@@ -55,7 +55,7 @@ public class PageParserTest {
         checkPageRanges.accept(PageParser.parse("10 - 20"));
         checkPageRanges.accept(PageParser.parse("10--20"));
         checkPageRanges.accept(PageParser.parse("10---20"));
-        checkPageRanges.accept(PageParser.parse("10\u201320"));
+        checkPageRanges.accept(PageParser.parse("10–20"));
     }
 
     /**
@@ -94,7 +94,7 @@ public class PageParserTest {
      */
     @Test
     public void complex() {
-        PageRanges prs = PageParser.parse("10-20, 30--40, 45, 50\u201355, 5");
+        PageRanges prs = PageParser.parse("10-20, 30--40, 45, 50–55, 5");
         assertEquals("10-20, 30-40, 45, 50-55, 5", prs.getLiteral());
         assertEquals("5", prs.getPageFirst());
         assertEquals(Integer.valueOf(30), prs.getNumberOfPages());
