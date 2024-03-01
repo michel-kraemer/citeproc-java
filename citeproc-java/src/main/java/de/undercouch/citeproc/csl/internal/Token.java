@@ -1,5 +1,6 @@
 package de.undercouch.citeproc.csl.internal;
 
+import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 
 /**
@@ -55,6 +56,7 @@ public class Token {
     private final String text;
     private final Type type;
     private final int formattingAttributes;
+    private final Display display;
     private final boolean firstField;
 
     /**
@@ -62,14 +64,16 @@ public class Token {
      * @param text the token's text
      * @param type the token's type
      * @param formattingAttributes the token's formatting attributes
+     * @param display the token's display attribute
      * @param firstField {@code true} if the token is part of the first
      * rendered field in a bibliography entry
      */
     private Token(String text, Type type, int formattingAttributes,
-            boolean firstField) {
+            Display display, boolean firstField) {
         this.text = text;
         this.type = type;
         this.formattingAttributes = formattingAttributes;
+        this.display = display;
         this.firstField = firstField;
     }
 
@@ -98,6 +102,14 @@ public class Token {
     }
 
     /**
+     * Get the token's display attribute
+     * @return the display attribute
+     */
+    public Display getDisplay() {
+        return display;
+    }
+
+    /**
      * Return {@code true} if the token is part of the first rendered field in
      * a bibliography entry
      * @return {@code true} if the token is part of the first field
@@ -118,6 +130,7 @@ public class Token {
         private String text;
         private Type type;
         private int formattingAttributes;
+        private Display display = Display.UNDEFINED;
         private boolean firstField;
 
         /**
@@ -135,6 +148,7 @@ public class Token {
             this.text = token.text;
             this.type = token.type;
             this.formattingAttributes = token.formattingAttributes;
+            this.display = token.display;
             this.firstField = token.firstField;
         }
 
@@ -160,7 +174,7 @@ public class Token {
 
         /**
          * Merge formatting attributes with the current set of formatting
-         * attributes. An attribute from the given set only will only be merged
+         * attributes. An attribute from the given set will only be merged
          * if the respective current attribute is undefined.
          * @param formattingAttributes the formatting attributes to merge with
          * the current set of formatting attributes
@@ -169,6 +183,21 @@ public class Token {
         public Builder mergeFormattingAttributes(int formattingAttributes) {
             this.formattingAttributes = FormattingAttributes.merge(
                     formattingAttributes, this.formattingAttributes);
+            return this;
+        }
+
+        /**
+         * Merge the given display attribute with the current display
+         * attribute. The given attribute will only be considered if the current
+         * attribute is {@link Display#UNDEFINED}. Otherwise, the current
+         * attribute will be kept unchanged.
+         * @param display the display attribute to merge
+         * @return this builder
+         */
+        public Builder mergeDisplay(Display display) {
+            if (this.display == Display.UNDEFINED) {
+                this.display = display;
+            }
             return this;
         }
 
@@ -188,7 +217,7 @@ public class Token {
          * @return the token
          */
         public Token build() {
-            return new Token(text, type, formattingAttributes, firstField);
+            return new Token(text, type, formattingAttributes, display, firstField);
         }
     }
 }

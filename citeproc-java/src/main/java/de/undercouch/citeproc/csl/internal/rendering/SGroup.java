@@ -5,6 +5,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SRenderingElementContainerElement;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
@@ -19,6 +20,7 @@ public class SGroup extends SRenderingElementContainerElement implements SRender
     private final Affixes affixes;
     private final int formattingAttributes;
     private final String delimiter;
+    private final Display display;
 
     /**
      * Creates the group from an XML node
@@ -29,6 +31,7 @@ public class SGroup extends SRenderingElementContainerElement implements SRender
         affixes = new Affixes(node);
         formattingAttributes = FormattingAttributes.of(node);
         delimiter = NodeHelper.getAttrValue(node, "delimiter");
+        display = Display.of(node);
     }
 
     @Override
@@ -59,7 +62,7 @@ public class SGroup extends SRenderingElementContainerElement implements SRender
         boolean allEmpty = vl.getCalled() > 0 && vl.getCalled() == vl.getEmpty();
 
         if (!allEmpty && !child.getResult().isEmpty()) {
-            ctx.emit(child.getResult(), formattingAttributes);
+            ctx.emit(child.getResult(), formattingAttributes, display);
 
             // This group has been rendered and so should any parent group:
             // To achieve this, we pretend we called a variable with a non-null

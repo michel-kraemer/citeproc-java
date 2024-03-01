@@ -8,6 +8,7 @@ import de.undercouch.citeproc.csl.internal.SMacro;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.VariableForm;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.Quotes;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
@@ -34,6 +35,7 @@ public class SText implements SRenderingElement {
     private final Quotes quotes;
     private final TextCase textCase;
     private final int formattingAttributes;
+    private final Display display;
 
     /**
      * Creates the text element from an XML node
@@ -48,6 +50,7 @@ public class SText implements SRenderingElement {
         quotes = new Quotes(node);
         textCase = new TextCase(node);
         formattingAttributes = FormattingAttributes.of(node);
+        display = Display.of(node);
 
         String form = NodeHelper.getAttrValue(node, "form");
         if (form == null) {
@@ -97,14 +100,16 @@ public class SText implements SRenderingElement {
             int i = 0;
             for (PageRange r : prs) {
                 if (i > 0) {
-                    ctx.emit(", ", Token.Type.TEXT, formattingAttributes);
+                    ctx.emit(", ", Token.Type.TEXT,
+                            formattingAttributes, display);
                 }
                 ctx.emit(PageRangeFormatter.format(r, format, delimiter),
-                        Token.Type.TEXT, formattingAttributes);
+                        Token.Type.TEXT, formattingAttributes, display);
                 ++i;
             }
         } else {
-            ctx.emit(page.replace("-", delimiter), Token.Type.TEXT, formattingAttributes);
+            ctx.emit(page.replace("-", delimiter), Token.Type.TEXT,
+                    formattingAttributes, display);
         }
     }
 
@@ -132,37 +137,41 @@ public class SText implements SRenderingElement {
                                 lastLabel.render(ctx, i);
                             }
                             ctx.emit(e.getText(), Token.Type.TEXT,
-                                    formattingAttributes);
+                                    formattingAttributes, display);
                         }
                         break;
                     }
 
                     case "DOI":
-                        ctx.emit(v, Token.Type.DOI, formattingAttributes);
+                        ctx.emit(v, Token.Type.DOI,
+                                formattingAttributes, display);
                         break;
 
                     case "URL":
-                        ctx.emit(v, Token.Type.URL, formattingAttributes);
+                        ctx.emit(v, Token.Type.URL,
+                                formattingAttributes, display);
                         break;
 
                     default:
-                        ctx.emit(v, Token.Type.TEXT, formattingAttributes);
+                        ctx.emit(v, Token.Type.TEXT,
+                                formattingAttributes, display);
                         break;
                 }
             }
         } else if (macro != null && !macro.isEmpty()) {
             SMacro sm = ctx.getMacro(macro);
-            if (formattingAttributes == 0) {
+            if (formattingAttributes == 0 && display == Display.UNDEFINED) {
                 sm.render(ctx);
             } else {
                 RenderContext tmp = new RenderContext(ctx);
                 sm.render(tmp);
-                ctx.emit(tmp.getResult(), formattingAttributes);
+                ctx.emit(tmp.getResult(), formattingAttributes, display);
             }
         } else if (term != null && !term.isEmpty()) {
-            ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(form)), formattingAttributes);
+            ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(form)),
+                    formattingAttributes, display);
         } else if (value != null) {
-            ctx.emit(value, formattingAttributes);
+            ctx.emit(value, formattingAttributes, display);
         }
     }
 }

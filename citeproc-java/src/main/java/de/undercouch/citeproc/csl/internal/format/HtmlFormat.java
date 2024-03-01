@@ -4,6 +4,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SBibliography;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
+import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.SecondFieldAlign;
 import org.apache.commons.text.StringEscapeUtils;
@@ -137,5 +138,40 @@ public class HtmlFormat extends BaseFormat {
         } else {
             return "</sub>";
         }
+    }
+
+    @Override
+    protected String openDisplay(Display display) {
+        switch (display) {
+            case UNDEFINED:
+                // nothing to do
+                break;
+            case BLOCK:
+                return "\n\n    <div class=\"csl-block\">";
+            case LEFT_MARGIN:
+                return "\n    <div class=\"csl-left-margin\">";
+            case RIGHT_INLINE:
+                return "<div class=\"csl-right-inline\">";
+            case INDENT:
+                return "<div class=\"csl-indent\">";
+        }
+        return null;
+    }
+
+    @Override
+    protected String closeDisplay(Display display) {
+        switch (display) {
+            case UNDEFINED:
+                // nothing to do
+                break;
+            case BLOCK:
+                return "</div>\n";
+            case LEFT_MARGIN:
+                return "</div>";
+            case RIGHT_INLINE:
+            case INDENT:
+                return "</div>\n  ";
+        }
+        return null;
     }
 }

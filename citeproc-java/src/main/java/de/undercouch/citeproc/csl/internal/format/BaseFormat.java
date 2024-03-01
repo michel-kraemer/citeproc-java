@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.format;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
+import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.helper.SmartQuotes;
 import de.undercouch.citeproc.helper.StringHelper;
@@ -150,7 +151,7 @@ abstract public class BaseFormat implements Format {
                 // check if we need to merge the last character of t0 with
                 // the first one of t1
                 String lookup = t0.getText().substring(t0.getText().length() - 1) +
-                        t1.getText().substring(0, 1);
+                        t1.getText().charAt(0);
                 String replacement = MERGE_PUNCTUATION_MAP.get(lookup);
 
                 if (replacement != null) {
@@ -318,6 +319,8 @@ abstract public class BaseFormat implements Format {
     protected String format(TokenBuffer buffer) {
         StringBuilder result = new StringBuilder();
 
+        Display cd = Display.UNDEFINED;
+
         int cfs = UNDEFINED;
         int cfv = UNDEFINED;
         int cfw = UNDEFINED;
@@ -325,6 +328,24 @@ abstract public class BaseFormat implements Format {
         int cva = UNDEFINED;
 
         for (Token t : buffer.getTokens()) {
+            Display td = t.getDisplay();
+
+            if (td != cd) {
+                if (cd != Display.UNDEFINED) {
+                    String dr = closeDisplay(cd);
+                    if (dr != null) {
+                        result.append(dr);
+                    }
+                }
+                if (td != Display.UNDEFINED) {
+                    String dr = openDisplay(td);
+                    if (dr != null) {
+                        result.append(dr);
+                    }
+                }
+                cd = td;
+            }
+
             int tokenFormattingAttributes = t.getFormattingAttributes();
             int tfs = FormattingAttributes.getFontStyle(tokenFormattingAttributes);
             int tfv = FormattingAttributes.getFontVariant(tokenFormattingAttributes);
@@ -372,6 +393,14 @@ abstract public class BaseFormat implements Format {
         compareFormattingAttribute(cfw, 0, this::closeFontWeight, result);
         compareFormattingAttribute(ctd, 0, this::closeTextDecoration, result);
         compareFormattingAttribute(cva, 0, this::closeVerticalAlign, result);
+
+        // close display attribute if necessary
+        if (cd != Display.UNDEFINED) {
+            String dr = closeDisplay(cd);
+            if (dr != null) {
+                result.append(dr);
+            }
+        }
 
         return result.toString();
     }
@@ -482,6 +511,24 @@ abstract public class BaseFormat implements Format {
      * @return the generated text or {@code null}
      */
     protected String closeVerticalAlign(int verticalAlign) {
+        return null;
+    }
+
+    /**
+     * Generate text that enables the given display attribute
+     * @param display the display attribute to enable
+     * @return the generated text or {@code null}
+     */
+    protected String openDisplay(Display display) {
+        return null;
+    }
+
+    /**
+     * Generate text that disables the given display attribute
+     * @param display the display attribute to disable
+     * @return the generated text or {@code null}
+     */
+    protected String closeDisplay(Display display) {
         return null;
     }
 }
