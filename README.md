@@ -67,9 +67,7 @@ String bibl = CSL.makeAdhocBibliography("apa", item).makeString();
 
 <table><tr><td><br>
 
-<div class="csl-bib-body">
-  <div class="csl-entry">Lowry, O. H., Rosebrough, N. J., Farr, A. L., &amp; Randall, R. J. (1951). Protein measurement with the Folin phenol reagent. <span style="font-style: italic">The Journal of Biological Chemistry</span>, <span style="font-style: italic">193</span>(1), 265&ndash;275.</div>
-</div>
+Lowry, O. H., Rosebrough, N. J., Farr, A. L., &amp; Randall, R. J. (1951). Protein measurement with the Folin phenol reagent. *The Journal of Biological Chemistry*, *193*(1), 265&ndash;275.
 
 <br></td></tr></table>
 
