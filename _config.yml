@@ -1,6 +1,0 @@
-title: citeproc-java
-markdown: kramdown
-highlighter: rouge
-repository: michel-kraemer/citeproc-java
-baseurl: /citeproc-java/
-exclude: [ 'Gemfile', 'Gemfile.lock', 'README.md' ]
