@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.format;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SBibliography;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
+import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.SecondFieldAlign;
 import org.apache.commons.text.StringEscapeUtils;
@@ -159,5 +160,59 @@ public class FoFormat extends BaseFormat {
     @Override
     protected String closeVerticalAlign(int verticalAlign) {
         return "</fo:inline>";
+    }
+
+    @Override
+    protected String openDisplay(Display display) {
+        switch (display) {
+            case BLOCK:
+                return "\n  <fo:block>";
+
+            case LEFT_MARGIN:
+                return "\n  <fo:table table-layout=\"fixed\" width=\"100%\">\n    " +
+                        "<fo:table-column column-number=\"1\" column-width=\"" + columnWidth + "\"/>\n    " +
+                        "<fo:table-column column-number=\"2\" column-width=\"proportional-column-width(1)\"/>\n    " +
+                        "<fo:table-body>\n      " +
+                        "<fo:table-row>\n        " +
+                        "<fo:table-cell>\n          " +
+                        "<fo:block>";
+
+            case RIGHT_INLINE:
+                return "<fo:table-cell>\n          " +
+                        "<fo:block>";
+
+            case INDENT:
+                return "<fo:block margin-left=\"2em\">";
+
+            default:
+                break;
+        }
+
+        return null;
+    }
+
+    @Override
+    protected String closeDisplay(Display display) {
+        switch (display) {
+            case BLOCK:
+            case INDENT:
+                return "</fo:block>\n";
+
+            case LEFT_MARGIN:
+                return "</fo:block>\n        " +
+                        "</fo:table-cell>\n        ";
+
+            case RIGHT_INLINE:
+                return "</fo:block>\n        " +
+                        "</fo:table-cell>\n      " +
+                        "</fo:table-row>\n    " +
+                        "</fo:table-body>\n  " +
+                        "</fo:table>\n";
+
+            default:
+                break;
+        }
+
+        return null;
     }
 }

@@ -4,6 +4,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SBibliography;
 import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
+import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.SecondFieldAlign;
 
@@ -43,5 +44,18 @@ public class TextFormat extends BaseFormat {
         SecondFieldAlign sfa = bibliographyElement.getSecondFieldAlign();
         return new Bibliography(entries, null, null, null, null, null, null,
                 null, null, sfa);
+    }
+
+    @Override
+    protected String openDisplay(Display display) {
+        switch (display) {
+            case BLOCK:
+                return "\n";
+            case INDENT:
+                return "\n    ";
+            default:
+                break;
+        }
+        return null;
     }
 }
