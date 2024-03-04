@@ -29,6 +29,6 @@ items:
 result:
   html: |-
     <div class="csl-bib-body">
-      <div class="csl-entry"><sup><span style="text-decoration: underline"><span style="font-style: italic">That is my title!</span></span></sup>
-    <sub><span style="font-style: italic">That is my title!</span></sub></div>
+      <div class="csl-entry"><span style="font-style: italic"><span style="text-decoration: underline"><sup>That is my title!</sup></span></span>
+    <span style="font-style: italic"><sub>That is my title!</sub></span></div>
     </div>

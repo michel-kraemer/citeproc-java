@@ -240,6 +240,64 @@ public class FormattingAttributes {
     }
 
     /**
+     * Create formatting attributes from the given font style
+     * @param fontStyle the font style (one of {@link #FS_NORMAL},
+     * {@link #FS_ITALIC}, {@link #FS_OBLIQUE})
+     * @return the formatting attributes
+     */
+    public static int ofFontStyle(int fontStyle) {
+        assert fontStyle == FS_NORMAL || fontStyle == FS_ITALIC ||
+                fontStyle == FS_OBLIQUE;
+        return (fontStyle & 3) << FS_SHIFT;
+    }
+
+    /**
+     * Create formatting attributes from the given font variant
+     * @param fontVariant the font variant (one of {@link #FV_NORMAL},
+     * {@link #FV_SMALLCAPS})
+     * @return the formatting attributes
+     */
+    public static int ofFontVariant(int fontVariant) {
+        assert fontVariant == FV_NORMAL || fontVariant == FV_SMALLCAPS;
+        return (fontVariant & 3) << FV_SHIFT;
+    }
+
+    /**
+     * Create formatting attributes from the given font weight
+     * @param fontWeight the font weight (one of {@link #FW_NORMAL},
+     * {@link #FW_BOLD}, {@link #FW_LIGHT})
+     * @return the formatting attributes
+     */
+    public static int ofFontWeight(int fontWeight) {
+        assert fontWeight == FW_NORMAL || fontWeight == FW_BOLD ||
+                fontWeight == FW_LIGHT;
+        return (fontWeight & 3) << FW_SHIFT;
+    }
+
+    /**
+     * Create formatting attributes from the given text decoration
+     * @param textDecoration the text decoration (one of {@link #TD_NONE},
+     * {@link #TD_UNDERLINE})
+     * @return the formatting attributes
+     */
+    public static int ofTextDecoration(int textDecoration) {
+        assert textDecoration == TD_NONE || textDecoration == TD_UNDERLINE;
+        return (textDecoration & 3) << TD_SHIFT;
+    }
+
+    /**
+     * Create formatting attributes from the given vertical align
+     * @param verticalAlign the vertical align (one of {@link #VA_BASELINE},
+     * {@link #VA_SUP}, {@link #VA_SUB})
+     * @return the formatting attributes
+     */
+    public static int ofVerticalAlign(int verticalAlign) {
+        assert verticalAlign == VA_BASELINE || verticalAlign == VA_SUP ||
+                verticalAlign == VA_SUB;
+        return (verticalAlign & 3) << VA_SHIFT;
+    }
+
+    /**
      * Merge two sets of formatting attributes
      * @param a the set to merge into
      * @param b the set to merge (overwrites attributes from {@code a} unless

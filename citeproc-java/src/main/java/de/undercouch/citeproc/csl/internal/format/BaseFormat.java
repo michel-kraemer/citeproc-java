@@ -8,15 +8,16 @@ import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.helper.SmartQuotes;
 import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-
-import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.NORMAL;
-import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.UNDEFINED;
 
 /**
  * A base class for output formats
@@ -43,6 +44,17 @@ abstract public class BaseFormat implements Format {
         mpm.put(";.", ";");
 
         MERGE_PUNCTUATION_MAP = Collections.unmodifiableMap(mpm);
+    }
+
+    /**
+     * A list of all formatting attributes managed by {@link #format(TokenBuffer)}
+     */
+    private enum Format {
+        FontStyle,
+        FontVariant,
+        FontWeight,
+        TextDecoration,
+        VerticalAlign;
     }
 
     protected boolean convertLinks = false;
@@ -272,8 +284,8 @@ abstract public class BaseFormat implements Format {
     }
 
     /**
-     * Prepends 'https://doi.org/' to the given string if it is not an absolute
-     * URL yet.
+     * Prepends {@code https://doi.org/} to the given string if it is not an
+     * absolute URL yet.
      * @param str the string
      * @return the string with the prefix
      */
@@ -321,11 +333,7 @@ abstract public class BaseFormat implements Format {
 
         Display cd = Display.UNDEFINED;
 
-        int cfs = UNDEFINED;
-        int cfv = UNDEFINED;
-        int cfw = UNDEFINED;
-        int ctd = UNDEFINED;
-        int cva = UNDEFINED;
+        List<Pair<Format, Integer>> formattingStack = new ArrayList<>();
 
         for (Token t : buffer.getTokens()) {
             Display td = t.getDisplay();
@@ -346,30 +354,68 @@ abstract public class BaseFormat implements Format {
                 cd = td;
             }
 
-            int tokenFormattingAttributes = t.getFormattingAttributes();
-            int tfs = FormattingAttributes.getFontStyle(tokenFormattingAttributes);
-            int tfv = FormattingAttributes.getFontVariant(tokenFormattingAttributes);
-            int tfw = FormattingAttributes.getFontWeight(tokenFormattingAttributes);
-            int ttd = FormattingAttributes.getTextDecoration(tokenFormattingAttributes);
-            int tva = FormattingAttributes.getVerticalAlign(tokenFormattingAttributes);
+            EnumMap<Format, Integer> tokenFormattingAttributes =
+                    new EnumMap<>(Format.class);
+            tokenFormattingAttributes.put(Format.FontStyle,
+                    FormattingAttributes.getFontStyle(t.getFormattingAttributes()));
+            tokenFormattingAttributes.put(Format.FontVariant,
+                    FormattingAttributes.getFontVariant(t.getFormattingAttributes()));
+            tokenFormattingAttributes.put(Format.FontWeight,
+                    FormattingAttributes.getFontWeight(t.getFormattingAttributes()));
+            tokenFormattingAttributes.put(Format.TextDecoration,
+                    FormattingAttributes.getTextDecoration(t.getFormattingAttributes()));
+            tokenFormattingAttributes.put(Format.VerticalAlign,
+                    FormattingAttributes.getVerticalAlign(t.getFormattingAttributes()));
 
-            compareFormattingAttribute(cfs, tfs, this::closeFontStyle, result);
-            compareFormattingAttribute(cfv, tfv, this::closeFontVariant, result);
-            compareFormattingAttribute(cfw, tfw, this::closeFontWeight, result);
-            compareFormattingAttribute(ctd, ttd, this::closeTextDecoration, result);
-            compareFormattingAttribute(cva, tva, this::closeVerticalAlign, result);
+            // find formatting attributes that are not in effect any more
+            boolean[] closed = new boolean[formattingStack.size()];
+            int firstClosed = formattingStack.size();
+            for (int i = 0; i < formattingStack.size(); ++i) {
+                Pair<Format, Integer> f = formattingStack.get(i);
+                int newValue = tokenFormattingAttributes.getOrDefault(
+                        f.getKey(), FormattingAttributes.UNDEFINED);
+                closed[i] = newValue != f.getValue();
+                if (closed[i] && firstClosed == formattingStack.size()) {
+                    firstClosed = i;
+                }
+            }
 
-            compareFormattingAttribute(tva, cva, this::openVerticalAlign, result);
-            compareFormattingAttribute(ttd, ctd, this::openTextDecoration, result);
-            compareFormattingAttribute(tfw, cfw, this::openFontWeight, result);
-            compareFormattingAttribute(tfv, cfv, this::openFontVariant, result);
-            compareFormattingAttribute(tfs, cfs, this::openFontStyle, result);
+            // close all attributes from the top of the stack until (and
+            // including) the first closed one
+            for (int i = formattingStack.size(); i > firstClosed; --i) {
+                Pair<Format, Integer> f = formattingStack.get(i - 1);
+                closeFormattingAttribute(f.getKey(), f.getValue(), result);
+            }
 
-            cfs = tfs;
-            cfv = tfv;
-            cfw = tfw;
-            ctd = ttd;
-            cva = tva;
+            // remove all closed attributes from the stack
+            EnumSet<Format> remaining = EnumSet.allOf(Format.class);
+            int j = 0;
+            Iterator<Pair<Format, Integer>> iter = formattingStack.iterator();
+            while (iter.hasNext()) {
+                Pair<Format, Integer> f = iter.next();
+                remaining.remove(f.getKey());
+                if (closed[j]) {
+                    iter.remove();
+                }
+                ++j;
+            }
+
+            // push new attributes to the stack
+            for (Format r : remaining) {
+                int v = tokenFormattingAttributes.getOrDefault(
+                        r, FormattingAttributes.UNDEFINED);
+                if (v != FormattingAttributes.UNDEFINED) {
+                    formattingStack.add(Pair.of(r, v));
+                }
+            }
+
+            // Open all attributes still in effect (from the position of the
+            // first closed one on). This includes any attributes we've just
+            // pushed onto the stack.
+            for (int i = firstClosed; i < formattingStack.size(); ++i) {
+                Pair<Format, Integer> f = formattingStack.get(i);
+                openFormattingAttribute(f.getKey(), f.getValue(), result);
+            }
 
             if (convertLinks && (t.getType() == Token.Type.URL ||
                     t.getType() == Token.Type.DOI)) {
@@ -388,11 +434,10 @@ abstract public class BaseFormat implements Format {
         }
 
         // close remaining formatting attributes
-        compareFormattingAttribute(cfs, 0, this::closeFontStyle, result);
-        compareFormattingAttribute(cfv, 0, this::closeFontVariant, result);
-        compareFormattingAttribute(cfw, 0, this::closeFontWeight, result);
-        compareFormattingAttribute(ctd, 0, this::closeTextDecoration, result);
-        compareFormattingAttribute(cva, 0, this::closeVerticalAlign, result);
+        for (int i = formattingStack.size(); i > 0; --i) {
+            Pair<Format, Integer> f = formattingStack.get(i - 1);
+            closeFormattingAttribute(f.getKey(), f.getValue(), result);
+        }
 
         // close display attribute if necessary
         if (cd != Display.UNDEFINED) {
@@ -406,21 +451,74 @@ abstract public class BaseFormat implements Format {
     }
 
     /**
-     * Compare two formatting attributes with each other and, if necessary,
-     * call the specified function with the second attribute and append the
-     * result to the given {@link StringBuilder}.
-     * @param a the first formatting attribute
-     * @param b the second formatting attribute
-     * @param f the function to call
-     * @param result the {@link StringBuilder} to append the result to
+     * Open the given formatting attribute by calling the respective
+     * {@code openXXX()} method
+     * @param f the formatting attribute to open
+     * @param value the attribute's value
+     * @param result the string builder to append the result to
      */
-    protected void compareFormattingAttribute(int a, int b,
-            Function<Integer, String> f, StringBuilder result) {
-        if (a != b && a != UNDEFINED && !(a == NORMAL && b == UNDEFINED)) {
-            String str = f.apply(a);
-            if (str != null) {
-                result.append(str);
-            }
+    private void openFormattingAttribute(Format f, int value,
+            StringBuilder result) {
+        if (value == FormattingAttributes.UNDEFINED ||
+                value == FormattingAttributes.NORMAL) {
+            return;
+        }
+        String str = null;
+        switch (f) {
+            case FontStyle:
+                str = openFontStyle(value);
+                break;
+            case FontVariant:
+                str = openFontVariant(value);
+                break;
+            case FontWeight:
+                str = openFontWeight(value);
+                break;
+            case TextDecoration:
+                str = openTextDecoration(value);
+                break;
+            case VerticalAlign:
+                str = openVerticalAlign(value);
+                break;
+        }
+        if (str != null) {
+            result.append(str);
+        }
+    }
+
+    /**
+     * Close the given formatting attribute by calling the respective
+     * {@code closeXXX()} method
+     * @param f the formatting attribute to close
+     * @param value the attribute's old value
+     * @param result the string builder to append the result to
+     */
+    private void closeFormattingAttribute(Format f, int value,
+            StringBuilder result) {
+        if (value == FormattingAttributes.UNDEFINED ||
+                value == FormattingAttributes.NORMAL) {
+            return;
+        }
+        String str = null;
+        switch (f) {
+            case FontStyle:
+                str = closeFontStyle(value);
+                break;
+            case FontVariant:
+                str = closeFontVariant(value);
+                break;
+            case FontWeight:
+                str = closeFontWeight(value);
+                break;
+            case TextDecoration:
+                str = closeTextDecoration(value);
+                break;
+            case VerticalAlign:
+                str = closeVerticalAlign(value);
+                break;
+        }
+        if (str != null) {
+            result.append(str);
         }
     }
 
