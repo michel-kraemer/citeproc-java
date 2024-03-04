@@ -393,9 +393,10 @@ abstract public class BaseFormat implements Format {
             Iterator<Pair<Format, Integer>> iter = formattingStack.iterator();
             while (iter.hasNext()) {
                 Pair<Format, Integer> f = iter.next();
-                remaining.remove(f.getKey());
                 if (closed[j]) {
                     iter.remove();
+                } else {
+                    remaining.remove(f.getKey());
                 }
                 ++j;
             }

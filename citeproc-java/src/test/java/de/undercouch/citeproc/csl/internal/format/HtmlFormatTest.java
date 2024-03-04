@@ -47,6 +47,25 @@ public class HtmlFormatTest {
     }
 
     /**
+     * Format a simple string with a formatting attribute that is closed and
+     * then opened again with another value
+     */
+    @Test
+    public void formatFormattingAttributesOpenClose() {
+        int faItalic = FormattingAttributes.ofFontStyle(FormattingAttributes.FS_ITALIC);
+        int faOblique = FormattingAttributes.ofFontStyle(FormattingAttributes.FS_OBLIQUE);
+
+        HtmlFormat f = new HtmlFormat();
+        TokenBuffer buf = new TokenBuffer();
+        buf.append("Hello ", Token.Type.TEXT, faItalic);
+        buf.append("world", Token.Type.TEXT, faOblique);
+        String r = f.format(buf);
+
+        assertEquals("<span style=\"font-style: italic\">Hello " +
+                "</span><span style=\"font-style: oblique\">world</span>", r);
+    }
+
+    /**
      * Format a simple string with nested formatting attributes, where first
      * attribute A is opened, then attribute B is opened, then A is closed
      * again, and finally B is closed. Also test with even deeper nested

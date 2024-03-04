@@ -67,7 +67,7 @@ items:
 result:
   html: |-
     <div class="csl-bib-body">
-      <div class="csl-entry"><span style="font-style: oblique"><span style="font-weight: bold">This should be italic</span></span> <span style="font-style: italic"><span style="font-weight: 100">That is my title!</span></span>
+      <div class="csl-entry"><span style="font-style: oblique"><span style="font-weight: bold">This should be italic</span></span><span style="font-style: italic"><span style="font-weight: 100"> That is my title!</span></span>
     That is my title!
     That is my title!
     That is my title!
