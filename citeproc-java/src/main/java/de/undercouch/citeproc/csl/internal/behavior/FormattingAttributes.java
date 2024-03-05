@@ -300,8 +300,7 @@ public class FormattingAttributes {
     /**
      * Merge two sets of formatting attributes
      * @param a the set to merge into
-     * @param b the set to merge (overwrites attributes from {@code a} unless
-     * they are not undefined)
+     * @param b the set to merge (overwrites attributes from {@code a})
      * @return the merged formatting attributes
      */
     public static int merge(int a, int b) {

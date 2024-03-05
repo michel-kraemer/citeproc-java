@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.rendering.SRenderingElement;
+import de.undercouch.citeproc.csl.internal.token.Token;
 import org.w3c.dom.Node;
 
 import java.util.List;
@@ -41,10 +42,7 @@ public class SLayout extends SRenderingElementContainerElement {
                 e.render(innerTmp);
                 for (Token t : innerTmp.getResult().getTokens()) {
                     // set flag in token
-                    Token nt = new Token.Builder(t)
-                            .firstField(true)
-                            .build();
-                    tmp.emit(nt);
+                    tmp.emit(t.copyWithFirstField(true));
                 }
             } else {
                 e.render(tmp);

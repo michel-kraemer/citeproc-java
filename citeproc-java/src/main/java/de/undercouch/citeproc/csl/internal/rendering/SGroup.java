@@ -3,7 +3,6 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.internal.CountingVariableListener;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SRenderingElementContainerElement;
-import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
@@ -11,6 +10,8 @@ import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
 import java.util.List;
+
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.DELIMITER;
 
 /**
  * A group of rendering elements from a style file
@@ -51,7 +52,7 @@ public class SGroup extends SRenderingElementContainerElement implements SRender
 
             if (!tmp.getResult().isEmpty()) {
                 if (delimiter != null && !child.getResult().isEmpty()) {
-                    child.emit(delimiter, Token.Type.DELIMITER);
+                    child.emit(delimiter, DELIMITER);
                 }
                 child.emit(tmp.getResult());
             }
@@ -62,7 +63,7 @@ public class SGroup extends SRenderingElementContainerElement implements SRender
         boolean allEmpty = vl.getCalled() > 0 && vl.getCalled() == vl.getEmpty();
 
         if (!allEmpty && !child.getResult().isEmpty()) {
-            ctx.emit(child.getResult(), formattingAttributes, display);
+            ctx.emit(child.getResult(), formattingAttributes);
 
             // This group has been rendered and so should any parent group:
             // To achieve this, we pretend we called a variable with a non-null

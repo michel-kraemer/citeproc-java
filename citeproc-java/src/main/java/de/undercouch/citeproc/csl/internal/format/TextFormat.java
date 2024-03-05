@@ -2,11 +2,12 @@ package de.undercouch.citeproc.csl.internal.format;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SBibliography;
-import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.SecondFieldAlign;
+
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.TEXT;
 
 /**
  * The text output format
@@ -27,7 +28,7 @@ public class TextFormat extends BaseFormat {
     protected String doFormatBibliographyEntry(TokenBuffer buffer,
             RenderContext ctx, int index) {
         if (!buffer.isEmpty()) {
-            buffer.append("\n", Token.Type.TEXT);
+            buffer.append("\n", TEXT);
         }
 
         return format(buffer);

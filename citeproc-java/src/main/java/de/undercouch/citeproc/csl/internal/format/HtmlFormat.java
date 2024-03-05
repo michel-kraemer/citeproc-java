@@ -2,7 +2,7 @@ package de.undercouch.citeproc.csl.internal.format;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SBibliography;
-import de.undercouch.citeproc.csl.internal.Token;
+import de.undercouch.citeproc.csl.internal.token.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.output.Bibliography;

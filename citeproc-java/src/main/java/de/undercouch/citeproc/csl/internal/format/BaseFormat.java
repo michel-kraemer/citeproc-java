@@ -1,7 +1,8 @@
 package de.undercouch.citeproc.csl.internal.format;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
-import de.undercouch.citeproc.csl.internal.Token;
+import de.undercouch.citeproc.csl.internal.token.TextToken;
+import de.undercouch.citeproc.csl.internal.token.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
@@ -74,57 +75,74 @@ abstract public class BaseFormat implements Format {
                 ctx.getTerm("close-quote"), ctx.getLocale().getLang());
         for (int i = 0; i < tokens.size(); ++i) {
             Token t = tokens.get(i);
-            if (t.getType() == Token.Type.TEXT ||
-                    t.getType() == Token.Type.PREFIX ||
-                    t.getType() == Token.Type.SUFFIX ||
-                    t.getType() == Token.Type.DELIMITER) {
-                tokens.set(i, new Token.Builder(t)
-                        .text(sq.apply(t.getText()))
-                        .build());
+            if (t instanceof TextToken) {
+                TextToken tt = (TextToken)t;
+                TextToken.Type type = tt.getType();
+                if (type == TextToken.Type.TEXT ||
+                        type == TextToken.Type.PREFIX ||
+                        type == TextToken.Type.SUFFIX ||
+                        type == TextToken.Type.DELIMITER) {
+                    tokens.set(i, tt.copyWithText(sq.apply(tt.getText())));
+                }
             }
         }
 
         // swap punctuation and closing quotation marks if necessary
         if (ctx.getLocale().getStyleOptions().isPunctuationInQuote()) {
             for (int i = 0; i < tokens.size() - 1; ++i) {
-                Token t0 = tokens.get(i);
-                Token t1 = tokens.get(i + 1);
-                if (t0.getType() == Token.Type.CLOSE_QUOTE &&
+                Token ti = tokens.get(i);
+                if (!(ti instanceof TextToken)) {
+                    continue;
+                }
+                TextToken t0 = (TextToken)ti;
+
+                int j = findNextText(tokens, i);
+                if (j < 0) {
+                    break;
+                }
+                TextToken t1 = (TextToken)tokens.get(j);
+
+                if (t0.getType() == TextToken.Type.CLOSE_QUOTE &&
                         StringUtils.startsWithAny(t1.getText(), ",", ".")) {
                     String nextText = t1.getText();
                     String punctuation = nextText.substring(0, 1);
                     String rest = nextText.substring(1);
-                    tokens.add(i, new Token.Builder(t1)
-                            .text(punctuation)
-                            .build());
-                    ++i;
-                    tokens.set(i + 1, new Token.Builder(t1)
-                            .text(rest)
-                            .build());
+                    tokens.add(i, t1.copyWithText(punctuation));
+                    tokens.set(j + 1, t1.copyWithText(rest));
+                    i = j;
                 }
             }
         }
 
         // remove extraneous prefixes, suffixes, and delimiters
         for (int i = 1; i < tokens.size(); ++i) {
-            int j = findPreviousNonQuote(tokens, i);
-            if (j < 0) {
+            Token ti = tokens.get(i);
+            if (!(ti instanceof TextToken)) {
                 continue;
             }
+            TextToken t1 = (TextToken)ti;
 
-            Token t1 = tokens.get(i);
-            boolean mergeableSuffix = t1.getType() == Token.Type.SUFFIX &&
+            boolean mergeableSuffix = t1.getType() == TextToken.Type.SUFFIX &&
                     !t1.getText().startsWith(")");
-            if (t1.getType() == Token.Type.PREFIX || mergeableSuffix ||
-                    t1.getType() == Token.Type.DELIMITER) {
+            if (t1.getType() == TextToken.Type.PREFIX || mergeableSuffix ||
+                    t1.getType() == TextToken.Type.DELIMITER) {
+                int j = findPreviousNonQuote(tokens, i);
+                if (j < 0) {
+                    continue;
+                }
+
                 // collect as much preceding text as necessary
-                Token t0 = tokens.get(j);
+                TextToken t0 = (TextToken)tokens.get(j);
                 String t0str = t0.getText();
                 if (t0str.length() < t1.getText().length()) {
                     StringBuilder pre = new StringBuilder(t0str);
                     while (pre.length() < t1.getText().length() && j > 0) {
                         --j;
-                        t0 = tokens.get(j);
+                        Token tj = tokens.get(j);
+                        if (!(tj instanceof TextToken)) {
+                            continue;
+                        }
+                        t0 = (TextToken)tj;
                         pre.insert(0, t0.getText());
                     }
                     t0str = pre.toString();
@@ -138,9 +156,7 @@ abstract public class BaseFormat implements Format {
                         tokens.remove(i);
                         i--;
                     } else {
-                        tokens.set(i, new Token.Builder(t1)
-                                .text(rest)
-                                .build());
+                        tokens.set(i, t1.copyWithText(rest));
                     }
                 }
             }
@@ -148,18 +164,22 @@ abstract public class BaseFormat implements Format {
 
         // merge punctuation
         for (int i = 1; i < tokens.size(); ++i) {
+            Token ti = tokens.get(i);
+            if (!(ti instanceof TextToken)) {
+                continue;
+            }
+            TextToken t1 = (TextToken)ti;
+
             int j = findPreviousNonQuote(tokens, i);
             if (j < 0) {
                 continue;
             }
-
-            Token t0 = tokens.get(j);
-            Token t1 = tokens.get(i);
+            TextToken t0 = (TextToken)tokens.get(j);
 
             if (!t0.getText().isEmpty() && !t1.getText().isEmpty() &&
-                    (t1.getType() == Token.Type.PREFIX ||
-                            t1.getType() == Token.Type.SUFFIX ||
-                            t1.getType() == Token.Type.DELIMITER)) {
+                    (t1.getType() == TextToken.Type.PREFIX ||
+                            t1.getType() == TextToken.Type.SUFFIX ||
+                            t1.getType() == TextToken.Type.DELIMITER)) {
                 // check if we need to merge the last character of t0 with
                 // the first one of t1
                 String lookup = t0.getText().substring(t0.getText().length() - 1) +
@@ -170,9 +190,7 @@ abstract public class BaseFormat implements Format {
                     // replace last character in t0
                     String nt0 = t0.getText().substring(0, t0.getText().length() - 1) +
                             replacement;
-                    tokens.set(j, new Token.Builder(t0)
-                            .text(nt0)
-                            .build());
+                    tokens.set(j, t0.copyWithText(nt0));
 
                     // remove first character from t1 and remove t1 if it's empty
                     String rest = t1.getText().substring(1);
@@ -180,9 +198,7 @@ abstract public class BaseFormat implements Format {
                         tokens.remove(i);
                         i--;
                     } else {
-                        tokens.set(i, new Token.Builder(t1)
-                                .text(rest)
-                                .build());
+                        tokens.set(i, t1.copyWithText(rest));
                     }
                 }
             }
@@ -191,41 +207,81 @@ abstract public class BaseFormat implements Format {
         // filter DOI prefix
         if (convertLinks) {
             for (int i = 1; i < tokens.size(); ++i) {
-                Token t0 = tokens.get(i - 1);
-                Token t1 = tokens.get(i);
-                if (t1.getType() == Token.Type.DOI &&
-                        t0.getType() == Token.Type.PREFIX &&
+                Token ti = tokens.get(i);
+                if (!(ti instanceof TextToken)) {
+                    continue;
+                }
+                TextToken t1 = (TextToken)ti;
+
+                int j = findPreviousText(tokens, i);
+                if (j < 0) {
+                    continue;
+                }
+                TextToken t0 = (TextToken)tokens.get(j);
+
+                if (t1.getType() == TextToken.Type.DOI &&
+                        t0.getType() == TextToken.Type.PREFIX &&
                         t0.getText().matches("^https?://doi.org/?$")) {
                     // add doi.org if necessary
                     String url = addDOIPrefix(t1.getText());
                     if (!url.equals(t1.getText())) {
-                        tokens.set(i, new Token.Builder(t1)
-                                .text(url)
-                                .build());
+                        tokens.set(i, t1.copyWithText(url));
                     }
 
                     // Remove unnecessary prefix
-                    tokens.remove(i - 1);
-
-                    // no need to decrease i because even if the next t1 would
-                    // be a DOI, t0 could not be a PREFIX
-                    // --i;
+                    tokens.remove(j);
                 }
             }
         }
     }
 
     /**
-     * Search the list of tokens from {@code i - 1} down to {@code 0} and find
-     * the first one that is not a closing quotation mark
+     * Search the list of tokens from {@code i + 1} up to {@code tokens.size()}
+     * and find the first text token
      * @param tokens the list of tokens
-     * @param i the index of the token where the search should start
-     * @return the first token that is not a closing quotation mark
+     * @param i the index of the token after which the search should start
+     * @return the index of the first text token after {@code i}, or {@code -1}
+     * if there is no such token
+     */
+    private static int findNextText(List<Token> tokens, int i) {
+        for (int j = i + 1; j < tokens.size(); ++j) {
+            if (tokens.get(j) instanceof TextToken) {
+                return j;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Search the list of tokens from {@code i - 1} down to {@code 0} and find
+     * the first text token
+     * @param tokens the list of tokens
+     * @param i the index of the token before which the search should start
+     * @return the index of the first text token before {@code i}, or {@code -1}
+     * if there is no such token
+     */
+    private static int findPreviousText(List<Token> tokens, int i) {
+        for (int j = i - 1; j >= 0; --j) {
+            if (tokens.get(j) instanceof TextToken) {
+                return j;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Search the list of tokens from {@code i - 1} down to {@code 0} and find
+     * the first text token that is not a closing quotation mark
+     * @param tokens the list of tokens
+     * @param i the index of the token before which the search should start
+     * @return the index of the first text token before {@code i} that is not
+     * a closing quotation mark, or {@code -1} if there is no such token
      */
     private static int findPreviousNonQuote(List<Token> tokens, int i) {
         for (int j = i - 1; j >= 0; --j) {
             Token t = tokens.get(j);
-            if (t.getType() != Token.Type.CLOSE_QUOTE) {
+            if (t instanceof TextToken &&
+                    ((TextToken)t).getType() != TextToken.Type.CLOSE_QUOTE) {
                 return j;
             }
         }
@@ -331,29 +387,9 @@ abstract public class BaseFormat implements Format {
     protected String format(TokenBuffer buffer) {
         StringBuilder result = new StringBuilder();
 
-        Display cd = Display.UNDEFINED;
-
         List<Pair<Format, Integer>> formattingStack = new ArrayList<>();
 
         for (Token t : buffer.getTokens()) {
-            Display td = t.getDisplay();
-
-            if (td != cd) {
-                if (cd != Display.UNDEFINED) {
-                    String dr = closeDisplay(cd);
-                    if (dr != null) {
-                        result.append(dr);
-                    }
-                }
-                if (td != Display.UNDEFINED) {
-                    String dr = openDisplay(td);
-                    if (dr != null) {
-                        result.append(dr);
-                    }
-                }
-                cd = td;
-            }
-
             EnumMap<Format, Integer> tokenFormattingAttributes =
                     new EnumMap<>(Format.class);
             tokenFormattingAttributes.put(Format.FontStyle,
@@ -418,19 +454,22 @@ abstract public class BaseFormat implements Format {
                 openFormattingAttribute(f.getKey(), f.getValue(), result);
             }
 
-            if (convertLinks && (t.getType() == Token.Type.URL ||
-                    t.getType() == Token.Type.DOI)) {
-                // convert URLs and DOIs to links
-                String link;
-                if (t.getType() == Token.Type.URL) {
-                    link = formatURL(t.getText());
+            if (t instanceof TextToken) {
+                TextToken tt = (TextToken)t;
+                if (convertLinks && (tt.getType() == TextToken.Type.URL ||
+                        tt.getType() == TextToken.Type.DOI)) {
+                    // convert URLs and DOIs to links
+                    String link;
+                    if (tt.getType() == TextToken.Type.URL) {
+                        link = formatURL(tt.getText());
+                    } else {
+                        link = formatDOI(tt.getText());
+                    }
+                    result.append(link);
                 } else {
-                    link = formatDOI(t.getText());
+                    // render escaped token
+                    result.append(escape(tt.getText()));
                 }
-                result.append(link);
-            } else {
-                // render escaped token
-                result.append(escape(t.getText()));
             }
         }
 
@@ -438,14 +477,6 @@ abstract public class BaseFormat implements Format {
         for (int i = formattingStack.size(); i > 0; --i) {
             Pair<Format, Integer> f = formattingStack.get(i - 1);
             closeFormattingAttribute(f.getKey(), f.getValue(), result);
-        }
-
-        // close display attribute if necessary
-        if (cd != Display.UNDEFINED) {
-            String dr = closeDisplay(cd);
-            if (dr != null) {
-                result.append(dr);
-            }
         }
 
         return result.toString();

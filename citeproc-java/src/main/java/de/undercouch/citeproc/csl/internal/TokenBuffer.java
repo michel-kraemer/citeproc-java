@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal;
 
-import de.undercouch.citeproc.csl.internal.behavior.Display;
+import de.undercouch.citeproc.csl.internal.token.TextToken;
+import de.undercouch.citeproc.csl.internal.token.Token;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,74 +50,49 @@ public class TokenBuffer {
     }
 
     /**
-     * Append a token with a given type to the buffer
+     * Append a text token with a given type to the buffer
      * @param text the token's text
      * @param type the token's type
      * @return this token buffer
      */
-    public TokenBuffer append(String text, Token.Type type) {
-        return append(new Token.Builder()
-                .text(text)
-                .type(type)
-                .build());
+    public TokenBuffer append(String text, TextToken.Type type) {
+        return append(new TextToken(text, type));
     }
 
     /**
-     * Prepend a token with a given type to the buffer
+     * Prepend a text token with a given type to the buffer
      * @param text the token's text
      * @param type the token's type
      * @return this token buffer
      */
-    public TokenBuffer prepend(String text, Token.Type type) {
-        return prepend(new Token.Builder()
-                .text(text)
-                .type(type)
-                .build());
+    public TokenBuffer prepend(String text, TextToken.Type type) {
+        return prepend(new TextToken(text, type));
     }
 
     /**
-     * Append a token with a given type and formatting attributes to the buffer
+     * Append a text token with a given type and formatting attributes to
+     * the buffer
      * @param text the token's text
      * @param type the token's type
      * @param formattingAttributes the token's formatting attributes
      * @return this token buffer
      */
-    public TokenBuffer append(String text, Token.Type type, int formattingAttributes) {
-        return append(text, type, formattingAttributes, Display.UNDEFINED);
+    public TokenBuffer append(String text, TextToken.Type type,
+            int formattingAttributes) {
+        return append(new TextToken(text, type, formattingAttributes));
     }
 
     /**
-     * Append a token with a given type and formatting attributes and display
-     * attribute to the buffer
-     * @param text the token's text
-     * @param type the token's type
-     * @param formattingAttributes the token's formatting attributes
-     * @param display the token's display attribute
-     * @return this token buffer
-     */
-    public TokenBuffer append(String text, Token.Type type,
-            int formattingAttributes, Display display) {
-        return append(new Token.Builder()
-                .text(text)
-                .type(type)
-                .mergeFormattingAttributes(formattingAttributes)
-                .mergeDisplay(display)
-                .build());
-    }
-
-    /**
-     * Prepend a token with a given type and formatting attributes to the buffer
+     * Prepend a text token with a given type and formatting attributes to
+     * the buffer
      * @param text the token's text
      * @param type the token's type
      * @param formattingAttributes the token's formatting attributes
      * @return this token buffer
      */
-    public TokenBuffer prepend(String text, Token.Type type, int formattingAttributes) {
-        return prepend(new Token.Builder()
-                .text(text)
-                .type(type)
-                .mergeFormattingAttributes(formattingAttributes)
-                .build());
+    public TokenBuffer prepend(String text, TextToken.Type type,
+            int formattingAttributes) {
+        return prepend(new TextToken(text, type, formattingAttributes));
     }
 
     /**

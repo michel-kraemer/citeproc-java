@@ -1,10 +1,10 @@
 package de.undercouch.citeproc.csl.internal.format;
 
-import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import org.junit.Test;
 
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.TEXT;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -19,7 +19,7 @@ public class HtmlFormatTest {
     public void formatSimple() {
         HtmlFormat f = new HtmlFormat();
         TokenBuffer buf = new TokenBuffer();
-        buf.append("Hello world", Token.Type.TEXT);
+        buf.append("Hello world", TEXT);
         String r = f.format(buf);
         assertEquals("Hello world", r);
     }
@@ -31,7 +31,7 @@ public class HtmlFormatTest {
     public void formatFormattingAttributes() {
         HtmlFormat f = new HtmlFormat();
         TokenBuffer buf = new TokenBuffer();
-        buf.append("Hello ", Token.Type.TEXT);
+        buf.append("Hello ", TEXT);
 
         int fa = 0;
         fa = FormattingAttributes.merge(fa,
@@ -39,7 +39,7 @@ public class HtmlFormatTest {
         fa = FormattingAttributes.merge(fa,
                 FormattingAttributes.ofFontWeight(FormattingAttributes.FW_BOLD));
 
-        buf.append("world", Token.Type.TEXT, fa);
+        buf.append("world", TEXT, fa);
         String r = f.format(buf);
 
         assertEquals("Hello <span style=\"font-style: italic\">" +
@@ -57,8 +57,8 @@ public class HtmlFormatTest {
 
         HtmlFormat f = new HtmlFormat();
         TokenBuffer buf = new TokenBuffer();
-        buf.append("Hello ", Token.Type.TEXT, faItalic);
-        buf.append("world", Token.Type.TEXT, faOblique);
+        buf.append("Hello ", TEXT, faItalic);
+        buf.append("world", TEXT, faOblique);
         String r = f.format(buf);
 
         assertEquals("<span style=\"font-style: italic\">Hello " +
@@ -75,22 +75,22 @@ public class HtmlFormatTest {
     public void formatFormattingAttributesNested() {
         HtmlFormat f = new HtmlFormat();
         TokenBuffer buf = new TokenBuffer();
-        buf.append("Undefined ", Token.Type.TEXT);
+        buf.append("Undefined ", TEXT);
 
         int faItalic = FormattingAttributes.ofFontStyle(FormattingAttributes.FS_ITALIC);
         int faBold = FormattingAttributes.ofFontWeight(FormattingAttributes.FW_BOLD);
         int faBoth = FormattingAttributes.merge(faItalic, faBold);
 
-        buf.append("Italic ", Token.Type.TEXT, faItalic);
-        buf.append("Both ", Token.Type.TEXT, faBoth);
-        buf.append("Bold ", Token.Type.TEXT, faBold);
+        buf.append("Italic ", TEXT, faItalic);
+        buf.append("Both ", TEXT, faBoth);
+        buf.append("Bold ", TEXT, faBold);
 
         String r = f.format(buf);
         assertEquals("Undefined <span style=\"font-style: italic\">Italic " +
                 "<span style=\"font-weight: bold\">Both </span></span>" +
                 "<span style=\"font-weight: bold\">Bold </span>", r);
 
-        buf.append("Undefined", Token.Type.TEXT);
+        buf.append("Undefined", TEXT);
 
         r = f.format(buf);
         assertEquals("Undefined <span style=\"font-style: italic\">Italic " +
@@ -100,11 +100,9 @@ public class HtmlFormatTest {
         TokenBuffer outer = new TokenBuffer();
         int faUnderline = FormattingAttributes.ofTextDecoration(
                 FormattingAttributes.TD_UNDERLINE);
-        outer.append("Outer Start ", Token.Type.TEXT, faUnderline);
+        outer.append("Outer Start ", TEXT, faUnderline);
         buf.getTokens().stream()
-                .map(t -> new Token.Builder(t)
-                        .mergeFormattingAttributes(faUnderline)
-                        .build())
+                .map(t -> t.wrapFormattingAttributes(faUnderline))
                 .forEach(outer::append);
 
         r = f.format(outer);
@@ -114,7 +112,7 @@ public class HtmlFormatTest {
                 "<span style=\"font-weight: bold\">Bold </span>Undefined" +
                 "</span>", r);
 
-        outer.append(" Outer End", Token.Type.TEXT, faUnderline);
+        outer.append(" Outer End", TEXT, faUnderline);
 
         r = f.format(outer);
         assertEquals("<span style=\"text-decoration: underline\">Outer Start " +

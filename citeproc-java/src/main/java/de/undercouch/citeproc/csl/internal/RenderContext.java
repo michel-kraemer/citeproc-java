@@ -8,11 +8,12 @@ import de.undercouch.citeproc.csl.CSLCitationItemBuilder;
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLName;
-import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.csl.internal.rendering.SLabel;
 import de.undercouch.citeproc.csl.internal.rendering.SNameInheritableAttributes;
+import de.undercouch.citeproc.csl.internal.token.TextToken;
+import de.undercouch.citeproc.csl.internal.token.Token;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -838,40 +839,26 @@ public class RenderContext {
      * @return this render context
      */
     public RenderContext emit(String text) {
-        return emit(text, Token.Type.TEXT);
+        return emit(text, TextToken.Type.TEXT);
     }
 
     /**
-     * Emit a text token and attach the given formatting attributes to it
-     * (unless they are {code 0})
+     * Emit a text token with the given formatting attributes
      * @param text the text token
      * @param formattingAttributes the token's formatting attributes
      * @return this render context
      */
     public RenderContext emit(String text, int formattingAttributes) {
-        return emit(text, Token.Type.TEXT, formattingAttributes);
+        return emit(text, TextToken.Type.TEXT, formattingAttributes);
     }
 
     /**
-     * Emit a text token and attach the given formatting attributes and display
-     * attribute to it
-     * @param text the text token
-     * @param formattingAttributes the token's formatting attributes
-     * @param display the token's display attribute
-     * @return this render context
-     */
-    public RenderContext emit(String text, int formattingAttributes,
-            Display display) {
-        return emit(text, Token.Type.TEXT, formattingAttributes, display);
-    }
-
-    /**
-     * Emit a token of a given type
+     * Emit a text token of a given type
      * @param text the token's text
      * @param type the token's type
      * @return this render context
      */
-    public RenderContext emit(String text, Token.Type type) {
+    public RenderContext emit(String text, TextToken.Type type) {
         if (text != null) {
             result.append(text, type);
         }
@@ -879,30 +866,17 @@ public class RenderContext {
     }
 
     /**
-     * Emit a token of a given type and attach the specified formatting
-     * attributes to it (unless they are {code 0})
+     * Emit a text token of a given type and with the specified formatting
+     * attributes
      * @param text the token's text
      * @param type the token's type
      * @param formattingAttributes the token's formatting attributes
      * @return this render context
      */
-    public RenderContext emit(String text, Token.Type type, int formattingAttributes) {
-        return emit(text, type, formattingAttributes, Display.UNDEFINED);
-    }
-
-    /**
-     * Emit a token of a given type and attach the specified formatting
-     * attributes and display attribute to it
-     * @param text the token's text
-     * @param type the token's type
-     * @param formattingAttributes the token's formatting attributes
-     * @param display the token's display attribute
-     * @return this render context
-     */
-    public RenderContext emit(String text, Token.Type type,
-            int formattingAttributes, Display display) {
+    public RenderContext emit(String text, TextToken.Type type,
+            int formattingAttributes) {
         if (text != null) {
-            result.append(text, type, formattingAttributes, display);
+            result.append(text, type, formattingAttributes);
         }
         return this;
     }
@@ -928,35 +902,18 @@ public class RenderContext {
     }
 
     /**
-     * Emit all tokens from the given token buffer and append the given
-     * formatting attributes to all of them (unless they are {code 0})
+     * Emit all tokens from the given token buffer and wrap the given
+     * formatting attributes around them (unless the are {@code 0})
      * @param buffer the token buffer
      * @param formattingAttributes the formatting attributes to append
      * @return this render context
      */
     public RenderContext emit(TokenBuffer buffer, int formattingAttributes) {
-        return emit(buffer, formattingAttributes, Display.UNDEFINED);
-    }
-
-    /**
-     * Emit all tokens from the given token buffer and append the given
-     * formatting attributes (unless they are {code 0}) and display attributes
-     * (unless they equal {@link Display#UNDEFINED}) to all of them
-     * @param buffer the token buffer
-     * @param formattingAttributes the formatting attributes to append
-     * @param display the display attributes to append
-     * @return this render context
-     */
-    public RenderContext emit(TokenBuffer buffer, int formattingAttributes,
-            Display display) {
-        if (formattingAttributes == 0 && display == Display.UNDEFINED) {
+        if (formattingAttributes == 0) {
             result.append(buffer);
         } else {
             buffer.getTokens().stream()
-                    .map(t -> new Token.Builder(t)
-                            .mergeFormattingAttributes(formattingAttributes)
-                            .mergeDisplay(display)
-                            .build())
+                    .map(t -> t.wrapFormattingAttributes(formattingAttributes))
                     .forEach(result::append);
         }
         return this;

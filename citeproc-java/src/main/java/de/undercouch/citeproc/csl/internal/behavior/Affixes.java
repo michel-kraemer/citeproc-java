@@ -1,12 +1,14 @@
 package de.undercouch.citeproc.csl.internal.behavior;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
-import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
 import java.util.function.Consumer;
+
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.PREFIX;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.SUFFIX;
 
 /**
  * Wraps around a render function and adds prefixes and suffixes
@@ -40,11 +42,11 @@ public class Affixes implements Behavior {
 
         if (!child.getResult().isEmpty()) {
             if (prefix != null) {
-                ctx.emit(prefix, Token.Type.PREFIX);
+                ctx.emit(prefix, PREFIX);
             }
             ctx.emit(child.getResult());
             if (suffix != null) {
-                ctx.emit(suffix, Token.Type.SUFFIX);
+                ctx.emit(suffix, SUFFIX);
             }
         }
     }
@@ -56,10 +58,10 @@ public class Affixes implements Behavior {
     public void applyTo(TokenBuffer buffer) {
         if (!buffer.isEmpty()) {
             if (prefix != null) {
-                buffer.prepend(prefix, Token.Type.PREFIX);
+                buffer.prepend(prefix, PREFIX);
             }
             if (suffix != null) {
-                buffer.append(suffix, Token.Type.SUFFIX);
+                buffer.append(suffix, SUFFIX);
             }
         }
     }

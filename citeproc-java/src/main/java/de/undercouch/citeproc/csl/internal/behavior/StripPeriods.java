@@ -1,7 +1,8 @@
 package de.undercouch.citeproc.csl.internal.behavior;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
-import de.undercouch.citeproc.csl.internal.Token;
+import de.undercouch.citeproc.csl.internal.token.TextToken;
+import de.undercouch.citeproc.csl.internal.token.Token;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
@@ -44,14 +45,15 @@ public class StripPeriods implements Behavior {
     }
 
     /**
-     * Removes all periods from a token's text
+     * Remove all periods from a token's text
      * @param t the token
      * @return the new token with periods removed
      */
     private Token transform(Token t) {
-        String s = StringUtils.remove(t.getText(), '.');
-        return new Token.Builder(t)
-                .text(s)
-                .build();
+        if (t instanceof TextToken) {
+            TextToken tt = (TextToken)t;
+            return tt.copyWithText(StringUtils.remove(tt.getText(), '.'));
+        }
+        return t;
     }
 }

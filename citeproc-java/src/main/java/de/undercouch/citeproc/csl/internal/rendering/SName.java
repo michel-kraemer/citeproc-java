@@ -7,6 +7,7 @@ import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
+import de.undercouch.citeproc.csl.internal.token.TextToken;
 import de.undercouch.citeproc.helper.NodeHelper;
 import de.undercouch.citeproc.helper.StringHelper;
 import org.w3c.dom.Node;
@@ -16,9 +17,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static de.undercouch.citeproc.csl.internal.Token.Type.DELIMITER;
-import static de.undercouch.citeproc.csl.internal.Token.Type.SUFFIX;
-import static de.undercouch.citeproc.csl.internal.Token.Type.TEXT;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.DELIMITER;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.SUFFIX;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.TEXT;
 
 /**
  * A name element from a style file

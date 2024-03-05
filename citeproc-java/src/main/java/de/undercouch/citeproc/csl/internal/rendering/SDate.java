@@ -2,9 +2,10 @@ package de.undercouch.citeproc.csl.internal.rendering;
 
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.internal.RenderContext;
-import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.locale.LDate;
+import de.undercouch.citeproc.csl.internal.token.TextToken;
+import de.undercouch.citeproc.csl.internal.token.Token;
 import de.undercouch.citeproc.helper.NodeHelper;
 import de.undercouch.citeproc.helper.time.AnyDateParser;
 import org.apache.commons.lang3.ArrayUtils;
@@ -15,6 +16,9 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
+
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.PREFIX;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.SUFFIX;
 
 /**
  * A date element from a style file
@@ -231,24 +235,36 @@ public class SDate implements SRenderingElement {
             // append all tokens from the first buffer to the result but trim
             // the last suffix
             List<Token> leftTokens = left.getResult().getTokens();
-            for (int i = 0; i < leftTokens.size(); ++i) {
-                Token t = leftTokens.get(i);
-                if (i < leftTokens.size() - 1 || t.getType() != Token.Type.SUFFIX) {
-                    result.emit(t);
+            for (int i = leftTokens.size(); i > 0; --i) {
+                Token t = leftTokens.get(i - 1);
+                if (t instanceof TextToken) {
+                    if (((TextToken)t).getType() == SUFFIX) {
+                        leftTokens.remove(i - 1);
+                    }
+                    break;
                 }
+            }
+            for (Token t : leftTokens) {
+                result.emit(t);
             }
 
             // render en-dash
-            result.emit("\u2013");
+            result.emit("–");
 
             // append all tokens from the second buffer to the result but trim
             // the first prefix
             List<Token> rightTokens = right.getResult().getTokens();
             for (int i = 0; i < rightTokens.size(); ++i) {
                 Token t = rightTokens.get(i);
-                if (i > 0 || t.getType() != Token.Type.PREFIX) {
-                    result.emit(t);
+                if (t instanceof TextToken) {
+                    if (((TextToken)t).getType() == PREFIX) {
+                        rightTokens.remove(i);
+                    }
+                    break;
                 }
+            }
+            for (Token t : rightTokens) {
+                result.emit(t);
             }
         } else if (!left.getResult().isEmpty()) {
             // second buffer is empty. only render the first one.

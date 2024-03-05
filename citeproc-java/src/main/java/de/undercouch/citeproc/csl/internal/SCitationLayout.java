@@ -9,6 +9,10 @@ import org.w3c.dom.Node;
 
 import java.util.regex.Pattern;
 
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.DELIMITER;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.PREFIX;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.SUFFIX;
+
 /**
  * A layout element inside a citation element in a style file
  * @author Michel Kraemer
@@ -47,7 +51,7 @@ public class SCitationLayout extends SRenderingElementContainerElement {
             super.render(innerTmp);
 
             if (delimiter != null && !tmp.getResult().isEmpty()) {
-                tmp.emit(delimiter, Token.Type.DELIMITER);
+                tmp.emit(delimiter, DELIMITER);
             }
 
             if (item.getPrefix() != null) {
@@ -55,7 +59,7 @@ public class SCitationLayout extends SRenderingElementContainerElement {
                 if (needsAppendSpace(prefix)) {
                     prefix = TRIM_END.matcher(prefix).replaceAll("") + " ";
                 }
-                tmp.emit(prefix, Token.Type.PREFIX);
+                tmp.emit(prefix, PREFIX);
             }
 
             tmp.emit(innerTmp.getResult());
@@ -65,7 +69,7 @@ public class SCitationLayout extends SRenderingElementContainerElement {
                 if (needsPrependSpace(suffix)) {
                     suffix = " " + suffix;
                 }
-                tmp.emit(suffix, Token.Type.SUFFIX);
+                tmp.emit(suffix, SUFFIX);
             }
         }
         ctx.emit(tmp.getResult(), formattingAttributes);

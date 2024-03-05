@@ -1,7 +1,8 @@
 package de.undercouch.citeproc.csl.internal.behavior;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
-import de.undercouch.citeproc.csl.internal.Token;
+import de.undercouch.citeproc.csl.internal.token.TextToken;
+import de.undercouch.citeproc.csl.internal.token.Token;
 import de.undercouch.citeproc.helper.NodeHelper;
 import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -42,9 +43,11 @@ public class TextCase implements Behavior {
      * @return the new token with the transformed text
      */
     private Token transform(Token t, RenderContext ctx) {
-        return new Token.Builder(t)
-                .text(applyTo(t.getText(), ctx))
-                .build();
+        if (t instanceof TextToken) {
+            TextToken tt = (TextToken)t;
+            return tt.copyWithText(applyTo(tt.getText(), ctx));
+        }
+        return t;
     }
 
     /**

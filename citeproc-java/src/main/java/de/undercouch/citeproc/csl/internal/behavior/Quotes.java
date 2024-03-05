@@ -1,11 +1,13 @@
 package de.undercouch.citeproc.csl.internal.behavior;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
-import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.helper.NodeHelper;
 import org.w3c.dom.Node;
 
 import java.util.function.Consumer;
+
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.CLOSE_QUOTE;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.OPEN_QUOTE;
 
 /**
  * Wraps around a render function and adds quotation marks
@@ -30,12 +32,12 @@ public class Quotes implements Behavior {
 
             if (!tmp.getResult().isEmpty()) {
                 String openQuote = ctx.getTerm("open-quote");
-                ctx.emit(openQuote, Token.Type.OPEN_QUOTE);
+                ctx.emit(openQuote, OPEN_QUOTE);
 
                 ctx.emit(tmp.getResult());
 
                 String closeQuote = ctx.getTerm("close-quote");
-                ctx.emit(closeQuote, Token.Type.CLOSE_QUOTE);
+                ctx.emit(closeQuote, CLOSE_QUOTE);
             }
         } else {
             renderFunction.accept(ctx);

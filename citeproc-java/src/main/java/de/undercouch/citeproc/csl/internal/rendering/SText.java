@@ -5,10 +5,8 @@ import de.undercouch.citeproc.bibtex.PageRange;
 import de.undercouch.citeproc.bibtex.PageRanges;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SMacro;
-import de.undercouch.citeproc.csl.internal.Token;
 import de.undercouch.citeproc.csl.internal.VariableForm;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
-import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.Quotes;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
@@ -20,6 +18,10 @@ import de.undercouch.citeproc.helper.PageRangeFormatter;
 import org.w3c.dom.Node;
 
 import java.util.List;
+
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.DOI;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.TEXT;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.URL;
 
 /**
  * A text element from a style file
@@ -35,7 +37,6 @@ public class SText implements SRenderingElement {
     private final Quotes quotes;
     private final TextCase textCase;
     private final int formattingAttributes;
-    private final Display display;
 
     /**
      * Creates the text element from an XML node
@@ -50,7 +51,6 @@ public class SText implements SRenderingElement {
         quotes = new Quotes(node);
         textCase = new TextCase(node);
         formattingAttributes = FormattingAttributes.of(node);
-        display = Display.of(node);
 
         String form = NodeHelper.getAttrValue(node, "form");
         if (form == null) {
@@ -100,16 +100,14 @@ public class SText implements SRenderingElement {
             int i = 0;
             for (PageRange r : prs) {
                 if (i > 0) {
-                    ctx.emit(", ", Token.Type.TEXT,
-                            formattingAttributes, display);
+                    ctx.emit(", ", TEXT, formattingAttributes);
                 }
                 ctx.emit(PageRangeFormatter.format(r, format, delimiter),
-                        Token.Type.TEXT, formattingAttributes, display);
+                        TEXT, formattingAttributes);
                 ++i;
             }
         } else {
-            ctx.emit(page.replace("-", delimiter), Token.Type.TEXT,
-                    formattingAttributes, display);
+            ctx.emit(page.replace("-", delimiter), TEXT, formattingAttributes);
         }
     }
 
@@ -136,42 +134,38 @@ public class SText implements SRenderingElement {
                             if (i > 0 && lastLabel != null && e.getLabel() != null) {
                                 lastLabel.render(ctx, i);
                             }
-                            ctx.emit(e.getText(), Token.Type.TEXT,
-                                    formattingAttributes, display);
+                            ctx.emit(e.getText(), TEXT, formattingAttributes);
                         }
                         break;
                     }
 
                     case "DOI":
-                        ctx.emit(v, Token.Type.DOI,
-                                formattingAttributes, display);
+                        ctx.emit(v, DOI, formattingAttributes);
                         break;
 
                     case "URL":
-                        ctx.emit(v, Token.Type.URL,
-                                formattingAttributes, display);
+                        ctx.emit(v, URL, formattingAttributes);
                         break;
 
                     default:
-                        ctx.emit(v, Token.Type.TEXT,
-                                formattingAttributes, display);
+                        ctx.emit(v, TEXT, formattingAttributes);
                         break;
                 }
             }
         } else if (macro != null && !macro.isEmpty()) {
             SMacro sm = ctx.getMacro(macro);
-            if (formattingAttributes == 0 && display == Display.UNDEFINED) {
+            if (formattingAttributes == 0) {
                 sm.render(ctx);
             } else {
                 RenderContext tmp = new RenderContext(ctx);
                 sm.render(tmp);
-                ctx.emit(tmp.getResult(), formattingAttributes, display);
+                ctx.emit(tmp.getResult(), formattingAttributes);
             }
         } else if (term != null && !term.isEmpty()) {
             ctx.emit(ctx.getTerm(term, LTerm.Form.fromString(form)),
-                    formattingAttributes, display);
+                    formattingAttributes);
         } else if (value != null) {
-            ctx.emit(value, formattingAttributes, display);
+            ctx.emit(value, formattingAttributes);
         }
     }
 }
