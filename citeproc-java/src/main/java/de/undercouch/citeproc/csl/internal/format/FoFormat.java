@@ -3,7 +3,7 @@ package de.undercouch.citeproc.csl.internal.format;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SBibliography;
 import de.undercouch.citeproc.csl.internal.TokenBuffer;
-import de.undercouch.citeproc.csl.internal.behavior.Display;
+import de.undercouch.citeproc.csl.internal.token.DisplayGroupToken;
 import de.undercouch.citeproc.output.Bibliography;
 import de.undercouch.citeproc.output.SecondFieldAlign;
 import org.apache.commons.text.StringEscapeUtils;
@@ -163,8 +163,8 @@ public class FoFormat extends BaseFormat {
     }
 
     @Override
-    protected String openDisplay(Display display) {
-        switch (display) {
+    protected String openDisplayGroup(DisplayGroupToken.Type type) {
+        switch (type) {
             case BLOCK:
                 return "\n  <fo:block>";
 
@@ -192,8 +192,8 @@ public class FoFormat extends BaseFormat {
     }
 
     @Override
-    protected String closeDisplay(Display display) {
-        switch (display) {
+    protected String closeDisplayGroup(DisplayGroupToken.Type type) {
+        switch (type) {
             case BLOCK:
             case INDENT:
                 return "</fo:block>\n";

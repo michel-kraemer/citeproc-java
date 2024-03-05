@@ -1,11 +1,11 @@
 package de.undercouch.citeproc.csl.internal.format;
 
 import de.undercouch.citeproc.csl.internal.RenderContext;
+import de.undercouch.citeproc.csl.internal.TokenBuffer;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
+import de.undercouch.citeproc.csl.internal.token.DisplayGroupToken;
 import de.undercouch.citeproc.csl.internal.token.TextToken;
 import de.undercouch.citeproc.csl.internal.token.Token;
-import de.undercouch.citeproc.csl.internal.TokenBuffer;
-import de.undercouch.citeproc.csl.internal.behavior.Display;
-import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.helper.SmartQuotes;
 import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -454,7 +454,18 @@ abstract public class BaseFormat implements Format {
                 openFormattingAttribute(f.getKey(), f.getValue(), result);
             }
 
-            if (t instanceof TextToken) {
+            if (t instanceof DisplayGroupToken) {
+                DisplayGroupToken dgt = (DisplayGroupToken)t;
+                String str;
+                if (dgt.isOpen()) {
+                    str = openDisplayGroup(dgt.getType());
+                } else {
+                    str = closeDisplayGroup(dgt.getType());
+                }
+                if (str != null) {
+                    result.append(str);
+                }
+            } else if (t instanceof TextToken) {
                 TextToken tt = (TextToken)t;
                 if (convertLinks && (tt.getType() == TextToken.Type.URL ||
                         tt.getType() == TextToken.Type.DOI)) {
@@ -645,20 +656,20 @@ abstract public class BaseFormat implements Format {
     }
 
     /**
-     * Generate text that enables the given display attribute
-     * @param display the display attribute to enable
+     * Generate text that opens a display group
+     * @param type the type of the display group to open
      * @return the generated text or {@code null}
      */
-    protected String openDisplay(Display display) {
+    protected String openDisplayGroup(DisplayGroupToken.Type type) {
         return null;
     }
 
     /**
-     * Generate text that disables the given display attribute
-     * @param display the display attribute to disable
+     * Generate text that closes a display group
+     * @param type the type of the display group to close
      * @return the generated text or {@code null}
      */
-    protected String closeDisplay(Display display) {
+    protected String closeDisplayGroup(DisplayGroupToken.Type type) {
         return null;
     }
 }

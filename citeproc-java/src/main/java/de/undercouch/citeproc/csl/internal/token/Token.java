@@ -47,7 +47,7 @@ public abstract class Token {
     public abstract Token wrapFormattingAttributes(int otherFormattingAttributes);
 
     /**
-     * Creates a copy of this token but replaces its first-field flag
+     * Create a copy of this token but replaces its first-field flag
      * @param firstField the new first-field flag
      * @return the copied token
      */

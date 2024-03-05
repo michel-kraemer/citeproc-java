@@ -7,6 +7,7 @@ import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SMacro;
 import de.undercouch.citeproc.csl.internal.VariableForm;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.Display;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.Quotes;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
@@ -33,6 +34,7 @@ public class SText implements SRenderingElement {
     private final String term;
     private final String form;
     private final String value;
+    private final Display display;
     private final Affixes affixes;
     private final Quotes quotes;
     private final TextCase textCase;
@@ -47,6 +49,7 @@ public class SText implements SRenderingElement {
         macro = NodeHelper.getAttrValue(node, "macro");
         term = NodeHelper.getAttrValue(node, "term");
         value = NodeHelper.getAttrValue(node, "value");
+        display = new Display(node);
         affixes = new Affixes(node);
         quotes = new Quotes(node);
         textCase = new TextCase(node);
@@ -61,7 +64,7 @@ public class SText implements SRenderingElement {
 
     @Override
     public void render(RenderContext ctx) {
-        affixes.wrap(quotes.wrap(textCase.wrap(this::renderInternal))).accept(ctx);
+        display.wrap(affixes.wrap(quotes.wrap(textCase.wrap(this::renderInternal)))).accept(ctx);
     }
 
     private void renderPage(String page, RenderContext ctx) {

@@ -1,0 +1,115 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <locale>
+      <style-options punctuation-in-quote="true"/>
+    </locale>
+    <bibliography>
+      <layout>
+        <text variable="title" quotes="true"/>
+        <text variable="title" prefix=". "/>
+        <text value=" | " />
+        <text variable="title" suffix=". "/>
+        <text variable="title" prefix=". "/>
+        <text value=" | " />
+        <text variable="title" suffix="."/>
+        <text variable="title" prefix=". "/>
+        <text value=" | " />
+        <group display="block">
+          <text variable="title" quotes="true"/>
+        </group>
+        <text variable="title" prefix=". "/>
+        <text value=" | " />
+        <group display="block">
+          <text variable="title" suffix=". "/>
+        </group>
+        <text variable="title" prefix=". "/>
+        <text value=" | " />
+        <group display="block">
+          <text variable="title" suffix="."/>
+        </group>
+        <text variable="title" prefix=". "/>
+        <text value=" | " />
+        <group display="block">
+          <group display="block">
+            <text variable="title" quotes="true"/>
+          </group>
+        </group>
+        <text value=" | " />
+        <group display="block">
+          <group display="indent">
+            <text variable="title" quotes="true"/>
+          </group>
+        </group>
+        <text value=" | " />
+          <group display="block">
+            <group display="indent">
+              <group display="block">
+                <text variable="title" quotes="true"/>
+              </group>
+            </group>
+          </group>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    title: title
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">&ldquo;title.&rdquo; title | title. title | title. title | 
+    
+        <div class="csl-block">&ldquo;title.&rdquo;</div>
+     title | 
+    
+        <div class="csl-block">title. </div>
+    title | 
+    
+        <div class="csl-block">title.</div>
+     title | 
+    
+        <div class="csl-block">
+    
+        <div class="csl-block">&ldquo;title&rdquo;</div>
+    </div>
+     | 
+    
+        <div class="csl-block"><div class="csl-indent">&ldquo;title&rdquo;</div>
+      </div>
+     | 
+    
+        <div class="csl-block"><div class="csl-indent">
+    
+        <div class="csl-block">&ldquo;title&rdquo;</div>
+    </div>
+      </div>
+    </div>
+    </div>
+
+resultLegacy:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">“title.” title | title. . title | title. title | 
+    
+        <div class="csl-block">“title.”</div>
+     title | 
+    
+        <div class="csl-block">title. .</div>
+     title | 
+    
+        <div class="csl-block">title.</div>
+     title | 
+    
+        <div class="csl-block">“title”</div>
+     | 
+    
+        <div class="csl-block">“title”</div>
+     | 
+    
+        <div class="csl-block">“title”</div>
+    </div>
+    </div>

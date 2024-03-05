@@ -3,7 +3,7 @@ package de.undercouch.citeproc.csl.internal.token;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 
 /**
- * Base class for all text tokens
+ * A token that renders to text
  * @author Michel Kraemer
  */
 public class TextToken extends Token {
@@ -111,7 +111,7 @@ public class TextToken extends Token {
     }
 
     /**
-     * Creates a copy of this token but replaces its text
+     * Create a copy of this token but replaces its text
      * @param text the new text
      * @return the copied token with new text
      */

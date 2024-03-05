@@ -1,0 +1,40 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout suffix=".">
+        <group display="block">
+          <text variable="title" />
+          <text value=" - " />
+          <text variable="title" font-style="italic"/>
+        </group>
+        <text variable="title" font-style="italic"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: That is my title!
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">
+    
+        <div class="csl-block">That is my title! - <span style="font-style: italic">That is my title!</span></div>
+    <span style="font-style: italic">That is my title!</span></div>
+    </div>
+
+resultLegacy:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry">
+    
+        <div class="csl-block">That is my title! - <i>That is my title!</i></div>
+    <i>That is my title!</i>.</div>
+    </div>

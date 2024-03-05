@@ -18,10 +18,10 @@ import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.DELIMITER
  * @author Michel Kraemer
  */
 public class SGroup extends SRenderingElementContainerElement implements SRenderingElement {
+    private final Display display;
     private final Affixes affixes;
     private final int formattingAttributes;
     private final String delimiter;
-    private final Display display;
 
     /**
      * Creates the group from an XML node
@@ -30,14 +30,14 @@ public class SGroup extends SRenderingElementContainerElement implements SRender
     public SGroup(Node node) {
         super(node);
         affixes = new Affixes(node);
+        display = new Display(node);
         formattingAttributes = FormattingAttributes.of(node);
         delimiter = NodeHelper.getAttrValue(node, "delimiter");
-        display = Display.of(node);
     }
 
     @Override
     public void render(RenderContext ctx) {
-        affixes.accept(this::renderInternal, ctx);
+        display.wrap(affixes.wrap(this::renderInternal)).accept(ctx);
     }
 
     private void renderInternal(RenderContext ctx) {
