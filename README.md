@@ -71,8 +71,8 @@ Lowry, O. H., Rosebrough, N. J., Farr, A. L., &amp; Randall, R. J. (1951). Prote
 
 </td></tr></table>
 
-Using the library for development
----------------------------------
+Dependencies
+------------
 
 To use citeproc-java, you need three things: the library itself, the CSL styles, and the CSL locales. The styles and locales are distributed separately, because they are updated more frequently than citeproc-java.
 
