@@ -14,7 +14,7 @@
 citeproc-java is a [Citation Style Language (CSL)](http://citationstyles.org/) processor for Java.<br>
 It interprets CSL styles and generates citations and bibliographies.
 
-<br>
+
 </b>
 </p>
 </div>
@@ -25,12 +25,6 @@ It interprets CSL styles and generates citations and bibliographies.
 
 <br>
 </div>
-
-**Additional features:**
-
-* Support for various output formats such as `html`, `text`, `asciidoc`, `rtf`, and `fo`.
-* Importers for BibTeX, EndNote, and RIS: create citations and bibliographies from your existing citation databases.
-* Command line tool to execute the library without setting up a development environment. This is great for testing, in particular if you are a CSL style author and want to quickly test your style files.
 
 Quick start
 -----------
@@ -71,6 +65,15 @@ Lowry, O. H., Rosebrough, N. J., Farr, A. L., &amp; Randall, R. J. (1951). Prote
 
 </td></tr></table>
 
+Features
+--------
+
+* Generates citations and bibliographies
+* Supports 10000+ citation styles and various locales
+* Different output formats such as `html`, `text`, `asciidoc`, `rtf`, and `fo`
+* Importers for BibTeX, EndNote, and RIS
+* Command-line tool to execute the library without setting up a development environment
+
 Dependencies
 ------------
 
@@ -106,18 +109,6 @@ And here's the configuration for [Maven](http://maven.apache.org/):
     <version>23.11</version>
   </dependency>
 </dependencies>
-```
-
-Downloading the command line tool
----------------------------------
-
-citeproc-java binaries are available from the [GitHub releases page](https://github.com/michel-kraemer/citeproc-java/releases).
-
-On macOS, you can install the command line tool with [Homebrew](http://brew.sh/).
-
-```sh
-brew tap michel-kraemer/citeproc-java
-brew install citeproc-java
 ```
 
 Usage
@@ -239,7 +230,15 @@ citeproc.setOutputFormat("html");
 Command-line tool
 -----------------
 
-The [binary bundle](https://github.com/michel-kraemer/citeproc-java/releases) of citeproc-java contains a command-line tool that you can use to execute the library without setting up a full development environment. The tool allows you to easily create citations and bibliographies. In particular, it comes in very handy if ...
+citeproc-java binaries are available from the [GitHub releases page](https://github.com/michel-kraemer/citeproc-java/releases). On macOS, you can install the command line tool with [Homebrew](http://brew.sh/).
+
+```sh
+brew tap michel-kraemer/citeproc-java
+brew install citeproc-java
+```
+
+
+With the command-line tool, can use citeproc-java without setting up a full development environment. The tool allows you to easily create citations and bibliographies. In particular, it comes in handy if ...
 
 * you are an author using CSL and you want a quick way to preview your citations or bibliographies, or if
 * you are a CSL style author and want to test your style files.
