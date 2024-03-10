@@ -43,7 +43,7 @@ CSLItemData item = new CSLItemDataBuilder()
     .containerTitle("The Journal of biological chemistry")
     .volume(193)
     .issue(1)
-    .page("265-275")
+    .page(265, 275)
     .build();
 
 String bibl = CSL.makeAdhocBibliography("apa", item).makeString();
