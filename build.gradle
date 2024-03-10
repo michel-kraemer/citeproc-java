@@ -17,8 +17,8 @@ subprojects {
 
     group = rootProject.group
     version = rootProject.version
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
 
     repositories {
         mavenCentral()
@@ -36,19 +36,19 @@ subprojects {
         // exclude internal packages
         exclude '**/internal/**'
         
-        // link to Java 8 documentation
+        // link to Java 11 documentation
         options.author true
-        options.links 'https://docs.oracle.com/javase/8/docs/api/'
-        options.source '8' // Java version
+        options.links 'https://docs.oracle.com/en/java/javase/11/docs/api/'
+        options.source '11' // Java version
     }
-    
+
     // package javadoc and sources
     java {
         withJavadocJar()
         withSourcesJar()
     }
 
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).configureEach {
         options.compilerArgs << '-Xlint:unchecked'
         options.deprecation = true
     }
