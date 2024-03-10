@@ -48,7 +48,6 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals("7", cid.getNumber());
         assertEquals("11", cid.getNumberOfPages());
         assertEquals("365-375", cid.getPage());
-        assertEquals("365", cid.getPageFirst());
         assertEquals("The UNIX Time-Sharing System", cid.getTitle());
         assertArrayEquals(new int[][] { new int[] { 1974, 7 } }, cid.getIssued().getDateParts());
     }
@@ -75,7 +74,6 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals("6", cid.getNumber());
         assertEquals("15", cid.getNumberOfPages());
         assertEquals("2087-2101", cid.getPage());
-        assertEquals("2087", cid.getPageFirst());
         assertEquals("UNIX Time-Sharing System: UNIX on a Microprocessor", cid.getTitle());
         assertArrayEquals(new int[][] { new int[] { 1978, 7 }, new int[] { 1978, 8 } }, cid.getIssued().getDateParts());
     }
@@ -104,7 +102,6 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals("7", cid.getNumber());
         assertEquals("11", cid.getNumberOfPages());
         assertEquals("365-375", cid.getPage());
-        assertEquals("365", cid.getPageFirst());
         assertEquals("The UNIX Time-Sharing System", cid.getTitle());
         assertArrayEquals(new int[][] { new int[] { 1974, 7 } }, cid.getIssued().getDateParts());
     }
@@ -206,7 +203,6 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals(2021, item.getIssued().getDateParts()[0][0]);
         assertEquals("Springer International Publishing", item.getPublisher());
         assertEquals("Cham", item.getPublisherPlace());
-        assertEquals("32", item.getPageFirst());
         assertEquals("978-3-030-83014-4", item.getISBN());
         assertEquals("10.1007/978-3-030-83014-4_2", item.getDOI());
     }

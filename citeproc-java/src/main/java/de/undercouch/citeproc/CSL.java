@@ -1331,9 +1331,6 @@ public class CSL {
         if (b.getPage() != null && Objects.equals(a.getPage(), b.getPage())) {
             return true;
         }
-        if (b.getPageFirst() != null && Objects.equals(a.getPageFirst(), b.getPageFirst())) {
-            return true;
-        }
         if (b.getPMCID() != null && Objects.equals(a.getPMCID(), b.getPMCID())) {
             return true;
         }

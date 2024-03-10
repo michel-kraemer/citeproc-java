@@ -453,8 +453,7 @@ public class RenderContext {
                     result = itemData.getPage();
                     break;
                 case "page-first":
-                    result = itemData.getPageFirst();
-                    if (result == null && itemData.getPage() != null) {
+                    if (itemData.getPage() != null) {
                         result = PageParser.parse(itemData.getPage()).getPageFirst();
                     }
                     break;

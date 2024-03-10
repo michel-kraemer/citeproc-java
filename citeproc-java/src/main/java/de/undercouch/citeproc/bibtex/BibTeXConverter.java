@@ -289,7 +289,6 @@ public class BibTeXConverter {
         if (pages != null) {
             PageRanges ranges = PageParser.parse(pages);
             builder.page(ranges.getLiteral());
-            builder.pageFirst(ranges.getPageFirst());
             Integer numberOfPages = ranges.getNumberOfPages();
             if (numberOfPages != null) {
                 builder.numberOfPages(String.valueOf(numberOfPages));
