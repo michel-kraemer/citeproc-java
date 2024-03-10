@@ -11,10 +11,10 @@ import java.io.File;
  * @author Michel Kraemer
  */
 public class CSLToolContext {
-    private static ThreadLocal<CSLToolContext> current = new ThreadLocal<>();
+    private static final ThreadLocal<CSLToolContext> current = new ThreadLocal<>();
     private String toolName;
     private File configDir;
-    private BibliographyFileReader bibReader = new CachingBibliographyFileReader();
+    private final BibliographyFileReader bibReader = new CachingBibliographyFileReader();
 
     private CSLToolContext() {
         // hidden constructor

@@ -15,7 +15,6 @@ import de.undercouch.underline.OptionParserException;
 import de.undercouch.underline.UnknownAttributes;
 
 import java.beans.IntrospectionException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,7 @@ public class ShellHelpCommand extends AbstractCSLToolCommand {
 
     @Override
     public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
-            throws OptionParserException, IOException {
+            throws OptionParserException {
         Class<? extends Command> cmdClass;
 
         String[] args = commands.toArray(new String[0]);

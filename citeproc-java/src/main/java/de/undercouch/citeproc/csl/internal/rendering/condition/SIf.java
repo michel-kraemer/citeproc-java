@@ -249,7 +249,7 @@ public class SIf extends SCondition {
                     // the preceding citation consists of a single cite
                     // referencing the same item.
                     List<GeneratedCitation> gcs = ctx.getGeneratedCitations();
-                    if (gcs != null && gcs.size() > 0) {
+                    if (gcs != null && !gcs.isEmpty()) {
                         CSLCitationItem[] gcis = gcs.get(gcs.size() - 1)
                                 .getPrepared().getCitationItems();
                         return gcis.length == 1 && gcis[0].getId().equals(currentItem.getId());

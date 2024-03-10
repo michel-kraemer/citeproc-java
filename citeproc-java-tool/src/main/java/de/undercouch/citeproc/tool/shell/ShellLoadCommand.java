@@ -5,7 +5,6 @@ import de.undercouch.citeproc.BibliographyFileReader.FileFormat;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 import de.undercouch.citeproc.tool.CSLToolContext;
 import de.undercouch.underline.InputReader;
-import de.undercouch.underline.OptionParserException;
 import de.undercouch.underline.UnknownAttributes;
 
 import java.io.File;
@@ -79,8 +78,7 @@ public class ShellLoadCommand extends AbstractCSLToolCommand {
     }
 
     @Override
-    public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
-            throws OptionParserException, IOException {
+    public int doRun(String[] remainingArgs, InputReader in, PrintWriter out) {
         // load the bibliography file now. use the common instance of
         // BibliographyFileReader in order to enable caching
         String fn = files.get(0);

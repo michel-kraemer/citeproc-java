@@ -9,7 +9,7 @@ public enum $name {
         toEnum.call(t) + '("' + t+ '")'
     }).join(',') %>;
     
-    private String name;
+    private final String name;
     
     $name(String name) {
         this.name = name;

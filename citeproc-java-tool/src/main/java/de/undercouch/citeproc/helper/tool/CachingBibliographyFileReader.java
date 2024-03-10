@@ -19,7 +19,7 @@ import java.util.Map;
  * @author Michel Kraemer
  */
 public class CachingBibliographyFileReader extends BibliographyFileReader {
-    private Map<String, SoftReference<ItemDataProvider>> cache = new HashMap<>();
+    private final Map<String, SoftReference<ItemDataProvider>> cache = new HashMap<>();
 
     @Override
     public ItemDataProvider readBibliographyFile(File bibfile) throws IOException {

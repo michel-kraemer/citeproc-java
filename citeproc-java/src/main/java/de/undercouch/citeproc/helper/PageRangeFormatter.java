@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author Michel Kraemer
  */
 public class PageRangeFormatter {
-    public static final String DEFAULT_DELIMITER = "\u2013";
+    public static final String DEFAULT_DELIMITER = "–";
 
     public enum Format {
         CHICAGO15,

@@ -25,7 +25,7 @@ public class ToolUtils {
         StringBuilder message = null;
 
         Collection<String> mins = Levenshtein.findSimilar(available, it);
-        if (mins.size() > 0) {
+        if (!mins.isEmpty()) {
             message = new StringBuilder();
             if (mins.size() == 1) {
                 message.append("Did you mean this?");

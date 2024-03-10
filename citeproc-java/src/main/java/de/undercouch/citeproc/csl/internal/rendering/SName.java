@@ -7,7 +7,6 @@ import de.undercouch.citeproc.csl.internal.TokenBuffer;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
 import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.TextCase;
-import de.undercouch.citeproc.csl.internal.token.TextToken;
 import de.undercouch.citeproc.helper.NodeHelper;
 import de.undercouch.citeproc.helper.StringHelper;
 import org.w3c.dom.Node;

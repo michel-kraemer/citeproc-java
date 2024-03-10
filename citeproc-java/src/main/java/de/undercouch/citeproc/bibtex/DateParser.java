@@ -102,11 +102,11 @@ public class DateParser {
         // individually and merge them afterwards
         String[] ms = null;
         if (month != null) {
-            ms = month.split("-+|\u2013+");
+            ms = month.split("-+|–+");
         }
         String[] ys = null;
         if (year != null) {
-            ys = year.split("-+|\u2013+");
+            ys = year.split("-+|–+");
         }
 
         if (ys != null && ys.length > 1) {
@@ -268,10 +268,10 @@ public class DateParser {
     }
 
     /**
-     * Retrieves and caches a list of month names for a given locale
+     * Retrieves and caches a map of month names and numbers for a given locale
      * @param locale the locale
-     * @return the list of month names (short and long). All names are
-     * converted to upper case
+     * @return the map of month names (short and long) and the corresponding
+     * month numbers. All names are converted to upper case.
      */
     private static Map<String, Integer> getMonthNames(Locale locale) {
         Map<String, Integer> r = MONTH_NAMES_CACHE.get(locale);

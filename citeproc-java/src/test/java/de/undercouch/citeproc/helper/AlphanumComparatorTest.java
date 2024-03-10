@@ -19,6 +19,7 @@ public class AlphanumComparatorTest {
      * Test the {@link AlphanumComparator#compare(CharSequence, CharSequence)} method
      */
     @Test
+    @SuppressWarnings("EqualsWithItself")
     public void compare() {
         AlphanumComparator c = new AlphanumComparator(new Locale("es"));
 

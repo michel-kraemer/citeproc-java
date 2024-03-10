@@ -240,7 +240,7 @@ public class FixturesTest {
      * Get all test files
      */
     @Parameterized.Parameters(name = "{0}, {1}, {2}")
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "DataFlowIssue"})
     public static Iterable<Object[]> data() {
         URL fixturesUrl = FixturesTest.class.getResource(FIXTURES_DIR);
         URL testSuiteUrl = FixturesTest.class.getResource(TEST_SUITE_DIR);
@@ -395,13 +395,15 @@ public class FixturesTest {
         ItemDataProvider result = bibliographyFileCache.get(filename);
         if (result == null) {
             BibTeXDatabase db;
-            try (InputStream is = FixturesTest.class.getResourceAsStream(filename);
-                 BufferedInputStream bis = new BufferedInputStream(is)) {
-                InputStream tis = bis;
-                if (filename.endsWith(".gz")) {
-                    tis = new GZIPInputStream(bis);
+            try (InputStream is = FixturesTest.class.getResourceAsStream(filename)) {
+                assert is != null;
+                try (BufferedInputStream bis = new BufferedInputStream(is)) {
+                    InputStream tis = bis;
+                    if (filename.endsWith(".gz")) {
+                        tis = new GZIPInputStream(bis);
+                    }
+                    db = new BibTeXConverter().loadDatabase(tis);
                 }
-                db = new BibTeXConverter().loadDatabase(tis);
             } catch (ParseException e) {
                 throw new IOException(e);
             }

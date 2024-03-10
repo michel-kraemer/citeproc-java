@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Command line tool for the CSL processor. Use <code>citeproc-java --help</code>
@@ -136,7 +137,7 @@ public class CSLTool extends AbstractCSLToolCommand {
 
         // prepare output
         if (outputFile != null) {
-            out = new PrintWriter(outputFile, "UTF-8");
+            out = new PrintWriter(outputFile, StandardCharsets.UTF_8);
         }
 
         try {

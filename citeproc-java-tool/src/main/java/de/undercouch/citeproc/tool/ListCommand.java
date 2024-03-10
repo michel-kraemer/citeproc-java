@@ -3,7 +3,6 @@ package de.undercouch.citeproc.tool;
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.underline.InputReader;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,8 +29,7 @@ public class ListCommand extends AbstractCSLToolCommand implements ProviderComma
     }
 
     @Override
-    public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
-            throws IOException {
+    public int doRun(String[] remainingArgs, InputReader in, PrintWriter out) {
         // list available citation ids and exit
         List<String> ids = new ArrayList<>(getProvider().getIds());
         Collections.sort(ids);

@@ -171,8 +171,9 @@ public class CSLTest {
 
         String bibl = CSL.makeAdhocBibliography("ieee", "text", item).makeString();
         assertEquals("[1]M. Krämer, “citeproc-java: A Citation Style "
-                + "Language (CSL) processor for Java,” Sep. 07, 2013. "
-                + "http://michel-kraemer.github.io/citeproc-java/ (accessed Dec. 06, 2013).\n", bibl);
+                + "Language (CSL) processor for Java.” "
+                + "Accessed: Dec. 06, 2013. [Online]. Available: "
+                + "http://michel-kraemer.github.io/citeproc-java/\n", bibl);
     }
 
     /**
@@ -236,7 +237,6 @@ public class CSLTest {
                 .accessed(2013, 9, 11)
                 .build();
 
-
         CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee");
         citeproc.setOutputFormat("html");
 
@@ -248,13 +248,13 @@ public class CSLTest {
         assertEquals(1, b.getEntries().length);
 
         String expectedAuthorTitle = "M. Kr&auml;mer, &ldquo;citeproc-java: " +
-                "A Citation Style Language (CSL) processor for Java,&rdquo;";
+                "A Citation Style Language (CSL) processor for Java.&rdquo;";
         assertEquals("  <div class=\"csl-entry\">\n" +
                 "    <div class=\"csl-left-margin\">[1]</div><div class=\"csl-right-inline\">" +
                 expectedAuthorTitle +
-                " Sep. 09, 2013. " +
-                "http://michel-kraemer.github.io/citeproc-java/ " +
-                "(accessed Sep. 11, 2013).</div>\n" +
+                " Accessed: Sep. 11, 2013. [Online]. Available: " +
+                "http://michel-kraemer.github.io/citeproc-java/" +
+                "</div>\n" +
                 "  </div>\n", b.getEntries()[0]);
 
         citeproc.reset();
@@ -271,10 +271,10 @@ public class CSLTest {
         assertEquals("  <div class=\"csl-entry\">\n" +
                 "    <div class=\"csl-left-margin\">[1]</div><div class=\"csl-right-inline\">" +
                 expectedAuthorTitle +
-                " Sep. 09, 2013. " +
+                " Accessed: Sep. 11, 2013. [Online]. Available: " +
                 "<a href=\"http://michel-kraemer.github.io/citeproc-java/\">" +
-                "http://michel-kraemer.github.io/citeproc-java/</a> " +
-                "(accessed Sep. 11, 2013).</div>\n" +
+                "http://michel-kraemer.github.io/citeproc-java/</a>" +
+                "</div>\n" +
                 "  </div>\n", d.getEntries()[0]);
     }
 
@@ -304,9 +304,10 @@ public class CSLTest {
         assertEquals("[.csl-entry]\n" +
                 "[.csl-left-margin]##[1]##[.csl-right-inline]##M. Krämer, " +
                 "“citeproc-java: A Citation Style "
-                + "Language (CSL) processor for Java,” Sep. 09, 2013. "
-                + "http://michel-kraemer.github.io/citeproc-java/ "
-                + "(accessed Sep. 11, 2013).##\n", b.getEntries()[0]);
+                + "Language (CSL) processor for Java.” "
+                + "Accessed: Sep. 11, 2013. [Online]. Available: "
+                + "http://michel-kraemer.github.io/citeproc-java/##\n",
+                b.getEntries()[0]);
     }
 
     /**

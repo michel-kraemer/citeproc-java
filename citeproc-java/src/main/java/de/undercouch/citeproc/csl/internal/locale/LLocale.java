@@ -46,22 +46,28 @@ public class LLocale {
         NodeList children = localeRoot.getChildNodes();
         for (int i = 0; i < children.getLength(); ++i) {
             Node c = children.item(i);
-            if ("terms".equals(c.getNodeName())) {
-                NodeList termsNodeChildren = c.getChildNodes();
-                for (int j = 0; j < termsNodeChildren.getLength(); ++j) {
-                    Node tc = termsNodeChildren.item(j);
-                    if ("term".equals(tc.getNodeName())) {
-                        LTerm t = new LTerm(tc);
-                        Map<String, LTerm> m = terms.computeIfAbsent(t.getForm(),
-                                k -> new HashMap<>());
-                        m.put(t.getName(), t);
+            switch (c.getNodeName()) {
+                case "terms":
+                    NodeList termsNodeChildren = c.getChildNodes();
+                    for (int j = 0; j < termsNodeChildren.getLength(); ++j) {
+                        Node tc = termsNodeChildren.item(j);
+                        if ("term".equals(tc.getNodeName())) {
+                            LTerm t = new LTerm(tc);
+                            Map<String, LTerm> m = terms.computeIfAbsent(t.getForm(),
+                                    k -> new HashMap<>());
+                            m.put(t.getName(), t);
+                        }
                     }
-                }
-            } else if ("style-options".equals(c.getNodeName())) {
-                styleOptions = new LStyleOptions(c);
-            } else if ("date".equals(c.getNodeName())) {
-                LDate d = new LDate(c);
-                dateFormats.put(d.getForm(), d);
+                    break;
+
+                case "style-options":
+                    styleOptions = new LStyleOptions(c);
+                    break;
+
+                case "date":
+                    LDate d = new LDate(c);
+                    dateFormats.put(d.getForm(), d);
+                    break;
             }
         }
 

@@ -12,10 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,24 +25,22 @@ import java.util.Map;
 abstract public class BaseFormat implements Format {
     private final static Map<String, String> MERGE_PUNCTUATION_MAP;
     static {
-        Map<String, String> mpm = new HashMap<>();
+        MERGE_PUNCTUATION_MAP = Map.ofEntries(
+                Map.entry("!.", "!"),
+                Map.entry("!:", "!"),
 
-        mpm.put("!.", "!");
-        mpm.put("!:", "!");
+                Map.entry("?.", "?"),
+                Map.entry("?:", "?"),
 
-        mpm.put("?.", "?");
-        mpm.put("?:", "?");
+                Map.entry(":!", "!"),
+                Map.entry(":?", "?"),
+                Map.entry(":.", ":"),
 
-        mpm.put(":!", "!");
-        mpm.put(":?", "?");
-        mpm.put(":.", ":");
-
-        mpm.put(";!", "!");
-        mpm.put(";?", "?");
-        mpm.put(";:", ";");
-        mpm.put(";.", ";");
-
-        MERGE_PUNCTUATION_MAP = Collections.unmodifiableMap(mpm);
+                Map.entry(";!", "!"),
+                Map.entry(";?", "?"),
+                Map.entry(";:", ";"),
+                Map.entry(";.", ";")
+        );
     }
 
     /**
@@ -55,7 +51,7 @@ abstract public class BaseFormat implements Format {
         FontVariant,
         FontWeight,
         TextDecoration,
-        VerticalAlign;
+        VerticalAlign
     }
 
     protected boolean convertLinks = false;

@@ -4,7 +4,6 @@ import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.helper.tool.ToolUtils;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 import de.undercouch.underline.InputReader;
-import de.undercouch.underline.OptionParserException;
 import de.undercouch.underline.UnknownAttributes;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
@@ -77,8 +76,7 @@ public class ShellSetLocaleCommand extends AbstractCSLToolCommand implements Com
     }
 
     @Override
-    public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
-            throws OptionParserException, IOException {
+    public int doRun(String[] remainingArgs, InputReader in, PrintWriter out) {
         ShellContext.current().setLocale(locales.get(0));
         return 0;
     }

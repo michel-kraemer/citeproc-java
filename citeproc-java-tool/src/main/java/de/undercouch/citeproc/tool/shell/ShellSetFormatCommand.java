@@ -4,14 +4,12 @@ import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.helper.tool.ToolUtils;
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 import de.undercouch.underline.InputReader;
-import de.undercouch.underline.OptionParserException;
 import de.undercouch.underline.UnknownAttributes;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,8 +70,7 @@ public class ShellSetFormatCommand extends AbstractCSLToolCommand implements Com
     }
 
     @Override
-    public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
-            throws OptionParserException, IOException {
+    public int doRun(String[] remainingArgs, InputReader in, PrintWriter out) {
         ShellContext.current().setFormat(formats.get(0));
         return 0;
     }

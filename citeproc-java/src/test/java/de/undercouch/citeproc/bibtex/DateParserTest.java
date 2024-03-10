@@ -16,6 +16,7 @@ public class DateParserTest {
      * Tests if a single date can be converted
      */
     @Test
+    @SuppressWarnings("DataFlowIssue")
     public void toSingleDate() {
         CSLDate d = DateParser.toDateSingle("2013", "Aug");
         assertArrayEquals(new int[][] { new int[] { 2013, 8 } }, d.getDateParts());

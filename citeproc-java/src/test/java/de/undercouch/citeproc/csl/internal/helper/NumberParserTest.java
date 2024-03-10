@@ -38,7 +38,7 @@ public class NumberParserTest {
     @Test
     public void range() {
         assertEquals(Collections.singletonList(
-                new NumberElement("10\u201312", null, true)),
+                new NumberElement("10–12", null, true)),
                 NumberParser.parse("10-12"));
         assertEquals(Collections.singletonList(
                 new NumberElement("10a, I; 10c, I", null, true)),
@@ -115,22 +115,22 @@ public class NumberParserTest {
     @Test
     public void labelPlural() {
         assertEquals(Collections.singletonList(
-                new NumberElement("10\u201312", CSLLabel.CHAPTER, true)),
+                new NumberElement("10–12", CSLLabel.CHAPTER, true)),
                 NumberParser.parse("chaps. 10-12"));
         assertEquals(Collections.singletonList(
-                new NumberElement("10\u201312", CSLLabel.SECTION, true)),
+                new NumberElement("10–12", CSLLabel.SECTION, true)),
                 NumberParser.parse("secs. 10-12"));
         assertEquals(Collections.singletonList(
-                new NumberElement("10\u201312", CSLLabel.CHAPTER, true)),
+                new NumberElement("10–12", CSLLabel.CHAPTER, true)),
                 NumberParser.parse("chapters 10-12"));
         assertEquals(Collections.singletonList(
-                new NumberElement("10\u201312", CSLLabel.SECTION, true)),
+                new NumberElement("10–12", CSLLabel.SECTION, true)),
                 NumberParser.parse("sections 10-12"));
         assertEquals(Collections.singletonList(
                 new NumberElement("10, 4", CSLLabel.CHAPTER, true)),
                 NumberParser.parse("ch. 10, 4"));
         assertEquals(Collections.singletonList(
-                new NumberElement("10\u201312", null, true)),
+                new NumberElement("10–12", null, true)),
                 NumberParser.parse("10-12"));
         assertEquals(Collections.singletonList(
                 new NumberElement("10, 12", null, true)),
@@ -148,7 +148,7 @@ public class NumberParserTest {
                 new NumberElement("10 and 12", null, true)),
                 NumberParser.parse("10 and 12"));
         assertEquals(Collections.singletonList(
-                new NumberElement("2\u20133", CSLLabel.CHAPTER, true)),
+                new NumberElement("2–3", CSLLabel.CHAPTER, true)),
                 NumberParser.parse("ch. 2-3"));
         assertEquals(Collections.singletonList(
                 new NumberElement("1, 2, 3", CSLLabel.CHAPTER, true)),
@@ -176,8 +176,8 @@ public class NumberParserTest {
                 new NumberElement("4", CSLLabel.SECTION, false)),
                 NumberParser.parse("ch. 10 ,sec. 4"));
         assertEquals(Arrays.asList(
-                new NumberElement("2\u20133, ", CSLLabel.CHAPTER, true),
-                new NumberElement("4\u20135", CSLLabel.PAGE, true)),
+                new NumberElement("2–3, ", CSLLabel.CHAPTER, true),
+                new NumberElement("4–5", CSLLabel.PAGE, true)),
                 NumberParser.parse("ch. 2-3, p. 4-5"));
         assertEquals(Arrays.asList(
                 new NumberElement("2, 3, ", CSLLabel.CHAPTER, true),
@@ -193,11 +193,11 @@ public class NumberParserTest {
                 NumberParser.parse("ch. 2, 3; p. 4, 5"));
         assertEquals(Arrays.asList(
                 new NumberElement("foo. bar, "),
-                new NumberElement("2\u20133", CSLLabel.SECTION, true)),
+                new NumberElement("2–3", CSLLabel.SECTION, true)),
                 NumberParser.parse("foo. bar, sec. 2-3"));
         assertEquals(Arrays.asList(
                 new NumberElement("cp. foo, "),
-                new NumberElement("2\u20133", CSLLabel.SECTION, true)),
+                new NumberElement("2–3", CSLLabel.SECTION, true)),
                 NumberParser.parse("cp. foo, sec. 2-3"));
         assertEquals(Arrays.asList(
                 new NumberElement("1, 2, and 3, ", CSLLabel.CHAPTER, true),
@@ -229,7 +229,7 @@ public class NumberParserTest {
                 new NumberElement("10, 40", CSLLabel.SECTION, true)),
                 NumberParser.parse("sec. 10, sec. 40"));
         assertEquals(Collections.singletonList(
-                new NumberElement("10\u201312, 40", CSLLabel.SECTION, true)),
+                new NumberElement("10–12, 40", CSLLabel.SECTION, true)),
                 NumberParser.parse("sec. 10-12, sec. 40"));
         assertEquals(Arrays.asList(
                 new NumberElement("10, ", CSLLabel.CHAPTER, false),

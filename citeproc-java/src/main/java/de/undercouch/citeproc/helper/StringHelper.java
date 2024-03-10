@@ -73,7 +73,7 @@ public class StringHelper {
         }
     }
     private static final Pattern WORD_PATTERN =
-            Pattern.compile("^[\\p{L}\\d][\\p{L}\\d\\[\\]()'\u2019&]*");
+            Pattern.compile("^[\\p{L}\\d][\\p{L}\\d\\[\\]()'’&]*");
 
     /**
      * Based on Markdown by John Gruber
@@ -136,103 +136,103 @@ public class StringHelper {
         for (int i = 0; i < s.length(); ++i) {
             char c = s.charAt(i);
             switch (c) {
-                case '\u00c0':
-                case '\u00c1':
-                case '\u00c3':
-                case '\u00c4':
+                case 'À':
+                case 'Á':
+                case 'Ã':
+                case 'Ä':
                     sb.append('A');
                     break;
 
-                case '\u00c8':
-                case '\u00c9':
-                case '\u00cb':
+                case 'È':
+                case 'É':
+                case 'Ë':
                     sb.append('E');
                     break;
 
-                case '\u00cc':
-                case '\u00cd':
-                case '\u00cf':
+                case 'Ì':
+                case 'Í':
+                case 'Ï':
                     sb.append('I');
                     break;
 
-                case '\u00d2':
-                case '\u00d3':
-                case '\u00d5':
-                case '\u00d6':
+                case 'Ò':
+                case 'Ó':
+                case 'Õ':
+                case 'Ö':
                     sb.append('O');
                     break;
 
-                case '\u00d9':
-                case '\u00da':
-                case '\u00dc':
+                case 'Ù':
+                case 'Ú':
+                case 'Ü':
                     sb.append('U');
                     break;
 
-                case '\u00e0':
-                case '\u00e1':
-                case '\u00e3':
-                case '\u00e4':
+                case 'à':
+                case 'á':
+                case 'ã':
+                case 'ä':
                     sb.append('a');
                     break;
 
-                case '\u00e8':
-                case '\u00e9':
-                case '\u00eb':
+                case 'è':
+                case 'é':
+                case 'ë':
                     sb.append('e');
                     break;
 
-                case '\u00ec':
-                case '\u00ed':
-                case '\u00ef':
+                case 'ì':
+                case 'í':
+                case 'ï':
                     sb.append('i');
                     break;
 
-                case '\u00f2':
-                case '\u00f3':
-                case '\u00f6':
-                case '\u00f5':
+                case 'ò':
+                case 'ó':
+                case 'ö':
+                case 'õ':
                     sb.append('o');
                     break;
 
-                case '\u00f9':
-                case '\u00fa':
-                case '\u00fc':
+                case 'ù':
+                case 'ú':
+                case 'ü':
                     sb.append('u');
                     break;
 
-                case '\u00d1':
+                case 'Ñ':
                     sb.append('N');
                     break;
 
-                case '\u00f1':
+                case 'ñ':
                     sb.append('n');
                     break;
 
-                case '\u010c':
+                case 'Č':
                     sb.append('C');
                     break;
 
-                case '\u0160':
+                case 'Š':
                     sb.append('S');
                     break;
 
-                case '\u017d':
+                case 'Ž':
                     sb.append('Z');
                     break;
 
-                case '\u010d':
+                case 'č':
                     sb.append('c');
                     break;
 
-                case '\u0161':
+                case 'š':
                     sb.append('s');
                     break;
 
-                case '\u017e':
+                case 'ž':
                     sb.append('z');
                     break;
 
-                case '\u00df':
+                case 'ß':
                     sb.append("ss");
                     break;
 
@@ -417,7 +417,7 @@ public class StringHelper {
         if (str == null) {
             return null;
         }
-        if (str.length() == 0) {
+        if (str.isEmpty()) {
             return str;
         }
 
@@ -557,7 +557,7 @@ public class StringHelper {
                 .replaceAll("\\s+", " ")
                 .replaceAll("\\s*\\.", ".")
                 .replaceAll("\\.+", ".")
-                .replaceAll("\\s*[-\u2010\u2011\u2012\u2013\u2014\u2015]+\\s*", "-");
+                .replaceAll("\\s*[-‐‑‒–—―]+\\s*", "-");
 
         List<NamePart> parts = new ArrayList<>();
         int lp = 0;

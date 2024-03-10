@@ -2,9 +2,7 @@ package de.undercouch.citeproc.tool.shell;
 
 import de.undercouch.citeproc.tool.AbstractCSLToolCommand;
 import de.undercouch.underline.InputReader;
-import de.undercouch.underline.OptionParserException;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
@@ -23,8 +21,7 @@ public class ShellGetStyleCommand extends AbstractCSLToolCommand {
     }
 
     @Override
-    public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
-            throws OptionParserException, IOException {
+    public int doRun(String[] remainingArgs, InputReader in, PrintWriter out) {
         out.println(ShellContext.current().getStyle());
         return 0;
     }

@@ -18,13 +18,13 @@ public class SmartQuotes {
     private static final String WORD = "[" + LETTER + "_" + NUMBER + "]";
     private static final String NO_WORD = "[^" + LETTER + "_" + NUMBER + "]";
 
-    private static final String LEFT_SINGLE_QUOTE = "\u2018";
-    private static final String RIGHT_SINGLE_QUOTE = "\u2019";
-    private static final String LEFT_DOUBLE_QUOTE = "\u201c";
-    private static final String RIGHT_DOUBLE_QUOTE = "\u201d";
-    private static final String PRIME = "\u2032";
-    private static final String DOUBLE_PRIME = "\u2033";
-    private static final String TRIPLE_PRIME = "\u2034";
+    private static final String LEFT_SINGLE_QUOTE = "‘";
+    private static final String RIGHT_SINGLE_QUOTE = "’";
+    private static final String LEFT_DOUBLE_QUOTE = "“";
+    private static final String RIGHT_DOUBLE_QUOTE = "”";
+    private static final String PRIME = "′";
+    private static final String DOUBLE_PRIME = "″";
+    private static final String TRIPLE_PRIME = "‴";
 
     private final Pattern[] patterns;
     private final String[] replacements;
@@ -63,7 +63,7 @@ public class SmartQuotes {
      * @param triplePrime custom triple prime
      * @param locale a locale object used to apply special rules and corner cases
      */
-    @SuppressWarnings({"RegExpUnexpectedAnchor", "Annotator"})
+    @SuppressWarnings({"RegExpUnexpectedAnchor"})
     public SmartQuotes(String leftSingleQuote, String rightSingleQuote,
             String leftDoubleQuote, String rightDoubleQuote, String apostrophe,
             String prime, String doublePrime, String triplePrime, Locale locale) {

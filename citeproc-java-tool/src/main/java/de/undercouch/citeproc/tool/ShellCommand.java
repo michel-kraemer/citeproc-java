@@ -30,8 +30,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,10 +42,7 @@ public class ShellCommand extends AbstractCSLToolCommand {
      */
     public static final List<Class<? extends Command>> EXCLUDED_COMMANDS;
     static {{
-        List<Class<? extends Command>> ec = new ArrayList<>();
-        ec.add(HelpCommand.class);
-        ec.add(ShellCommand.class);
-        EXCLUDED_COMMANDS = Collections.unmodifiableList(ec);
+        EXCLUDED_COMMANDS = List.of(HelpCommand.class, ShellCommand.class);
     }}
 
     @Override
@@ -63,7 +58,7 @@ public class ShellCommand extends AbstractCSLToolCommand {
 
     @Override
     public int doRun(String[] remainingArgs, InputReader in, PrintWriter out)
-            throws OptionParserException, IOException {
+            throws IOException {
         // prepare console
         Terminal terminal = TerminalBuilder.terminal();
         LineReader reader = LineReaderBuilder.builder()
@@ -76,7 +71,7 @@ public class ShellCommand extends AbstractCSLToolCommand {
 
         // enable colored error stream for ANSI terminals
         OutputStream errout = new ErrorOutputStream(terminal.output());
-        System.setErr(new PrintStream(errout, false, terminal.encoding().name()));
+        System.setErr(new PrintStream(errout, false, terminal.encoding()));
 
         PrintWriter cout = new PrintWriter(terminal.output(), true);
 

@@ -8,7 +8,6 @@ import de.undercouch.underline.UnknownAttributes;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -69,7 +68,7 @@ public abstract class CitationIdsCommand extends AbstractCSLToolCommand implemen
                 Collection<String> availableIds = provider.getIds();
                 if (!availableIds.isEmpty()) {
                     Collection<String> mins = Levenshtein.findSimilar(availableIds, id);
-                    if (mins.size() > 0) {
+                    if (!mins.isEmpty()) {
                         if (mins.size() == 1) {
                             message.append("\n\nDid you mean this?");
                         } else {

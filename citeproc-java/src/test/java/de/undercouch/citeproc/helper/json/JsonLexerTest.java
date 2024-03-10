@@ -147,7 +147,7 @@ public class JsonLexerTest {
         t = p.readNextToken();
         assertEquals(Type.STRING, t);
         String value = p.readString();
-        assertEquals("Michel Kr\u00E4mer", value);
+        assertEquals("Michel Krämer", value);
 
         t = p.readNextToken();
         assertEquals(Type.END_OBJECT, t);

@@ -26,7 +26,7 @@ public class InputFileCommand extends AbstractCSLToolCommand {
     /**
      * The input bibliography file(s)
      */
-    private List<String> inputs = new ArrayList<>();
+    private final List<String> inputs = new ArrayList<>();
 
     /**
      * Constructs a new command

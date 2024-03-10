@@ -34,24 +34,31 @@ public class SChoose {
 
             String nodeName = c.getNodeName();
             SCondition condition;
-            if ("if".equals(nodeName)) {
-                if (!conditions.isEmpty()) {
-                    throw new IllegalStateException("Multiple `if' nodes found");
-                }
-                condition = new SIf(c);
-            } else if ("else-if".equals(nodeName)) {
-                if (conditions.isEmpty()) {
-                    throw new IllegalStateException("`else-if' without `if' found");
-                }
-                if (done) {
-                    throw new IllegalStateException("`else-if' following `else' found");
-                }
-                condition = new SIf(c);
-            } else if ("else".equals(nodeName)) {
-                condition = new SElse(c);
-                done = true;
-            } else {
-                throw new IllegalStateException("Unknown conditional element: " + nodeName);
+            switch (nodeName) {
+                case "if":
+                    if (!conditions.isEmpty()) {
+                        throw new IllegalStateException("Multiple `if' nodes found");
+                    }
+                    condition = new SIf(c);
+                    break;
+
+                case "else-if":
+                    if (conditions.isEmpty()) {
+                        throw new IllegalStateException("`else-if' without `if' found");
+                    }
+                    if (done) {
+                        throw new IllegalStateException("`else-if' following `else' found");
+                    }
+                    condition = new SIf(c);
+                    break;
+
+                case "else":
+                    condition = new SElse(c);
+                    done = true;
+                    break;
+
+                default:
+                    throw new IllegalStateException("Unknown conditional element: " + nodeName);
             }
 
             conditions.add(condition);

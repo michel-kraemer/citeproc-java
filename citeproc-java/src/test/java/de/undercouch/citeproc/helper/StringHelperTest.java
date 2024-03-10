@@ -15,10 +15,10 @@ public class StringHelperTest {
      */
     @Test
     public void sanitize() {
-        assertEquals("Kramer", StringHelper.sanitize("Kr\u00E4mer"));
-        assertEquals("Giessen", StringHelper.sanitize("Gie\u00dfen"));
-        assertEquals("Elsyee", StringHelper.sanitize("Elsy\u00e9e"));
-        assertEquals("Champs_Elysees", StringHelper.sanitize("Champs-\u00c9lys\u00e9es"));
+        assertEquals("Kramer", StringHelper.sanitize("Krämer"));
+        assertEquals("Giessen", StringHelper.sanitize("Gießen"));
+        assertEquals("Elsyee", StringHelper.sanitize("Elsyée"));
+        assertEquals("Champs_Elysees", StringHelper.sanitize("Champs-Élysées"));
         assertEquals("A_test_with_spaces", StringHelper.sanitize("A test with spaces"));
         assertEquals("any_thing_else", StringHelper.sanitize("any+thing*else"));
         assertEquals("Numbers_0124", StringHelper.sanitize("Numbers 0124"));
@@ -38,11 +38,11 @@ public class StringHelperTest {
         assertEscapeJava("\\\"", "\"");
         assertEscapeJava("/", "/");
         assertEscapeJava("\\\\\\b\\r", "\\\b\r");
-        assertEscapeJava("\\u4711", "\u4711");
-        assertEscapeJava("\\u0815", "\u0815");
+        assertEscapeJava("\\u4711", "䜑");
+        assertEscapeJava("\\u0815", "ࠕ");
         assertEscapeJava("\\u0080", "\u0080");
         assertEscapeJava("\u007f", "\u007f");
-        assertEscapeJava(" ", "\u0020");
+        assertEscapeJava(" ", " ");
         assertEscapeJava("\\u0000", "\u0000");
         assertEscapeJava("\\u001F", "\u001f");
     }
@@ -127,42 +127,42 @@ public class StringHelperTest {
                 StringHelper.toTitleCase("keep that colo(u)r"));
         assertEquals("Leave Q&A Unscathed",
                 StringHelper.toTitleCase("leave Q&A unscathed"));
-        assertEquals("Pi\u00F1a Colada While You Listen to \u00C6nima",
-                StringHelper.toTitleCase("pi\u00F1a colada while you listen to \u00E6nima"));
-        assertEquals("Start Title \u2013 End Title",
-                StringHelper.toTitleCase("start title \u2013 end title"));
-        assertEquals("Start Title\u2013End Title",
-                StringHelper.toTitleCase("start title\u2013end title"));
-        assertEquals("Start Title \u2014 End Title",
-                StringHelper.toTitleCase("start title \u2014 end title"));
-        assertEquals("Start Title\u2014End Title",
-                StringHelper.toTitleCase("start title\u2014end title"));
+        assertEquals("Piña Colada While You Listen to Ænima",
+                StringHelper.toTitleCase("piña colada while you listen to ænima"));
+        assertEquals("Start Title – End Title",
+                StringHelper.toTitleCase("start title – end title"));
+        assertEquals("Start Title–End Title",
+                StringHelper.toTitleCase("start title–end title"));
+        assertEquals("Start Title — End Title",
+                StringHelper.toTitleCase("start title — end title"));
+        assertEquals("Start Title—End Title",
+                StringHelper.toTitleCase("start title—end title"));
         assertEquals("Start Title - End Title",
                 StringHelper.toTitleCase("start title - end title"));
 
         // quotes
         assertEquals("Don't Break", StringHelper.toTitleCase("don't break"));
-        assertEquals("Don\u2019t Break", StringHelper.toTitleCase("don\u2019t break"));
+        assertEquals("Don’t Break", StringHelper.toTitleCase("don’t break"));
         assertEquals("\"Double Quotes\"",
                 StringHelper.toTitleCase("\"double quotes\""));
         assertEquals("Double Quotes \"Inner\" Word",
                 StringHelper.toTitleCase("double quotes \"inner\" word"));
-        assertEquals("Fancy Double Quotes \u201CInner\u201D Word",
-                StringHelper.toTitleCase("fancy double quotes \u201Cinner\u201D word"));
+        assertEquals("Fancy Double Quotes “Inner” Word",
+                StringHelper.toTitleCase("fancy double quotes “inner” word"));
         assertEquals("'Single Quotes'",
                 StringHelper.toTitleCase("'single quotes'"));
         assertEquals("Single Quotes 'Inner' Word",
                 StringHelper.toTitleCase("single quotes 'inner' word"));
-        assertEquals("Fancy Single Quotes \u2018Inner\u2019 Word",
-                StringHelper.toTitleCase("fancy single quotes \u2018inner\u2019 word"));
+        assertEquals("Fancy Single Quotes ‘Inner’ Word",
+                StringHelper.toTitleCase("fancy single quotes ‘inner’ word"));
         assertEquals("Single Quotes 'To Stop' Word",
                 StringHelper.toTitleCase("single quotes 'To stop' word"));
         assertEquals("Fancy Single Quotes 'To Stop' Word",
                 StringHelper.toTitleCase("fancy single quotes 'To stop' word"));
-        assertEquals("\u201C\u2018A Twice Quoted Subtitle\u2019\u201D",
-                StringHelper.toTitleCase("\u201C\u2018a twice quoted subtitle\u2019\u201D"));
-        assertEquals("Have You Read \u201CThe Lottery\u201D?",
-                StringHelper.toTitleCase("have you read \u201CThe Lottery\u201D?"));
+        assertEquals("“‘A Twice Quoted Subtitle’”",
+                StringHelper.toTitleCase("“‘a twice quoted subtitle’”"));
+        assertEquals("Have You Read “The Lottery”?",
+                StringHelper.toTitleCase("have you read “The Lottery”?"));
         assertEquals("Normal \"Quotes\" to \"Follow\" a Stop Word",
                 StringHelper.toTitleCase("normal \"quotes\" to \"follow\" a stop word"));
 
@@ -207,11 +207,11 @@ public class StringHelperTest {
         // miscellaneous
         assertNull(StringHelper.toTitleCase(null));
         assertEquals("", StringHelper.toTitleCase(""));
-        assertEquals("Scott Moritz and TheStreet.com\u2019s Million iPhone La-La Land",
-                StringHelper.toTitleCase("Scott Moritz and TheStreet.com\u2019s million iPhone la-la land"));
+        assertEquals("Scott Moritz and TheStreet.com’s Million iPhone La-La Land",
+                StringHelper.toTitleCase("Scott Moritz and TheStreet.com’s million iPhone la-la land"));
         assertEquals("Back to the 50's", StringHelper.toTitleCase("back to the 50's"));
-        assertEquals("Notes and Observations Regarding Apple\u2019s Announcements from \u2018The Beat Goes On\u2019 Special Event",
-                StringHelper.toTitleCase("Notes and observations regarding Apple\u2019s announcements from \u2018The Beat Goes On\u2019 special event"));
+        assertEquals("Notes and Observations Regarding Apple’s Announcements from ‘The Beat Goes On’ Special Event",
+                StringHelper.toTitleCase("Notes and observations regarding Apple’s announcements from ‘The Beat Goes On’ special event"));
         assertEquals("2018", StringHelper.toTitleCase("2018"));
 
         // two sentences with stop word
@@ -299,8 +299,8 @@ public class StringHelperTest {
         // strings that need normalization
         assertEquals("J. L.", StringHelper.initializeName(" Jean   Luc ", ". "));
         assertEquals("J.-L.", StringHelper.initializeName(" Jean -   Luc ", ". "));
-        assertEquals("J.-L.", StringHelper.initializeName("Jean\u2013 Luc ", ". "));
-        assertEquals("J.-L.", StringHelper.initializeName("Jean\u2013-- Luc ", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("Jean– Luc ", ". "));
+        assertEquals("J.-L.", StringHelper.initializeName("Jean–-- Luc ", ". "));
         assertEquals("J.-L.", StringHelper.initializeName("J.. -L.", ". "));
         assertEquals("J. L.", StringHelper.initializeName("J..L.", ". "));
         assertEquals("J. L.", StringHelper.initializeName("J . L. ", ". "));
@@ -380,8 +380,8 @@ public class StringHelperTest {
         // strings that need normalization
         assertEquals("Jean Luc", StringHelper.initializeName(" Jean   Luc ", ". ", true));
         assertEquals("Jean-Luc", StringHelper.initializeName(" Jean -   Luc ", ". ", true));
-        assertEquals("Jean-Luc", StringHelper.initializeName("Jean\u2013 Luc ", ". ", true));
-        assertEquals("Jean-Luc", StringHelper.initializeName("Jean\u2013-- Luc ", ". ", true));
+        assertEquals("Jean-Luc", StringHelper.initializeName("Jean– Luc ", ". ", true));
+        assertEquals("Jean-Luc", StringHelper.initializeName("Jean–-- Luc ", ". ", true));
         assertEquals("J.-L.", StringHelper.initializeName("J.. -L.", ". ", true));
         assertEquals("J. L.", StringHelper.initializeName("J..L.", ". ", true));
         assertEquals("J. L.", StringHelper.initializeName("J . L. ", ". ", true));

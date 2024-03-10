@@ -74,7 +74,7 @@ public class StringJsonBuilder implements JsonBuilder {
                 }
                 r.append(toJson(ao, factory));
             }
-            return "[" + r.toString() + "]";
+            return "[" + r + "]";
         } else if (obj instanceof Collection) {
             Collection<?> coll = (Collection<?>)obj;
             StringBuilder r = new StringBuilder();
@@ -84,7 +84,7 @@ public class StringJsonBuilder implements JsonBuilder {
                 }
                 r.append(toJson(ao, factory));
             }
-            return "[" + r.toString() + "]";
+            return "[" + r + "]";
         } else if (obj instanceof Map) {
             Map<?, ?> m = (Map<?, ?>)obj;
             StringBuilder r = new StringBuilder();
@@ -96,7 +96,7 @@ public class StringJsonBuilder implements JsonBuilder {
                 r.append(":");
                 r.append(toJson(e.getValue(), factory));
             }
-            return "{" + r.toString() + "}";
+            return "{" + r + "}";
         }
         return toJson(String.valueOf(obj));
     }

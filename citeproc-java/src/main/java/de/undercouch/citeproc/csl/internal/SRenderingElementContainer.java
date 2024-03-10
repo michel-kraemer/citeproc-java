@@ -32,20 +32,34 @@ public class SRenderingElementContainer {
             Node c = children.item(i);
             String nodeName = c.getNodeName();
             Object element = null;
-            if ("choose".equals(nodeName)) {
-                element = new SChoose(c);
-            } else if ("date".equals(nodeName)) {
-                element = new SDate(c);
-            } else if ("group".equals(nodeName)) {
-                element = new SGroup(c);
-            } else if ("label".equals(nodeName)) {
-                element = new SLabel(c);
-            } else if ("names".equals(nodeName)) {
-                element = new SNames(c);
-            } else if ("number".equals(nodeName)) {
-                element = new SNumber(c);
-            } else if ("text".equals(nodeName)) {
-                element = new SText(c);
+            switch (nodeName) {
+                case "choose":
+                    element = new SChoose(c);
+                    break;
+
+                case "date":
+                    element = new SDate(c);
+                    break;
+
+                case "group":
+                    element = new SGroup(c);
+                    break;
+
+                case "label":
+                    element = new SLabel(c);
+                    break;
+
+                case "names":
+                    element = new SNames(c);
+                    break;
+
+                case "number":
+                    element = new SNumber(c);
+                    break;
+
+                case "text":
+                    element = new SText(c);
+                    break;
             }
             if (element != null) {
                 rawElements.add(element);
