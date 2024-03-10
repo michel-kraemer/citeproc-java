@@ -663,6 +663,7 @@ public class FixturesTest {
         }
     }
 
+    // TODO Check if list is complete. There might be new files.
     private final static String[] TEST_SUITE_TESTS = new String[] {
             "affix_CommaAfterQuote",
             "affix_InterveningEmpty",
