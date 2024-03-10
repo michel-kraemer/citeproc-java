@@ -84,8 +84,8 @@ Here's the configuration for [Gradle](https://gradle.org/):
 ```groovy
 dependencies {
     implementation 'de.undercouch:citeproc-java:3.0.0-beta.2'
-    implementation 'org.citationstyles:styles:23.11'
-    implementation 'org.citationstyles:locales:23.11'
+    implementation 'org.citationstyles:styles:24.3'
+    implementation 'org.citationstyles:locales:24.3'
 }
 ```
 
