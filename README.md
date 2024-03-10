@@ -70,7 +70,7 @@ Features
 
 * Generates citations and bibliographies
 * Supports 10000+ citation styles and various locales
-* Different output formats such as `html`, `text`, `asciidoc`, `rtf`, and `fo`
+* Different output formats such as `html`, `text`, `asciidoc`, and `fo`
 * Importers for BibTeX, EndNote, and RIS
 * Command-line tool to execute the library without setting up a development environment
 
