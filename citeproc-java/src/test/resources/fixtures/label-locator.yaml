@@ -100,15 +100,15 @@ citations:
         locator: ch. 5 foo, test sec. 1-5, p. 5, 3, 6
 
 result: |-
-  10
+  number 10
   chapter 10
   section 10
   chapter 10, section 4
   chapters 10, 4
   section 10a-b
   chapters 10–12, section 4
-  10–12
-  10–12
+  numbers 10–12
+  numbers 10–12
   p. 10
   chap. 10
   pp. 10–12
