@@ -101,12 +101,12 @@ And here's the configuration for [Maven](http://maven.apache.org/):
   <dependency>
     <groupId>org.citationstyles</groupId>
     <artifactId>styles</artifactId>
-    <version>23.11</version>
+    <version>24.3</version>
   </dependency>
   <dependency>
     <groupId>org.citationstyles</groupId>
     <artifactId>locales</artifactId>
-    <version>23.11</version>
+    <version>24.3</version>
   </dependency>
 </dependencies>
 ```
