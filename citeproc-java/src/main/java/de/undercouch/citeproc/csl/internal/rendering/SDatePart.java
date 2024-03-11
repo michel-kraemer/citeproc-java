@@ -9,6 +9,8 @@ import de.undercouch.citeproc.helper.NodeHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 
+import java.util.Objects;
+
 /**
  * A date-part element from a style file
  * @author Michel Kraemer
@@ -20,6 +22,7 @@ public class SDatePart implements SElement {
     private final String form;
     private final Affixes affixes;
     private final StripPeriods stripPeriods;
+    private final String rangeDelimiter;
 
     /**
      * Creates the date-part element from an XML node
@@ -37,18 +40,9 @@ public class SDatePart implements SElement {
         form = NodeHelper.getAttrValue(node, "form");
         affixes = new Affixes(node);
         stripPeriods = new StripPeriods(node);
-    }
 
-    /**
-     * Construct a date-part element from a name and a form
-     * @param name the name
-     * @param form the form
-     */
-    public SDatePart(String name, String form) {
-        this.name = name;
-        this.form = form;
-        affixes = new Affixes();
-        stripPeriods = new StripPeriods();
+        String rd = NodeHelper.getAttrValue(node, "range-delimiter");
+        rangeDelimiter = Objects.requireNonNullElse(rd, "–");
     }
 
     @Override
@@ -125,5 +119,15 @@ public class SDatePart implements SElement {
      */
     public void setDate(int[] date) {
         this.date = date;
+    }
+
+    /**
+     * Get the delimiter to use to express ranges between this date part and
+     * another one with the same name (i.e. between two years, two months,
+     * or two days). The default delimiter is an en-dash.
+     * @return the delimiter (never {@code null})
+     */
+    public String getRangeDelimiter() {
+        return rangeDelimiter;
     }
 }

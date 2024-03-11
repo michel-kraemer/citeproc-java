@@ -888,7 +888,7 @@ public class FixturesTest {
             // "date_NonexistentSortReverseCitation",
             "date_OtherAlone",
             // "date_OtherWithDate",
-            // "date_RangeDelimiter",
+            "date_RangeDelimiter",
             // "date_SeasonRange1",
             // "date_SeasonRange2",
             // "date_SeasonRange3",

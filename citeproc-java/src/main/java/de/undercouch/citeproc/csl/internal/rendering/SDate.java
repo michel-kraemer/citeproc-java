@@ -164,6 +164,7 @@ public class SDate implements SRenderingElement {
                 dateParts = this.dateParts;
             }
 
+            String delimiter = "–";
             for (SDatePart dp : dateParts) {
                 // determine which part to render
                 int len = ArrayUtils.indexOf(NAMES, dp.getName());
@@ -185,11 +186,12 @@ public class SDate implements SRenderingElement {
 
                 if (shouldMerge) {
                     // merge by appending left and right to the result
-                    merge(left, right, result);
+                    merge(left, right, result, delimiter);
 
                     // reset left and right
                     left = new RenderContext(ctx);
                     right = new RenderContext(ctx);
+                    delimiter = "–";
 
                     // render the current part
                     dp.setDate(first);
@@ -200,11 +202,12 @@ public class SDate implements SRenderingElement {
                     dp.render(left);
                     dp.setDate(last);
                     dp.render(right);
+                    delimiter = dp.getRangeDelimiter();
                 }
             }
 
             // merge anything that is left
-            merge(left, right, result);
+            merge(left, right, result, delimiter);
 
             // emit the final result
             notifyListenersEmpty = result.getResult().isEmpty();
@@ -224,13 +227,16 @@ public class SDate implements SRenderingElement {
     }
 
     /**
-     * Merge two token buffers by appending them to a result buffer with
-     * an en-dash as separator
+     * Merge two token buffers by appending them to a result buffer and using
+     * the given delimiter
      * @param left a render context holding the first token buffer
      * @param right a render context holding the second token buffer
      * @param result a render context holding the result buffer
+     * @param delimiter the delimiter to put between {@code left} and
+     * {@code right}
      */
-    private void merge(RenderContext left, RenderContext right, RenderContext result) {
+    private void merge(RenderContext left, RenderContext right,
+            RenderContext result, String delimiter) {
         if (!left.getResult().isEmpty() && !right.getResult().isEmpty()) {
             // append all tokens from the first buffer to the result but trim
             // the last suffix
@@ -248,8 +254,8 @@ public class SDate implements SRenderingElement {
                 result.emit(t);
             }
 
-            // render en-dash
-            result.emit("–");
+            // render delimiter
+            result.emit(delimiter);
 
             // append all tokens from the second buffer to the result but trim
             // the first prefix
