@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class LDate {
     private final String form;
+    private final String delimiter;
     private final List<SDatePart> dateParts = new ArrayList<>();
 
     /**
@@ -22,6 +23,7 @@ public class LDate {
      */
     public LDate(Node node) {
         this.form = NodeHelper.getAttrValue(node, "form");
+        this.delimiter = NodeHelper.getAttrValue(node, "delimiter");
 
         NodeList children = node.getChildNodes();
         for (int j = 0; j < children.getLength(); ++j) {
@@ -38,6 +40,14 @@ public class LDate {
      */
     public String getForm() {
         return form;
+    }
+
+    /**
+     * An optional delimiter for the elements returned by {@link #getDateParts()}
+     * @return a delimiter or {@code null} if no delimiter should be used
+     */
+    public String getDelimiter() {
+        return delimiter;
     }
 
     /**

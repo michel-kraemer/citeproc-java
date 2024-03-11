@@ -17,6 +17,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.DELIMITER;
 import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.PREFIX;
 import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.SUFFIX;
 
@@ -142,6 +143,7 @@ public class SDate implements SRenderingElement {
             RenderContext right = new RenderContext(ctx);
             RenderContext result = new RenderContext(ctx);
 
+            String datePartDelimiter = null;
             List<SDatePart> dateParts;
             if (form != null && ctx.getLocale().getDateFormats() != null) {
                 dateParts = new ArrayList<>();
@@ -159,12 +161,13 @@ public class SDate implements SRenderingElement {
                             dateParts.add(datePart);
                         }
                     }
+                    datePartDelimiter = d.getDelimiter();
                 }
             } else {
                 dateParts = this.dateParts;
             }
 
-            String delimiter = "–";
+            String rangeDelimiter = "–";
             for (SDatePart dp : dateParts) {
                 // determine which part to render
                 int len = ArrayUtils.indexOf(NAMES, dp.getName());
@@ -186,28 +189,47 @@ public class SDate implements SRenderingElement {
 
                 if (shouldMerge) {
                     // merge by appending left and right to the result
-                    merge(left, right, result, delimiter);
+                    if (datePartDelimiter != null && !result.getResult().isEmpty() &&
+                            (!left.getResult().isEmpty() || !right.getResult().isEmpty())) {
+                        result.emit(datePartDelimiter, DELIMITER);
+                    }
+                    merge(left, right, result, rangeDelimiter);
 
                     // reset left and right
                     left = new RenderContext(ctx);
                     right = new RenderContext(ctx);
-                    delimiter = "–";
+                    rangeDelimiter = "–";
 
                     // render the current part
+                    if (datePartDelimiter != null && !result.getResult().isEmpty()) {
+                        result.emit(datePartDelimiter, DELIMITER);
+                    }
                     dp.setDate(first);
                     dp.render(result);
                 } else {
                     // push first and last date to buffers until we merge them
+                    if (datePartDelimiter != null && !left.getResult().isEmpty()) {
+                        left.emit(datePartDelimiter, DELIMITER);
+                    }
                     dp.setDate(first);
                     dp.render(left);
+
+                    if (datePartDelimiter != null && !right.getResult().isEmpty()) {
+                        right.emit(datePartDelimiter, DELIMITER);
+                    }
                     dp.setDate(last);
                     dp.render(right);
-                    delimiter = dp.getRangeDelimiter();
+
+                    rangeDelimiter = dp.getRangeDelimiter();
                 }
             }
 
             // merge anything that is left
-            merge(left, right, result, delimiter);
+            if (datePartDelimiter != null && !result.getResult().isEmpty() &&
+                    (!left.getResult().isEmpty() || !right.getResult().isEmpty())) {
+                result.emit(datePartDelimiter, DELIMITER);
+            }
+            merge(left, right, result, rangeDelimiter);
 
             // emit the final result
             notifyListenersEmpty = result.getResult().isEmpty();
@@ -255,7 +277,7 @@ public class SDate implements SRenderingElement {
             }
 
             // render delimiter
-            result.emit(delimiter);
+            result.emit(delimiter, DELIMITER);
 
             // append all tokens from the second buffer to the result but trim
             // the first prefix
