@@ -1,0 +1,36 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author" suffix=". ">
+          <name initialize-with=". "/>
+        </names>
+        <text variable="title"/>
+        <date form="text" variable="issued" date-parts="year-month-day" prefix=" (" suffix=")"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: My title
+    issued:
+      date-parts:
+        - [-500]
+  - id: item2
+    author:
+      - given: Given
+        family: Name
+    title: My title
+    issued:
+      date-parts:
+        - [ 123 ]
+
+result: |
+  G. Name. My title (500BC)
+  G. Name. My title (123AD)

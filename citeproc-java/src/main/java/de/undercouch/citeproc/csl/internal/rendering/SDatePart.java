@@ -55,7 +55,7 @@ public class SDatePart implements SElement {
         switch (name) {
             case "year":
                 if (date.length > 0) {
-                    value = renderYear(date[0]);
+                    value = renderYear(date[0], ctx);
                 }
                 break;
 
@@ -77,7 +77,12 @@ public class SDatePart implements SElement {
         }
     }
 
-    private String renderYear(int year) {
+    private String renderYear(int year, RenderContext ctx) {
+        if (year < 0) {
+            return (-year) + ctx.getTerm("bc");
+        } else if (year < 1000) {
+            return year + ctx.getTerm("ad");
+        }
         return String.valueOf(year);
     }
 

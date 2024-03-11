@@ -810,8 +810,9 @@ public class FixturesTest {
             "condition_VariableNone",
             "date_Accessed",
             "date_AccessedCrash",
-            // "date_DateAD",
-            // "date_DateBC",
+            "date_DateAD",
+            "date_DateBC",
+            // we don't render error messages
             // "date_DateNoDateNoTest",
             "date_DateNoDateWithTest",
             // "date_DayOrdinalDayOneOnly",
