@@ -51,8 +51,7 @@ public class SNameInheritableAttributes implements Behavior {
 
         if (node != null) {
             and = NodeHelper.getAttrValue(node, "and");
-            String strInitialize = NodeHelper.getAttrValue(node, "initialize");
-            initialize = strInitialize == null ? DEFAULT_INITIALIZE : Boolean.parseBoolean(strInitialize);
+            initialize = NodeHelper.getAttrValueBool(node, "initialize", DEFAULT_INITIALIZE);
             initializeWith = NodeHelper.getAttrValue(node, "initialize-with");
             nameAsSortOrder = NodeHelper.getAttrValue(node, "name-as-sort-order");
             delimiterPrecedesEtAl = NodeHelper.getAttrValue(node,

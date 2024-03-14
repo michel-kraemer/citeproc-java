@@ -28,7 +28,7 @@ public class StripPeriods implements Behavior {
      * @param node the XML node
      */
     public StripPeriods(Node node) {
-        stripPeriods = Boolean.parseBoolean(NodeHelper.getAttrValue(node, "strip-periods"));
+        stripPeriods = NodeHelper.getAttrValueBool(node, "strip-periods", false);
     }
 
     @Override

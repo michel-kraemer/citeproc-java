@@ -54,6 +54,23 @@ public class NodeHelper {
     }
 
     /**
+     * Gets an attribute value from a node and parses it to a boolean
+     * @param node the node
+     * @param attrName the name of the attribute
+     * @param defaultValue an optional default value to return if the
+     * attribute does not exist
+     * @return the attribute's value or the default value
+     */
+    public static boolean getAttrValueBool(Node node, String attrName,
+            boolean defaultValue) {
+        String s = getAttrValue(node, attrName);
+        if (s == null) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(s.trim());
+    }
+
+    /**
      * Iterate through the direct children of the given parent node and find
      * the child with the given name
      * @param node the parent node
