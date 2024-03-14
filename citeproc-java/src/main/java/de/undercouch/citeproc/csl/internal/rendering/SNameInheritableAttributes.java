@@ -46,8 +46,8 @@ public class SNameInheritableAttributes implements Behavior {
         String delimiterPrecedesEtAl;
         String delimiterPrecedesLast;
         String sortSeparator;
-        String strEtAlMin;
-        String strEtAlUseFirst;
+        Integer etAlMin;
+        Integer etAlUseFirst;
 
         if (node != null) {
             and = NodeHelper.getAttrValue(node, "and");
@@ -60,8 +60,10 @@ public class SNameInheritableAttributes implements Behavior {
             delimiterPrecedesLast = NodeHelper.getAttrValue(node,
                     "delimiter-precedes-last");
             sortSeparator = NodeHelper.getAttrValue(node, "sort-separator");
-            strEtAlMin = NodeHelper.getAttrValue(node, "et-al-min");
-            strEtAlUseFirst = NodeHelper.getAttrValue(node, "et-al-use-first");
+            etAlMin = NodeHelper.getAttrValueInt(node, "et-al-min",
+                    DEFAULT_ET_AL_MIN);
+            etAlUseFirst = NodeHelper.getAttrValueInt(node, "et-al-use-first",
+                    DEFAULT_ET_AL_USE_FIRST);
         } else {
             and = DEFAULT_AND;
             initialize = DEFAULT_INITIALIZE;
@@ -70,8 +72,8 @@ public class SNameInheritableAttributes implements Behavior {
             delimiterPrecedesEtAl = null;
             delimiterPrecedesLast = null;
             sortSeparator = null;
-            strEtAlMin = null;
-            strEtAlUseFirst = null;
+            etAlMin = DEFAULT_ET_AL_MIN;
+            etAlUseFirst = DEFAULT_ET_AL_USE_FIRST;
         }
 
         if (delimiterPrecedesEtAl == null) {
@@ -84,20 +86,6 @@ public class SNameInheritableAttributes implements Behavior {
 
         if (sortSeparator == null) {
             sortSeparator = DEFAULT_SORT_SEPARATOR;
-        }
-
-        Integer etAlMin;
-        if (strEtAlMin != null) {
-            etAlMin = Integer.parseInt(strEtAlMin);
-        } else {
-            etAlMin = DEFAULT_ET_AL_MIN;
-        }
-
-        Integer etAlUseFirst;
-        if (strEtAlUseFirst != null) {
-            etAlUseFirst = Integer.parseInt(strEtAlUseFirst);
-        } else {
-            etAlUseFirst = DEFAULT_ET_AL_USE_FIRST;
         }
 
         this.and = and;
