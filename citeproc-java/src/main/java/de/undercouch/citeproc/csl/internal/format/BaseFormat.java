@@ -6,6 +6,7 @@ import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.token.DisplayGroupToken;
 import de.undercouch.citeproc.csl.internal.token.TextToken;
 import de.undercouch.citeproc.csl.internal.token.Token;
+import de.undercouch.citeproc.helper.FrenchPunctuationSpacing;
 import de.undercouch.citeproc.helper.SmartQuotes;
 import de.undercouch.citeproc.helper.StringHelper;
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,6 +16,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -77,7 +79,10 @@ abstract public class BaseFormat implements Format {
                         type == TextToken.Type.PREFIX ||
                         type == TextToken.Type.SUFFIX ||
                         type == TextToken.Type.DELIMITER) {
-                    tokens.set(i, tt.copyWithText(sq.apply(tt.getText())));
+                    String nt = sq.apply(tt.getText());
+                    if (!nt.equals(tt.getText())) {
+                        tokens.set(i, tt.copyWithText(nt));
+                    }
                 }
             }
         }
@@ -230,6 +235,26 @@ abstract public class BaseFormat implements Format {
                         i--;
                     } else {
                         tokens.set(i, t1.copyWithText(rest));
+                    }
+                }
+            }
+        }
+
+        // apply rules for french punctuation spacing
+        if (ctx.getLocale().getLang().getLanguage().equals(Locale.FRENCH.getLanguage())) {
+            for (int i = 0; i < tokens.size(); ++i) {
+                Token t = tokens.get(i);
+                if (t instanceof TextToken) {
+                    TextToken tt = (TextToken)t;
+                    TextToken.Type type = tt.getType();
+                    if (type == TextToken.Type.TEXT ||
+                            type == TextToken.Type.PREFIX ||
+                            type == TextToken.Type.SUFFIX ||
+                            type == TextToken.Type.DELIMITER) {
+                        String nt = FrenchPunctuationSpacing.apply(tt.getText());
+                        if (!nt.equals(tt.getText())) {
+                            tokens.set(i, tt.copyWithText(nt));
+                        }
                     }
                 }
             }

@@ -1410,9 +1410,15 @@ public class FixturesTest {
             "punctuation_DelimiterWithStripPeriodsAndSubstitute3",
             "punctuation_DoNotSuppressColonAfterPeriod",
             "punctuation_FieldDuplicates",
+            // Does not set a default locale! We only apply French punctuation
+            // spacing if the locale is actually French. This test has been
+            // replaced by a custom test named `punctuation-french-orthography.yaml`
             // "punctuation_FrenchOrthography",
             "punctuation_FullMontyField",
             "punctuation_FullMontyPlain",
+            // the test seems to be wrong IMHO; according to the specification,
+            // only commas and periods should be moved inside quotes. See also:
+            // https://www.thepunctuationguide.com/quotation-marks.html
             // "punctuation_FullMontyQuotesIn",
             "punctuation_FullMontyQuotesOut",
             "punctuation_NoSuppressOfPeriodBeforeSemicolon",

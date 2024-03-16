@@ -1,0 +1,21 @@
+mode: citation
+
+# replaces punctuation_FrenchOrthography from the CSL test suite and sets
+# the default locale to french
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" class="note" version="1.0" default-locale="fr-FR">
+    <citation>
+      <layout>
+        <text variable="title"/>
+      </layout>
+    </citation>
+  </style>
+
+items:
+  - id: ITEM-1
+    title: His « Anonymous » Life
+    type: book
+
+result: |-
+  His « Anonymous » Life
