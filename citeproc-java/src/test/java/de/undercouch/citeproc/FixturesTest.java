@@ -1421,7 +1421,7 @@ public class FixturesTest {
             // "punctuation_SuppressPrefixPeriodForDelimiterSemicolon",
             "quotes_Punctuation",
             "quotes_PunctuationNasty",
-            // "quotes_PunctuationWithInnerQuote",
+            "quotes_PunctuationWithInnerQuote",
             // "quotes_QuotesUnderQuotesFalse",
             "simplespace_case1",
             // "sort_AguStyle",

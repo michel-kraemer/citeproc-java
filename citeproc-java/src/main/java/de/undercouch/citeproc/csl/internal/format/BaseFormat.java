@@ -8,7 +8,6 @@ import de.undercouch.citeproc.csl.internal.token.TextToken;
 import de.undercouch.citeproc.csl.internal.token.Token;
 import de.undercouch.citeproc.helper.SmartQuotes;
 import de.undercouch.citeproc.helper.StringHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -98,13 +97,49 @@ abstract public class BaseFormat implements Format {
                 }
                 TextToken t1 = (TextToken)tokens.get(j);
 
-                if (t0.getType() == TextToken.Type.CLOSE_QUOTE &&
-                        StringUtils.startsWithAny(t1.getText(), ",", ".")) {
+                if (t0.getType() == TextToken.Type.CLOSE_QUOTE && !t1.getText().isEmpty() &&
+                        (t1.getText().charAt(0) == ',' || t1.getText().charAt(0) == '.')) {
                     String nextText = t1.getText();
                     String punctuation = nextText.substring(0, 1);
                     String rest = nextText.substring(1);
+                    tokens.set(j, t1.copyWithText(rest));
+
+                    // The token before CLOSE_QUOTE should be a TEXT token. If
+                    // it also ends with a closing quote, merge the punctuation
+                    // even further.
+                    if (i > 0 && tokens.get(i - 1) instanceof TextToken &&
+                            ((TextToken)tokens.get(i - 1)).getType() == TextToken.Type.TEXT) {
+                        TextToken tt = (TextToken)tokens.get(i - 1);
+                        String ttt = tt.getText();
+                        int len = ttt.length();
+
+                        String cq = ctx.getTerm("close-quote");
+                        String ciq = ctx.getTerm("close-inner-quote");
+                        while (len > 0) {
+                            String ss = ttt.substring(0, len);
+                            if (ss.endsWith(cq)) {
+                                len -= cq.length();
+                            } else if (ss.endsWith(ciq)) {
+                                len -= ciq.length();
+                            } else {
+                                break;
+                            }
+                        }
+
+                        if (len == 0) {
+                            // The whole token consists of closing quotes. Move
+                            // the punctuation before the token.
+                            i -= 1;
+                        } else if (len < ttt.length()) {
+                            // split the token
+                            String ttr = ttt.substring(len);
+                            ttt = ttt.substring(0, len);
+                            tokens.set(i - 1, tt.copyWithText(ttt));
+                            tokens.add(i, tt.copyWithText(ttr));
+                        }
+                    }
+
                     tokens.add(i, t1.copyWithText(punctuation));
-                    tokens.set(j + 1, t1.copyWithText(rest));
                     i = j;
                 }
             }
