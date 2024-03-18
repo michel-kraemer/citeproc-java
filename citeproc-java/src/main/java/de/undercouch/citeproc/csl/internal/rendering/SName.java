@@ -314,8 +314,11 @@ public class SName implements SElement {
             family.append(strFamily, TEXT, familyFormattingAttributes);
 
             if (name.getNonDroppingParticle() != null) {
-                family.prepend(" ", DELIMITER);
                 String ndp = name.getNonDroppingParticle().trim();
+                char last = ndp.charAt(ndp.length() - 1);
+                if (last != '\'' && last != '’') {
+                    family.prepend(" ", DELIMITER);
+                }
                 if (familyTextCase != null) {
                     ndp = familyTextCase.applyTo(ndp, ctx);
                 }
@@ -329,10 +332,13 @@ public class SName implements SElement {
 
             // prepend dropping particle for long form
             if (name.getDroppingParticle() != null) {
-                family.prepend(" ", DELIMITER);
+                String dp = name.getDroppingParticle().trim();
+                char last = dp.charAt(dp.length() - 1);
+                if (last != '\'' && last != '’') {
+                    family.prepend(" ", DELIMITER);
+                }
                 // according to the spec, we need to use the formatting
                 // attributes of the given name here
-                String dp = name.getDroppingParticle().trim();
                 if (givenTextCase != null) {
                     dp = givenTextCase.applyTo(dp, ctx);
                 }

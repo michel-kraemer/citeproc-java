@@ -1,0 +1,30 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" class="note" version="1.0">
+    <bibliography>
+      <layout>
+        <names variable="author">
+          <name />
+        </names>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    type: book
+    author:
+      - dropping-particle: "d'"
+        family: Jones
+        given: John
+  - id: item2
+    type: book
+    author:
+      - non-dropping-particle: "l'"
+        family: Orleans
+        given: John
+
+result: |
+  John d’Jones
+  John l’Orleans
