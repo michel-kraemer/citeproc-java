@@ -15,7 +15,9 @@ dependencies {
     runtimeOnly 'org.citationstyles:locales:24.3'
 }
 
-mainClassName = 'de.undercouch.citeproc.CSLTool'
+application {
+    mainClass = 'de.undercouch.citeproc.CSLTool'
+}
 
 jar {
     // include license into jar
