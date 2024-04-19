@@ -83,7 +83,7 @@ Here's the configuration for [Gradle](https://gradle.org/):
 
 ```groovy
 dependencies {
-    implementation 'de.undercouch:citeproc-java:3.0.0-beta.2'
+    implementation 'de.undercouch:citeproc-java:3.1.0'
     implementation 'org.citationstyles:styles:24.3'
     implementation 'org.citationstyles:locales:24.3'
 }
@@ -96,7 +96,7 @@ And here's the configuration for [Maven](http://maven.apache.org/):
   <dependency>
     <groupId>de.undercouch</groupId>
     <artifactId>citeproc-java</artifactId>
-    <version>3.0.0-beta.2</version>
+    <version>3.1.0</version>
   </dependency>
   <dependency>
     <groupId>org.citationstyles</groupId>
