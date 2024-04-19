@@ -360,6 +360,7 @@
         "public CSLItemDataBuilder volume(int volume) { volume(String.valueOf(volume)); return this; }",
         "public CSLItemDataBuilder page(int page) { page(String.valueOf(page)); return this; }",
         "public CSLItemDataBuilder page(int firstPageInRange, int lastPageInRange) { page(firstPageInRange + \"–\" + lastPageInRange); return this; }",
+        "public CSLItemDataBuilder page(String firstPageInRange, String lastPageInRange) { page(firstPageInRange + \"–\" + lastPageInRange); return this; }",
         "public CSLItemDataBuilder author(String given, String family) { author(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder author(String given, String family, boolean parseNames) { author(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder collectionEditor(String given, String family) { collectionEditor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
