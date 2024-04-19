@@ -353,6 +353,9 @@ public class RenderContext {
                 case "chapter-number":
                     result = itemData.getChapterNumber();
                     break;
+                case "citation-key":
+                    result = itemData.getCitationKey();
+                    break;
                 case "citation-label":
                     result = itemData.getCitationLabel();
                     break;

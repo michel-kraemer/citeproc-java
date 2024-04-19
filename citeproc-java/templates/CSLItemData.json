@@ -176,6 +176,10 @@
         },
         {
             "type": "String",
+            "name": "citation-key"
+        },
+        {
+            "type": "String",
             "name": "citation-label"
         },
         {
