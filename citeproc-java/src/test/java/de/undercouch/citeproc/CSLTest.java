@@ -667,8 +667,8 @@ public class CSLTest {
                 "<style><citation><layout>" +
                         "<choose>" +
                         "<if variable=\"title\"></if>" +
-                        "<else variable=\"title\"></if>" +
-                        "<else variable=\"title\"></if>" +
+                        "<else variable=\"title\"></else>" +
+                        "<else variable=\"title\"></else>" +
                         "</choose>" +
                         "</layout></citation></style>");
     }
@@ -684,8 +684,8 @@ public class CSLTest {
                 "<style><citation><layout>" +
                         "<choose>" +
                         "<if variable=\"title\"></if>" +
-                        "<else variable=\"title\"></if>" +
-                        "<else-if variable=\"title\"></if>" +
+                        "<else variable=\"title\"></else>" +
+                        "<else-if variable=\"title\"></else-if>" +
                         "</choose>" +
                         "</layout></citation></style>");
     }
