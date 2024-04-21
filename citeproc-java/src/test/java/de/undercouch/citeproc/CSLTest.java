@@ -639,4 +639,85 @@ public class CSLTest {
                 b.getEntries()[0]
         );
     }
+
+    /**
+     * Test if parsing a style with multiple if nodes within a choose node
+     * throws an exception
+     * @throws Exception if the test succeeds
+     */
+    @Test(expected = IllegalStateException.class)
+    public void multipleIfNodes() throws Exception {
+        new CSL(new ListItemDataProvider(),
+                "<style><citation><layout>" +
+                        "<choose>" +
+                        "<if variable=\"title\"></if>" +
+                        "<if variable=\"title\"></if>" +
+                        "</choose>" +
+                        "</layout></citation></style>");
+    }
+
+    /**
+     * Test if parsing a style with multiple else nodes within a choose node
+     * throws an exception
+     * @throws Exception if the test succeeds
+     */
+    @Test(expected = IllegalStateException.class)
+    public void multipleElseNodes() throws Exception {
+        new CSL(new ListItemDataProvider(),
+                "<style><citation><layout>" +
+                        "<choose>" +
+                        "<if variable=\"title\"></if>" +
+                        "<else variable=\"title\"></if>" +
+                        "<else variable=\"title\"></if>" +
+                        "</choose>" +
+                        "</layout></citation></style>");
+    }
+
+    /**
+     * Test if parsing a style with an else-if node following an else node
+     * throws an exception
+     * @throws Exception if the test succeeds
+     */
+    @Test(expected = IllegalStateException.class)
+    public void multipleElseIfAfterElse() throws Exception {
+        new CSL(new ListItemDataProvider(),
+                "<style><citation><layout>" +
+                        "<choose>" +
+                        "<if variable=\"title\"></if>" +
+                        "<else variable=\"title\"></if>" +
+                        "<else-if variable=\"title\"></if>" +
+                        "</choose>" +
+                        "</layout></citation></style>");
+    }
+
+    /**
+     * Test if parsing a style with an if node having no condition throws an
+     * exception
+     * @throws Exception if the test succeeds
+     */
+    @Test(expected = IllegalStateException.class)
+    public void multipleIfWithoutCondition() throws Exception {
+        new CSL(new ListItemDataProvider(),
+                "<style><citation><layout>" +
+                        "<choose>" +
+                        "<if></if>" +
+                        "</choose>" +
+                        "</layout></citation></style>");
+    }
+
+    /**
+     * Test if parsing a style with an else-if node having no condition
+     * throws an exception
+     * @throws Exception if the test succeeds
+     */
+    @Test(expected = IllegalStateException.class)
+    public void multipleElseIfWithoutCondition() throws Exception {
+        new CSL(new ListItemDataProvider(),
+                "<style><citation><layout>" +
+                        "<choose>" +
+                        "<if variable=\"title\"></if>" +
+                        "<else-if></else-if>" +
+                        "</choose>" +
+                        "</layout></citation></style>");
+    }
 }

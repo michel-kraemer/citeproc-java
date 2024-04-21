@@ -53,6 +53,9 @@ public class SChoose {
                     break;
 
                 case "else":
+                    if (done) {
+                        throw new IllegalStateException("Multiple `else' nodes found");
+                    }
                     condition = new SElse(c);
                     done = true;
                     break;

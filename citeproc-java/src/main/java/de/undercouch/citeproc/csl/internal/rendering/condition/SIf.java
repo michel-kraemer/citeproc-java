@@ -21,11 +21,11 @@ public class SIf extends SCondition {
     private static final int ANY = 1;
     private static final int NONE = 2;
 
+    private final String[] isNumerics;
+    private final String[] positions;
     private final String[] types;
     private final String[] variables;
-    private final String[] isNumerics;
     private final String[] numbers;
-    private final String[] positions;
     private final int match;
 
     /**
@@ -34,6 +34,31 @@ public class SIf extends SCondition {
      */
     public SIf(Node node) {
         super(node);
+
+        // TODO support this condition
+        String disambiguate = NodeHelper.getAttrValue(node, "disambiguate");
+
+        // get the numeric variables to check
+        String isNumeric = NodeHelper.getAttrValue(node, "is-numeric");
+        if (isNumeric != null) {
+            isNumerics = isNumeric.split("\\s+");
+        } else {
+            isNumerics = null;
+        }
+
+        // TODO support this condition
+        String isUncertainDate = NodeHelper.getAttrValue(node, "is-uncertain-date");
+
+        // TODO support this condition
+        String locator = NodeHelper.getAttrValue(node, "locator");
+
+        // get the positions to check
+        String position = NodeHelper.getAttrValue(node, "position");
+        if (position != null) {
+            positions = position.split("\\s+");
+        } else {
+            positions = null;
+        }
 
         // get the citation item types to check against
         String type = NodeHelper.getAttrValue(node, "type");
@@ -51,13 +76,6 @@ public class SIf extends SCondition {
             variables = null;
         }
 
-        // get the numeric variables to check
-        String isNumeric = NodeHelper.getAttrValue(node, "is-numeric");
-        if (isNumeric != null) {
-            isNumerics = isNumeric.split("\\s+");
-        } else {
-            isNumerics = null;
-        }
 
         // get the labels to check the number variable against
         String number = NodeHelper.getAttrValue(node, "number");
@@ -67,12 +85,11 @@ public class SIf extends SCondition {
             numbers = null;
         }
 
-        // get the positions to check
-        String position = NodeHelper.getAttrValue(node, "position");
-        if (position != null) {
-            positions = position.split("\\s+");
-        } else {
-            positions = null;
+        if (disambiguate == null && isNumeric == null && isUncertainDate == null &&
+                locator == null && position == null && type == null &&
+                variable == null && number == null) {
+            throw new IllegalStateException("Encountered `" + node.getNodeName() +
+                    "' node without condition");
         }
 
         // get the match mode
@@ -90,11 +107,6 @@ public class SIf extends SCondition {
 
     @Override
     public boolean matches(RenderContext ctx) {
-        if (types == null && variables == null && isNumerics == null &&
-                numbers == null && positions == null) {
-            return false;
-        }
-
         Boolean mt = matchesType(ctx);
         if (mt != null) {
             return mt;
