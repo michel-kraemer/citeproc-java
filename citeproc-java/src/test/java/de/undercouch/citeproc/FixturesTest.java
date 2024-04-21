@@ -898,7 +898,7 @@ public class FixturesTest {
             "date_TextFormMonthdateYearRange",
             "date_TextFormYeardateYearRange",
             // "date_TextFormYeardateYearRangeOpen",
-            // "date_Uncertain",
+            "date_Uncertain",
             // "date_VariousInvalidDates",
             // "date_YearSuffixDelimiter",
             // "date_YearSuffixImplicitWithNoDate",

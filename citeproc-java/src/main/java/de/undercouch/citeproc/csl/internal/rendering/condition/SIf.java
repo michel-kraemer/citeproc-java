@@ -1,6 +1,7 @@
 package de.undercouch.citeproc.csl.internal.rendering.condition;
 
 import de.undercouch.citeproc.csl.CSLCitationItem;
+import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.csl.internal.GeneratedCitation;
 import de.undercouch.citeproc.csl.internal.RenderContext;
@@ -22,6 +23,7 @@ public class SIf extends SCondition {
     private static final int NONE = 2;
 
     private final String[] isNumerics;
+    private final String[] isUncertainDates;
     private final String[] positions;
     private final String[] types;
     private final String[] variables;
@@ -46,8 +48,13 @@ public class SIf extends SCondition {
             isNumerics = null;
         }
 
-        // TODO support this condition
+        // get date variables to check
         String isUncertainDate = NodeHelper.getAttrValue(node, "is-uncertain-date");
+        if (isUncertainDate != null) {
+            isUncertainDates = isUncertainDate.split("\\s+");
+        } else {
+            isUncertainDates = null;
+        }
 
         // TODO support this condition
         String locator = NodeHelper.getAttrValue(node, "locator");
@@ -122,6 +129,11 @@ public class SIf extends SCondition {
             return mne;
         }
 
+        Boolean mud = matchesUncertainDate(ctx);
+        if (mud != null) {
+            return mud;
+        }
+
         Boolean mnb = matchesNumbers(ctx);
         if (mnb != null) {
             return mnb;
@@ -189,6 +201,26 @@ public class SIf extends SCondition {
                     return Boolean.TRUE;
                 }
                 if (match == NONE && numeric) {
+                    return Boolean.FALSE;
+                }
+            }
+        }
+        return null;
+    }
+
+    private Boolean matchesUncertainDate(RenderContext ctx) {
+        if (isUncertainDates != null) {
+            // check if given variables are approximate dates
+            for (String v : isUncertainDates) {
+                CSLDate o = ctx.getDateVariable(v, true);
+                boolean circa = o != null && o.getCirca() == Boolean.TRUE;
+                if (match == ALL && !circa) {
+                    return Boolean.FALSE;
+                }
+                if (match == ANY && circa) {
+                    return Boolean.TRUE;
+                }
+                if (match == NONE && circa) {
                     return Boolean.FALSE;
                 }
             }
