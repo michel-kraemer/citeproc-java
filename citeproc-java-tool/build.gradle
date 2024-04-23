@@ -9,7 +9,7 @@ dependencies {
 
     implementation 'de.undercouch:underline:1.0.0'
     implementation 'org.apache.commons:commons-lang3:3.14.0'
-    implementation 'org.jline:jline:3.25.1'
+    implementation 'org.jline:jline:3.26.0'
 
     runtimeOnly 'org.citationstyles:styles:24.3'
     runtimeOnly 'org.citationstyles:locales:24.3'
