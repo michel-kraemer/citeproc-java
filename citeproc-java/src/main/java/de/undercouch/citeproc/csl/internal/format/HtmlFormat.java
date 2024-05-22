@@ -10,6 +10,7 @@ import de.undercouch.citeproc.output.SecondFieldAlign;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.List;
+import java.util.Locale;
 
 import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FS_ITALIC;
 import static de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes.FW_BOLD;
@@ -58,7 +59,13 @@ public class HtmlFormat extends BaseFormat {
 
     @Override
     protected String doFormatLink(String text, String uri) {
-        return "<a href=\"" + uri + "\">" + text + "</a>";
+        String uriLowerCase = uri.toLowerCase(Locale.ENGLISH);
+        if (uriLowerCase.startsWith("http://")
+                || uriLowerCase.startsWith("https://")
+                || uriLowerCase.startsWith("/")) {
+            return "<a href=\"" + uri + "\">" + text + "</a>";
+        }
+        return text;
     }
 
     @Override
