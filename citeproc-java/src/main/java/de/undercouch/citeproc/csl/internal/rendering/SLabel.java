@@ -79,6 +79,9 @@ public class SLabel implements SRenderingElement {
         if (value == null) {
             return;
         }
+        if (value instanceof Object[] && ((Object[]) value).length == 0) {
+            return;
+        }
 
         String term = variable;
         boolean plural = false;
