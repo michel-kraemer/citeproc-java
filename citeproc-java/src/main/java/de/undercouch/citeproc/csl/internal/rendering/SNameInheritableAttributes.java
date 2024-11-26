@@ -221,7 +221,8 @@ public class SNameInheritableAttributes implements Behavior {
     @Override
     public void accept(Consumer<RenderContext> renderFunction, RenderContext ctx) {
         if (hasInheritableAttributes) {
-            RenderContext tmp = new RenderContext(ctx, this);
+            SNameInheritableAttributes ia = ctx.getInheritedNameAttributes().merge(this);
+            RenderContext tmp = new RenderContext(ctx, ia);
             renderFunction.accept(tmp);
             ctx.emit(tmp.getResult());
         } else {

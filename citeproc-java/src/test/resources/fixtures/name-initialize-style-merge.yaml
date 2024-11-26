@@ -1,0 +1,25 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0" initialize-with=" ">
+    <bibliography et-al-min="4" et-al-use-first="3">
+      <layout>
+        <names variable="author" suffix=". ">
+          <name />
+        </names>
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: James T
+        family: Kirk
+      - given: Jean-Luc
+        family: Picard
+    title: To boldly go where no man has gone before
+
+result: |
+  J T Kirk, J-L Picard. To boldly go where no man has gone before
