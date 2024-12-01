@@ -42,7 +42,7 @@ public class BibliographyCommand extends CitationIdsCommand {
      * @param format the format
      */
     @OptionDesc(longName = "format", shortName = "f",
-            description = "output format: text (default), html, asciidoc, fo, rtf",
+            description = "output format: text (default), html, asciidoc, fo, markdown",
             argumentName = "FORMAT", argumentType = ArgumentType.STRING,
             priority = 20)
     public void setFormat(String format) {
@@ -76,7 +76,7 @@ public class BibliographyCommand extends CitationIdsCommand {
         // check output format
         if (!format.equals("text") && !format.equals("html") &&
                 !format.equals("asciidoc") && !format.equals("fo") &&
-                !format.equals("rtf")) {
+                !format.equals("markdown")) {
             error("invalid output format: " + format);
             return false;
         }

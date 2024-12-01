@@ -70,7 +70,7 @@ Features
 
 * Generates citations and bibliographies
 * Supports 10000+ citation styles and various locales
-* Different output formats such as `html`, `text`, `asciidoc`, and `fo`
+* Different output formats such as `html`, `text`, `asciidoc`, `markdown`, and `fo`
 * Importers for BibTeX, EndNote, and RIS
 * Command-line tool to execute the library without setting up a development environment
 
@@ -219,7 +219,7 @@ CSL citeproc = new CSL(idp, "apa");
 Output formats
 --------------
 
-citeproc-java supports several output formats. The most common ones are `html` and `text`, but you can also use `asciidoc` and `fo`.
+citeproc-java supports several output formats. The most common ones are `html` and `text`, but you can also use `asciidoc`, `markdown`, and `fo`.
 
 Call the CSL processor’s `setOutputFormat(String)` method to set the desired format.
 
