@@ -14,6 +14,7 @@ import de.undercouch.citeproc.csl.internal.format.FoFormat;
 import de.undercouch.citeproc.csl.internal.format.Format;
 import de.undercouch.citeproc.csl.internal.format.HtmlFormat;
 import de.undercouch.citeproc.csl.internal.format.MarkdownFormat;
+import de.undercouch.citeproc.csl.internal.format.MarkdownPureFormat;
 import de.undercouch.citeproc.csl.internal.format.TextFormat;
 import de.undercouch.citeproc.csl.internal.locale.LLocale;
 import de.undercouch.citeproc.helper.CSLUtils;
@@ -241,7 +242,8 @@ public class CSL {
      * @return the formats
      */
     public static List<String> getSupportedOutputFormats() {
-        return Arrays.asList("asciidoc", "fo", "html", "markdown", "text");
+        return Arrays.asList("asciidoc", "fo", "html", "markdown",
+                "markdown-pure", "text");
     }
 
     private static Set<String> getAvailableFiles(String prefix,
@@ -500,7 +502,8 @@ public class CSL {
     /**
      * Sets the processor's output format
      * @param format the format (one of {@code "asciidoc"}, {@code "fo"},
-     * {@code "html"}, {@code "markdown"}, or {@code "text"}).
+     * {@code "html"}, {@code "markdown"}, {@code "markdown-pure"},
+     * or {@code "text"}).
      */
     public void setOutputFormat(String format) {
         if ("asciidoc".equals(format)) {
@@ -511,12 +514,14 @@ public class CSL {
             setOutputFormat(new HtmlFormat());
         } else if ("markdown".equals(format)) {
             setOutputFormat(new MarkdownFormat());
+        } else if ("markdown-pure".equals(format)) {
+            setOutputFormat(new MarkdownPureFormat());
         } else if ("text".equals(format)) {
             setOutputFormat(new TextFormat());
         } else {
             throw new IllegalArgumentException("Unknown output format: `" +
                     format + "'. Supported formats: `asciidoc', `fo', " +
-                    "`html', `markdown', `text'.");
+                    "`html', `markdown', `markdown-pure', `text'.");
         }
     }
 
@@ -1073,7 +1078,7 @@ public class CSL {
      * <code>/ieee.csl</code>)
      * @param outputFormat the processor's output format (one of
      * <code>"html"</code>, <code>"text"</code>, <code>"asciidoc"</code>,
-     * <code>"fo"</code>, or <code>"markdown"</code>)
+     * <code>"fo"</code>, <code>"markdown"</code>, or <code>"markdown-pure"</code>)
      * @param items the citation items to add to the bibliography
      * @return the bibliography
      * @throws IOException if the CSL style could not be loaded
@@ -1118,7 +1123,7 @@ public class CSL {
      * <code>/ieee.csl</code>)
      * @param outputFormat the processor's output format (one of
      * <code>"html"</code>, <code>"text"</code>, <code>"asciidoc"</code>,
-     * <code>"fo"</code>, or <code>"markdown"</code>)
+     * <code>"fo"</code>, <code>"markdown"</code>, or <code>"markdown-pure"</code>)
      * @param items the citation items
      * @return a list of generated citations strings that can be inserted into the text
      * @see #makeCitation(String...)
