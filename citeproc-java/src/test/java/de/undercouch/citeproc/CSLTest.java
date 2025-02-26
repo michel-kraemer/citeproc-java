@@ -643,6 +643,67 @@ public class CSLTest {
     }
 
     /**
+     * Check if an empty 'thesis' item can be converted to XSL-FO
+     */
+    @Test
+    public void emptyFo() throws Exception {
+        CSLItemData item = new CSLItemDataBuilder()
+                .id("EMPTY-THESIS")
+                .type(CSLType.THESIS)
+                .build();
+
+        CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee");
+        citeproc.setOutputFormat("fo");
+        citeproc.makeCitation(item.getId());
+
+        Bibliography b = citeproc.makeBibliography();
+
+        assertEquals(1, b.getEntries().length);
+        assertEquals(
+                "<fo:block id=\"EMPTY-THESIS\">\n" +
+                "  <fo:table table-layout=\"fixed\" width=\"100%\">\n" +
+                "    <fo:table-column column-number=\"1\" column-width=\"2.5em\"/>\n" +
+                "    <fo:table-column column-number=\"2\" column-width=\"proportional-column-width(1)\"/>\n" +
+                "    <fo:table-body>\n" +
+                "      <fo:table-row>\n" +
+                "        <fo:table-cell>\n" +
+                "          <fo:block>[1]</fo:block>\n" +
+                "        </fo:table-cell>\n" +
+                "        <fo:table-cell>\n" +
+                "          <fo:block></fo:block>\n" +
+                "        </fo:table-cell>\n" +
+                "      </fo:table-row>\n" +
+                "    </fo:table-body>\n" +
+                "  </fo:table>\n" +
+                "</fo:block>\n",
+                b.getEntries()[0]
+        );
+    }
+
+    /**
+     * Check if an empty 'thesis' item can be converted to AsciiDoc
+     */
+    @Test
+    public void emptyAsciiDoc() throws Exception {
+        CSLItemData item = new CSLItemDataBuilder()
+                .type(CSLType.THESIS)
+                .build();
+
+        CSL citeproc = new CSL(new ListItemDataProvider(item), "ieee");
+        citeproc.setOutputFormat("asciidoc");
+        citeproc.makeCitation(item.getId());
+
+        Bibliography b = citeproc.makeBibliography();
+
+        assertEquals(1, b.getEntries().length);
+        assertEquals(
+                "[.csl-entry]\n" +
+                "[.csl-left-margin]##[1]##[.csl-right-inline]####\n",
+                b.getEntries()[0]
+        );
+    }
+
+    /**
      * Test if parsing a style with multiple if nodes within a choose node
      * throws an exception
      * @throws Exception if the test succeeds
