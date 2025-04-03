@@ -532,6 +532,29 @@ public class StringHelper {
     }
 
     /**
+     * Check if a string contains no other characters than those from the
+     * Unicode scripts "Latin", "Common", or "Inherited"
+     * @param s the string to check
+     * @return if the string contains only latin, common, or inherited
+     * characters
+     */
+    public static boolean containsLatinScriptOnly(String s) {
+        for (int i = 0; i < s.length(); ) {
+            int codePoint = s.codePointAt(i);
+            Character.UnicodeScript script = Character.UnicodeScript.of(codePoint);
+
+            if (script != Character.UnicodeScript.LATIN &&
+                script != Character.UnicodeScript.COMMON &&
+                script != Character.UnicodeScript.INHERITED) {
+                return false;
+            }
+
+            i += Character.charCount(codePoint);
+        }
+        return true;
+    }
+
+    /**
      * Parse the given name, split it into parts, and convert them to initials
      * @param name the name to convert
      * @param initializeWith the string to append to each initial
@@ -552,6 +575,11 @@ public class StringHelper {
      */
     public static String initializeName(String name, String initializeWith,
             boolean onlyNormalize) {
+        if (!containsLatinScriptOnly(name)) {
+            // initialization only applies to names with Latin characters
+            return name;
+        }
+
         // trim string, normalize spaces, normalize hyphens
         name = name.trim()
                 .replaceAll("\\s+", " ")

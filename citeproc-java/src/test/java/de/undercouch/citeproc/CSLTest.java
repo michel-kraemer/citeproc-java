@@ -722,4 +722,39 @@ public class CSLTest {
                         "</choose>" +
                         "</layout></citation></style>");
     }
+
+    /**
+     * Make sure initialization only applies to Latin names
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    public void issue257() throws Exception {
+        CSLItemData item1 = new CSLItemDataBuilder()
+                .type(CSLType.ARTICLE_JOURNAL)
+                .title("沙漠种植玉米的可行性")
+                .author(
+                        new CSLNameBuilder().family("李").given("世民").build(),
+                        new CSLNameBuilder().family("秦").given("叔宝").build()
+                )
+                .issued(2021, 7, 14)
+                .containerTitle("沙漠期刊")
+                .page(11, 17)
+                .volume(7)
+                .issue(14)
+                .build();
+
+        CSLItemData item2 = new CSLItemDataBuilder()
+                .type(CSLType.PAPER_CONFERENCE)
+                .title("The Paper")
+                .author("The", "Author")
+                .event("Conference")
+                .eventPlace("The Place")
+                .build();
+
+        String style = "china-national-standard-gb-t-7714-2015-note";
+        String result = CSL.makeAdhocBibliography(style, "text", item1, item2).makeString();
+
+        assertEquals("[1]李 世民, 秦 叔宝. 沙漠种植玉米的可行性[J]. 沙漠期刊, 2021, 7(14): 11-17.\n" +
+                "[2]AUTHOR T. The Paper[C]//Conference.\n", result);
+    }
 }
