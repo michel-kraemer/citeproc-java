@@ -31,38 +31,29 @@ items:
     title: Another title
     URL: www.example.com
     DOI: https://doi.org/EXAMPLE2
-  - id: item3
+  - id: item4
     author:
       - given: Third
         family: Name
     title: Third title
-    URL: example.com
-    DOI: http://doi.org/EXAMPLE3
-  - id: item4
+    DOI: https://example.com/EXAMPLE3
+  - id: item5
     author:
       - given: Fourth
         family: Name
     title: Fourth title
-    DOI: https://example.com/EXAMPLE4
-  - id: item5
-    author:
-      - given: Fifth
-        family: Name
-    title: Fifth title
-    DOI: http://example.com/EXAMPLE5
+    DOI: http://example.com/EXAMPLE4
 
 result:
   text: |
     G. Name. My title. http://example.com. EXAMPLE
     A. Name. Another title. www.example.com. https://doi.org/EXAMPLE2
-    T. Name. Third title. example.com. http://doi.org/EXAMPLE3
-    F. Name. Fourth title. https://example.com/EXAMPLE4
-    F. Name. Fifth title. http://example.com/EXAMPLE5
+    T. Name. Third title. https://example.com/EXAMPLE3
+    F. Name. Fourth title. http://example.com/EXAMPLE4
   html: |-
     <div class="csl-bib-body">
       <div class="csl-entry">G. Name. My title. <a href="http://example.com">http://example.com</a>. <a href="https://doi.org/EXAMPLE">EXAMPLE</a></div>
       <div class="csl-entry">A. Name. Another title. <a href="www.example.com">www.example.com</a>. <a href="https://doi.org/EXAMPLE2">https://doi.org/EXAMPLE2</a></div>
-      <div class="csl-entry">T. Name. Third title. <a href="example.com">example.com</a>. <a href="http://doi.org/EXAMPLE3">http://doi.org/EXAMPLE3</a></div>
-      <div class="csl-entry">F. Name. Fourth title. <a href="https://example.com/EXAMPLE4">https://example.com/EXAMPLE4</a></div>
-      <div class="csl-entry">F. Name. Fifth title. <a href="http://example.com/EXAMPLE5">http://example.com/EXAMPLE5</a></div>
+      <div class="csl-entry">T. Name. Third title. <a href="https://example.com/EXAMPLE3">https://example.com/EXAMPLE3</a></div>
+      <div class="csl-entry">F. Name. Fourth title. <a href="http://example.com/EXAMPLE4">http://example.com/EXAMPLE4</a></div>
     </div>

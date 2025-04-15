@@ -64,6 +64,8 @@ public class HtmlFormat extends BaseFormat {
                 || uriLowerCase.startsWith("https://")
                 || uriLowerCase.startsWith("ftp://")
                 || uriLowerCase.startsWith("mailto:")
+                || uriLowerCase.startsWith("news:")
+                || uriLowerCase.startsWith("www.")
                 || uriLowerCase.startsWith("/")) {
             return "<a href=\"" + uri + "\">" + text + "</a>";
         }
