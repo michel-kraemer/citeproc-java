@@ -5,6 +5,7 @@ import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import org.junit.Test;
 
 import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.TEXT;
+import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.URL;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -120,5 +121,34 @@ public class HtmlFormatTest {
                 "<span style=\"font-weight: bold\">Both </span></span>" +
                 "<span style=\"font-weight: bold\">Bold </span>Undefined " +
                 "Outer End</span>", r);
+    }
+
+    /**
+     * Check if URLs are correctly formatted and if JavaScript injection is
+     * prevented
+     */
+    @Test
+    public void formatLinkWithJavascript() {
+        HtmlFormat f = new HtmlFormat();
+        f.setConvertLinks(true);
+        TokenBuffer buf = new TokenBuffer();
+        buf.append("Hello ", TEXT);
+
+        int fa = FormattingAttributes.merge(0,
+                FormattingAttributes.ofFontStyle(FormattingAttributes.FS_ITALIC));
+
+        buf.append("http://example.com", URL, fa);
+        buf.append("https://example.com", URL, fa);
+        buf.append("javascript:alert('Hello world')", URL, fa);
+        buf.append("ftp://example.com", URL, fa);
+        buf.append("mailto:example@example.com", URL, fa);
+        String r = f.format(buf);
+
+        assertEquals("Hello <span style=\"font-style: italic\">" +
+                "<a href=\"http://example.com\">http://example.com</a>" +
+                "<a href=\"https://example.com\">https://example.com</a>" +
+                "javascript:alert('Hello world')" +
+                "<a href=\"ftp://example.com\">ftp://example.com</a>" +
+                "<a href=\"mailto:example@example.com\">mailto:example@example.com</a></span>", r);
     }
 }

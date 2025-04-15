@@ -62,6 +62,8 @@ public class HtmlFormat extends BaseFormat {
         String uriLowerCase = uri.toLowerCase(Locale.ENGLISH);
         if (uriLowerCase.startsWith("http://")
                 || uriLowerCase.startsWith("https://")
+                || uriLowerCase.startsWith("ftp://")
+                || uriLowerCase.startsWith("mailto:")
                 || uriLowerCase.startsWith("/")) {
             return "<a href=\"" + uri + "\">" + text + "</a>";
         }
