@@ -815,7 +815,7 @@ public class CSLTest {
         String style = "china-national-standard-gb-t-7714-2015-note";
         String result = CSL.makeAdhocBibliography(style, "text", item1, item2).makeString();
 
-        assertEquals("[1]李 世民, 秦 叔宝. 沙漠种植玉米的可行性[J]. 沙漠期刊, 2021, 7(14): 11-17.\n" +
-                "[2]AUTHOR T. The Paper[C]//Conference.\n", result);
+        assertEquals("[1]李 世民, 秦 叔宝. 沙漠种植玉米的可行性[J]. 沙漠期刊, 2021, 7(14).\n" +
+                "[2]AUTHOR T. The Paper[C].\n", result);
     }
 }
