@@ -279,4 +279,19 @@ public class NameParserTest {
         assertEquals("van", names[1].getNonDroppingParticle());
         assertEquals("Gogh", names[1].getFamily());
     }
+
+    /**
+     * Tests that "and" inside braces is preserved as part of the name
+     * and not treated as a separator
+     */
+    @Test
+    public void andInsideBraces() {
+        CSLName[] names = NameParser.parse("{Barnes and Noble, Inc.}");
+        assertEquals(1, names.length);
+        assertEquals("Barnes and Noble, Inc.", names[0].getLiteral());
+
+        // the name should not be parsed as separate components
+        assertNull(names[0].getFamily());
+        assertNull(names[0].getGiven());
+    }
 }
