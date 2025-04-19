@@ -4,6 +4,7 @@ import de.undercouch.citeproc.csl.CSLName;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests the name parser
@@ -227,5 +228,70 @@ public class NameParserTest {
         CSLName[] names = NameParser.parse(str);
         assertEquals(1, names.length);
         assertEquals(str, names[0].getLiteral());
+    }
+
+    /**
+     * Tests if a name enclosed in braces is preserved as-is
+     */
+    @Test
+    public void bracedNamePreserved() {
+        CSLName[] names = NameParser.parse("{John Doe}");
+        assertEquals(1, names.length);
+        assertEquals("John Doe", names[0].getLiteral());
+
+        // these should be null since we're using literal
+        assertNull(names[0].getFamily());
+        assertNull(names[0].getGiven());
+    }
+
+    /**
+     * Tests if multiple braced names are handled correctly
+     */
+    @Test
+    public void multipleBracedNames() {
+        CSLName[] names = NameParser.parse("{John Doe} and {Jane Smith}");
+        assertEquals(2, names.length);
+        assertEquals("John Doe", names[0].getLiteral());
+        assertEquals("Jane Smith", names[1].getLiteral());
+    }
+
+    /**
+     * Tests mixed braced and non-braced names
+     */
+    @Test
+    public void mixedBracedAndNonBraced() {
+        CSLName[] names = NameParser.parse("{John Doe} and Jane Smith");
+        assertEquals(2, names.length);
+        assertEquals("John Doe", names[0].getLiteral());
+        assertEquals("Jane", names[1].getGiven());
+        assertEquals("Smith", names[1].getFamily());
+    }
+
+    /**
+     * Tests non-braced name with van particle
+     */
+    @Test
+    public void nonBracedWithParticle() {
+        CSLName[] names = NameParser.parse("{Ludwig van Beethoven} and Vincent van Gogh");
+        assertEquals(2, names.length);
+        assertEquals("Ludwig van Beethoven", names[0].getLiteral());
+        assertEquals("Vincent", names[1].getGiven());
+        assertEquals("van", names[1].getNonDroppingParticle());
+        assertEquals("Gogh", names[1].getFamily());
+    }
+
+    /**
+     * Tests that "and" inside braces is preserved as part of the name
+     * and not treated as a separator
+     */
+    @Test
+    public void andInsideBraces() {
+        CSLName[] names = NameParser.parse("{Barnes and Noble, Inc.}");
+        assertEquals(1, names.length);
+        assertEquals("Barnes and Noble, Inc.", names[0].getLiteral());
+
+        // the name should not be parsed as separate components
+        assertNull(names[0].getFamily());
+        assertNull(names[0].getGiven());
     }
 }
