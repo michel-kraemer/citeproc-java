@@ -236,7 +236,7 @@ public class NameParserTest {
     @Test
     public void bracedNamePreserved() {
         CSLName[] names = NameParser.parse("{John Doe}");
-        System.out.println(names[0].getGiven());
+        assertEquals(1, names.length);
         assertEquals("John Doe", names[0].getLiteral());
 
         // these should be null since we're using literal
