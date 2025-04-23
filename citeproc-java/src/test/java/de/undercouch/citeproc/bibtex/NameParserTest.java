@@ -236,7 +236,7 @@ public class NameParserTest {
     @Test
     public void bracedNamePreserved() {
         CSLName[] names = NameParser.parse("{John Doe}");
-        assertEquals(1, names.length);
+        System.out.println(names[0].getGiven());
         assertEquals("John Doe", names[0].getLiteral());
 
         // these should be null since we're using literal
@@ -293,5 +293,34 @@ public class NameParserTest {
         // the name should not be parsed as separate components
         assertNull(names[0].getFamily());
         assertNull(names[0].getGiven());
+    }
+
+    /**
+     * Tests that "and" inside braces is preserved as part of the name
+     * and not treated as a separator
+     */
+    @Test
+    public void andInsideBracesComplex() {
+        CSLName[] names = NameParser.parse("{Barnes and Noble, Inc.} and John Doe and {Jane Smith}");
+        assertEquals(3, names.length);
+        assertEquals("Barnes and Noble, Inc.", names[0].getLiteral());
+
+        // the name should not be parsed as separate components
+        assertNull(names[0].getFamily());
+        assertNull(names[0].getGiven());
+
+        assertEquals("John", names[1].getGiven());
+        assertEquals("Doe", names[1].getFamily());
+        assertEquals("Jane Smith", names[2].getLiteral());
+    }
+
+    /**
+     * Tests that an escaped curly brace inside braces is preserved
+     */
+    @Test
+    public void escapedCurlyBrace() {
+        CSLName[] names = NameParser.parse("{John {\\} Doe}");
+        assertEquals(1, names.length);
+        assertEquals("John {} Doe", names[0].getLiteral());
     }
 }

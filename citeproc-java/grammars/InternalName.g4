@@ -26,6 +26,27 @@ name
   returns [
     CSLName result
   ]
+  : literalname { $result = $literalname.result; }
+  | parsablename { $result = $parsablename.result; }
+  ;
+
+literalname
+  returns [
+    CSLName result
+  ]
+  locals [
+     CSLNameBuilder builder = new CSLNameBuilder();
+  ]
+  @after {
+    $result = $builder.build();
+  }
+  : LITERALNAME { $builder.literal($LITERALNAME.text.substring(1, $LITERALNAME.text.length() - 1).replace("\\}", "}")); }
+  ;
+
+parsablename
+  returns [
+    CSLName result
+  ]
   locals [
      CSLNameBuilder builder = new CSLNameBuilder();
   ]
@@ -98,7 +119,9 @@ last
   | uwords { $result.addAll($uwords.result); }
   ;
 
-AND  : 'and' ;
+LITERALNAME : '{' (ESCAPED_BRACE|.)*? '}' ;
+ESCAPED_BRACE : '\\}' ;
+AND : 'and' ;
 SPACE : ' '+ ;
 COMMA : ',' ;
 UWORD : ULETTER ( ULETTER | LLETTER )* ;
