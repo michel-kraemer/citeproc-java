@@ -286,6 +286,55 @@ public class SName implements SElement {
     }
 
     /**
+     * <p>Check if a string only contains characters from a language where the
+     * given name and the family name are typically separated by whitespace. As
+     * soon as a character is found from a language where names typically don't
+     * include spaces, the method returns {@code false}.</p>
+     *
+     * <p>The list of languages that don't include spaces in names comes from
+     * Claude AI and ChatGPT. There is also a nice discussion in the
+     * <a href="https://discourse.citationstyles.org/t/east-asian-author-names-and-white-space-for-separation/1619">CSL discussion forum</a>.</p>
+     *
+     * @param s the string to check
+     * @return {@code true} if given name and family name should be separated by
+     * whitespace (or if the given string is {@code null}, in which case it is
+     * undecidable, and the default is {@code true}), or {@code false} if this
+     * is normally not the case for the string's language.
+     */
+    private static boolean shouldBeSeparatedBySpace(String s) {
+        if (s == null) {
+            // undecidable, so default to true
+            return true;
+        }
+
+        for (int i = 0; i < s.length();) {
+            int codePoint = s.codePointAt(i);
+            Character.UnicodeScript script = Character.UnicodeScript.of(codePoint);
+
+            // According to Claude AI and ChatGPT, these are the languages
+            // that don't use spaces in names
+            switch (script) {
+                case HAN:               // Chinese characters
+                case HIRAGANA:          // Japanese Hiragana
+                case KATAKANA:          // Japanese Katakana
+                case HANGUL:            // Korean
+                case LAO:               // Lao
+                case KHMER:             // Khmer (Cambodian)
+                case MYANMAR:           // Burmese
+                case TIBETAN:           // Tibetan
+                case MONGOLIAN:         // Mongolian
+                    return false;
+                default:
+                    // continue
+            }
+
+            i += Character.charCount(codePoint);
+        }
+
+        return true;
+    }
+
+    /**
      * Render a single name
      * @param name the name to render
      * @param nameAsSort {@code true} if given name and family name should be
@@ -371,13 +420,21 @@ public class SName implements SElement {
         if (nameAsSort) {
             result.append(family);
             if (!family.isEmpty() && !given.isEmpty()) {
-                result.append(sortSeparator, DELIMITER);
+                if (!sortSeparator.isBlank() ||
+                        (shouldBeSeparatedBySpace(strGiven) &&
+                                shouldBeSeparatedBySpace(strFamily))) {
+                    result.append(sortSeparator, DELIMITER);
+                }
             }
             result.append(given);
         } else {
             result.append(given);
             if (!given.isEmpty() && !family.isEmpty()) {
-                result.append(" ", DELIMITER);
+                if (!sortSeparator.isBlank() ||
+                        (shouldBeSeparatedBySpace(strGiven) &&
+                                shouldBeSeparatedBySpace(strFamily))) {
+                    result.append(" ", DELIMITER);
+                }
             }
             result.append(family);
         }
