@@ -5,6 +5,7 @@ import de.undercouch.citeproc.csl.CSLDateBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.DateFormatSymbols;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -182,7 +183,21 @@ public class DateParser {
         CSLDateBuilder builder = new CSLDateBuilder();
 
         // handle date parts
-        builder.dateParts(d1.getDateParts()[0], d2.getDateParts()[d2.getDateParts().length - 1]);
+        int[] dp1 = d1.getDateParts()[0];
+        int[] dp2 = d2.getDateParts()[d2.getDateParts().length - 1];
+        if (dp1.length != dp2.length) {
+            // only produce valid date ranges: trim one or the other
+            if (dp1.length < dp2.length) {
+                dp2 = Arrays.copyOf(dp2, dp1.length);
+            } else {
+                dp1 = Arrays.copyOf(dp1, dp2.length);
+            }
+        }
+        if (Arrays.equals(dp1, dp2)) {
+            builder.dateParts(dp1);
+        } else {
+            builder.dateParts(dp1, dp2);
+        }
 
         // handle circa
         if (d1.getCirca() != null) {

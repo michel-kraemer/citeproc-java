@@ -82,4 +82,14 @@ public class DateParserTest {
         d = DateParser.toDate("2013/2014", "Jan/Aug");
         assertArrayEquals(new int[][] { new int[] { 2013 }, new int[] { 2014 } }, d.getDateParts());
     }
+
+    /**
+     * Tests if an invalid month entry can be handled. See
+     * <a href="https://github.com/michel-kraemer/citeproc-java/issues/270">issue 270</a>.
+     */
+    @Test
+    public void invalidMonth() {
+        CSLDate d = DateParser.toDate("2019", "2--7 June");
+        assertArrayEquals(new int[][] { new int[] { 2019 } }, d.getDateParts());
+    }
 }
