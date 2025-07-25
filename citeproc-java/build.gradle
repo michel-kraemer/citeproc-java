@@ -14,7 +14,7 @@ dependencies {
     api 'org.jbibtex:jbibtex:1.0.20'
     api "org.antlr:antlr4-runtime:${libs.versions.antlr.get()}"
     implementation 'org.apache.commons:commons-lang3:3.17.0'
-    implementation 'org.apache.commons:commons-text:1.13.1'
+    implementation 'org.apache.commons:commons-text:1.14.0'
     implementation 'org.yaml:snakeyaml:2.4', optional
 
     testImplementation 'commons-io:commons-io:2.19.0'
