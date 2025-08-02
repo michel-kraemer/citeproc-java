@@ -13,11 +13,11 @@ ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 dependencies {
     api 'org.jbibtex:jbibtex:1.0.20'
     api "org.antlr:antlr4-runtime:${libs.versions.antlr.get()}"
-    implementation 'org.apache.commons:commons-lang3:3.17.0'
-    implementation 'org.apache.commons:commons-text:1.13.1'
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
+    implementation 'org.apache.commons:commons-text:1.14.0'
     implementation 'org.yaml:snakeyaml:2.4', optional
 
-    testImplementation 'commons-io:commons-io:2.19.0'
+    testImplementation 'commons-io:commons-io:2.20.0'
     testImplementation 'org.citationstyles:styles:25.4'
     testImplementation 'org.citationstyles:locales:25.4'
     testImplementation "org.graalvm.sdk:graal-sdk:$graalVMVersion"

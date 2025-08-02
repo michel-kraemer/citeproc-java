@@ -1,6 +1,6 @@
 package de.undercouch.citeproc.helper;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import java.util.ArrayList;
@@ -113,7 +113,7 @@ public class Levenshtein {
         // look for strings prefixed by 't'
         Collection<T> result = new LinkedHashSet<>();
         for (T s : ss) {
-            if (StringUtils.startsWithIgnoreCase(s, t)) {
+            if (Strings.CI.startsWith(s, t)) {
                 result.add(s);
             }
         }
