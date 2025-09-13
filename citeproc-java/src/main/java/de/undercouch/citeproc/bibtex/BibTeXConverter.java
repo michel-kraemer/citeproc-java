@@ -144,7 +144,7 @@ public class BibTeXConverter {
                     // candidate segment from segStart to i
                     // skip if it covers the whole string
                     if (!(segStart == 0 && i == len - 1)) {
-                        segments.add(new int[] { segStart, i });
+                        segments.add(new int[]{segStart, i});
                     }
                     segStart = -1;
                 }
@@ -168,7 +168,7 @@ public class BibTeXConverter {
             // Convert the inner LaTeX to the same plain text to find in converted
             String innerConverted = original.substring(start, end);
             try {
-                java.util.List<LaTeXObject> objs = latexParser.parse(new StringReader(innerConverted));
+                List<LaTeXObject> objs = latexParser.parse(new StringReader(innerConverted));
                 innerConverted = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
             } catch (Exception ex) {
                 // ignore parse errors; fall back to raw inner
@@ -239,6 +239,7 @@ public class BibTeXConverter {
 
     /**
      * Converts the given database to a map of CSL citation items
+     *
      * @param db the database
      * @return a map consisting of citation keys and citation items
      */
