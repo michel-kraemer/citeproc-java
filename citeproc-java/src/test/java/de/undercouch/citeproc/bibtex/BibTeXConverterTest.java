@@ -1,13 +1,10 @@
 package de.undercouch.citeproc.bibtex;
 
 import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.csl.CSLName;
+import de.undercouch.citeproc.csl.CSLNameBuilder;
 import de.undercouch.citeproc.csl.CSLType;
-import org.jbibtex.BibTeXDatabase;
-import org.jbibtex.BibTeXEntry;
-import org.jbibtex.BibTeXParser;
-import org.jbibtex.Key;
-import org.jbibtex.ParseException;
-import org.jbibtex.StringValue;
+import org.jbibtex.*;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -15,9 +12,7 @@ import java.io.StringReader;
 import java.util.Iterator;
 import java.util.Map;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /**
  * Tests the BibTeX converter
@@ -255,4 +250,115 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals("2020-01-02", item.getAccessed().getRaw());
         assertEquals("1984", item.getIssued().getRaw());
     }
+
+    @Test
+    public void curlyBracesAreKept() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "  author = {{The PGF/TikZ Team} and others},\n" +
+                "  journal = {TUGBoat},\n" +
+                "  title = {pgf – Create PostScript and PDF graphics in TeX},\n" +
+                "  year = {2013},\n" +
+                "  _jabref_shared = {sharedId: -1, version: 1}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+
+        CSLName name = new CSLNameBuilder()
+                .literal("The PGF/TikZ Team")
+                .build();
+
+        assertEquals(name.getLiteral(), item.getAuthor()[0].getLiteral());
+    }
+
+    @Test
+    public void curlyNestedBracesAreKept() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "  author = {{The PGF/TikZ Team} and {JabRef e.V}},\n" +
+                "  journal = {TUGBoat},\n" +
+                "  title = {pgf – Create PostScript and PDF graphics in TeX},\n" +
+                "  year = {2013},\n" +
+                "  _jabref_shared = {sharedId: -1, version: 1}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+
+        CSLName name = new CSLNameBuilder()
+                .literal("The PGF/TikZ Team")
+                .build();
+
+        CSLName jabrefName = new CSLNameBuilder()
+                .literal("JabRef e.V")
+                .build();
+
+        assertEquals(name.getLiteral(), item.getAuthor()[0].getLiteral());
+        assertEquals(jabrefName.getLiteral(), item.getAuthor()[1].getLiteral());
+    }
+
+    @Test
+    public void editorCurlyBracesAreKept() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "  editor = {{The PGF/TikZ Team} and others},\n" +
+                "  title = {pgf – Create PostScript and PDF graphics in TeX},\n" +
+                "  year = {2013}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+
+        CSLName name = new CSLNameBuilder()
+                .literal("The PGF/TikZ Team")
+                .build();
+
+        assertEquals(2, item.getEditor().length);
+        assertEquals(name.getLiteral(), item.getEditor()[0].getLiteral());
+    }
+
+    @Test
+    public void editorMixedLiteralAndPerson() throws ParseException {
+        String entry = "@book{mixededitors,\n" +
+                "  editor = {{ACME Inc} and Doe, John},\n" +
+                "  title = {Some Book},\n" +
+                "  year = {2020}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("mixededitors");
+
+        assertEquals(2, item.getEditor().length);
+        assertEquals("ACME Inc", item.getEditor()[0].getLiteral());
+        assertNull("First editor should be literal; no family name", item.getEditor()[0].getFamily());
+        assertEquals("Doe", item.getEditor()[1].getFamily());
+        assertEquals("John", item.getEditor()[1].getGiven());
+    }
+
+    @Test
+    public void titleBracesNotReadded() throws ParseException {
+        String entry = "@article{titlebraces,\n" +
+                "  author = {Test, Author},\n" +
+                "  title = {An {E}xample with {B}races in {T}itle},\n" +
+                "  year = {2022}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("titlebraces");
+
+        String title = item.getTitle();
+        assertNotNull(title);
+        assertFalse("Title should not contain curly braces after conversion", title.contains("{"));
+        assertFalse("Title should not contain curly braces after conversion", title.contains("}"));
+        assertEquals("An Example with Braces in Title", title);
+    }
+
 }
