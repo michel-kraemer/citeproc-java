@@ -44,11 +44,11 @@
         },
         {
             "type": "CSLName[]",
-            "name": "composer"
+            "name": "compiler"
         },
         {
             "type": "CSLName[]",
-            "name": "compiler"
+            "name": "composer"
         },
         {
             "type": "CSLName[]",
@@ -80,11 +80,23 @@
         },
         {
             "type": "CSLName[]",
-            "name": "illustrator"
+            "name": "guest"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "host"
         },
         {
             "type": "CSLName[]",
             "name": "interviewer"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "illustrator"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "narrator"
         },
         {
             "type": "CSLName[]",
@@ -112,11 +124,23 @@
         },
         {
             "type": "CSLName[]",
+            "name": "script-writer"
+        },
+        {
+            "type": "CSLName[]",
+            "name": "series-creator"
+        },
+        {
+            "type": "CSLName[]",
             "name": "translator"
         },
         {
             "type": "CSLDate",
             "name": "accessed"
+        },
+      {
+            "type": "CSLDate",
+            "name": "available-date"
         },
         {
             "type": "CSLDate",
@@ -149,6 +173,10 @@
         {
             "type": "String",
             "name": "archive"
+        },
+        {
+            "type": "String",
+            "name": "archive_collection"
         },
         {
             "type": "String",
@@ -204,6 +232,10 @@
         },
         {
             "type": "String",
+            "name": "division"
+        },
+        {
+            "type": "String",
             "name": "DOI"
         },
         {
@@ -213,6 +245,10 @@
         {
             "type": "String",
             "name": "event"
+        },
+        {
+            "type": "String",
+            "name": "event-title"
         },
         {
             "type": "String",
@@ -288,11 +324,23 @@
         },
         {
             "type": "String",
+            "name": "part"
+        },
+        {
+            "type": "String",
+            "name": "part-title"
+        },
+        {
+            "type": "String",
             "name": "PMCID"
         },
         {
             "type": "String",
             "name": "PMID"
+        },
+        {
+            "type": "String",
+            "name": "printing"
         },
         {
             "type": "String",
@@ -305,6 +353,10 @@
         {
             "type": "String",
             "name": "references"
+        },
+        {
+            "type": "String",
+            "name": "reviewed-genre"
         },
         {
             "type": "String",
@@ -328,6 +380,10 @@
         },
         {
             "type": "String",
+            "name": "supplement"
+        },
+        {
+            "type": "String",
             "name": "title"
         },
         {
@@ -348,6 +404,10 @@
         },
         {
             "type": "String",
+            "name": "volume-title"
+        },
+        {
+            "type": "String",
             "name": "year-suffix"
         }
     ],
@@ -357,34 +417,63 @@
         "public CSLItemDataBuilder issue(int issue) { issue(String.valueOf(issue)); return this; }",
         "public CSLItemDataBuilder number(int number) { number(String.valueOf(number)); return this; }",
         "public CSLItemDataBuilder numberOfVolumes(int numberOfVolumes) { numberOfVolumes(String.valueOf(numberOfVolumes)); return this; }",
-        "public CSLItemDataBuilder volume(int volume) { volume(String.valueOf(volume)); return this; }",
         "public CSLItemDataBuilder page(int page) { page(String.valueOf(page)); return this; }",
         "public CSLItemDataBuilder page(int firstPageInRange, int lastPageInRange) { page(firstPageInRange + \"–\" + lastPageInRange); return this; }",
         "public CSLItemDataBuilder page(String firstPageInRange, String lastPageInRange) { page(firstPageInRange + \"–\" + lastPageInRange); return this; }",
+        "public CSLItemDataBuilder part(int part) { part(String.valueOf(part)); return this; }",
+        "public CSLItemDataBuilder printing(int printing) { printing(String.valueOf(printing)); return this; }",
+        "public CSLItemDataBuilder supplement(int supplement) { supplement(String.valueOf(supplement)); return this; }",
+        "public CSLItemDataBuilder volume(int volume) { volume(String.valueOf(volume)); return this; }",
         "public CSLItemDataBuilder author(String given, String family) { author(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder author(String given, String family, boolean parseNames) { author(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder chair(String given, String family) { chair(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder chair(String given, String family, boolean parseNames) { chair(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder collectionEditor(String given, String family) { collectionEditor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder collectionEditor(String given, String family, boolean parseNames) { collectionEditor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder compiler(String given, String family) { compiler(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder compiler(String given, String family, boolean parseNames) { compiler(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder composer(String given, String family) { composer(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder composer(String given, String family, boolean parseNames) { composer(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder containerAuthor(String given, String family) { containerAuthor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder containerAuthor(String given, String family, boolean parseNames) { containerAuthor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder contributor(String given, String family) { contributor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder contributor(String given, String family, boolean parseNames) { contributor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder curator(String given, String family) { curator(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder curator(String given, String family, boolean parseNames) { curator(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder director(String given, String family) { director(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder director(String given, String family, boolean parseNames) { director(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder editor(String given, String family) { editor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder editor(String given, String family, boolean parseNames) { editor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder editorialDirector(String given, String family) { editorialDirector(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder editorialDirector(String given, String family, boolean parseNames) { editorialDirector(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder executiveProducer(String given, String family) { executiveProducer(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder executiveProducer(String given, String family, boolean parseNames) { executiveProducer(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder guest(String given, String family) { guest(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder guest(String given, String family, boolean parseNames) { guest(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder host(String given, String family) { host(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder host(String given, String family, boolean parseNames) { host(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder interviewer(String given, String family) { interviewer(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder interviewer(String given, String family, boolean parseNames) { interviewer(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder illustrator(String given, String family) { illustrator(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder illustrator(String given, String family, boolean parseNames) { illustrator(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder narrator(String given, String family) { narrator(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder narrator(String given, String family, boolean parseNames) { narrator(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder organizer(String given, String family) { organizer(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder organizer(String given, String family, boolean parseNames) { organizer(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder originalAuthor(String given, String family) { originalAuthor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder originalAuthor(String given, String family, boolean parseNames) { originalAuthor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder performer(String given, String family) { performer(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder performer(String given, String family, boolean parseNames) { performer(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder producer(String given, String family) { producer(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder producer(String given, String family, boolean parseNames) { producer(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder recipient(String given, String family) { recipient(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder recipient(String given, String family, boolean parseNames) { recipient(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder reviewedAuthor(String given, String family) { reviewedAuthor(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder reviewedAuthor(String given, String family, boolean parseNames) { reviewedAuthor(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder scriptWriter(String given, String family) { scriptWriter(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder scriptWriter(String given, String family, boolean parseNames) { scriptWriter(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
+        "public CSLItemDataBuilder seriesCreator(String given, String family) { seriesCreator(new CSLNameBuilder().given(given).family(family).build()); return this; }",
+        "public CSLItemDataBuilder seriesCreator(String given, String family, boolean parseNames) { seriesCreator(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder translator(String given, String family) { translator(new CSLNameBuilder().given(given).family(family).build()); return this; }",
         "public CSLItemDataBuilder translator(String given, String family, boolean parseNames) { translator(new CSLNameBuilder().given(given).family(family).parseNames(parseNames).build()); return this; }",
         "public CSLItemDataBuilder issued(int year) { issued(new CSLDateBuilder().dateParts(year).build()); return this; }",
@@ -393,6 +482,9 @@
         "public CSLItemDataBuilder accessed(int year) { accessed(new CSLDateBuilder().dateParts(year).build()); return this; }",
         "public CSLItemDataBuilder accessed(int year, int month) { accessed(new CSLDateBuilder().dateParts(year, month).build()); return this; }",
         "public CSLItemDataBuilder accessed(int year, int month, int day) { accessed(new CSLDateBuilder().dateParts(year, month, day).build()); return this; }",
+        "public CSLItemDataBuilder availableDate(int year) { availableDate(new CSLDateBuilder().dateParts(year).build()); return this; }",
+        "public CSLItemDataBuilder availableDate(int year, int month) { availableDate(new CSLDateBuilder().dateParts(year, month).build()); return this; }",
+        "public CSLItemDataBuilder availableDate(int year, int month, int day) { availableDate(new CSLDateBuilder().dateParts(year, month, day).build()); return this; }",
         "public CSLItemDataBuilder container(int year) { container(new CSLDateBuilder().dateParts(year).build()); return this; }",
         "public CSLItemDataBuilder container(int year, int month) { container(new CSLDateBuilder().dateParts(year, month).build()); return this; }",
         "public CSLItemDataBuilder container(int year, int month, int day) { container(new CSLDateBuilder().dateParts(year, month, day).build()); return this; }",
