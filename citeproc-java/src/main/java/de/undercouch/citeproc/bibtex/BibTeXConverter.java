@@ -171,14 +171,22 @@ public class BibTeXConverter {
                 continue;
             }
             // Convert the inner LaTeX to the same plain text to find in converted
-            String innerConverted = original.substring(start, end);
+            String innerOriginal = original.substring(start, end);
+            // If the original inner text contains LaTeX commands (e.g., accent macros),
+            // do not treat it as a literal brace group to be re-added as it is typically not a name group
+            if (innerOriginal.indexOf('\\') >= 0) {
+                continue;
+            }
+            String innerConverted = innerOriginal;
             try {
                 List<LaTeXObject> objs = latexParser.parse(new StringReader(innerConverted));
                 innerConverted = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
             } catch (Exception ex) {
                 // ignore parse errors; fall back to raw inner
             }
-            if (innerConverted.isEmpty()) {
+            // Skip trivial fragments (e.g., single accented letters) to avoid turning
+            // normal names into literals and breaking et-al logic
+            if (innerConverted.isEmpty() || innerConverted.length() == 1) {
                 continue;
             }
             result = wrapWithBracesIfFound(result, innerConverted);
