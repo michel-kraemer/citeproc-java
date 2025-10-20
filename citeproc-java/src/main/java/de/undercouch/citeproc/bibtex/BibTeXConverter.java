@@ -9,9 +9,11 @@ import org.jbibtex.BibTeXEntry;
 import org.jbibtex.BibTeXParser;
 import org.jbibtex.BibTeXString;
 import org.jbibtex.Key;
+import org.jbibtex.LaTeXGroup;
 import org.jbibtex.LaTeXObject;
 import org.jbibtex.LaTeXParser;
 import org.jbibtex.LaTeXPrinter;
+import org.jbibtex.LaTeXString;
 import org.jbibtex.ParseException;
 import org.jbibtex.TokenMgrException;
 import org.jbibtex.Value;
@@ -104,6 +106,24 @@ public class BibTeXConverter {
     private final LaTeXPrinter latexPrinter;
 
     /**
+     * Detects if a LaTeX group (recursively) contains LaTeX commands (e.g., accent macros).
+     * If so, the group is likely used for formatting/diacritics rather than a name
+     */
+    private static boolean containsLatexCommands(LaTeXGroup group) {
+        for (LaTeXObject child : group.getObjects()) {
+            if (child instanceof org.jbibtex.LaTeXCommand) {
+                return true;
+            }
+            if (child instanceof LaTeXGroup) {
+                if (containsLatexCommands((LaTeXGroup) child)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Default constructor
      */
     public BibTeXConverter() {
@@ -115,115 +135,6 @@ public class BibTeXConverter {
             throw new RuntimeException(e);
         }
         latexPrinter = new LaTeXPrinter();
-    }
-
-    /**
-     * Re-add curly braces around parts of a name string that were enclosed in curly
-     * braces in the original BibTeX field. This is necessary because the LaTeX conversion
-     * removes braces, but NameParser uses them to detect literal names.
-     * Only applies to author/editor fields.
-     * @param original the original field value (possibly containing braces and LaTeX)
-     * @param converted the field value after LaTeX conversion
-     * @return the converted string with curly braces re-added where appropriate
-     */
-    private String reAddCurlyBracesInNames(String original, String converted) {
-        if (original == null || converted == null || original.indexOf('{') < 0) {
-            return converted;
-        }
-
-        int len = original.length();
-        // Collect all top-level brace segments (and nested ones), but skip one that
-        // wraps the whole string
-        List<int[]> segments = new ArrayList<>();
-        int depth = 0;
-        int segStart = -1;
-        for (int i = 0; i < len; ++i) {
-            char c = original.charAt(i);
-            if (c == '{') {
-                depth++;
-                if (depth == 1) {
-                    segStart = i;
-                }
-            } else if (c == '}') {
-                if (depth == 1) {
-                    // candidate segment from segStart to i
-                    // skip if it covers the whole string
-                    if (!(segStart == 0 && i == len - 1)) {
-                        segments.add(new int[]{segStart, i});
-                    }
-                    segStart = -1;
-                }
-                if (depth > 0) {
-                    depth--;
-                }
-            }
-        }
-
-        if (segments.isEmpty()) {
-            return converted;
-        }
-
-        String result = converted;
-        for (int[] seg : segments) {
-            int start = seg[0] + 1; // content inside braces
-            int end = seg[1];
-            if (start >= end) {
-                continue;
-            }
-            // Convert the inner LaTeX to the same plain text to find in converted
-            String innerOriginal = original.substring(start, end);
-            // If the original inner text contains LaTeX commands (e.g., accent macros),
-            // do not treat it as a literal brace group to be re-added as it is typically not a name group
-            if (innerOriginal.indexOf('\\') >= 0) {
-                continue;
-            }
-            String innerConverted = innerOriginal;
-            try {
-                List<LaTeXObject> objs = latexParser.parse(new StringReader(innerConverted));
-                innerConverted = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
-            } catch (Exception ex) {
-                // ignore parse errors; fall back to raw inner
-            }
-            // Skip trivial fragments (e.g., single accented letters) to avoid turning
-            // normal names into literals and breaking et-al logic
-            if (innerConverted.isEmpty() || innerConverted.length() == 1) {
-                continue;
-            }
-            result = wrapWithBracesIfFound(result, innerConverted);
-        }
-        return result;
-    }
-
-    private String wrapWithBracesIfFound(String text, String needle) {
-        int fromIndex = 0;
-        StringBuilder sb = new StringBuilder();
-        while (fromIndex < text.length()) {
-            int idx = text.indexOf(needle, fromIndex);
-            if (idx < 0) {
-                sb.append(text, fromIndex, text.length());
-                break;
-            }
-            // Check if already wrapped with braces (ignoring spaces around)
-            int left = idx - 1;
-            while (left >= fromIndex && Character.isWhitespace(text.charAt(left))) {
-                left--;
-            }
-            int right = idx + needle.length();
-            int r = right;
-            while (r < text.length() && Character.isWhitespace(text.charAt(r))) {
-                r++;
-            }
-            boolean alreadyWrapped = left >= 0 && text.charAt(left) == '{' && r < text.length() && text.charAt(r) == '}';
-            sb.append(text, fromIndex, idx);
-            if (alreadyWrapped) {
-                // keep as-is
-                sb.append(text, idx, right);
-            } else {
-                sb.append('{').append(needle).append('}');
-            }
-            fromIndex = right;
-        }
-        return sb.toString();
     }
 
     /**
@@ -273,23 +184,43 @@ public class BibTeXConverter {
         // get all fields from the BibTeX entry
         Map<String, String> entries = new HashMap<>();
         for (Map.Entry<Key, Value> field : e.getFields().entrySet()) {
-            String original = field.getValue().toUserString().replaceAll("\\r", "");
-            String us = original;
+            String us = field.getValue().toUserString().replaceAll("\\r", "");
 
             // convert LaTeX string to normal text
             try {
                 List<LaTeXObject> objs = latexParser.parse(new StringReader(us));
-                us = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
+                List<LaTeXObject> newObjs;
+                String keyLower = field.getKey().getValue().toLowerCase();
+                if (FIELD_AUTHOR.equals(keyLower) || FIELD_EDITOR.equals(keyLower)) {
+                    newObjs = new ArrayList<>();
+                    // only add curly braces if the latex string does not contain latex commands e.g. for accents
+                    for (LaTeXObject o : objs) {
+                        if (o instanceof LaTeXGroup grp) {
+                            boolean hasLatexCmd = containsLatexCommands(grp);
+                            if (!hasLatexCmd) {
+                                List<LaTeXObject> children = new ArrayList<>();
+                                children.add(new LaTeXString("{"));
+                                children.addAll(grp.getObjects());
+                                children.add(new LaTeXString("}"));
+                                LaTeXGroup g = new LaTeXGroup(children);
+                                newObjs.add(g);
+                            } else {
+                                // Keep the group as-is (no explicit braces added)
+                                newObjs.add(o);
+                            }
+                        } else {
+                            newObjs.add(o);
+                        }
+                    }
+                } else {
+                    newObjs = objs;
+                }
+                us = latexPrinter.print(newObjs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
             } catch (ParseException | TokenMgrException ex) {
                 // ignore
             }
 
-            String keyLower = field.getKey().getValue().toLowerCase();
-            if (FIELD_AUTHOR.equals(keyLower) || FIELD_EDITOR.equals(keyLower)) {
-                us = reAddCurlyBracesInNames(original, us);
-            }
-
-            entries.put(keyLower, us);
+            entries.put(field.getKey().getValue().toLowerCase(), us);
         }
 
         // map type

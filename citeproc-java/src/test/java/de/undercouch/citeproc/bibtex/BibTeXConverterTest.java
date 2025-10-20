@@ -370,4 +370,52 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals("An Example with Braces in Title", title);
     }
 
+    @Test
+    public void curlyBracesAreReaddedOnlyForSecondAuthor() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "  author = {Foo Bar and {Foo Bar}},\n" +
+                "  journal = {Test journal},\n" +
+                "  title = {Test title},\n" +
+                "  year = {2025},\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+
+        CSLName name1 = new CSLNameBuilder()
+                .family("Bar")
+                .given("Foo")
+                .build();
+
+        CSLName name2 = new CSLNameBuilder()
+                .literal("Foo Bar")
+                .build();
+
+        assertEquals(name1, item.getAuthor()[0]);
+        assertEquals(name2, item.getAuthor()[1]);
+    }
+
+
+    @Test
+    public void curlyBracesSingleAuthor() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "  author = {{NASA}},\n" +
+                "  journal = {Test journal},\n" +
+                "  title = {Test title},\n" +
+                "  year = {2025},\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+
+        CSLName name1 = new CSLNameBuilder()
+                .literal("NASA")
+                .build();
+
+        assertEquals(name1, item.getAuthor()[0]);
+    }
 }
