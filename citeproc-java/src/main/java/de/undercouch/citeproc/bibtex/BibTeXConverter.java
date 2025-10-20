@@ -9,6 +9,7 @@ import org.jbibtex.BibTeXEntry;
 import org.jbibtex.BibTeXParser;
 import org.jbibtex.BibTeXString;
 import org.jbibtex.Key;
+import org.jbibtex.LaTeXCommand;
 import org.jbibtex.LaTeXGroup;
 import org.jbibtex.LaTeXObject;
 import org.jbibtex.LaTeXParser;
@@ -111,7 +112,7 @@ public class BibTeXConverter {
      */
     private static boolean containsLatexCommands(LaTeXGroup group) {
         for (LaTeXObject child : group.getObjects()) {
-            if (child instanceof org.jbibtex.LaTeXCommand) {
+            if (child instanceof LaTeXCommand) {
                 return true;
             }
             if (child instanceof LaTeXGroup) {
@@ -193,7 +194,7 @@ public class BibTeXConverter {
                 String keyLower = field.getKey().getValue().toLowerCase();
                 if (FIELD_AUTHOR.equals(keyLower) || FIELD_EDITOR.equals(keyLower)) {
                     newObjs = new ArrayList<>();
-                    // only add curly braces if the latex string does not contain latex commands e.g. for accents
+                    // only add curly braces if the latex string does not contain latex commands, e.g. for accents
                     for (LaTeXObject o : objs) {
                         if (o instanceof LaTeXGroup grp) {
                             boolean hasLatexCmd = containsLatexCommands(grp);
