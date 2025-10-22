@@ -1,6 +1,8 @@
 package de.undercouch.citeproc.bibtex;
 
 import de.undercouch.citeproc.csl.CSLItemData;
+import de.undercouch.citeproc.csl.CSLName;
+import de.undercouch.citeproc.csl.CSLNameBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
@@ -18,6 +20,8 @@ import java.util.Map;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests the BibTeX converter
@@ -254,5 +258,202 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         CSLItemData item = items.get("testcitationkey");
         assertEquals("2020-01-02", item.getAccessed().getRaw());
         assertEquals("1984", item.getIssued().getRaw());
+    }
+
+    /**
+     * Test if curly braces in the author field are kept and the field is
+     * correctly converted to a literal string
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void curlyBracesAreKept() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "  author = {{The PGF/TikZ Team} and others},\n" +
+                "  journal = {TUGBoat},\n" +
+                "  title = {pgf – Create PostScript and PDF graphics in TeX},\n" +
+                "  year = {2013}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+
+        CSLName name = new CSLNameBuilder()
+                .literal("The PGF/TikZ Team")
+                .build();
+
+        assertEquals(2, item.getAuthor().length);
+        assertEquals(name, item.getAuthor()[0]);
+    }
+
+    /**
+     * Test if multiple names with curly braces in the author field are kept
+     * and if they are correctly converted to literal strings
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void multipleCurlyBracesAreKept() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "  author = {{The PGF/TikZ Team} and {JabRef e.V}},\n" +
+                "  journal = {TUGBoat},\n" +
+                "  title = {pgf – Create PostScript and PDF graphics in TeX},\n" +
+                "  year = {2013}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+
+        CSLName name = new CSLNameBuilder()
+                .literal("The PGF/TikZ Team")
+                .build();
+
+        CSLName jabrefName = new CSLNameBuilder()
+                .literal("JabRef e.V")
+                .build();
+
+        assertEquals(name, item.getAuthor()[0]);
+        assertEquals(jabrefName, item.getAuthor()[1]);
+    }
+
+    /**
+     * Test if curly braces in the editor field are kept and the field is
+     * correctly converted to a literal string
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void editorCurlyBracesAreKept() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "  editor = {{The PGF/TikZ Team} and others},\n" +
+                "  title = {pgf – Create PostScript and PDF graphics in TeX},\n" +
+                "  year = {2013}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+
+        CSLName name = new CSLNameBuilder()
+                .literal("The PGF/TikZ Team")
+                .build();
+
+        assertEquals(2, item.getEditor().length);
+        assertEquals(name, item.getEditor()[0]);
+    }
+
+    /**
+     * Test if curly braces in the editor field are kept and the name is
+     * correctly converted to a literal string, even if the field contains
+     * multiple names
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void editorMixedLiteralAndPerson() throws ParseException {
+        String entry = "@book{mixededitors,\n" +
+                "  editor = {{ACME Inc} and Doe, John},\n" +
+                "  title = {Some Book},\n" +
+                "  year = {2020}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("mixededitors");
+
+        assertEquals(2, item.getEditor().length);
+        assertEquals("ACME Inc", item.getEditor()[0].getLiteral());
+        assertNull("First editor should be literal; no family name",
+                item.getEditor()[0].getFamily());
+        assertEquals("Doe", item.getEditor()[1].getFamily());
+        assertEquals("John", item.getEditor()[1].getGiven());
+    }
+
+    /**
+     * Make sure curly braces in the title field are stripped away (as opposed
+     * to curly braces in the author or editor fields)
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void titleBracesNotReadded() throws ParseException {
+        String entry = "@article{titlebraces,\n" +
+                "  author = {Test, Author},\n" +
+                "  title = {An {E}xample with {B}races in {T}itle},\n" +
+                "  year = {2022}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("titlebraces");
+
+        String title = item.getTitle();
+        assertNotNull(title);
+        assertFalse("Title should not contain curly braces after conversion",
+                title.contains("{"));
+        assertFalse("Title should not contain curly braces after conversion",
+                title.contains("}"));
+        assertEquals("An Example with Braces in Title", title);
+    }
+
+    /**
+     * Test if curly braces in the author field are kept and the second name is
+     * correctly converted to a literal string, even if the field contains
+     * multiple names
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void curlyBracesAreReaddedOnlyForSecondAuthor() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "  author = {Foo Bar and {Foo Bar}},\n" +
+                "  journal = {Test journal},\n" +
+                "  title = {Test title},\n" +
+                "  year = {2025},\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+
+        CSLName name1 = new CSLNameBuilder()
+                .family("Bar")
+                .given("Foo")
+                .build();
+
+        CSLName name2 = new CSLNameBuilder()
+                .literal("Foo Bar")
+                .build();
+
+        assertEquals(name1, item.getAuthor()[0]);
+        assertEquals(name2, item.getAuthor()[1]);
+    }
+
+    /**
+     * Test if curly braces in the author field are kept and the field is
+     * correctly converted to a literal string
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void curlyBracesSingleAuthor() throws ParseException {
+        String entry = "@online{testcitationkey,\n" +
+                "  author = {{NASA}},\n" +
+                "  journal = {Test journal},\n" +
+                "  title = {Test title},\n" +
+                "  year = {2025}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        Map<String, CSLItemData> items = converter.toItemData(db);
+        CSLItemData item = items.get("testcitationkey");
+
+        CSLName name1 = new CSLNameBuilder()
+                .literal("NASA")
+                .build();
+
+        assertEquals(name1, item.getAuthor()[0]);
     }
 }

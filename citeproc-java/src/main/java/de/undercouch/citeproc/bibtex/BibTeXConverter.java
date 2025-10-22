@@ -9,9 +9,12 @@ import org.jbibtex.BibTeXEntry;
 import org.jbibtex.BibTeXParser;
 import org.jbibtex.BibTeXString;
 import org.jbibtex.Key;
+import org.jbibtex.LaTeXCommand;
+import org.jbibtex.LaTeXGroup;
 import org.jbibtex.LaTeXObject;
 import org.jbibtex.LaTeXParser;
 import org.jbibtex.LaTeXPrinter;
+import org.jbibtex.LaTeXString;
 import org.jbibtex.ParseException;
 import org.jbibtex.TokenMgrException;
 import org.jbibtex.Value;
@@ -21,10 +24,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * <p>Converts BibTeX items to CSL citation items</p>
@@ -141,6 +146,7 @@ public class BibTeXConverter {
 
     /**
      * Converts the given database to a map of CSL citation items
+     *
      * @param db the database
      * @return a map consisting of citation keys and citation items
      */
@@ -149,6 +155,60 @@ public class BibTeXConverter {
         for (Map.Entry<Key, BibTeXEntry> e : db.getEntries().entrySet()) {
             result.put(e.getKey().getValue(), toItemData(e.getValue()));
         }
+        return result;
+    }
+
+    /**
+     * Detects if a LaTeX group (recursively) contains LaTeX commands (e.g.,
+     * accent macros). If so, the group is likely used for formatting/diacritics
+     * rather than a name
+     */
+    private static boolean containsLatexCommands(LaTeXGroup group) {
+        for (LaTeXObject child : group.getObjects()) {
+            if (child instanceof LaTeXCommand) {
+                return true;
+            }
+            if (child instanceof LaTeXGroup) {
+                if (containsLatexCommands((LaTeXGroup) child)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Re-adds curly braces to all {@code LaTeXGroup} objects in the given list
+     * of {@link LaTeXObject}s. JBibTeX converts substrings with curly braces
+     * to {@code LaTeXGroup} objects and removes the curly braces. We need to
+     * re-add them here, so we can later keep the desired capitalization.
+     * @param objs the objects to process
+     * @return the new list of objects with curly braces added
+     */
+    private static List<LaTeXObject> readdCurlyBraces(List<LaTeXObject> objs) {
+        List<LaTeXObject> result = new ArrayList<>();
+        for (LaTeXObject o : objs) {
+            if (o instanceof LaTeXGroup) {
+                LaTeXGroup grp = (LaTeXGroup)o;
+                boolean hasLatexCmd = containsLatexCommands(grp);
+                if (!hasLatexCmd) {
+                    // only add curly braces if the LaTeX string does
+                    // not contain latex commands, e.g. for accents
+                    List<LaTeXObject> children = new ArrayList<>();
+                    children.add(new LaTeXString("{"));
+                    children.addAll(grp.getObjects());
+                    children.add(new LaTeXString("}"));
+                    LaTeXGroup g = new LaTeXGroup(children);
+                    result.add(g);
+                } else {
+                    // keep the group as-is (no explicit braces added)
+                    result.add(o);
+                }
+            } else {
+                result.add(o);
+            }
+        }
+
         return result;
     }
 
@@ -166,6 +226,13 @@ public class BibTeXConverter {
             // convert LaTeX string to normal text
             try {
                 List<LaTeXObject> objs = latexParser.parse(new StringReader(us));
+                String keyLower = field.getKey().getValue().toLowerCase();
+
+                // re-add curly braces for the author and editor fields
+                if (FIELD_AUTHOR.equals(keyLower) || FIELD_EDITOR.equals(keyLower)) {
+                    objs = readdCurlyBraces(objs);
+                }
+
                 us = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
             } catch (ParseException | TokenMgrException ex) {
                 // ignore
