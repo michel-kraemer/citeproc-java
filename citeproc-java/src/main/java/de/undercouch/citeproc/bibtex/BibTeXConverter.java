@@ -107,24 +107,6 @@ public class BibTeXConverter {
     private final LaTeXPrinter latexPrinter;
 
     /**
-     * Detects if a LaTeX group (recursively) contains LaTeX commands (e.g., accent macros).
-     * If so, the group is likely used for formatting/diacritics rather than a name
-     */
-    private static boolean containsLatexCommands(LaTeXGroup group) {
-        for (LaTeXObject child : group.getObjects()) {
-            if (child instanceof LaTeXCommand) {
-                return true;
-            }
-            if (child instanceof LaTeXGroup) {
-                if (containsLatexCommands((LaTeXGroup) child)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Default constructor
      */
     public BibTeXConverter() {
@@ -177,6 +159,60 @@ public class BibTeXConverter {
     }
 
     /**
+     * Detects if a LaTeX group (recursively) contains LaTeX commands (e.g.,
+     * accent macros). If so, the group is likely used for formatting/diacritics
+     * rather than a name
+     */
+    private static boolean containsLatexCommands(LaTeXGroup group) {
+        for (LaTeXObject child : group.getObjects()) {
+            if (child instanceof LaTeXCommand) {
+                return true;
+            }
+            if (child instanceof LaTeXGroup) {
+                if (containsLatexCommands((LaTeXGroup) child)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Re-adds curly braces to all {@code LaTeXGroup} objects in the given list
+     * of {@link LaTeXObject}s. JBibTeX converts substrings with curly braces
+     * to {@code LaTeXGroup} objects and removes the curly braces. We need to
+     * re-add them here, so we can later keep the desired capitalization.
+     * @param objs the objects to process
+     * @return the new list of objects with curly braces added
+     */
+    private static List<LaTeXObject> readdCurlyBraces(List<LaTeXObject> objs) {
+        List<LaTeXObject> result = new ArrayList<>();
+        for (LaTeXObject o : objs) {
+            if (o instanceof LaTeXGroup) {
+                LaTeXGroup grp = (LaTeXGroup)o;
+                boolean hasLatexCmd = containsLatexCommands(grp);
+                if (!hasLatexCmd) {
+                    // only add curly braces if the LaTeX string does
+                    // not contain latex commands, e.g. for accents
+                    List<LaTeXObject> children = new ArrayList<>();
+                    children.add(new LaTeXString("{"));
+                    children.addAll(grp.getObjects());
+                    children.add(new LaTeXString("}"));
+                    LaTeXGroup g = new LaTeXGroup(children);
+                    result.add(g);
+                } else {
+                    // keep the group as-is (no explicit braces added)
+                    result.add(o);
+                }
+            } else {
+                result.add(o);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Converts a BibTeX entry to a citation item
      * @param e the BibTeX entry to convert
      * @return the citation item
@@ -190,33 +226,14 @@ public class BibTeXConverter {
             // convert LaTeX string to normal text
             try {
                 List<LaTeXObject> objs = latexParser.parse(new StringReader(us));
-                List<LaTeXObject> newObjs;
                 String keyLower = field.getKey().getValue().toLowerCase();
+
+                // re-add curly braces for the author and editor fields
                 if (FIELD_AUTHOR.equals(keyLower) || FIELD_EDITOR.equals(keyLower)) {
-                    newObjs = new ArrayList<>();
-                    // only add curly braces if the latex string does not contain latex commands, e.g. for accents
-                    for (LaTeXObject o : objs) {
-                        if (o instanceof LaTeXGroup grp) {
-                            boolean hasLatexCmd = containsLatexCommands(grp);
-                            if (!hasLatexCmd) {
-                                List<LaTeXObject> children = new ArrayList<>();
-                                children.add(new LaTeXString("{"));
-                                children.addAll(grp.getObjects());
-                                children.add(new LaTeXString("}"));
-                                LaTeXGroup g = new LaTeXGroup(children);
-                                newObjs.add(g);
-                            } else {
-                                // Keep the group as-is (no explicit braces added)
-                                newObjs.add(o);
-                            }
-                        } else {
-                            newObjs.add(o);
-                        }
-                    }
-                } else {
-                    newObjs = objs;
+                    objs = readdCurlyBraces(objs);
                 }
-                us = latexPrinter.print(newObjs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
+
+                us = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
             } catch (ParseException | TokenMgrException ex) {
                 // ignore
             }
@@ -250,7 +267,7 @@ public class BibTeXConverter {
             builder.collectionEditor(NameParser.parse(entries.get(FIELD_EDITOR)));
         }
 
-        // map date‚
+        // map date
         CSLDate date;
         if (entries.containsKey(FIELD_DATE)) {
             date = DateParser.toDate(entries.get(FIELD_DATE));

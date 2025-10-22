@@ -260,14 +260,18 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals("1984", item.getIssued().getRaw());
     }
 
+    /**
+     * Test if curly braces in the author field are kept and the field is
+     * correctly converted to a literal string
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
     @Test
     public void curlyBracesAreKept() throws ParseException {
         String entry = "@online{testcitationkey,\n" +
                 "  author = {{The PGF/TikZ Team} and others},\n" +
                 "  journal = {TUGBoat},\n" +
                 "  title = {pgf – Create PostScript and PDF graphics in TeX},\n" +
-                "  year = {2013},\n" +
-                "  _jabref_shared = {sharedId: -1, version: 1}\n" +
+                "  year = {2013}\n" +
                 "}";
 
         BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
@@ -279,17 +283,22 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
                 .literal("The PGF/TikZ Team")
                 .build();
 
-        assertEquals(name.getLiteral(), item.getAuthor()[0].getLiteral());
+        assertEquals(2, item.getAuthor().length);
+        assertEquals(name, item.getAuthor()[0]);
     }
 
+    /**
+     * Test if multiple names with curly braces in the author field are kept
+     * and if they are correctly converted to literal strings
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
     @Test
-    public void curlyNestedBracesAreKept() throws ParseException {
+    public void multipleCurlyBracesAreKept() throws ParseException {
         String entry = "@online{testcitationkey,\n" +
                 "  author = {{The PGF/TikZ Team} and {JabRef e.V}},\n" +
                 "  journal = {TUGBoat},\n" +
                 "  title = {pgf – Create PostScript and PDF graphics in TeX},\n" +
-                "  year = {2013},\n" +
-                "  _jabref_shared = {sharedId: -1, version: 1}\n" +
+                "  year = {2013}\n" +
                 "}";
 
         BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
@@ -305,10 +314,15 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
                 .literal("JabRef e.V")
                 .build();
 
-        assertEquals(name.getLiteral(), item.getAuthor()[0].getLiteral());
-        assertEquals(jabrefName.getLiteral(), item.getAuthor()[1].getLiteral());
+        assertEquals(name, item.getAuthor()[0]);
+        assertEquals(jabrefName, item.getAuthor()[1]);
     }
 
+    /**
+     * Test if curly braces in the editor field are kept and the field is
+     * correctly converted to a literal string
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
     @Test
     public void editorCurlyBracesAreKept() throws ParseException {
         String entry = "@online{testcitationkey,\n" +
@@ -327,9 +341,15 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
                 .build();
 
         assertEquals(2, item.getEditor().length);
-        assertEquals(name.getLiteral(), item.getEditor()[0].getLiteral());
+        assertEquals(name, item.getEditor()[0]);
     }
 
+    /**
+     * Test if curly braces in the editor field are kept and the name is
+     * correctly converted to a literal string, even if the field contains
+     * multiple names
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
     @Test
     public void editorMixedLiteralAndPerson() throws ParseException {
         String entry = "@book{mixededitors,\n" +
@@ -345,11 +365,17 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
 
         assertEquals(2, item.getEditor().length);
         assertEquals("ACME Inc", item.getEditor()[0].getLiteral());
-        assertNull("First editor should be literal; no family name", item.getEditor()[0].getFamily());
+        assertNull("First editor should be literal; no family name",
+                item.getEditor()[0].getFamily());
         assertEquals("Doe", item.getEditor()[1].getFamily());
         assertEquals("John", item.getEditor()[1].getGiven());
     }
 
+    /**
+     * Make sure curly braces in the title field are stripped away (as opposed
+     * to curly braces in the author or editor fields)
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
     @Test
     public void titleBracesNotReadded() throws ParseException {
         String entry = "@article{titlebraces,\n" +
@@ -365,11 +391,19 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
 
         String title = item.getTitle();
         assertNotNull(title);
-        assertFalse("Title should not contain curly braces after conversion", title.contains("{"));
-        assertFalse("Title should not contain curly braces after conversion", title.contains("}"));
+        assertFalse("Title should not contain curly braces after conversion",
+                title.contains("{"));
+        assertFalse("Title should not contain curly braces after conversion",
+                title.contains("}"));
         assertEquals("An Example with Braces in Title", title);
     }
 
+    /**
+     * Test if curly braces in the author field are kept and the second name is
+     * correctly converted to a literal string, even if the field contains
+     * multiple names
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
     @Test
     public void curlyBracesAreReaddedOnlyForSecondAuthor() throws ParseException {
         String entry = "@online{testcitationkey,\n" +
@@ -397,14 +431,18 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
         assertEquals(name2, item.getAuthor()[1]);
     }
 
-
+    /**
+     * Test if curly braces in the author field are kept and the field is
+     * correctly converted to a literal string
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
     @Test
     public void curlyBracesSingleAuthor() throws ParseException {
         String entry = "@online{testcitationkey,\n" +
                 "  author = {{NASA}},\n" +
                 "  journal = {Test journal},\n" +
                 "  title = {Test title},\n" +
-                "  year = {2025},\n" +
+                "  year = {2025}\n" +
                 "}";
 
         BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));

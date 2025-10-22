@@ -1,8 +1,6 @@
 package de.undercouch.citeproc.bibtex;
 
 import de.undercouch.citeproc.csl.CSLName;
-import org.jbibtex.BibTeXEntry;
-import org.jbibtex.DigitStringValue;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
