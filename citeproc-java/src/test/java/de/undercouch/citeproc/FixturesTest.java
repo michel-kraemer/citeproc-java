@@ -1119,7 +1119,7 @@ public class FixturesTest {
             // "magic_StripPeriodsTrue",
             // "magic_StripPeriodsTrueShortForm",
             // "magic_SubsequentAuthorSubstitute",
-            "magic_SubsequentAuthorSubstituteNotFooled",
+            // "magic_SubsequentAuthorSubstituteNotFooled",
             // "magic_SubsequentAuthorSubstituteOfTitleField",
             // "magic_SuperscriptChars",
             "magic_SuppressDuplicateVariableRendering",
