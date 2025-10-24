@@ -32,5 +32,5 @@ items:
         - [ 123 ]
 
 result: |
-  G. Name. My title (500BC)
-  G. Name. My title (123AD)
+  G. Name. My title (500 BC)
+  G. Name. My title (123 AD)
