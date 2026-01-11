@@ -747,10 +747,17 @@ public class RenderContext {
         if (t == null) {
             return null;
         }
+        String result;
         if (plural) {
-            return t.getMultiple();
+            result = t.getMultiple();
+        } else {
+            result = t.getSingle();
         }
-        return t.getSingle();
+        if (result.isEmpty()) {
+            // BUGFIX: Treat empty terms as non-existent
+            return null;
+        }
+        return result;
     }
 
     /**

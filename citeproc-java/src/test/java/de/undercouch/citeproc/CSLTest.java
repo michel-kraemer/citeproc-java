@@ -818,4 +818,43 @@ public class CSLTest {
         assertEquals("[1]李世民, 秦叔宝. 沙漠种植玉米的可行性[J]. 沙漠期刊, 2021, 7(14).\n" +
                 "[2]AUTHOR T. The Paper[C].\n", result);
     }
+
+    /**
+     * Don't render a label if the term is empty. See
+     * <a href="https://github.com/citation-style-language/styles/issues/7975">https://github.com/citation-style-language/styles/issues/7975</a>
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    public void dontRenderLabelOnEmptyTerm() throws Exception {
+        CSLItemData item1 = new CSLItemDataBuilder()
+                .type(CSLType.ARTICLE_JOURNAL)
+                .title("Title of the test entry")
+                .author(
+                        new CSLNameBuilder().family("Smith").given("Bill").build(),
+                        new CSLNameBuilder().family("Jones").given("Bob").build(),
+                        new CSLNameBuilder().family("Williams").given("Jeff").build()
+                )
+                .collectionEditor(
+                        new CSLNameBuilder().family("Taylor").given("Phil").build()
+                )
+                .editor(
+                        new CSLNameBuilder().family("Taylor").given("Phil").build()
+                )
+                .issued(2026, 7)
+                .containerTitle("BibTeX Journal")
+                .eventPlace("Trondheim")
+                .DOI("10.1001/bla.blubb")
+                .page(45, 67)
+                .volume(34)
+                .issue(3)
+                .publisher("JabRef Publishing")
+                .publisherPlace("Trondheim")
+                .build();
+
+        String style = "vancouver";
+        String result = CSL.makeAdhocBibliography(style, "text", item1).makeString();
+
+        assertEquals("1.Smith B, Jones B, Williams J. Title of the test entry. " +
+                "Taylor P, editor. BibTeX Journal. 2026 July;34(3):45–67. \n", result);
+    }
 }

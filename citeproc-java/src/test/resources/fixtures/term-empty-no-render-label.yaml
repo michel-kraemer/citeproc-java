@@ -1,0 +1,29 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <locale xml:lang="en">
+      <terms>
+        <term name="author" form="long" />
+      </terms>
+    </locale>
+    <bibliography>
+      <layout suffix=".">
+        <names variable="author" suffix=". ">
+          <name initialize-with=". " text-decoration="underline"/>
+          <label form="long" prefix=", " />
+        </names>
+        <text variable="title" quotes="true" font-style="oblique" font-weight="bold"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    author:
+      - given: Given
+        family: Name
+    title: That's my title!
+
+result: |
+  G. Name. “That’s my title!”
