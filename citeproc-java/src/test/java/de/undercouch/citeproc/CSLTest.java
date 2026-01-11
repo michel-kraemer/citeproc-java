@@ -123,10 +123,10 @@ public class CSLTest {
                 + "Operating Systems Review, vol. 7, no. 4, p. 27, Oct. 1973.\n", b.getEntries()[1]);
         assertEquals("[3]D. M. Ritchie and K. Thompson, “The UNIX Time-Sharing System,” "
                 + "Communications of the Association for Computing Machinery, vol. 17, no. 7, pp. 365–375, "
-                + "July 1974.\n", b.getEntries()[2]);
+                + "Jul. 1974.\n", b.getEntries()[2]);
         assertEquals("[4]H. Lycklama, “UNIX Time-Sharing System: UNIX on a Microprocessor,” "
                 + "The Bell System Technical Journal, vol. 57, no. 6, pp. 2087–2101, "
-                + "July–Aug. 1978, [Online]. Available: "
+                + "Jul.–Aug. 1978, [Online]. Available: "
                 + "http://bstj.bell-labs.com/BSTJ/images/Vol57/bstj57-6-2087.pdf\n", b.getEntries()[3]);
     }
 
@@ -252,7 +252,7 @@ public class CSLTest {
         assertEquals("  <div class=\"csl-entry\">\n" +
                 "    <div class=\"csl-left-margin\">[1]</div><div class=\"csl-right-inline\">" +
                 expectedAuthorTitle +
-                " Accessed: Sept. 11, 2013. [Online]. Available: " +
+                " Accessed: Sep. 11, 2013. [Online]. Available: " +
                 "http://michel-kraemer.github.io/citeproc-java/" +
                 "</div>\n" +
                 "  </div>\n", b.getEntries()[0]);
@@ -271,7 +271,7 @@ public class CSLTest {
         assertEquals("  <div class=\"csl-entry\">\n" +
                 "    <div class=\"csl-left-margin\">[1]</div><div class=\"csl-right-inline\">" +
                 expectedAuthorTitle +
-                " Accessed: Sept. 11, 2013. [Online]. Available: " +
+                " Accessed: Sep. 11, 2013. [Online]. Available: " +
                 "<a href=\"http://michel-kraemer.github.io/citeproc-java/\">" +
                 "http://michel-kraemer.github.io/citeproc-java/</a>" +
                 "</div>\n" +
@@ -305,7 +305,7 @@ public class CSLTest {
                 "[.csl-left-margin]##[1]##[.csl-right-inline]##M. Krämer, " +
                 "“citeproc-java: A Citation Style "
                 + "Language (CSL) processor for Java.” "
-                + "Accessed: Sept. 11, 2013. [Online]. Available: "
+                + "Accessed: Sep. 11, 2013. [Online]. Available: "
                 + "http://michel-kraemer.github.io/citeproc-java/##\n",
                 b.getEntries()[0]);
     }
@@ -410,7 +410,7 @@ public class CSLTest {
 
         List<Citation> a = citeproc.makeCitation(items[0].getId());
         assertEquals(0, a.get(0).getIndex());
-        assertEquals("Johnson and Kernighan, B (Bell Laboratories, 1973).", a.get(0).getText());
+        assertEquals("Johnson and Kernighan, B.", a.get(0).getText());
     }
 
     /**
@@ -585,7 +585,7 @@ public class CSLTest {
     }
 
     /**
-     * Test if titles with 'modern-language-association-8th-edition' style are
+     * Test if titles with 'modern-language-association' style are
      * rendered in title-case
      * See <a href="https://github.com/michel-kraemer/citeproc-java/issues/150">issue 150</a>
      */
@@ -606,7 +606,7 @@ public class CSLTest {
                 .build();
 
         CSL citeproc = new CSL(new ListItemDataProvider(item),
-                "modern-language-association-8th-edition");
+                "modern-language-association");
         citeproc.setOutputFormat("text");
         citeproc.makeCitation(item.getId());
 

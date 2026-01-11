@@ -75,10 +75,10 @@ public class BibTeXItemDataProviderTest extends AbstractBibTeXTest {
                 + "Operating Systems Review, vol. 7, Art. no. 4, Oct. 1973.\n", b.getEntries()[1]);
         assertEquals("[3]D. W. Ritchie and K. Thompson, “The UNIX Time-Sharing System,” "
                 + "Communications of the Association for Computing Machinery, vol. 17, Art. no. 7, "
-                + "July 1974.\n", b.getEntries()[2]);
+                + "Jul. 1974.\n", b.getEntries()[2]);
         assertEquals("[4]H. Lycklama, “UNIX Time-Sharing System: UNIX on a Microprocessor,” "
                 + "The Bell System Technical Journal, vol. 57, Art. no. 6, "
-                + "July–Aug. 1978, [Online]. Available: "
+                + "Jul.–Aug. 1978, [Online]. Available: "
                 + "http://bstj.bell-labs.com/BSTJ/images/Vol57/bstj57-6-2087.pdf\n", b.getEntries()[3]);
     }
 
