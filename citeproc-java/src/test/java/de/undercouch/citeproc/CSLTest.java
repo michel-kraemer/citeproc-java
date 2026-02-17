@@ -525,7 +525,7 @@ public class CSLTest {
         assertTrue(ss.size() > 5000);
         assertTrue(ss.contains("ieee"));
         assertTrue(ss.contains("apa"));
-        assertTrue(ss.contains("vancouver"));
+        assertTrue(ss.contains("modern-language-association"));
     }
 
     /**
@@ -851,11 +851,11 @@ public class CSLTest {
                 .publisherPlace("Trondheim")
                 .build();
 
-        String style = "vancouver";
+        String style = "nlm-citation-sequence";
         String result = CSL.makeAdhocBibliography(style, "text", item1).makeString();
 
         assertEquals("1.Smith B, Jones B, Williams J. Title of the test entry. " +
-                "Taylor P, editor. BibTeX Journal. 2026 July;34(3):45–67. \n", result);
+                "Taylor P, editor. BibTeX Journal. 2026 Jul;34(3):45–67. \n", result);
     }
 
     /**

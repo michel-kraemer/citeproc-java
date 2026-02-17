@@ -19,11 +19,11 @@ items:
 result:
   html: |-
     <div class="csl-bib-body">
-      <div class="csl-entry">Doe, J. (1992) in <span style="font-style: italic">Some title</span>. Vintage First edition. Vintage, pp. 250&ndash;300.</div>
+      <div class="csl-entry">Doe, J. (1992) <span style="font-style: italic">Some title</span>. Vintage First edition. Vintage, pp. 250&ndash;300.</div>
     </div>
 
 resultLegacy:
   html: |-
     <div class="csl-bib-body">
-      <div class="csl-entry">Doe, J. (1992) in <i>Some title</i>. Vintage First edition. Vintage, pp. 250–300.</div>
+      <div class="csl-entry">Doe, J. (1992) <i>Some title</i>. Vintage First edition. Vintage, pp. 250–300.</div>
     </div>

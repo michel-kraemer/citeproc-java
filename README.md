@@ -84,8 +84,8 @@ Here's the configuration for [Gradle](https://gradle.org/):
 ```groovy
 dependencies {
     implementation 'de.undercouch:citeproc-java:3.4.1'
-    implementation 'org.citationstyles:styles:26.1'
-    implementation 'org.citationstyles:locales:26.1'
+    implementation 'org.citationstyles:styles:26.2'
+    implementation 'org.citationstyles:locales:26.2'
 }
 ```
 
@@ -101,12 +101,12 @@ And here's the configuration for [Maven](http://maven.apache.org/):
   <dependency>
     <groupId>org.citationstyles</groupId>
     <artifactId>styles</artifactId>
-    <version>26.1</version>
+    <version>26.2</version>
   </dependency>
   <dependency>
     <groupId>org.citationstyles</groupId>
     <artifactId>locales</artifactId>
-    <version>26.1</version>
+    <version>26.2</version>
   </dependency>
 </dependencies>
 ```
