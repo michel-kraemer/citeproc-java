@@ -222,8 +222,10 @@ public class SName implements SElement {
                     // We reached the maximum number of names. Render "et al."
                     // and then break
                     String etAl = ctx.getTerm("et-al");
-                    appendDelimiter(buffer, delimiterPrecedesEtAl, nameAsSort, max > 1);
-                    buffer.append(" " + etAl, SUFFIX);
+                    if (etAl != null) {
+                        appendDelimiter(buffer, delimiterPrecedesEtAl, nameAsSort, max > 1);
+                        buffer.append(" " + etAl, SUFFIX);
+                    }
                     break;
                 }
 

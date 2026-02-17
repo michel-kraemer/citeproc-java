@@ -1065,7 +1065,7 @@ public class FixturesTest {
             "locale_EmptyStyleOpt",
             "locale_EmptyTerm",
             // "locale_ForceEmptyAndOthersTerm",
-            // "locale_ForceEmptyEtAlTerm",
+            "locale_ForceEmptyEtAlTerm",
             // "locale_NonExistentLocaleDef",
             "locale_OverloadWithEmptyString",
             "locale_PageRangeDelimiterTermDefined",
