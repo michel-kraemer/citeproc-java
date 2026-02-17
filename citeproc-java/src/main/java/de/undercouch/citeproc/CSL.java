@@ -220,6 +220,16 @@ public class CSL {
             }
         }
 
+        // load locale and prioritize according to the specification:
+        // * locales in the style where language and country match the
+        //   output locale have the highest priority
+        // * then locales in the style where the language matches the output
+        //   locale
+        // * then locales in the style where xml:lang is not set
+        // * then locale files where language and country match the output
+        //   locale
+        // * finally, locale files where the language and country match the
+        //   primary dialect of the output locale
         LLocale locale = null;
 
         // load locale of primary dialect
@@ -264,16 +274,35 @@ public class CSL {
                 + "your classpath?");
         }
 
+        // look for a locale in the style where "lang" is not set
         for (LLocale l : this.style.getLocales()) {
-            if (l.getLang() == null ||
-                    (l.getLang().getLanguage().equals(locale.getLang().getLanguage()) &&
-                            (l.getLang().getCountry().isEmpty() ||
-                                    l.getLang().getCountry().equals(locale.getLang().getCountry())))) {
-                // additional localization data in the style file overrides or
-                // augments the data from the locale file
+            if (l.getLang() == null) {
                 locale = locale.merge(l);
+                break;
             }
         }
+
+        // look for a locale in the style with a matching language
+        if (slash >= 0) {
+            for (LLocale l : this.style.getLocales()) {
+                if (l.getLang() != null && l.getLang().getCountry().isEmpty() &&
+                        l.getLang().getLanguage().equals(locale.getLang().getLanguage())) {
+                    locale = locale.merge(l);
+                    break;
+                }
+            }
+        }
+
+        // look for a locale in the style with a matching language and country
+        for (LLocale l : this.style.getLocales()) {
+            if (l.getLang() != null &&
+                    l.getLang().getLanguage().equals(locale.getLang().getLanguage()) &&
+                    l.getLang().getCountry().equals(locale.getLang().getCountry())) {
+                locale = locale.merge(l);
+                break;
+            }
+        }
+
         this.locale = locale;
     }
 
