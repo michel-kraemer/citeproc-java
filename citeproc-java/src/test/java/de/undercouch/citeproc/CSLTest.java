@@ -857,4 +857,98 @@ public class CSLTest {
         assertEquals("1.Smith B, Jones B, Williams J. Title of the test entry. " +
                 "Taylor P, editor. BibTeX Journal. 2026 July;34(3):45–67. \n", result);
     }
+
+    /**
+     * Make sure the primary dialect of a locale is correctly loaded as fallback
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    public void primaryLocale() throws Exception {
+        LocaleProvider localeProvider = lang -> {
+            if ("de-AT".equals(lang)) {
+                return
+                    "<locale xmlns=\"http://purl.org/net/xbiblio/csl\" version=\"1.0\" xml:lang=\"de-AT\">" +
+                        "<terms>" +
+                            "<term name=\"month-01\">Jänner</term>" +
+                        "</terms>" +
+                    "</locale>";
+            }
+            return new DefaultLocaleProvider().retrieveLocale(lang);
+        };
+
+        String style = "<style xmlns=\"http://purl.org/net/xbiblio/csl\" version=\"1.0\">\n" +
+                "    <citation>\n" +
+                "      <layout>\n" +
+                "        <text variable=\"citation-number\" prefix=\"[\" suffix=\"]\"/>\n" +
+                "      </layout>\n" +
+                "    </citation>\n" +
+                "    <bibliography>\n" +
+                "      <layout>\n" +
+                "        <text variable=\"citation-number\" prefix=\"[\" suffix=\"] \"/>\n" +
+                "        <text variable=\"title\" suffix=\". \"/>\n" +
+                "        <text term=\"accessed\" text-case=\"capitalize-first\" suffix=\": \"/>\n" +
+                "        <date variable=\"accessed\" form=\"text\"/>\n" +
+                "      </layout>\n" +
+                "    </bibliography>\n" +
+                "  </style>";
+
+        CSLItemData item1 = new CSLItemDataBuilder()
+                .id("citeproc-java-1")
+                .type(CSLType.WEBPAGE)
+                .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
+                .author("Michel", "Krämer")
+                .issued(2026, 1, 1)
+                .URL("https://github.com/michel-kraemer/citeproc-java")
+                .accessed(2026, 1, 1)
+                .build();
+        CSLItemData item2 = new CSLItemDataBuilder()
+                .id("citeproc-java-2")
+                .type(CSLType.WEBPAGE)
+                .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
+                .author("Michel", "Krämer")
+                .issued(2026, 2, 1)
+                .URL("https://github.com/michel-kraemer/citeproc-java")
+                .accessed(2026, 2, 1)
+                .build();
+
+        CSL citeproc = new CSL(new ListItemDataProvider(item1, item2),
+                localeProvider, null, style, "de-AT");
+        citeproc.setOutputFormat("text");
+        citeproc.makeCitation("citeproc-java-1");
+        citeproc.makeCitation("citeproc-java-2");
+
+        Bibliography b = citeproc.makeBibliography();
+        assertEquals("[1] citeproc-java: A Citation Style Language (CSL) processor " +
+                "for Java. Zugegriffen: 1 Jänner 2026\n" +
+                "[2] citeproc-java: A Citation Style Language (CSL) processor " +
+                "for Java. Zugegriffen: 1 Februar 2026\n", b.makeString());
+    }
+
+    /**
+     * Make sure the primary dialect of a locale is correctly loaded as fallback
+     * if no dialect is specified
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    public void noDialect() throws Exception {
+        CSLItemData item1 = new CSLItemDataBuilder()
+                .id("citeproc-java")
+                .type(CSLType.WEBPAGE)
+                .title("citeproc-java: A Citation Style Language (CSL) processor for Java")
+                .author("Michel", "Krämer")
+                .issued(2026, 2, 17)
+                .URL("https://github.com/michel-kraemer/citeproc-java")
+                .accessed(2026, 2, 17)
+                .build();
+
+        CSL citeproc = new CSL(new ListItemDataProvider(item1), "ieee", "de");
+        citeproc.setOutputFormat("text");
+        citeproc.makeCitation("citeproc-java");
+
+        Bibliography b = citeproc.makeBibliography();
+        assertEquals("[1]M. Krämer, „citeproc-java: A Citation Style Language (CSL) " +
+                "processor for Java“. Zugegriffen: 17 Februar 2026. [Online]. " +
+                "Verfügbar unter: https://github.com/michel-kraemer/citeproc-java\n",
+                b.makeString());
+    }
 }

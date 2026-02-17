@@ -8,12 +8,74 @@ import org.w3c.dom.NodeList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import static java.util.Map.entry;
 
 /**
  * CSL localization data
  * @author Michel Kraemer
  */
 public class LLocale {
+    /**
+     * <p>A map of primary language dialects. See <a href="https://docs.citationstyles.org/en/stable/specification.html#locale-fallback">https://docs.citationstyles.org/en/stable/specification.html#locale-fallback</a>
+     * for more information.</p>
+     * <p>The map is based on <a href="https://github.com/citation-style-language/locales/blob/master/locales.json">locales.json</a>
+     * from the repository of CSL locale files.</p>
+     */
+    public static Map<String, String> PRIMARY_DIALECTS = Map.ofEntries(
+        entry("af", "af-ZA"),
+        entry("ar", "ar"),
+        entry("bal", "bal-PK"),
+        entry("bg", "bg-BG"),
+        entry("brh", "brh-PK"),
+        entry("ca", "ca-AD"),
+        entry("cs", "cs-CZ"),
+        entry("cy", "cy-GB"),
+        entry("da", "da-DK"),
+        entry("de", "de-DE"),
+        entry("el", "el-GR"),
+        entry("en", "en-US"),
+        entry("es", "es-ES"),
+        entry("et", "et-EE"),
+        entry("eu", "eu"),
+        entry("fa", "fa-IR"),
+        entry("fi", "fi-FI"),
+        entry("fr", "fr-FR"),
+        entry("gl", "gl-ES"),
+        entry("he", "he-IL"),
+        entry("hi", "hi-IN"),
+        entry("hr", "hr-HR"),
+        entry("hu", "hu-HU"),
+        entry("id", "id-ID"),
+        entry("is", "is-IS"),
+        entry("it", "it-IT"),
+        entry("ja", "ja-JP"),
+        entry("km", "km-KH"),
+        entry("ko", "ko-KR"),
+        entry("la", "la"),
+        entry("lij", "lij-IT"),
+        entry("lt", "lt-LT"),
+        entry("lv", "lv-LV"),
+        entry("mn", "mn-MN"),
+        entry("ms", "ms-MY"),
+        entry("nb", "nb-NO"),
+        entry("nl", "nl-NL"),
+        entry("nn", "nn-NO"),
+        entry("pa", "pa-PK"),
+        entry("pl", "pl-PL"),
+        entry("pt", "pt-PT"),
+        entry("ro", "ro-RO"),
+        entry("ru", "ru-RU"),
+        entry("sk", "sk-SK"),
+        entry("sl", "sl-SI"),
+        entry("sr", "sr-Latn-RS"),
+        entry("sv", "sv-SE"),
+        entry("th", "th-TH"),
+        entry("tr", "tr-TR"),
+        entry("uk", "uk-UA"),
+        entry("vi", "vi-VN"),
+        entry("zh", "zh-CN")
+    );
+
     private final Locale lang;
     private final Map<String, LDate> dateFormats;
     private final Map<LTerm.Form, Map<String, LTerm>> terms;

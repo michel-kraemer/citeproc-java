@@ -220,9 +220,49 @@ public class CSL {
             }
         }
 
-        // load locale
-        String strLocale = localeProvider.retrieveLocale(lang);
-        LLocale locale = loadLocale(strLocale);
+        LLocale locale = null;
+
+        // load locale of primary dialect
+        String languageRoot = lang;
+        int slash = languageRoot.indexOf('-');
+        if (slash >= 0) {
+            languageRoot = languageRoot.substring(0, slash);
+        }
+        String primaryDialect = LLocale.PRIMARY_DIALECTS.get(languageRoot.toLowerCase());
+        if (primaryDialect != null && !primaryDialect.equals(lang)) {
+            String strPrimaryLocale;
+            try {
+                strPrimaryLocale = localeProvider.retrieveLocale(primaryDialect);
+            } catch (IllegalArgumentException e) {
+                // Primary locale file does not exist. Ignore this and try
+                // the main locale instead.
+                strPrimaryLocale = null;
+            }
+            if (strPrimaryLocale != null) {
+                locale = loadLocale(strPrimaryLocale);
+            }
+        }
+
+        if (slash >= 0 || locale == null) {
+            // load locale of specified dialect
+            String strLocale = localeProvider.retrieveLocale(lang);
+            if (strLocale != null) {
+                LLocale l = loadLocale(strLocale);
+                if (locale == null) {
+                    locale = l;
+                } else {
+                    locale.merge(l);
+                }
+            }
+        }
+
+        if (locale == null) {
+            throw new IllegalArgumentException("Unable to load locale " +
+                lang + ". Make sure you have a file called " +
+                "'/locales-" + lang + ".xml' at the root of your " +
+                "classpath. Did you add the CSL locale files to "
+                + "your classpath?");
+        }
 
         for (LLocale l : this.style.getLocales()) {
             if (l.getLang() == null ||
