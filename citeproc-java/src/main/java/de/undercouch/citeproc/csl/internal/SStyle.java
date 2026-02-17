@@ -78,7 +78,7 @@ public class SStyle {
 
     /**
      * Get additional localization data defined in the style file. This
-     * data may override or augments information from the locale file
+     * data may override or augment information from the locale file
      * @return the additional localization data (or an empty list if there
      * is no additional information in the style file)
      */
