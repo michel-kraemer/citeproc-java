@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.DELIMITER;
-import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.SUFFIX;
 import static de.undercouch.citeproc.csl.internal.token.TextToken.Type.TEXT;
 
 /**
@@ -42,6 +41,7 @@ public class SName implements SElement {
 
     private final String variable;
     private final String delimiter;
+    private final SEtAl etAl;
     private final int form;
     private final int formattingAttributes;
     private final SNameInheritableAttributes inheritableAttributes;
@@ -56,10 +56,12 @@ public class SName implements SElement {
      * Create the name element from an XML node
      * @param node the XML node (may be {@code null})
      * @param variable the variable that holds the name (may be {@code null})
+     * @param etAl the element that renders et-al terms
      */
-    public SName(Node node, String variable) {
+    public SName(Node node, String variable, SEtAl etAl) {
         this.variable = variable;
         this.inheritableAttributes = new SNameInheritableAttributes(node);
+        this.etAl = etAl;
 
         String delimiter;
         String form;
@@ -221,10 +223,12 @@ public class SName implements SElement {
                 if (i == max - 1) {
                     // We reached the maximum number of names. Render "et al."
                     // and then break
-                    String etAl = ctx.getTerm("et-al");
-                    if (etAl != null) {
+                    RenderContext ctxEtAl = new RenderContext(ctx);
+                    etAl.render(ctxEtAl);
+                    TokenBuffer etAlResult = ctxEtAl.getResult();
+                    if (!etAlResult.isEmpty()) {
                         appendDelimiter(buffer, delimiterPrecedesEtAl, nameAsSort, max > 1);
-                        buffer.append(" " + etAl, SUFFIX);
+                        buffer.append(etAlResult);
                     }
                     break;
                 }

@@ -48,6 +48,8 @@ public class SNames implements SRenderingElement {
         String delimiter = NodeHelper.getAttrValue(node, "delimiter");
         this.formattingAttributes = FormattingAttributes.of(node);
 
+        SEtAl etAl = new SEtAl(NodeHelper.findDirectChild(node, "et-al"));
+
         boolean allFormCount = true;
         Node firstNameNode = null;
         for (String variable : variables) {
@@ -61,7 +63,7 @@ public class SNames implements SRenderingElement {
                 Node c = children.item(i);
                 String nodeName = c.getNodeName();
                 if ("name".equals(nodeName)) {
-                    name = new SName(c, variable);
+                    name = new SName(c, variable, etAl);
                     nameNode = c;
                     if (namePos >= 0) {
                         elementsForVariable.set(namePos, name);
@@ -76,7 +78,7 @@ public class SNames implements SRenderingElement {
             }
 
             if (name == null) {
-                name = new SName(null, variable);
+                name = new SName(null, variable, etAl);
                 elementsForVariable.add(0, name);
             }
             if (firstNameNode == null) {
@@ -116,7 +118,7 @@ public class SNames implements SRenderingElement {
 
         if (allFormCount) {
             elements.clear();
-            elements.add(new SName(firstNameNode, variableAttribute));
+            elements.add(new SName(firstNameNode, variableAttribute, etAl));
             affixes = new Affixes();
         } else {
             affixes = new Affixes(node);
