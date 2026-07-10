@@ -425,6 +425,9 @@ public class RenderContext {
                 case "keyword":
                     result = itemData.getKeyword();
                     break;
+                case "language":
+                    result = itemData.getLanguage();
+                    break;
                 case "locator":
                     result = itemData.getLocator();
                     break;
