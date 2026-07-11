@@ -1,0 +1,45 @@
+mode: bibliography
+
+# Minimal style, adapted from the official "BibTeX generic citation style"
+# (https://github.com/citation-style-language/styles/blob/master/bibtex.csl),
+# just to test the language variable
+style:
+    <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+      <macro name="zotero2bibtexType">
+        <choose>
+          <if type="article article-journal article-magazine article-newspaper"
+          match="any">
+            <text value="article"/>
+          </if>
+          <else>
+            <text value="misc"/>
+          </else>
+        </choose>
+      </macro>
+      <bibliography>
+        <layout>
+          <text macro="zotero2bibtexType" prefix=" @"/>
+          <group prefix="{" suffix=" }" delimiter=", ">
+            <text variable="citation-key"/>
+            <text variable="title" prefix=" title={" suffix="}"/>
+            <text variable="language" prefix=" language={" suffix="}"/>
+          </group>
+        </layout>
+      </bibliography>
+    </style>
+
+items:
+    - id: item1
+      type: article-journal
+      citation-key: test_case_1
+      title: An item with a language
+      language: en
+    - id: item2
+      type: article-journal
+      citation-key: test_case_2
+      title: An item without a language
+
+result:
+    text: |2
+       @article{test_case_1, title={An item with a language}, language={en} }
+       @article{test_case_2, title={An item without a language} }
