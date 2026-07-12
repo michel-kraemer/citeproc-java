@@ -643,11 +643,16 @@ public class FixturesTest {
                 context.eval("js",
                         "let generatedCitations = []\n" +
                         "if (citations) {\n" +
-                            "for (let c of citations) {\n" +
+                            "for (let i = 0; i < citations.length; ++i) {\n" +
+                                "let c = citations[i];\n" +
                                 "let jsonBuilder = jsonFactory.createJsonBuilder()\n" +
                                 "let obj = JSON.parse(c.toJson(jsonBuilder))\n" +
-                                "let r = csl.appendCitationCluster(obj)\n" +
-                                "generatedCitations.push(r[0][1])\n" +
+                                "let pre = citations.slice(0, i).map(p =>\n"+
+                                "  ([p.getCitationID(), p.getProperties().getNoteIndex()]));\n" +
+                                "let r = csl.processCitationCluster(obj, pre, [])\n" +
+                                "for (let g of r[1]) {\n" +
+                                "  generatedCitations[g[0]] = g[1];\n" +
+                                "}\n" +
                             "}\n" +
                         "} else {\n" +
                             "let citation = { citationItems: csl.registry.reflist }\n" +
