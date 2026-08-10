@@ -855,7 +855,7 @@ public class CSLTest {
         String result = CSL.makeAdhocBibliography(style, "text", item1).makeString();
 
         assertEquals("1.Smith B, Jones B, Williams J. Title of the test entry. " +
-                "Taylor P, editor. BibTeX Journal. 2026 Jul;34(3):45–67. \n", result);
+                "Taylor P, editor. BibTeX Journal. 2026 Jul;34(3):45–67. doi:10.1001/bla.blubb\n", result);
     }
 
     /**
