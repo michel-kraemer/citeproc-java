@@ -1,0 +1,23 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout vertical-align="sup" prefix="[" suffix="]">
+        <text variable="title"/>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    title: My title
+  - id: item2
+    title: Another title
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><sup>[My title]</sup></div>
+      <div class="csl-entry"><sup>[Another title]</sup></div>
+    </div>

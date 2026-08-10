@@ -40,10 +40,6 @@ public class SCitationLayout extends SRenderingElementContainerElement {
 
     @Override
     public void render(RenderContext ctx) {
-        affixes.wrap(this::renderInternal).accept(ctx);
-    }
-
-    private void renderInternal(RenderContext ctx) {
         RenderContext tmp = new RenderContext(ctx);
         for (CSLCitationItem item : ctx.getCitation().getCitationItems()) {
             RenderContext innerTmp = new RenderContext(ctx, item);
@@ -72,7 +68,18 @@ public class SCitationLayout extends SRenderingElementContainerElement {
                 tmp.emit(suffix, SUFFIX);
             }
         }
-        ctx.emit(tmp.getResult(), formattingAttributes);
+        TokenBuffer buffer = tmp.getResult();
+        if (buffer.isEmpty()) {
+            return;
+        }
+
+        // In contrast to all other elements, affixes on cs:layout are within
+        // the scope of the formatting attributes set on the same element.
+        // Apply them before the formatting attributes are wrapped around the
+        // rendered tokens.
+        affixes.applyTo(buffer);
+
+        ctx.emit(buffer, formattingAttributes);
     }
 
     /**

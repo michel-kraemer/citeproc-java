@@ -28,10 +28,6 @@ public class SLayout extends SRenderingElementContainerElement {
 
     @Override
     public void render(RenderContext ctx) {
-        affixes.wrap(this::renderInternal).accept(ctx);
-    }
-
-    private void renderInternal(RenderContext ctx) {
         RenderContext tmp = new RenderContext(ctx);
         List<SRenderingElement> elements = getElements(ctx);
         for (int i = 0; i < elements.size(); i++) {
@@ -48,6 +44,24 @@ public class SLayout extends SRenderingElementContainerElement {
                 e.render(tmp);
             }
         }
-        ctx.emit(tmp.getResult(), formattingAttributes);
+        TokenBuffer buffer = tmp.getResult();
+        if (buffer.isEmpty()) {
+            return;
+        }
+
+        // In contrast to all other elements, affixes on cs:layout are within
+        // the scope of the formatting attributes set on the same element.
+        // Apply them before the formatting attributes are wrapped around the
+        // rendered tokens.
+        boolean firstField = buffer.getTokens().get(0).isFirstField();
+        affixes.applyTo(buffer);
+        if (firstField) {
+            // the prefix has been prepended to the first field, so it needs to
+            // be marked as such too (otherwise second-field-align would break)
+            List<Token> tokens = buffer.getTokens();
+            tokens.set(0, tokens.get(0).copyWithFirstField(true));
+        }
+
+        ctx.emit(buffer, formattingAttributes);
     }
 }
