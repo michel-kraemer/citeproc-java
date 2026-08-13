@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SElement;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.StripPeriods;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.NodeHelper;
@@ -23,6 +24,7 @@ public class SDatePart implements SElement {
     private final Affixes affixes;
     private final StripPeriods stripPeriods;
     private final String rangeDelimiter;
+    private final int formattingAttributes;
 
     /**
      * Creates the date-part element from an XML node
@@ -40,6 +42,7 @@ public class SDatePart implements SElement {
         form = NodeHelper.getAttrValue(node, "form");
         affixes = new Affixes(node);
         stripPeriods = new StripPeriods(node);
+        formattingAttributes = FormattingAttributes.of(node);
 
         String rd = NodeHelper.getAttrValue(node, "range-delimiter");
         rangeDelimiter = Objects.requireNonNullElse(rd, "–");
@@ -73,7 +76,7 @@ public class SDatePart implements SElement {
         }
 
         if (value != null) {
-            ctx.emit(value);
+            ctx.emit(value, formattingAttributes);
         }
     }
 

@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.locale.LDate;
 import de.undercouch.citeproc.csl.internal.token.TextToken;
 import de.undercouch.citeproc.csl.internal.token.Token;
@@ -32,6 +33,7 @@ public class SDate implements SRenderingElement {
     private final String datePartsAttr;
     private final List<SDatePart> dateParts = new ArrayList<>();
     private final Affixes affixes;
+    private final int formattingAttributes;
 
     /**
      * Creates the date element from an XML node
@@ -72,11 +74,23 @@ public class SDate implements SRenderingElement {
         }
 
         affixes = new Affixes(node);
+        formattingAttributes = FormattingAttributes.of(node);
     }
 
     @Override
     public void render(RenderContext ctx) {
-        affixes.wrap(this::renderInternal).accept(ctx);
+        affixes.wrap(this::renderWithFormatting).accept(ctx);
+    }
+
+    private void renderWithFormatting(RenderContext ctx) {
+        if (formattingAttributes == 0) {
+            renderInternal(ctx);
+            return;
+        }
+
+        RenderContext tmp = new RenderContext(ctx);
+        renderInternal(tmp);
+        ctx.emit(tmp.getResult(), formattingAttributes);
     }
 
     private void renderInternal(RenderContext ctx) {
