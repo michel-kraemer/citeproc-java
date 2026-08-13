@@ -704,6 +704,44 @@ public class CSLTest {
     }
 
     /**
+     * Make sure formatting attributes on date and date-part elements are
+     * preserved in rendered output.
+     * @throws Exception if something goes wrong
+     */
+    @Test
+    public void dateFormattingAttributes() throws Exception {
+        CSLItemData item = new CSLItemDataBuilder()
+                .id("DATE-FORMATTING")
+                .type(CSLType.ARTICLE_JOURNAL)
+                .issued(2007)
+                .build();
+
+        String dateStyle = "<style xmlns=\"http://purl.org/net/xbiblio/csl\" version=\"1.0\">"
+                + "<citation><layout><text value=\"1\"/></layout></citation>"
+                + "<bibliography><layout>"
+                + "<date variable=\"issued\" font-weight=\"bold\">"
+                + "<date-part name=\"year\"/>"
+                + "</date>"
+                + "</layout></bibliography>"
+                + "</style>";
+
+        String datePartStyle = "<style xmlns=\"http://purl.org/net/xbiblio/csl\" version=\"1.0\">"
+                + "<citation><layout><text value=\"1\"/></layout></citation>"
+                + "<bibliography><layout>"
+                + "<date variable=\"issued\">"
+                + "<date-part name=\"year\" font-weight=\"bold\"/>"
+                + "</date>"
+                + "</layout></bibliography>"
+                + "</style>";
+
+        String dateBibliography = CSL.makeAdhocBibliography(dateStyle, "html", item).makeString();
+        assertTrue(dateBibliography.contains("<span style=\"font-weight: bold\">2007</span>"));
+
+        String datePartBibliography = CSL.makeAdhocBibliography(datePartStyle, "html", item).makeString();
+        assertTrue(datePartBibliography.contains("<span style=\"font-weight: bold\">2007</span>"));
+    }
+
+    /**
      * Test if parsing a style with multiple if nodes within a choose node
      * throws an exception
      * @throws Exception if the test succeeds
