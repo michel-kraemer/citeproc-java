@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.SElement;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.behavior.StripPeriods;
 import de.undercouch.citeproc.csl.internal.locale.LTerm;
 import de.undercouch.citeproc.helper.NodeHelper;
@@ -21,6 +22,7 @@ public class SDatePart implements SElement {
     private final String name;
     private final String form;
     private final Affixes affixes;
+    private final int formattingAttributes;
     private final StripPeriods stripPeriods;
     private final String rangeDelimiter;
 
@@ -39,6 +41,7 @@ public class SDatePart implements SElement {
 
         form = NodeHelper.getAttrValue(node, "form");
         affixes = new Affixes(node);
+        formattingAttributes = FormattingAttributes.of(node);
         stripPeriods = new StripPeriods(node);
 
         String rd = NodeHelper.getAttrValue(node, "range-delimiter");
@@ -73,7 +76,7 @@ public class SDatePart implements SElement {
         }
 
         if (value != null) {
-            ctx.emit(value);
+            ctx.emit(value, formattingAttributes);
         }
     }
 

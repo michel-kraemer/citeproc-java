@@ -3,6 +3,7 @@ package de.undercouch.citeproc.csl.internal.rendering;
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.internal.RenderContext;
 import de.undercouch.citeproc.csl.internal.behavior.Affixes;
+import de.undercouch.citeproc.csl.internal.behavior.FormattingAttributes;
 import de.undercouch.citeproc.csl.internal.locale.LDate;
 import de.undercouch.citeproc.csl.internal.token.TextToken;
 import de.undercouch.citeproc.csl.internal.token.Token;
@@ -32,6 +33,7 @@ public class SDate implements SRenderingElement {
     private final String datePartsAttr;
     private final List<SDatePart> dateParts = new ArrayList<>();
     private final Affixes affixes;
+    private final int formattingAttributes;
 
     /**
      * Creates the date element from an XML node
@@ -72,6 +74,7 @@ public class SDate implements SRenderingElement {
         }
 
         affixes = new Affixes(node);
+        formattingAttributes = FormattingAttributes.of(node);
     }
 
     @Override
@@ -233,10 +236,10 @@ public class SDate implements SRenderingElement {
 
             // emit the final result
             notifyListenersEmpty = result.getResult().isEmpty();
-            ctx.emit(result.getResult());
+            ctx.emit(result.getResult(), formattingAttributes);
         } else if (literal != null) {
             notifyListenersEmpty = literal.isEmpty();
-            ctx.emit(literal);
+            ctx.emit(literal, formattingAttributes);
         }
 
         if (notifyListenersEmpty) {
