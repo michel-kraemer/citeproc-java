@@ -1,0 +1,30 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" version="1.0">
+    <bibliography>
+      <layout>
+        <date variable="issued">
+          <date-part name="year" font-weight="bold" />
+        </date>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    issued:
+      date-parts:
+        - [2007]
+
+result:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><span style="font-weight: bold">2007</span></div>
+    </div>
+
+resultLegacy:
+  html: |-
+    <div class="csl-bib-body">
+      <div class="csl-entry"><b>2007</b></div>
+    </div>
