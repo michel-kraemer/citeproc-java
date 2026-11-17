@@ -1,0 +1,17 @@
+mode: citation
+
+style: chicago-author-date-de
+
+items:
+  - id: item1
+    type: book
+    title: Dummy
+    editor:
+      - given: Erika
+        family: Muster
+    issued:
+      date-parts:
+        - [2024]
+
+result: |-
+  (Muster 2024)

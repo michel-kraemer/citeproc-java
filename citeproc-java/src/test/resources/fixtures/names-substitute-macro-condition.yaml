@@ -1,0 +1,53 @@
+mode: bibliography
+
+style:
+  <style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0">
+    <info>
+      <title>min</title>
+      <id>min</id>
+      <updated>2024-01-01T00:00:00+00:00</updated>
+    </info>
+    <macro name="cond">
+      <choose>
+        <if variable="editor"><text value="macro:present"/></if>
+        <else><text value="macro:empty"/></else>
+      </choose>
+    </macro>
+    <citation>
+      <layout><text variable="title"/></layout>
+    </citation>
+    <bibliography>
+      <layout>
+        <group delimiter=" | ">
+          <names variable="author">
+            <substitute>
+              <names variable="editor"/>
+            </substitute>
+          </names>
+          <choose>
+            <if variable="editor"><text value="inline:present"/></if>
+            <else><text value="inline:empty"/></else>
+          </choose>
+          <text macro="cond"/>
+        </group>
+      </layout>
+    </bibliography>
+  </style>
+
+items:
+  - id: item1
+    type: book
+    title: My Title
+    editor:
+      - given: Erika
+        family: Muster
+  - id: item2
+    type: book
+    title: Another Title
+    author:
+      - given: John
+        family: Smith
+
+result: |
+  Erika Muster | inline:present | macro:present
+  John Smith | inline:empty | macro:empty

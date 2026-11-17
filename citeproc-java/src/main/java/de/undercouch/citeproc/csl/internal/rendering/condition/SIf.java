@@ -171,8 +171,10 @@ public class SIf extends SCondition {
     private Boolean matchesVariable(RenderContext ctx) {
         if (variables != null) {
             // check the values of the given variables
+            // conditions always test the original item data and are
+            // not affected by variables suppressed by a substitute
             for (String v : variables) {
-                Object o = ctx.getVariable(v, true);
+                Object o = ctx.getVariable(v, true, true);
                 if (match == ALL && o == null) {
                     return Boolean.FALSE;
                 }
@@ -190,8 +192,10 @@ public class SIf extends SCondition {
     private Boolean matchesNumerics(RenderContext ctx) {
         if (isNumerics != null) {
             // check if the given variables are numeric
+            // conditions always test the original item data and are
+            // not affected by variables suppressed by a substitute
             for (String v : isNumerics) {
-                Object o = ctx.getVariable(v, true);
+                Object o = ctx.getVariable(v, true, true);
                 boolean numeric = o != null && (o instanceof Number ||
                         NumberHelper.isNumeric(String.valueOf(o)));
                 if (match == ALL && !numeric) {
@@ -211,8 +215,10 @@ public class SIf extends SCondition {
     private Boolean matchesUncertainDate(RenderContext ctx) {
         if (isUncertainDates != null) {
             // check if given variables are approximate dates
+            // conditions always test the original item data and are
+            // not affected by variables suppressed by a substitute
             for (String v : isUncertainDates) {
-                CSLDate o = ctx.getDateVariable(v, true);
+                CSLDate o = ctx.getDateVariable(v, true, true);
                 boolean circa = o != null && o.getCirca() == Boolean.TRUE;
                 if (match == ALL && !circa) {
                     return Boolean.FALSE;
@@ -231,7 +237,9 @@ public class SIf extends SCondition {
     private Boolean matchesNumbers(RenderContext ctx) {
         if (numbers != null) {
             // check if the number variable has the given label(s)
-            String v = ctx.getStringVariable("number", true);
+            // conditions always test the original item data and are
+            // not affected by variables suppressed by a substitute
+            String v = ctx.getStringVariable("number", true, true);
             String firstLabel = null;
             if (v != null) {
                 List<NumberElement> elements = NumberParser.parse(v);

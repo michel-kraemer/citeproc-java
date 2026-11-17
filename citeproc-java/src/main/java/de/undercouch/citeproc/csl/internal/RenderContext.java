@@ -264,22 +264,37 @@ public class RenderContext {
      * Get the value of a string, date, or name variable
      * @param name the variable's name
      * @param ignoreListeners {@code true} if {@link VariableListener}s should
-     * not be notified about this call.
+     * not be notified about this call
      * @return the variable's value or {@code null} if the value is not set
      * @throws IllegalArgumentException if the variable is unknown
      */
     public Object getVariable(String name, boolean ignoreListeners) {
-        Object result = getStringVariable(name, ignoreListeners);
+        return getVariable(name, ignoreListeners, false);
+    }
+
+    /**
+     * Get the value of a string, date, or name variable
+     * @param name the variable's name
+     * @param ignoreListeners {@code true} if {@link VariableListener}s should
+     * not be notified about this call
+     * @param ignoreSuppression {@code true} if variables suppressed by a
+     * substitute should be treated as if they were not suppressed
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the variable is unknown
+     */
+    public Object getVariable(String name, boolean ignoreListeners,
+            boolean ignoreSuppression) {
+        Object result = getStringVariable(name, ignoreListeners, ignoreSuppression);
         if (result != null) {
             return result;
         }
 
-        result = getDateVariable(name, ignoreListeners);
+        result = getDateVariable(name, ignoreListeners, ignoreSuppression);
         if (result != null) {
             return result;
         }
 
-        return getNameVariable(name, ignoreListeners);
+        return getNameVariable(name, ignoreListeners, ignoreSuppression);
     }
 
     /**
@@ -296,12 +311,28 @@ public class RenderContext {
      * Get the value of the string variable with the given name
      * @param name the variable's name
      * @param ignoreListeners {@code true} if {@link VariableListener}s should
-     * not be notified about this call.
+     * not be notified about this call
      * @return the variable's value or {@code null} if the value is not set
      * @throws IllegalArgumentException if the variable is unknown
      */
     public String getStringVariable(String name, boolean ignoreListeners) {
-        return getStringVariable(name, VariableForm.LONG, ignoreListeners);
+        return getStringVariable(name, ignoreListeners, false);
+    }
+
+    /**
+     * Get the value of the string variable with the given name
+     * @param name the variable's name
+     * @param ignoreListeners {@code true} if {@link VariableListener}s should
+     * not be notified about this call
+     * @param ignoreSuppression {@code true} if variables suppressed by a
+     * substitute should be treated as if they were not suppressed
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the variable is unknown
+     */
+    public String getStringVariable(String name, boolean ignoreListeners,
+            boolean ignoreSuppression) {
+        return getStringVariable(name, VariableForm.LONG, ignoreListeners,
+                ignoreSuppression);
     }
 
     /**
@@ -320,14 +351,31 @@ public class RenderContext {
      * @param name the variable's name
      * @param form the variable form to get
      * @param ignoreListeners {@code true} if {@link VariableListener}s should
-     * not be notified about this call.
+     * not be notified about this call
      * @return the variable's value or {@code null} if the value is not set
      * @throws IllegalArgumentException if the variable is unknown
      */
-    public String getStringVariable(String name, VariableForm form, boolean ignoreListeners) {
+    public String getStringVariable(String name, VariableForm form,
+            boolean ignoreListeners) {
+        return getStringVariable(name, form, ignoreListeners, false);
+    }
+
+    /**
+     * Get the value of the string variable with the given name
+     * @param name the variable's name
+     * @param form the variable form to get
+     * @param ignoreListeners {@code true} if {@link VariableListener}s should
+     * not be notified about this call
+     * @param ignoreSuppression {@code true} if variables suppressed by a
+     * substitute should be treated as if they were not suppressed
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the variable is unknown
+     */
+    public String getStringVariable(String name, VariableForm form, boolean ignoreListeners,
+            boolean ignoreSuppression) {
         String result = null;
         String origResultForAbbrev = null;
-        if (!suppressedVariables.contains(name)) {
+        if (ignoreSuppression || !suppressedVariables.contains(name)) {
             switch (name) {
                 case "abstract":
                     result = itemData.getAbstrct();
@@ -562,13 +610,28 @@ public class RenderContext {
      * Get the value of the date variable with the given name
      * @param name the variable's name
      * @param ignoreListeners {@code true} if {@link VariableListener}s should
-     * not be notified about this call.
+     * not be notified about this call
      * @return the variable's value or {@code null} if the value is not set
      * @throws IllegalArgumentException if the date variable is unknown
      */
     public CSLDate getDateVariable(String name, boolean ignoreListeners) {
+        return getDateVariable(name, ignoreListeners, false);
+    }
+
+    /**
+     * Get the value of the date variable with the given name
+     * @param name the variable's name
+     * @param ignoreListeners {@code true} if {@link VariableListener}s should
+     * not be notified about this call
+     * @param ignoreSuppression {@code true} if variables suppressed by a
+     * substitute should be treated as if they were not suppressed
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the date variable is unknown
+     */
+    public CSLDate getDateVariable(String name, boolean ignoreListeners,
+            boolean ignoreSuppression) {
         CSLDate result;
-        if (!suppressedVariables.contains(name)) {
+        if (ignoreSuppression || !suppressedVariables.contains(name)) {
             switch (name) {
                 case "accessed":
                     result = itemData.getAccessed();
@@ -610,8 +673,23 @@ public class RenderContext {
     }
 
     public CSLName[] getNameVariable(String name, boolean ignoreListeners) {
+        return getNameVariable(name, ignoreListeners, false);
+    }
+
+    /**
+     * Get the value of the name variable with the given name
+     * @param name the variable's name
+     * @param ignoreListeners {@code true} if {@link VariableListener}s should
+     * not be notified about this call
+     * @param ignoreSuppression {@code true} if variables suppressed by a
+     * substitute should be treated as if they were not suppressed
+     * @return the variable's value or {@code null} if the value is not set
+     * @throws IllegalArgumentException if the name variable is unknown
+     */
+    public CSLName[] getNameVariable(String name, boolean ignoreListeners,
+            boolean ignoreSuppression) {
         CSLName[] result;
-        if (!suppressedVariables.contains(name)) {
+        if (ignoreSuppression || !suppressedVariables.contains(name)) {
             switch (name) {
                 case "author":
                     result = itemData.getAuthor();
@@ -696,7 +774,7 @@ public class RenderContext {
     /**
      * Add a variable to the set of suppressed variables. Suppressed variables
      * should not be rendered any more for the rest of the output. The context
-     * will pretend the variable's value is {@code null}).
+     * will pretend the variable's value is {@code null}.
      * @param name the variable's name
      */
     public void suppressVariable(String name) {
