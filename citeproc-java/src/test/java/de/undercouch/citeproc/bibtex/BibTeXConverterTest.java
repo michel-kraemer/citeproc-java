@@ -261,6 +261,59 @@ public class BibTeXConverterTest extends AbstractBibTeXTest {
     }
 
     /**
+     * Make sure verbatim fields like {@code url} and {@code doi} are not
+     * converted from TeX: ligature rules must not apply to them, so {@code --}
+     * must not be turned into an en dash and {@code ---} must not be turned
+     * into an em dash. Prose fields like {@code note} must still be converted.
+     *
+     * See also <a href="https://github.com/michel-kraemer/citeproc-java/issues/355">
+     * https://github.com/michel-kraemer/citeproc-java/issues/355</a>
+     *
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void verbatimFieldsNotConvertedFromTeX() throws ParseException {
+        String entry = "@misc{verbatimfields,\n" +
+                "  author = {A. Author},\n" +
+                "  title  = {A title},\n" +
+                "  url    = {https://example.org/Brand-Story--How-to-Tell},\n" +
+                "  doi    = {10.1000/a--b---c},\n" +
+                "  note   = {pages 10--20 and 30---40},\n" +
+                "  year   = {2026}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        CSLItemData item = converter.toItemData(db).get("verbatimfields");
+
+        assertEquals("https://example.org/Brand-Story--How-to-Tell", item.getURL());
+        assertEquals("10.1000/a--b---c", item.getDOI());
+        assertEquals("pages 10\u201320 and 30\u201440", item.getNote());
+    }
+
+    /**
+     * Test if a URL wrapped in a <code>\u005Curl{...}</code> command is
+     * converted correctly, i.e. the command is removed but the inner URL is not
+     * converted from TeX
+     * @throws ParseException if the BibTeX entry could not be parsed
+     */
+    @Test
+    public void urlWrappedInUrlCommand() throws ParseException {
+        String entry = "@misc{urlcommand,\n" +
+                "  author = {A. Author},\n" +
+                "  title  = {A title},\n" +
+                "  url    = {\\url{https://example.org/Brand-Story--How-to-Tell}},\n" +
+                "  year   = {2026}\n" +
+                "}";
+
+        BibTeXDatabase db = new BibTeXParser().parse(new StringReader(entry));
+        BibTeXConverter converter = new BibTeXConverter();
+        CSLItemData item = converter.toItemData(db).get("urlcommand");
+
+        assertEquals("https://example.org/Brand-Story--How-to-Tell", item.getURL());
+    }
+
+    /**
      * Test if curly braces in the author field are kept and the field is
      * correctly converted to a literal string
      * @throws ParseException if the BibTeX entry could not be parsed

@@ -25,10 +25,15 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -102,6 +107,19 @@ public class BibTeXConverter {
     private static final String TYPE_TECHREPORT = "techreport";
     private static final String TYPE_UNPUBLISHED = "unpublished";
     private static final String TYPE_WWW = "www";
+
+    /**
+     * Fields whose values must be taken literally. The biblatex manual
+     * classifies these fields as "verbatim" fields (the <code>url</code> field
+     * has the data type "uri", which is also processed in verbatim mode), so
+     * TeX's ligature rules must not be applied to their values (e.g.,
+     * <code>--</code> must not be converted to an en dash)
+     */
+    private static final Set<String> VERBATIM_FIELDS = new HashSet<>(
+            Arrays.asList(FIELD_DOI, FIELD_URL, "eprint", "file", "pdf"));
+
+    private static final Pattern URL_COMMAND_PATTERN =
+            Pattern.compile("\\\\url\\s*\\{(.*)\\}", Pattern.DOTALL);
 
     private final LaTeXParser latexParser;
     private final LaTeXPrinter latexPrinter;
@@ -213,6 +231,21 @@ public class BibTeXConverter {
     }
 
     /**
+     * Strips a single surrounding {@code \u005Curl{...}} command from the
+     * given string. Some bibliography files wrap their URLs in such a command.
+     * @param s the string to process
+     * @return the string with the {@code \u005Curl{...}} command removed or the
+     * string itself if it is not wrapped in such a command
+     */
+    private static String unwrapUrlCommand(String s) {
+        Matcher m = URL_COMMAND_PATTERN.matcher(s.trim());
+        if (m.matches()) {
+            return m.group(1);
+        }
+        return s;
+    }
+
+    /**
      * Converts a BibTeX entry to a citation item
      * @param e the BibTeX entry to convert
      * @return the citation item
@@ -221,24 +254,37 @@ public class BibTeXConverter {
         // get all fields from the BibTeX entry
         Map<String, String> entries = new HashMap<>();
         for (Map.Entry<Key, Value> field : e.getFields().entrySet()) {
+            String keyLower = field.getKey().getValue().toLowerCase();
             String us = field.getValue().toUserString().replaceAll("\\r", "");
 
-            // convert LaTeX string to normal text
-            try {
-                List<LaTeXObject> objs = latexParser.parse(new StringReader(us));
-                String keyLower = field.getKey().getValue().toLowerCase();
+            // verbatim fields (e.g. 'url' and 'doi') must be taken literally:
+            // TeX's ligature rules must not apply to them (the biblatex manual
+            // classifies 'url' and 'doi' as verbatim fields, see §2.2.1
+            // "Data types" and §2.2.2 "Data fields")
+            // see also https://github.com/michel-kraemer/citeproc-java/issues/355
+            if (VERBATIM_FIELDS.contains(keyLower)) {
+                // some bibliography files wrap their URLs in a \\url command
+                us = unwrapUrlCommand(us);
+            } else {
+                // convert LaTeX string to normal text
+                try {
+                    List<LaTeXObject> objs = latexParser.parse(
+                            new StringReader(us));
 
-                // re-add curly braces for the author and editor fields
-                if (FIELD_AUTHOR.equals(keyLower) || FIELD_EDITOR.equals(keyLower)) {
-                    objs = readdCurlyBraces(objs);
+                    // re-add curly braces for the author and editor fields
+                    if (FIELD_AUTHOR.equals(keyLower) ||
+                            FIELD_EDITOR.equals(keyLower)) {
+                        objs = readdCurlyBraces(objs);
+                    }
+
+                    us = latexPrinter.print(objs).replaceAll("\\n", " ")
+                            .replaceAll("\\r", "").trim();
+                } catch (ParseException | TokenMgrException ex) {
+                    // ignore
                 }
-
-                us = latexPrinter.print(objs).replaceAll("\\n", " ").replaceAll("\\r", "").trim();
-            } catch (ParseException | TokenMgrException ex) {
-                // ignore
             }
 
-            entries.put(field.getKey().getValue().toLowerCase(), us);
+            entries.put(keyLower, us);
         }
 
         // map type
