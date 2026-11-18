@@ -11,8 +11,8 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.21.0'
     implementation 'org.jline:jline:4.5.0'
 
-    runtimeOnly 'org.citationstyles:styles:26.8'
-    runtimeOnly 'org.citationstyles:locales:26.8'
+    runtimeOnly 'org.citationstyles:styles:26.11'
+    runtimeOnly 'org.citationstyles:locales:26.11'
 }
 
 application {
